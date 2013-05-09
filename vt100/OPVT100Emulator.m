@@ -1122,7 +1122,7 @@ int     BufLen;                 /* Number of characters in cBuffer waiting for o
  * Output characters to terminal, passing them through the vt100 emulator.
  * Return -1 on error 
  */
-- (int) processedTextOut: (char*) cbuf length: (size_t) count {
+- (int) processedTextOut: (const char*) cbuf length: (size_t) count {
     
     /* If we have a buffer overflow, error out if we haven't already crashed. */
     

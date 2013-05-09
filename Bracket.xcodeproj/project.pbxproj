@@ -19,6 +19,7 @@
 		8D604290173C12FF00149409 /* OPVT100Emulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D60428C173C12FF00149409 /* OPVT100Emulator.m */; };
 		8D604292173C142A00149409 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424C173BE60800149409 /* AppKit.framework */; };
 		8D604293173C143300149409 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424E173BE60800149409 /* Foundation.framework */; };
+		8D604297173C22D600149409 /* BRTerminalController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* BRTerminalController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,8 @@
 		8D60428B173C12FF00149409 /* OPVT100Emulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = OPVT100Emulator.h; sourceTree = "<group>"; };
 		8D60428C173C12FF00149409 /* OPVT100Emulator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPVT100Emulator.m; sourceTree = "<group>"; };
 		8D60428D173C12FF00149409 /* vt100 readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "vt100 readme.txt"; sourceTree = "<group>"; };
+		8D604294173C22D600149409 /* BRTerminalController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = BRTerminalController.h; sourceTree = "<group>"; };
+		8D604295173C22D600149409 /* BRTerminalController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRTerminalController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +85,7 @@
 			children = (
 				8D604289173C12FF00149409 /* vt100 */,
 				8D60424F173BE60800149409 /* Bracket */,
+				8D604250173BE60800149409 /* Supporting Files */,
 				8D60426F173BE60900149409 /* BracketTests */,
 				8D604248173BE60800149409 /* Frameworks */,
 				8D604247173BE60800149409 /* Products */,
@@ -114,7 +118,8 @@
 				8D60425C173BE60800149409 /* BRDocument.m */,
 				8D60425E173BE60800149409 /* BRDocument.xib */,
 				8D604261173BE60800149409 /* MainMenu.xib */,
-				8D604250173BE60800149409 /* Supporting Files */,
+				8D604294173C22D600149409 /* BRTerminalController.h */,
+				8D604295173C22D600149409 /* BRTerminalController.m */,
 			);
 			path = Bracket;
 			sourceTree = "<group>";
@@ -129,6 +134,7 @@
 				8D604258173BE60800149409 /* Credits.rtf */,
 			);
 			name = "Supporting Files";
+			path = Bracket;
 			sourceTree = "<group>";
 		};
 		8D60426F173BE60900149409 /* BracketTests */ = {
@@ -274,6 +280,7 @@
 				8D604256173BE60800149409 /* main.m in Sources */,
 				8D60425D173BE60800149409 /* BRDocument.m in Sources */,
 				8D604290173C12FF00149409 /* OPVT100Emulator.m in Sources */,
+				8D604297173C22D600149409 /* BRTerminalController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -323,6 +323,6 @@
 
 - (void) puts: (char*) f;
 - (void) printf: (char *) format, ... ;
-- (int) processedTextOut: (char*) cbuf length: (size_t) count;
+- (int) processedTextOut: (const char*) cbuf length: (size_t) count;
 
 @end
