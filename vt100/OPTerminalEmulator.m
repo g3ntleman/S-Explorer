@@ -39,7 +39,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#import "OPVT100Emulator.h"
+#import "OPTerminalEmulator.h"
   
  
 /*  NOTE - many of the functions look like they should
@@ -79,7 +79,7 @@ int termAttrMode[NUM_TERM_ATTR_MODES] = { 0,
 };
 
 
-@implementation OPVT100Emulator {
+@implementation OPTerminalEmulator {
 
 char    cBuffer[MAXVTBUFLEN+1]; /* terminal output buffer for unprocessed characters */
 int     BufLen;                 /* Number of characters in cBuffer waiting for output */

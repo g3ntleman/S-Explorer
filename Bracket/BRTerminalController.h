@@ -7,12 +7,16 @@
 //
 
 #import <AppKit/AppKit.h>
-#import "OPVT100Emulator.h"
+#import "OPTerminalEmulator.h"
+#import "OPTerminalView.h"
 
-@interface BRTerminalController : NSViewController
+@interface BRTerminalController : NSObject <NSCoding>
 
 @property (readonly) NSTask* task;
-@property (readonly) OPVT100Emulator* terminalEmulator;
+@property (readonly) OPTerminalEmulator* terminalEmulator;
 
+@property (strong, nonatomic) IBOutlet OPTerminalView* terminalView;
+
+- (void) runCommand: (NSString*) command withArguments: (NSArray*) arguments;
 
 @end

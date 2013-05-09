@@ -106,7 +106,7 @@
 
 
 
-@protocol OPVT100EmulatorDelegate <NSObject>
+@protocol OPTerminalEmulatorDelegate <NSObject>
 
 /* Prototype for functions which MUST BE SUPPLIED BY THE BACK END!!! */
 
@@ -314,12 +314,12 @@
 
 @end
 
-@interface OPVT100Emulator :  NSObject {
+@interface OPTerminalEmulator :  NSObject {
     int termAttrMode[NUM_TERM_ATTR_MODES];
     int alltermAttrModes;
 }
 
-@property (strong, nonatomic) id <OPVT100EmulatorDelegate> delegate;
+@property (strong, nonatomic) id <OPTerminalEmulatorDelegate> delegate;
 
 - (void) puts: (char*) f;
 - (void) printf: (char *) format, ... ;

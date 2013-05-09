@@ -7,6 +7,7 @@
 //
 
 #import "BRTerminalController.h"
+#import "OPTerminalView.h"
 
 @implementation BRTerminalController {
     NSPipe* _outputPipe;
@@ -14,26 +15,49 @@
     NSPipe* _inputPipe;
 }
 
+@synthesize terminalEmulator;
+
 - (id) init {
     if (self = [super init]) {
-        _terminalEmulator = [[OPVT100Emulator alloc] init];
     }
     return self;
 }
 
-- (void) loadView {
-    [super loadView];
-    NSAssert([self.view conformsToProtocol:@protocol(OPVT100EmulatorDelegate)], @"View must conform to OPVT100EmulatorDelegate Protocol.");
-    self.terminalEmulator.delegate = (id <OPVT100EmulatorDelegate>) self.view;
+- (id) initWithCoder:(NSCoder *)aDecoder {
+
+    
+    return self;
 }
+
+- (void) encodeWithCoder:(NSCoder *)aCoder {
+    
+}
+
+- (void) awakeFromNib {
+    self.terminalEmulator.delegate = self.terminalView;
+}
+
+- (OPTerminalEmulator*) terminalEmulator {
+    if (! terminalEmulator) {
+        terminalEmulator = [[OPTerminalEmulator alloc] init];
+    }
+    return terminalEmulator;
+}
+
+- (void) noteScreenSizeChanged {
+    kill(self.task.processIdentifier, SIGWINCH);
+}
+
 
 - (void) taskOutputReceived: (NSNotification*) n {
     NSFileHandle* filehandle = n.object;
     NSData* data = filehandle.availableData;
-    [_terminalEmulator processedTextOut: data.bytes length: data.length];
+    [self.terminalEmulator processedTextOut: data.bytes length: data.length];
 }
 
 - (void) runCommand: (NSString*) command withArguments: (NSArray*) arguments {
+    
+    NSAssert(! _task.isRunning, @"There is already a task %@ running!", _task);
     
     _task = [[NSTask alloc] init];
     //self.outputCache = [NSMutableData data];
@@ -49,7 +73,10 @@
     [_task setArguments: arguments];
     [_task setLaunchPath: command];
     
-    [_task launch];
+    NSDictionary* environment = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 @"vt100", @"TERM", nil];
+    
+    [_task setEnvironment: environment];
     
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(taskOutputReceived:)
@@ -59,6 +86,9 @@
     
     [_outputPipe.fileHandleForReading waitForDataInBackgroundAndNotify];
     [_errorPipe.fileHandleForReading waitForDataInBackgroundAndNotify];
+    
+    [_task launch];
+
 }
 
 @end

@@ -7,7 +7,10 @@
 //
 
 #import <AppKit/AppKit.h>
+#import "BRTerminalController.h"
 
 @interface BRDocument : NSDocument
+
+@property (strong) IBOutlet BRTerminalController* terminalController;
 
 @end
