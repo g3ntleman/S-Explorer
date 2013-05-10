@@ -45,7 +45,8 @@
 }
 
 - (void) keyDown: (NSEvent*) theEvent {
-    NSLog(@"Key pressed: %@", theEvent);
+    
+    //NSLog(@"Key pressed: %@", theEvent);
     
     NSString* charactersString = [theEvent characters];
     NSData* inputData = [charactersString dataUsingEncoding:NSISOLatin1StringEncoding allowLossyConversion:YES];

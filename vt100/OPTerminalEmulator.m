@@ -1135,6 +1135,12 @@ int     BufLen;                 /* Number of characters in cBuffer waiting for o
      * output buffer, and attempt to parse it.
      */
     
+    NSMutableString* hexOutput = [[NSMutableString alloc] init];
+    for (unsigned i=0; i<count; i++) {
+        [hexOutput appendFormat:@" %02x", cbuf[i]];
+    }
+    NSLog(@"Terminal received:%@", hexOutput);
+    
     memcpy(cBuffer + BufLen, cbuf, count);
     BufLen += count;
     

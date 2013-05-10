@@ -99,6 +99,10 @@ typedef struct {
     
     cursorPosition.row = row;
     cursorPosition.column = col;
+    
+    NSLog(@"Cursor moved to (%d,%d).", cursorPosition.row, cursorPosition.column);
+
+    [self setNeedsDisplay: YES];
     return 0;
 }
 
@@ -115,6 +119,8 @@ typedef struct {
 - (int) setOffsetCursorRow: (int) rowOffset column: (int) columnOffset {
     cursorPosition.row += rowOffset;
     cursorPosition.column += columnOffset;
+    
+    NSLog(@"Cursor moved by (%d,%d) to (%d,%d).", rowOffset, columnOffset, cursorPosition.row, cursorPosition.column);
     [self setNeedsDisplay: YES];
     return 0;
 }
@@ -127,6 +133,7 @@ typedef struct {
  * cursor to the position stored in that variable.
  */
 - (int) restoreCursor {
+    NSLog(@"Warning! Unimplemented call to %@", NSStringFromSelector(_cmd));
     return 0;
 }
 
@@ -140,6 +147,7 @@ typedef struct {
  * beRestoreCursor function.
  */
 - (int) saveCursor {
+    NSLog(@"Warning! Unimplemented call to %@", NSStringFromSelector(_cmd));
     return 0;
 }
 
@@ -172,6 +180,7 @@ typedef struct {
  * are stored ONLY in the foreground specification.
  */
 - (int) setTextForegroundAttributes: (int) fore backgroundAtributes: (int) back {
+    NSLog(@"Warning! Unimplemented call to %@", NSStringFromSelector(_cmd));
     return 0;
 }
 
@@ -195,9 +204,12 @@ typedef struct {
         cursorPosition.column += 1;
 
         // Wrap if neccessary or LF occured:
-        if (c == '\n' || cursorPosition.column>80) {
+        if (c == '\n' || cursorPosition.column > 80) {
             cursorPosition.column = 1;
             cursorPosition.row += 1;
+        }
+        if (c == '\r') {
+            cursorPosition.column = 1;
         }
     }
     
@@ -226,6 +238,8 @@ typedef struct {
  * in the appropriate parameters.
  */
 - (int) eraseTextFromRow: (int) rowFrom andColumn: (int) colFrom toRow: (int) rowTo andColumn: (int) colTo{
+    
+    NSLog(@"Warning! Unimplemented call to %@", NSStringFromSelector(_cmd));
     return 0;
 }
 
@@ -245,6 +259,7 @@ typedef struct {
  * variables as well as regular row and column specifications.
  */
 - (int) deleteTextFromRow: (int) rowFrom andColumn: (int) colFrom toRow: (int) rowTo andColumn: (int) colTo {
+    NSLog(@"Warning! Unimplemented call to %@", NSStringFromSelector(_cmd));
     return 0;
 }
 
@@ -256,6 +271,7 @@ typedef struct {
  * and create a blank row under the cursor.
  */
 - (int) insertRow: (int) row {
+    NSLog(@"Warning! Unimplemented call to %@", NSStringFromSelector(_cmd));
     return 0;
 }
 
@@ -267,6 +283,7 @@ typedef struct {
  * should transmit data as though the user had typed it in.
  */
 - (int) transmitText: (char*) text length: (int) len {
+    NSLog(@"Warning! Unimplemented call to %@", NSStringFromSelector(_cmd));
     return 0;
 }
 
@@ -279,6 +296,7 @@ typedef struct {
  */
 
 - (int) advanceToTab {
+    NSLog(@"Warning! Unimplemented call to %@", NSStringFromSelector(_cmd));
     return 0;
 }
 
@@ -293,6 +311,7 @@ typedef struct {
  *
  */
 - (int) clearTab: (int) col {
+    NSLog(@"Warning! Unimplemented call to %@", NSStringFromSelector(_cmd));
     return 0;
 }
 
@@ -305,6 +324,7 @@ typedef struct {
  * be enabled for the entire display, regardless of resizing.
  */
 - (int) setScrollingFromRow: (int) fromRow toRow: (int) toRow {
+    NSLog(@"Warning! Unimplemented call to %@", NSStringFromSelector(_cmd));
     return 0;
 }
 
@@ -335,11 +355,11 @@ typedef struct {
  * couple of the possible flags, but we store many of the others.
  */
 - (int) setTermMode: (int) newMode {
+    NSLog(@"Warning! Unimplemented call to %@", NSStringFromSelector(_cmd));
     return 0;
 }
 
-- (NSString*) description {
-    
+- (NSString*) screenDescription {
     NSMutableString* result = [NSMutableString stringWithString: [super description]];
     for (unsigned row = 1; row<=24; row++) {
         unichar* rowArray = screenContent[row]+1;
@@ -353,6 +373,11 @@ typedef struct {
     }
     return result;
 }
+
+//- (NSString*) description {
+//    
+//    return result;
+//}
 
 - (NSFont*) font {
     if (! _font) {
