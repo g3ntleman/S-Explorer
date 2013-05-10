@@ -29,7 +29,7 @@
     [super windowControllerDidLoadNib:aController];
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
     
-    [self.terminalController runCommand: @"/bin/ls" withArguments: @[@"-l"]];
+    [self.terminalController runCommand: @"/usr/local/bin/csi" withArguments: @[]];
     
 }
 

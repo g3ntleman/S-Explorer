@@ -30,10 +30,26 @@ typedef struct {
 
 @synthesize cursorPosition;
 
-- (id) init {
-    if (self = [super init]) {
+- (id) initWithFrame: (NSRect) frameRect {
+    if (self = [super initWithFrame: frameRect]) {
+        [[NSNotificationCenter defaultCenter] addObserverForName:NSWindowDidBecomeKeyNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+            NSLog(@"%@ did become key.", note.object);
+            [self setNeedsDisplay: YES];
+        }];
+        [[NSNotificationCenter defaultCenter] addObserverForName:NSApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+            NSLog(@"%@ NSApplicationDidBecomeActiveNotification", note.object);
+            [self setNeedsDisplay: YES];
+        }];
+        [[NSNotificationCenter defaultCenter] addObserverForName:NSApplicationDidResignActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+            NSLog(@"%@ NSApplicationDidResignActiveNotification.", note.object);
+            [self setNeedsDisplay: YES];
+        }];        
     }
     return self;
+}
+
+- (void) dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
 }
 
 - (CGGlyph*) glyphCache {
@@ -41,7 +57,7 @@ typedef struct {
 }
 
 - (id) initWithCoder:(NSCoder *)aDecoder {
-    if (self = [self init]) {
+    if (self = [self initWithFrame:NSZeroRect]) {
     }
     return self;
 }
@@ -347,6 +363,23 @@ typedef struct {
     return _font;
 }
 
+- (BOOL) canBecomeKeyView {
+    return YES;
+}
+
+- (BOOL) acceptsFirstResponder {
+    return YES;
+}
+
+- (BOOL) becomeFirstResponder {
+    [self setNeedsDisplay: YES];
+    return YES;
+}
+
+- (BOOL) resignFirstResponder {
+    [self setNeedsDisplay: YES];
+    return YES;
+}
 
 - (void) drawRect:(NSRect)dirtyRect {
     
@@ -393,10 +426,17 @@ typedef struct {
     
     }
     
-    CGRect cursorRect = CGRectMake(cursorPosition.column*colWidth, cursorPosition.row*rowHeight-1.0, 1, rowHeight+2.0);
-
-    CGContextFillRect(context, cursorRect);
+//    if (! [NSApp isActive]) {
+//        CGContextSetFillColorWithColor(context, [[NSColor lightGrayColor] CGColor]);
+//    }
     
+    if (self.window.isKeyWindow && self.window.firstResponder == self) {
+        CGRect cursorRect = CGRectMake(cursorPosition.column*colWidth, cursorPosition.row*rowHeight-10.0, 1, rowHeight);
+        CGContextFillRect(context, cursorRect);
+    } else {
+    }
+    //NSLog(@"Cursor draw: key = %d", self.window.isKeyWindow);
+
     CFRelease(fontRef);
 }
 

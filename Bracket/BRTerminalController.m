@@ -51,13 +51,19 @@
 
 - (void) taskOutputReceived: (NSNotification*) n {
     NSFileHandle* filehandle = n.object;
-    NSData* data = filehandle.availableData;
+    //NSData* data = filehandle.availableData;
+    NSData* data = n.userInfo[NSFileHandleNotificationDataItem];
     [self.terminalEmulator processedTextOut: data.bytes length: data.length];
+    
+    [filehandle readInBackgroundAndNotify];
 }
 
 - (void) runCommand: (NSString*) command withArguments: (NSArray*) arguments {
     
     NSAssert(! _task.isRunning, @"There is already a task %@ running!", _task);
+    
+    command = [command stringByResolvingSymlinksInPath];
+
     
     _task = [[NSTask alloc] init];
     //self.outputCache = [NSMutableData data];
@@ -69,25 +75,30 @@
     
     [_task setStandardInput: _inputPipe];
     [_task setStandardOutput: _outputPipe];
-    [_task setStandardError: _errorPipe];
-    [_task setArguments: arguments];
+    [_task setStandardError: _outputPipe];
+    //[_task setArguments: arguments];
     [_task setLaunchPath: command];
     
-    NSDictionary* environment = [NSDictionary dictionaryWithObjectsAndKeys:
-                                 @"vt100", @"TERM", nil];
+    NSDictionary *defaultEnvironment = [[NSProcessInfo processInfo] environment];
+    NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary:defaultEnvironment];
+    [environment setObject:@"YES" forKey:@"NSUnbufferedIO"];
+    [environment setObject:@"vt100" forKey:@"TERM"];
     
     [_task setEnvironment: environment];
     
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(taskOutputReceived:)
-                                                 name: NSFileHandleDataAvailableNotification
+                                                 name:  NSFileHandleReadCompletionNotification
                                                object: _outputPipe.fileHandleForReading];
      
     
-    [_outputPipe.fileHandleForReading waitForDataInBackgroundAndNotify];
-    [_errorPipe.fileHandleForReading waitForDataInBackgroundAndNotify];
+    [_outputPipe.fileHandleForReading readInBackgroundAndNotify];
+    [_errorPipe.fileHandleForReading readInBackgroundAndNotify];
     
     [_task launch];
+    
+    [_inputPipe.fileHandleForWriting writeData: [NSData dataWithBytes:"\n" length:1]];
+//    fsync(_inputPipe.fileHandleForWriting.fileDescriptor);
 
 }
 
