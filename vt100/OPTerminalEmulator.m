@@ -971,24 +971,16 @@ int     BufLen;                 /* Number of characters in cBuffer waiting for o
             break;
             
             /* LF      10      Line feed; causes print if in autoprint. */
-        case 10:
-            [_delegate setOffsetCursorRow: 1 column: 0];
-            End += 1;
-            break;
-            
             /* VT      11      Same as LF.
-             * FF      12      Same as LF.
-             */
+             * FF      12      Same as LF. */
+        case 10:
         case 11:
         case 12:
             [_delegate setOffsetCursorRow: 1 column: 0];
-            End += 1;
-            break;
-            
+            // Fall through to CR:
             /* CR      13      Move cursor to left margin or newline. */
         case 13:
-            [_delegate setOffsetCursorRow: 1 column: 0];
-            [_delegate setAbsoluteCursorRow: CUR_ROW column:LEFT_EDGE];
+            [_delegate setAbsoluteCursorRow: CUR_ROW column: LEFT_EDGE];
             End += 1;
             break;
             
@@ -1063,7 +1055,7 @@ int     BufLen;                 /* Number of characters in cBuffer waiting for o
         End = Start;
         
         /* Since we null-terminated, null < 27 and we have a termination condition */
-        while ((cBuffer[End] > 27)||(cBuffer[End] == 10)||(cBuffer[End] == 13)) {
+        while ((cBuffer[End] > 27)/*||(cBuffer[End] == 10)||(cBuffer[End] == 13)*/) {
             End++;
         }
         

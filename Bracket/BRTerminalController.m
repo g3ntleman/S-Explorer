@@ -93,6 +93,11 @@
     NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary:defaultEnvironment];
     [environment setObject:@"YES" forKey:@"NSUnbufferedIO"];
     [environment setObject:@"vt100" forKey:@"TERM"];
+    [environment setObject: [NSString stringWithFormat:@"%u", self.terminalView.size.columns]
+                    forKey: @"COLUMNS"];
+    [environment setObject: [NSString stringWithFormat:@"%u", self.terminalView.size.rows]
+                    forKey: @"LINES"];
+
     
     [_task setEnvironment: environment];
     

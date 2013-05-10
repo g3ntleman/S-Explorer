@@ -8,16 +8,21 @@
 
 #import "OPTerminalView.h"
 
+#define rowHeight 14.0
+#define colWidth  7.0
+
+#define SCOLLBACKROWS 10000
+
+#define charAt(row,col) screenContent[(row-1)*_size.columns+(col)-1]
+
 typedef struct {
     unichar character;
-    int attrs;
-} OPAttributedChar;
+    uint32 attrs;
+} OPAttributedScreenCharacter;
 
 
 @implementation OPTerminalView {
-    unichar screenContent[24+1][80+1];
-    int foregroundAttrs[24+1][80+1];
-    int backgroundAttrs[24+1][80+1];
+    OPAttributedScreenCharacter* screenContent;
     CGGlyph glyphCache[256];
 }
 
@@ -67,6 +72,15 @@ typedef struct {
     [self.keyResponder keyDown: theEvent];
 }
 
+- (void) setFrame:(NSRect)frameRect {
+    [super setFrame:frameRect];
+    CGSize frameSize = self.frame.size;
+    _size.rows = floor(frameSize.height / rowHeight);
+    _size.columns = floor(frameSize.width / colWidth);
+    
+    if (screenContent) free(screenContent);
+    screenContent = calloc(SCOLLBACKROWS*_size.columns, sizeof(OPAttributedScreenCharacter));
+}
 
 - (void) awakeFromNib {
     cursorPosition.column = 1;
@@ -76,9 +90,9 @@ typedef struct {
 
 - (void) setNeedsDisplay:(BOOL)flag {
     [super setNeedsDisplay:flag];
-    if (flag) {
-        NSLog(@"-setNeedsDisplay: YES called: %@", self);
-    }
+//    if (flag) {
+//        NSLog(@"-setNeedsDisplay: YES called: %@", self);
+//    }
 }
 
 /* beAbsoluteCursor -
@@ -97,8 +111,17 @@ typedef struct {
  */
 - (int) setAbsoluteCursorRow: (int) row column: (int) col {
     
-    cursorPosition.row = row;
-    cursorPosition.column = col;
+    if (col != CUR_COL) {
+        if (col==LEFT_EDGE) col = 1;
+        if (col==RIGHT_EDGE) col = self.size.columns;
+        cursorPosition.column = col;
+    }
+    
+    if (row != CUR_ROW) {
+        if (row==TOP_EDGE) row = 1;
+        if (row==BOTTOM_EDGE) row = self.size.rows;
+        cursorPosition.row = row;
+    }
     
     NSLog(@"Cursor moved to (%d,%d).", cursorPosition.row, cursorPosition.column);
 
@@ -161,10 +184,10 @@ typedef struct {
  */
 - (int) getTextForegroundAttributes: (int*) foregroundPtr backgroundAttributes: (int*) backgroundPtr {
     if (foregroundPtr) {
-        *foregroundPtr = foregroundAttrs[cursorPosition.row][cursorPosition.column];
+        *foregroundPtr = charAt(cursorPosition.row,cursorPosition.column).attrs;
     }
     if (backgroundPtr) {
-        *backgroundPtr = backgroundAttrs[cursorPosition.row][cursorPosition.column];
+        *backgroundPtr = charAt(cursorPosition.row,cursorPosition.column).attrs;
     }
     return 0;
 }
@@ -200,16 +223,12 @@ typedef struct {
         unichar c = text[pos];
         
         // Put text at cursor position:
-        screenContent[cursorPosition.row][cursorPosition.column] = c;
+        charAt(cursorPosition.row,cursorPosition.column).character = c;
         cursorPosition.column += 1;
 
-        // Wrap if neccessary or LF occured:
-        if (c == '\n' || cursorPosition.column > 80) {
-            cursorPosition.column = 1;
-            cursorPosition.row += 1;
-        }
-        if (c == '\r') {
-            cursorPosition.column = 1;
+        // Wrap if neccessary:
+        if (cursorPosition.column > self.size.columns) {
+            [self setAbsoluteCursorRow: cursorPosition.row+1 column: 1];
         }
     }
     
@@ -359,20 +378,21 @@ typedef struct {
     return 0;
 }
 
-- (NSString*) screenDescription {
-    NSMutableString* result = [NSMutableString stringWithString: [super description]];
-    for (unsigned row = 1; row<=24; row++) {
-        unichar* rowArray = screenContent[row]+1;
-        unsigned len = 0;
-        while (len<80 && rowArray[len] && rowArray[len]!='\n') {
-            len += 1;
-        }
-        
-        NSString* rowContent = [[NSString alloc] initWithCharacters: rowArray length: len];
-        [result appendFormat: @"\n%@", rowContent];
-    }
-    return result;
-}
+//- (NSString*) screenDescription {
+//    NSMutableString* result = [NSMutableString stringWithString: [super description]];
+//    OPCharSize size = self.size;
+//    for (unsigned row = 1; row<=size.rows; row++) {
+//        OPAttributedScreenCharacter* rowArray = screenContent[row]+1;
+//        unsigned len = 0;
+//        while (len<size.columns && rowArray[len].character && rowArray[len].character!='\n') {
+//            len += 1;
+//        }
+//        
+//        NSString* rowContent = [[NSString alloc] initWithCharacters: rowArray length: len];
+//        [result appendFormat: @"\n%@", rowContent];
+//    }
+//    return result;
+//}
 
 //- (NSString*) description {
 //    
@@ -414,17 +434,13 @@ typedef struct {
 
 - (void) drawRect:(NSRect)dirtyRect {
     
-#define rowHeight 14.0
-#define colWidth  7.0
-    
     CGContextRef context = [NSGraphicsContext currentContext].graphicsPort;
     
     // Draw Background:
     CGContextSetFillColorWithColor(context, [[NSColor whiteColor] CGColor]);
     CGContextFillRect(context, dirtyRect);
     
-    
-    
+    // Draw all characters:
     CGFontRef fontRef = CTFontCopyGraphicsFont((__bridge CTFontRef)self.font, NULL);
     CGContextSetFont(context, fontRef);
     // CGFontGetFontBBox(<#CGFontRef font#>)
@@ -435,16 +451,16 @@ typedef struct {
 
     CGContextSetTextMatrix(context, CGAffineTransformMake(1.0, 0.0, 0.0, -1.0, 0.0, 0.0) );
 
-    for (unsigned row = 1; row<=24; row++) {
-        UniChar* rowArray = screenContent[row];
+    for (unsigned row = 1; row<=_size.rows; row++) {
+        //OPAttributedScreenCharacter* rowArray = &charAt(row,1);
         
-        for (unsigned col = 1; col<=80; col++) {
+        for (unsigned col = 1; col <= _size.columns; col++) {
 //            unsigned len = 0;
 //            if (len>80 || rowArray[col]!=0 || rowArray[col]!='\n') {
 //                break;
 //            }
             CGPoint lineStart = CGPointMake(col*colWidth, row*rowHeight);
-            unichar character = rowArray[col];
+            unichar character = charAt(row,col).character;
             if (character) {
                 CGGlyph glyph = [self glyphCache][character];
                 // Draw single glyph:
