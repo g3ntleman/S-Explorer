@@ -334,7 +334,7 @@ typedef struct {
 
 - (NSFont*) font {
     if (! _font) {
-        _font = [NSFont fontWithName:@"Monaco" size: 9.0];
+        _font = [NSFont fontWithName:@"Menlo-Bold" size: 11.0];
         
         // Build glyph cache:
         unichar chars[256];
@@ -350,7 +350,8 @@ typedef struct {
 
 - (void) drawRect:(NSRect)dirtyRect {
     
-    
+#define rowHeight 14.0
+#define colWidth  7.0
     
     CGContextRef context = [NSGraphicsContext currentContext].graphicsPort;
     
@@ -364,7 +365,7 @@ typedef struct {
     CGContextSetFont(context, fontRef);
     // CGFontGetFontBBox(<#CGFontRef font#>)
     CGContextSetFontSize(context, self.font.pointSize);
-    CGContextSetTextDrawingMode(context, kCGTextFillStroke);
+    CGContextSetTextDrawingMode(context, kCGTextFill);
     CGContextSetStrokeColorWithColor(context, [[NSColor blackColor] CGColor]);
     CGContextSetFillColorWithColor(context, [[NSColor blackColor] CGColor]);
 
@@ -378,7 +379,7 @@ typedef struct {
 //            if (len>80 || rowArray[col]!=0 || rowArray[col]!='\n') {
 //                break;
 //            }
-            CGPoint lineStart = CGPointMake(9+col*9.0, row*11);
+            CGPoint lineStart = CGPointMake(col*colWidth, row*rowHeight);
             unichar character = rowArray[col];
             if (character) {
                 CGGlyph glyph = [self glyphCache][character];
@@ -391,6 +392,11 @@ typedef struct {
         //[rowContent drawAtPoint:lineStart withAttributes:nil];
     
     }
+    
+    CGRect cursorRect = CGRectMake(cursorPosition.column*colWidth, cursorPosition.row*rowHeight-1.0, 1, rowHeight+2.0);
+
+    CGContextFillRect(context, cursorRect);
+    
     CFRelease(fontRef);
 }
 
