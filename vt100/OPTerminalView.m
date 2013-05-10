@@ -13,20 +13,35 @@ typedef struct {
     int attrs;
 } OPAttributedChar;
 
+
 @implementation OPTerminalView {
     unichar screenContent[24+1][80+1];
     int foregroundAttrs[24+1][80+1];
     int backgroundAttrs[24+1][80+1];
+    CGGlyph glyphCache[256];
+}
+
+- (BOOL) isFlipped {
+    return YES;
+}
+
+- (void) load {
 }
 
 @synthesize cursorPosition;
 
 - (id) init {
-    return [super init];
+    if (self = [super init]) {
+    }
+    return self;
+}
+
+- (CGGlyph*) glyphCache {
+    return glyphCache;
 }
 
 - (id) initWithCoder:(NSCoder *)aDecoder {
-    if (self = [super initWithCoder:aDecoder]) {
+    if (self = [self init]) {
     }
     return self;
 }
@@ -299,6 +314,84 @@ typedef struct {
  */
 - (int) setTermMode: (int) newMode {
     return 0;
+}
+
+- (NSString*) description {
+    
+    NSMutableString* result = [NSMutableString stringWithString: [super description]];
+    for (unsigned row = 1; row<=24; row++) {
+        unichar* rowArray = screenContent[row]+1;
+        unsigned len = 0;
+        while (len<80 && rowArray[len] && rowArray[len]!='\n') {
+            len += 1;
+        }
+        
+        NSString* rowContent = [[NSString alloc] initWithCharacters: rowArray length: len];
+        [result appendFormat: @"\n%@", rowContent];
+    }
+    return result;
+}
+
+- (NSFont*) font {
+    if (! _font) {
+        _font = [NSFont fontWithName:@"Monaco" size: 9.0];
+        
+        // Build glyph cache:
+        unichar chars[256];
+        for (unsigned i=0; i<256; i++) {
+            chars[i] = i;
+        }
+        CTFontRef fontRef = (__bridge CTFontRef)self.font;
+        CTFontGetGlyphsForCharacters(fontRef, chars, glyphCache, 256);
+    }
+    return _font;
+}
+
+
+- (void) drawRect:(NSRect)dirtyRect {
+    
+    
+    
+    CGContextRef context = [NSGraphicsContext currentContext].graphicsPort;
+    
+    // Draw Background:
+    CGContextSetFillColorWithColor(context, [[NSColor whiteColor] CGColor]);
+    CGContextFillRect(context, dirtyRect);
+    
+    
+    
+    CGFontRef fontRef = CTFontCopyGraphicsFont((__bridge CTFontRef)self.font, NULL);
+    CGContextSetFont(context, fontRef);
+    // CGFontGetFontBBox(<#CGFontRef font#>)
+    CGContextSetFontSize(context, self.font.pointSize);
+    CGContextSetTextDrawingMode(context, kCGTextFillStroke);
+    CGContextSetStrokeColorWithColor(context, [[NSColor blackColor] CGColor]);
+    CGContextSetFillColorWithColor(context, [[NSColor blackColor] CGColor]);
+
+    CGContextSetTextMatrix(context, CGAffineTransformMake(1.0, 0.0, 0.0, -1.0, 0.0, 0.0) );
+
+    for (unsigned row = 1; row<=24; row++) {
+        UniChar* rowArray = screenContent[row];
+        
+        for (unsigned col = 1; col<=80; col++) {
+//            unsigned len = 0;
+//            if (len>80 || rowArray[col]!=0 || rowArray[col]!='\n') {
+//                break;
+//            }
+            CGPoint lineStart = CGPointMake(9+col*9.0, row*11);
+            unichar character = rowArray[col];
+            if (character) {
+                CGGlyph glyph = [self glyphCache][character];
+                // Draw single glyph:
+                CGContextShowGlyphsAtPoint(context, lineStart.x, lineStart.y, &glyph, 1);
+            }
+        }
+        
+        //NSString* rowContent = [[NSString alloc] initWithCharacters: rowArray length: len];
+        //[rowContent drawAtPoint:lineStart withAttributes:nil];
+    
+    }
+    CFRelease(fontRef);
 }
 
 @end
