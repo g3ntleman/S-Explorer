@@ -8,8 +8,41 @@
 
 #import "OPTerminalView.h"
 
-@implementation OPTerminalView
+typedef struct {
+    unichar character;
+    int attrs;
+} OPAttributedChar;
 
+@implementation OPTerminalView {
+    unichar screenContent[24+1][80+1];
+    int foregroundAttrs[24+1][80+1];
+    int backgroundAttrs[24+1][80+1];
+}
+
+@synthesize cursorPosition;
+
+- (id) init {
+    return [super init];
+}
+
+- (id) initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super initWithCoder:aDecoder]) {
+    }
+    return self;
+}
+
+- (void) awakeFromNib {
+    cursorPosition.column = 1;
+    cursorPosition.row = 1;
+    //NSLog(@"%@ awoke.", self);
+}
+
+- (void) setNeedsDisplay:(BOOL)flag {
+    [super setNeedsDisplay:flag];
+    if (flag) {
+        NSLog(@"-setNeedsDisplay: YES called: %@", self);
+    }
+}
 
 /* beAbsoluteCursor -
  *
@@ -26,6 +59,9 @@
  * or a column number.
  */
 - (int) setAbsoluteCursorRow: (int) row column: (int) col {
+    
+    cursorPosition.row = row;
+    cursorPosition.column = col;
     return 0;
 }
 
@@ -39,7 +75,10 @@
  * If the cursor can't move the requested amount, results are
  * unpredictable.
  */
-- (int) setOffsetCursorRow: (int) row column: (int) column {
+- (int) setOffsetCursorRow: (int) rowOffset column: (int) columnOffset {
+    cursorPosition.row += rowOffset;
+    cursorPosition.column += columnOffset;
+    [self setNeedsDisplay: YES];
     return 0;
 }
 
@@ -76,6 +115,12 @@
  * font information in the foreground variable.
  */
 - (int) getTextForegroundAttributes: (int*) foregroundPtr backgroundAttributes: (int*) backgroundPtr {
+    if (foregroundPtr) {
+        *foregroundPtr = foregroundAttrs[cursorPosition.row][cursorPosition.column];
+    }
+    if (backgroundPtr) {
+        *backgroundPtr = backgroundAttrs[cursorPosition.row][cursorPosition.column];
+    }
     return 0;
 }
 
@@ -103,13 +148,28 @@
  * scroll only within that region. 'beRawTextOut' means that it's guaranteed
  * not to have control sequences within the text.
  */
-- (int) writeRawText: (char*) text length: (int) length {
+- (int) writeRawText: (char*) text length: (unsigned) length {
+    
+    for (unsigned pos = 0; pos<length; pos++) {
+        unichar c = text[pos];
+        
+        // Put text at cursor position:
+        screenContent[cursorPosition.row][cursorPosition.column] = c;
+        cursorPosition.column += 1;
+
+        // Wrap if neccessary or LF occured:
+        if (c == '\n' || cursorPosition.column>80) {
+            cursorPosition.column = 1;
+            cursorPosition.row += 1;
+        }
+    }
+    
     NSString* string = [[NSString alloc] initWithBytes: text
                                                 length: length
                                               encoding: NSISOLatin1StringEncoding];
-    
-    
     NSLog(@"print '%@'", string);
+    
+    [self setNeedsDisplay: YES];
     
     return 0;
 }

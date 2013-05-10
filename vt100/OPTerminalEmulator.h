@@ -92,13 +92,18 @@
 /* Text attribute definitions; color, font, bold. */
 #define NUM_SC_ATTRIBUTES   11
 
-#define SC_RED   0x0001
-#define SC_GREEN 0x0002
-#define SC_BLUE  0x0004
-#define SC_BOLD  0x0010
-#define SC_UL    0x0020 /* Underlined */
-#define SC_BL    0x0040 /* Blinking */
-#define SC_RV    0x0080 /* Reverse video */
+#define SC_BLACK   0x0000
+#define SC_RED     0x0001
+#define SC_GREEN   0x0002
+#define SC_YELLOW  0x0003
+#define SC_BLUE    0x0004
+#define SC_MAGENTA 0x0005
+#define SC_CYAN    0x0006
+#define SC_WHITE   0x0007
+#define SC_BOLD    0x0010
+#define SC_UL      0x0020 /* Underlined */
+#define SC_BL      0x0040 /* Blinking */
+#define SC_RV      0x0080 /* Reverse video */
 #define SC_ASCII    0x0100 /* Normal ASCII (USASCII) */
 #define SC_G0       0x0200 /* graphics set G0 */
 #define SC_G1       0x0400 /* Graphics set G1 */
@@ -204,7 +209,7 @@
  * scroll only within that region. 'beRawTextOut' means that it's guaranteed
  * not to have control sequences within the text. 
  */
-- (int) writeRawText: (char*) text length: (int) length;
+- (int) writeRawText: (char*) text length: (unsigned) length;
 
 
 /* beEraseText -
