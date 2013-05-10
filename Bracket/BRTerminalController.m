@@ -44,14 +44,47 @@
     return terminalEmulator;
 }
 
+#define ESC 27
+
 - (void) keyDown: (NSEvent*) theEvent {
     
+    
+    NSData* inputData = nil;
+    char* code = nil;
+
     //NSLog(@"Key pressed: %@", theEvent);
     
-    NSString* charactersString = [theEvent characters];
-    NSData* inputData = [charactersString dataUsingEncoding:NSISOLatin1StringEncoding allowLossyConversion:YES];
-    // Pipe keys entered by the user into the external task:
-    [_inputPipe.fileHandleForWriting writeData: inputData];    
+    switch ([theEvent keyCode]) {
+        case 123:    // Left arrow
+            NSLog(@"Left behind.");
+            code = "\e[D";
+            break;
+        case 124:    // Right arrow
+            NSLog(@"Right as always!");
+            code = "\e[C";
+            break;
+        case 125:    // Down arrow
+            NSLog(@"Downward is Heavenward");
+            code = "\e[B";
+            break;
+        case 126:    // Up arrow
+            NSLog(@"Up, up, and away!");
+            code = "\e[A";
+            break;
+        default: {
+            NSString* charactersString = [theEvent characters];
+            inputData = [charactersString dataUsingEncoding:NSISOLatin1StringEncoding allowLossyConversion:YES];
+            break;
+        }
+    }
+    if (code) {
+        inputData = [NSData dataWithBytes: code length: strlen(code)];
+    }
+    
+    if (inputData) {
+        // Pipe keys entered by the user into the external task:
+        [_inputPipe.fileHandleForWriting writeData: inputData];
+    }
 }
 
 - (void) noteScreenSizeChanged {

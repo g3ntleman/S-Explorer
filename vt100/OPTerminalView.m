@@ -72,6 +72,7 @@ typedef struct {
     [self.keyResponder keyDown: theEvent];
 }
 
+
 - (void) setFrame:(NSRect)frameRect {
     [super setFrame:frameRect];
     CGSize frameSize = self.frame.size;
@@ -95,6 +96,23 @@ typedef struct {
 //    }
 }
 
+
+- (void) interpreteRow: (int*) rowPtr column: (int*) colPtr {
+    if (*colPtr == CUR_COL) {
+        *colPtr = cursorPosition.column;
+    } else {
+        if (*colPtr==LEFT_EDGE) *colPtr = 1;
+        if (*colPtr==RIGHT_EDGE) *colPtr = _size.columns;
+    }
+    
+    if (*rowPtr == CUR_ROW) {
+        *rowPtr = cursorPosition.row;
+    } else {
+        if (*rowPtr==TOP_EDGE) *rowPtr = 1;
+        if (*rowPtr==BOTTOM_EDGE) *rowPtr = _size.rows;
+    }
+}
+
 /* beAbsoluteCursor -
  *
  * Given an input row and column, move the cursor to the
@@ -111,17 +129,10 @@ typedef struct {
  */
 - (int) setAbsoluteCursorRow: (int) row column: (int) col {
     
-    if (col != CUR_COL) {
-        if (col==LEFT_EDGE) col = 1;
-        if (col==RIGHT_EDGE) col = self.size.columns;
-        cursorPosition.column = col;
-    }
+    [self interpreteRow: &row column: &col];
     
-    if (row != CUR_ROW) {
-        if (row==TOP_EDGE) row = 1;
-        if (row==BOTTOM_EDGE) row = self.size.rows;
-        cursorPosition.row = row;
-    }
+    cursorPosition.column = col;
+    cursorPosition.row = row;
     
     NSLog(@"Cursor moved to (%d,%d).", cursorPosition.row, cursorPosition.column);
 
@@ -256,9 +267,20 @@ typedef struct {
  * BOTTOM_EDGE, LEFT_EDGE, RIGHT_EDGE, CUR_ROW, and CUR_COL
  * in the appropriate parameters.
  */
-- (int) eraseTextFromRow: (int) rowFrom andColumn: (int) colFrom toRow: (int) rowTo andColumn: (int) colTo{
+- (int) eraseTextFromRow: (int) rowFrom andColumn: (int) colFrom toRow: (int) rowTo andColumn: (int) colTo {
     
-    NSLog(@"Warning! Unimplemented call to %@", NSStringFromSelector(_cmd));
+    [self interpreteRow: &rowFrom column: &colFrom];
+    [self interpreteRow: &rowTo column: &colTo];
+    
+    OPAttributedScreenCharacter* start = &charAt(rowFrom, colFrom);
+    OPAttributedScreenCharacter* end = &charAt(rowTo, colTo);
+    OPAttributedScreenCharacter* cur = start;
+    while (cur<=end) {
+        cur->character = ' ';
+        cur++;
+    }
+    
+    [self setNeedsDisplay: YES];
     return 0;
 }
 
