@@ -52,6 +52,7 @@
 							<int key="NSvFlags">266</int>
 							<string key="NSFrame">{{161, 335}, {185, 22}}</string>
 							<reference key="NSSuperview" ref="568628114"/>
+							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="883019414"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSTextFieldCell" key="NSCell" id="566561048">
@@ -90,12 +91,14 @@
 							<int key="NSvFlags">274</int>
 							<string key="NSFrameSize">{507, 313}</string>
 							<reference key="NSSuperview" ref="568628114"/>
+							<reference key="NSWindow"/>
 							<string key="NSReuseIdentifierKey">_NS:9</string>
 							<string key="NSClassName">OPTerminalView</string>
 						</object>
 					</array>
 					<string key="NSFrameSize">{507, 413}</string>
 					<reference key="NSSuperview"/>
+					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="433022199"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1440, 878}}</string>
@@ -141,6 +144,14 @@
 						<reference key="destination" ref="883019414"/>
 					</object>
 					<int key="connectionID">100040</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">keyResponder</string>
+						<reference key="source" ref="883019414"/>
+						<reference key="destination" ref="533871374"/>
+					</object>
+					<int key="connectionID">100042</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -238,9 +249,72 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">100041</int>
+			<int key="maxID">100042</int>
 		</object>
-		<object class="IBClassDescriber" key="IBDocument.Classes"/>
+		<object class="IBClassDescriber" key="IBDocument.Classes">
+			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
+				<object class="IBPartialClassDescription">
+					<string key="className">BRDocument</string>
+					<string key="superclassName">NSDocument</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">terminalController</string>
+						<string key="NS.object.0">BRTerminalController</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">terminalController</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">terminalController</string>
+							<string key="candidateClassName">BRTerminalController</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/BRDocument.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">BRTerminalController</string>
+					<string key="superclassName">NSResponder</string>
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="keyResponder">NSResponder</string>
+						<string key="terminalView">OPTerminalView</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="keyResponder">
+							<string key="name">keyResponder</string>
+							<string key="candidateClassName">NSResponder</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="terminalView">
+							<string key="name">terminalView</string>
+							<string key="candidateClassName">OPTerminalView</string>
+						</object>
+					</dictionary>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/BRTerminalController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">OPTerminalView</string>
+					<string key="superclassName">NSView</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">keyResponder</string>
+						<string key="NS.object.0">NSResponder</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">keyResponder</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">keyResponder</string>
+							<string key="candidateClassName">NSResponder</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/OPTerminalView.h</string>
+					</object>
+				</object>
+			</array>
+		</object>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaFramework</string>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>

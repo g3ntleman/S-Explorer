@@ -62,6 +62,12 @@ typedef struct {
     return self;
 }
 
+- (void)keyDown:(NSEvent *)theEvent {
+    // Forward to key responder:
+    [self.keyResponder keyDown: theEvent];
+}
+
+
 - (void) awakeFromNib {
     cursorPosition.column = 1;
     cursorPosition.row = 1;
@@ -433,8 +439,8 @@ typedef struct {
     if (self.window.isKeyWindow && self.window.firstResponder == self) {
         CGRect cursorRect = CGRectMake(cursorPosition.column*colWidth, cursorPosition.row*rowHeight-10.0, 1, rowHeight);
         CGContextFillRect(context, cursorRect);
-    } else {
     }
+    
     //NSLog(@"Cursor draw: key = %d", self.window.isKeyWindow);
 
     CFRelease(fontRef);

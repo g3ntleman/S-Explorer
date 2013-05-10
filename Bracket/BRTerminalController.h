@@ -10,10 +10,12 @@
 #import "OPTerminalEmulator.h"
 #import "OPTerminalView.h"
 
-@interface BRTerminalController : NSObject <NSCoding>
+@interface BRTerminalController : NSResponder <NSCoding>
 
 @property (readonly) NSTask* task;
 @property (readonly) OPTerminalEmulator* terminalEmulator;
+
+@property (strong, nonatomic) IBOutlet NSResponder* keyResponder;
 
 @property (strong, nonatomic) IBOutlet OPTerminalView* terminalView;
 

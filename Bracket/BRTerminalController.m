@@ -44,6 +44,15 @@
     return terminalEmulator;
 }
 
+- (void) keyDown: (NSEvent*) theEvent {
+    NSLog(@"Key pressed: %@", theEvent);
+    
+    NSString* charactersString = [theEvent characters];
+    NSData* inputData = [charactersString dataUsingEncoding:NSISOLatin1StringEncoding allowLossyConversion:YES];
+    // Pipe keys entered by the user into the external task:
+    [_inputPipe.fileHandleForWriting writeData: inputData];    
+}
+
 - (void) noteScreenSizeChanged {
     kill(self.task.processIdentifier, SIGWINCH);
 }
@@ -97,7 +106,6 @@
     
     [_task launch];
     
-    [_inputPipe.fileHandleForWriting writeData: [NSData dataWithBytes:"\n" length:1]];
 //    fsync(_inputPipe.fileHandleForWriting.fileDescriptor);
 
 }

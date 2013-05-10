@@ -21,6 +21,8 @@ typedef struct {
 
 @interface OPTerminalView : NSView <OPTerminalEmulatorDelegate>
 
+@property (strong, nonatomic) IBOutlet NSResponder* keyResponder;
+
 @property (readonly) OPCharSize size;
 
 @property (strong, nonatomic) NSFont* font;
