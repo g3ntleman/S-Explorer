@@ -44,10 +44,9 @@
     return terminalEmulator;
 }
 
-#define ESC 27
+#define ESC \e
 
 - (void) keyDown: (NSEvent*) theEvent {
-    
     
     NSData* inputData = nil;
     char* code = nil;
@@ -73,7 +72,7 @@
             break;
         default: {
             NSString* charactersString = [theEvent characters];
-            inputData = [charactersString dataUsingEncoding:NSISOLatin1StringEncoding allowLossyConversion:YES];
+            inputData = [charactersString dataUsingEncoding: NSISOLatin1StringEncoding allowLossyConversion: YES];
             break;
         }
     }
@@ -130,6 +129,7 @@
                     forKey: @"COLUMNS"];
     [environment setObject: [NSString stringWithFormat:@"%u", self.terminalView.size.rows]
                     forKey: @"LINES"];
+    [environment setObject: @"en_US-iso8859-1" forKey: @"LANG"];
 
     
     [_task setEnvironment: environment];

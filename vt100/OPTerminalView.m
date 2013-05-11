@@ -13,7 +13,7 @@
 
 #define SCOLLBACKROWS 10000
 
-#define charAt(row,col) screenContent[(row-1)*_size.columns+(col)-1]
+#define charAt(row,col) screenBuffer[(row-1)*_size.columns+(col)-1]
 
 typedef struct {
     unichar character;
@@ -22,16 +22,15 @@ typedef struct {
 
 
 @implementation OPTerminalView {
-    OPAttributedScreenCharacter* screenContent;
+    OPAttributedScreenCharacter* screenBuffer;
     CGGlyph glyphCache[256];
+    
 }
 
 - (BOOL) isFlipped {
     return YES;
 }
 
-- (void) load {
-}
 
 @synthesize cursorPosition;
 
@@ -79,8 +78,8 @@ typedef struct {
     _size.rows = floor(frameSize.height / rowHeight);
     _size.columns = floor(frameSize.width / colWidth);
     
-    if (screenContent) free(screenContent);
-    screenContent = calloc(SCOLLBACKROWS*_size.columns, sizeof(OPAttributedScreenCharacter));
+    if (screenBuffer) free(screenBuffer);
+    screenBuffer = calloc(SCOLLBACKROWS*_size.columns, sizeof(OPAttributedScreenCharacter));
 }
 
 - (void) awakeFromNib {
