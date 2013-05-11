@@ -54,19 +54,19 @@
     //NSLog(@"Key pressed: %@", theEvent);
     
     switch ([theEvent keyCode]) {
-        case 123:    // Left arrow
+        case NSLeftArrowFunctionKey:
             NSLog(@"Left behind.");
             code = "\e[D";
             break;
-        case 124:    // Right arrow
+        case NSRightArrowFunctionKey:
             NSLog(@"Right as always!");
             code = "\e[C";
             break;
-        case 125:    // Down arrow
+        case NSDownArrowFunctionKey: 
             NSLog(@"Downward is Heavenward");
             code = "\e[B";
             break;
-        case 126:    // Up arrow
+        case NSUpArrowFunctionKey:
             NSLog(@"Up, up, and away!");
             code = "\e[A";
             break;
