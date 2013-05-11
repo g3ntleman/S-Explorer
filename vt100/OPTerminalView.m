@@ -13,7 +13,7 @@
 
 #define SCOLLBACKROWS 10000
 
-#define charAt(row,col) screenBuffer[(row-1)*_size.columns+(col)-1]
+#define charAt(row,col) screenBuffer[(row-1)*_terminalSize.columns+(col)-1]
 
 typedef struct {
     unichar character;
@@ -24,7 +24,7 @@ typedef struct {
 @implementation OPTerminalView {
     OPAttributedScreenCharacter* screenBuffer;
     CGGlyph glyphCache[256];
-    
+    uint32 lastRowIndex;
 }
 
 - (BOOL) isFlipped {
@@ -75,11 +75,14 @@ typedef struct {
 - (void) setFrame:(NSRect)frameRect {
     [super setFrame:frameRect];
     CGSize frameSize = self.frame.size;
-    _size.rows = floor(frameSize.height / rowHeight);
-    _size.columns = floor(frameSize.width / colWidth);
+    _terminalSize.rows = floor(frameSize.height / rowHeight);
+    _terminalSize.columns = floor(frameSize.width / colWidth);
     
     if (screenBuffer) free(screenBuffer);
-    screenBuffer = calloc(SCOLLBACKROWS*_size.columns, sizeof(OPAttributedScreenCharacter));
+    screenBuffer = calloc(SCOLLBACKROWS*_terminalSize.columns, sizeof(OPAttributedScreenCharacter));
+    if (! lastRowIndex) {
+        lastRowIndex = _terminalSize.rows;
+    }
 }
 
 - (void) awakeFromNib {
@@ -101,14 +104,14 @@ typedef struct {
         *colPtr = cursorPosition.column;
     } else {
         if (*colPtr==LEFT_EDGE) *colPtr = 1;
-        if (*colPtr==RIGHT_EDGE) *colPtr = _size.columns;
+        if (*colPtr==RIGHT_EDGE) *colPtr = _terminalSize.columns;
     }
     
     if (*rowPtr == CUR_ROW) {
         *rowPtr = cursorPosition.row;
     } else {
         if (*rowPtr==TOP_EDGE) *rowPtr = 1;
-        if (*rowPtr==BOTTOM_EDGE) *rowPtr = _size.rows;
+        if (*rowPtr==BOTTOM_EDGE) *rowPtr = _terminalSize.rows;
     }
 }
 
@@ -130,6 +133,11 @@ typedef struct {
     
     [self interpreteRow: &row column: &col];
     
+    NSParameterAssert(row <= _terminalSize.rows);
+    NSParameterAssert(row >= 1);
+    NSParameterAssert(col <= _terminalSize.columns);
+    NSParameterAssert(col >= 1);
+    
     cursorPosition.column = col;
     cursorPosition.row = row;
     
@@ -150,8 +158,14 @@ typedef struct {
  * unpredictable.
  */
 - (int) setOffsetCursorRow: (int) rowOffset column: (int) columnOffset {
+    
     cursorPosition.row += rowOffset;
     cursorPosition.column += columnOffset;
+    
+    NSParameterAssert(cursorPosition.row <= _terminalSize.rows);
+    NSParameterAssert(cursorPosition.row >= 1);
+    NSParameterAssert(cursorPosition.column <= _terminalSize.columns);
+    NSParameterAssert(cursorPosition.column >= 1);
     
     NSLog(@"Cursor moved by (%d,%d) to (%d,%d).", rowOffset, columnOffset, cursorPosition.row, cursorPosition.column);
     [self setNeedsDisplay: YES];
@@ -237,7 +251,7 @@ typedef struct {
         cursorPosition.column += 1;
 
         // Wrap if neccessary:
-        if (cursorPosition.column > self.size.columns) {
+        if (cursorPosition.column > self.terminalSize.columns) {
             [self setAbsoluteCursorRow: cursorPosition.row+1 column: 1];
         }
     }
@@ -472,10 +486,10 @@ typedef struct {
 
     CGContextSetTextMatrix(context, CGAffineTransformMake(1.0, 0.0, 0.0, -1.0, 0.0, 0.0) );
 
-    for (unsigned row = 1; row<=_size.rows; row++) {
+    for (unsigned row = 1; row<=_terminalSize.rows; row++) {
         //OPAttributedScreenCharacter* rowArray = &charAt(row,1);
         
-        for (unsigned col = 1; col <= _size.columns; col++) {
+        for (unsigned col = 1; col <= _terminalSize.columns; col++) {
 //            unsigned len = 0;
 //            if (len>80 || rowArray[col]!=0 || rowArray[col]!='\n') {
 //                break;

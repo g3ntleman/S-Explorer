@@ -23,7 +23,7 @@ typedef struct {
 
 @property (strong, nonatomic) IBOutlet NSResponder* keyResponder;
 
-@property (readonly) OPCharSize size;
+@property (readonly) OPCharSize terminalSize;
 
 @property (strong, nonatomic) NSFont* font;
 

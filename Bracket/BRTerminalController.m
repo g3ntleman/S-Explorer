@@ -125,9 +125,9 @@
     NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary:defaultEnvironment];
     [environment setObject:@"YES" forKey:@"NSUnbufferedIO"];
     [environment setObject:@"vt100" forKey:@"TERM"];
-    [environment setObject: [NSString stringWithFormat:@"%u", self.terminalView.size.columns]
+    [environment setObject: [NSString stringWithFormat:@"%u", self.terminalView.terminalSize.columns]
                     forKey: @"COLUMNS"];
-    [environment setObject: [NSString stringWithFormat:@"%u", self.terminalView.size.rows]
+    [environment setObject: [NSString stringWithFormat:@"%u", self.terminalView.terminalSize.rows]
                     forKey: @"LINES"];
     [environment setObject: @"en_US-iso8859-1" forKey: @"LANG"];
 
