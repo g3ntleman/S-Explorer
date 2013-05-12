@@ -70,12 +70,19 @@ typedef struct {
 
 - (void) setFrame:(NSRect)frameRect {
     [super setFrame:frameRect];
-    CGSize frameSize = self.frame.size;
-    _terminalSize.rows = floor(frameSize.height / rowHeight);
-    _terminalSize.columns = floor(frameSize.width / colWidth);
+    CGSize frameSize = self.superview.frame.size;
+    OPCharSize newSize;
     
-    if (screenBuffer) free(screenBuffer);
-    screenBuffer = calloc(SCREENBUFFEROWS*_terminalSize.columns, sizeof(OPAttributedScreenCharacter));
+    newSize.rows = floor(frameSize.height / rowHeight);
+    newSize.columns = floor(frameSize.width / colWidth);
+    
+    if (newSize.columns != _terminalSize.columns || ! screenBuffer) {
+        if (screenBuffer) free(screenBuffer);
+        screenBuffer = calloc(SCREENBUFFEROWS*newSize.columns, sizeof(OPAttributedScreenCharacter));
+    }
+    
+    _terminalSize = newSize;
+    
     if (! lastRowIndex) {
         lastRowIndex = _terminalSize.rows;
     }
@@ -111,6 +118,7 @@ typedef struct {
     }
 }
 
+
 /* beAbsoluteCursor -
  *
  * Given an input row and column, move the cursor to the
@@ -129,14 +137,27 @@ typedef struct {
     
     [self interpreteRow: &row column: &col];
     
-    NSParameterAssert(row <= _terminalSize.rows);
     NSParameterAssert(row >= 1);
     NSParameterAssert(col <= _terminalSize.columns);
     NSParameterAssert(col >= 1);
-    
-    cursorPosition.column = col;
+
+    // See, if we need to scroll instead of moving the cursor:
     cursorPosition.row = row;
+    cursorPosition.column = col;
+
+    if (cursorPosition.row > _terminalSize.rows) {
+        // do scroll by the excessive amount:
+        uint32 scrollAmount = row - _terminalSize.rows;
+        lastRowIndex += scrollAmount;
+        NSRect frame = self.frame;
+        frame.size.height += scrollAmount * rowHeight;
+        [self setFrame: frame];
+        cursorPosition.row -= scrollAmount;
+    } else {
+    }
     
+    NSAssert(cursorPosition.row <= _terminalSize.rows, @"Cursow (%u,%u) out of range. Terminal Size (%u,%u).", cursorPosition.row, cursorPosition.column, _terminalSize.rows, _terminalSize.columns);
+
     NSLog(@"Cursor moved to (%d,%d).", cursorPosition.row, cursorPosition.column);
 
     [self setNeedsDisplay: YES];
@@ -155,21 +176,10 @@ typedef struct {
  */
 - (int) setOffsetCursorRow: (int) rowOffset column: (int) columnOffset {
     
-    // See, if we need to scroll instead of moving the cursor:
-    if (cursorPosition.row + rowOffset > _terminalSize.rows) {
-        lastRowIndex += _terminalSize.rows - cursorPosition.row + rowOffset;
-    } else {
-        cursorPosition.row += rowOffset;
-    }
-
-    cursorPosition.column += columnOffset;
+    [self setAbsoluteCursorRow: cursorPosition.row + rowOffset
+                        column: cursorPosition.column + columnOffset];
     
-    NSParameterAssert(cursorPosition.row <= _terminalSize.rows);
-    NSParameterAssert(cursorPosition.row >= 1);
-    NSParameterAssert(cursorPosition.column <= _terminalSize.columns);
-    NSParameterAssert(cursorPosition.column >= 1);
-    
-    NSLog(@"Cursor moved by (%d,%d) to (%d,%d).", rowOffset, columnOffset, cursorPosition.row, cursorPosition.column);
+    NSLog(@"Cursor moved by (%d,%d).", rowOffset, columnOffset);
     [self setNeedsDisplay: YES];
     return 0;
 }
@@ -499,7 +509,7 @@ typedef struct {
 //                break;
 //            }
             CGPoint glpyphPoint = CGPointMake(col*colWidth, frameSize.height-row*rowHeight);
-            unichar character = charAt(row,col).character;
+            unichar character = screenBuffer[(row-1)*_terminalSize.columns+(col)-1].character;
             if (character) {
                 CGGlyph glyph = [self glyphCache][character];
                 // Draw single glyph:
@@ -517,7 +527,8 @@ typedef struct {
 //    }
     
     if (self.window.isKeyWindow && self.window.firstResponder == self) {
-        CGRect cursorRect = CGRectMake(cursorPosition.column*colWidth, (frameSize.height-cursorPosition.row*rowHeight)-4.0, 1, rowHeight);
+        //screenBuffer[(lastRowIndex-_terminalSize.rows+row-1)*_terminalSize.columns+(col)-1]
+        CGRect cursorRect = CGRectMake(cursorPosition.column*colWidth, (_terminalSize.rows-cursorPosition.row)*rowHeight+10.0, 1, rowHeight);
         CGContextFillRect(context, cursorRect);
     }
     
