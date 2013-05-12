@@ -11,9 +11,9 @@
 #define rowHeight 14.0
 #define colWidth  7.0
 
-#define SCOLLBACKROWS 10000
+#define SCREENBUFFEROWS 10000
 
-#define charAt(row,col) screenBuffer[(row-1)*_terminalSize.columns+(col)-1]
+#define charAt(row,col) screenBuffer[(lastRowIndex-_terminalSize.rows+row-1)*_terminalSize.columns+(col)-1]
 
 typedef struct {
     unichar character;
@@ -25,10 +25,6 @@ typedef struct {
     OPAttributedScreenCharacter* screenBuffer;
     CGGlyph glyphCache[256];
     uint32 lastRowIndex;
-}
-
-- (BOOL) isFlipped {
-    return YES;
 }
 
 
@@ -79,7 +75,7 @@ typedef struct {
     _terminalSize.columns = floor(frameSize.width / colWidth);
     
     if (screenBuffer) free(screenBuffer);
-    screenBuffer = calloc(SCOLLBACKROWS*_terminalSize.columns, sizeof(OPAttributedScreenCharacter));
+    screenBuffer = calloc(SCREENBUFFEROWS*_terminalSize.columns, sizeof(OPAttributedScreenCharacter));
     if (! lastRowIndex) {
         lastRowIndex = _terminalSize.rows;
     }
@@ -159,7 +155,13 @@ typedef struct {
  */
 - (int) setOffsetCursorRow: (int) rowOffset column: (int) columnOffset {
     
-    cursorPosition.row += rowOffset;
+    // See, if we need to scroll instead of moving the cursor:
+    if (cursorPosition.row + rowOffset > _terminalSize.rows) {
+        lastRowIndex += _terminalSize.rows - cursorPosition.row + rowOffset;
+    } else {
+        cursorPosition.row += rowOffset;
+    }
+
     cursorPosition.column += columnOffset;
     
     NSParameterAssert(cursorPosition.row <= _terminalSize.rows);
@@ -484,9 +486,11 @@ typedef struct {
     CGContextSetStrokeColorWithColor(context, [[NSColor blackColor] CGColor]);
     CGContextSetFillColorWithColor(context, [[NSColor blackColor] CGColor]);
 
-    CGContextSetTextMatrix(context, CGAffineTransformMake(1.0, 0.0, 0.0, -1.0, 0.0, 0.0) );
+    CGContextSetTextMatrix(context, CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0) );
 
-    for (unsigned row = 1; row<=_terminalSize.rows; row++) {
+    NSSize frameSize = self.frame.size;
+    
+    for (unsigned row = 1; row<=lastRowIndex; row++) {
         //OPAttributedScreenCharacter* rowArray = &charAt(row,1);
         
         for (unsigned col = 1; col <= _terminalSize.columns; col++) {
@@ -494,12 +498,12 @@ typedef struct {
 //            if (len>80 || rowArray[col]!=0 || rowArray[col]!='\n') {
 //                break;
 //            }
-            CGPoint lineStart = CGPointMake(col*colWidth, row*rowHeight);
+            CGPoint glpyphPoint = CGPointMake(col*colWidth, frameSize.height-row*rowHeight);
             unichar character = charAt(row,col).character;
             if (character) {
                 CGGlyph glyph = [self glyphCache][character];
                 // Draw single glyph:
-                CGContextShowGlyphsAtPoint(context, lineStart.x, lineStart.y, &glyph, 1);
+                CGContextShowGlyphsAtPoint(context, glpyphPoint.x, glpyphPoint.y, &glyph, 1);
             }
         }
         
@@ -513,7 +517,7 @@ typedef struct {
 //    }
     
     if (self.window.isKeyWindow && self.window.firstResponder == self) {
-        CGRect cursorRect = CGRectMake(cursorPosition.column*colWidth, cursorPosition.row*rowHeight-10.0, 1, rowHeight);
+        CGRect cursorRect = CGRectMake(cursorPosition.column*colWidth, (frameSize.height-cursorPosition.row*rowHeight)-4.0, 1, rowHeight);
         CGContextFillRect(context, cursorRect);
     }
     

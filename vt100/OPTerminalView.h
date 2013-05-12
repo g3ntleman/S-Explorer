@@ -10,13 +10,13 @@
 #import "OPTerminalEmulator.h"
 
 typedef struct {
-    unsigned rows;
-    unsigned columns;
+    uint32 rows;
+    uint32 columns;
 } OPCharSize;
 
 typedef struct {
-    unsigned row;
-    unsigned column;
+    uint32 row;
+    uint32 column;
 } OPCharPosition;
 
 @interface OPTerminalView : NSView <OPTerminalEmulatorDelegate>
