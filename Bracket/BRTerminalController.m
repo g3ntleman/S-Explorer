@@ -86,7 +86,8 @@
     }
 }
 
-- (void) noteScreenSizeChanged {
+- (void) noteTerminalSizeChanged: (id) sender {
+    NSLog(@"Sending SIGWINCH to sub-process.");
     kill(self.task.processIdentifier, SIGWINCH);
 }
 

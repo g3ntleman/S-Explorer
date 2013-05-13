@@ -21,4 +21,6 @@
 
 - (void) runCommand: (NSString*) command withArguments: (NSArray*) arguments;
 
+- (void) noteTerminalSizeChanged: (id) sender;
+
 @end

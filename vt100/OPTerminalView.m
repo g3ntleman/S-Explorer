@@ -13,7 +13,7 @@
 
 #define SCREENBUFFEROWS 10000
 
-#define charAt(row,col) screenBuffer[(lastRowIndex-_terminalSize.rows+row-1)*_terminalSize.columns+(col)-1]
+#define charAt(row,col) screenBuffer[(row-1)*screenBufferColumns+(col)-1]
 
 typedef struct {
     unichar character;
@@ -23,6 +23,7 @@ typedef struct {
 
 @implementation OPTerminalView {
     OPAttributedScreenCharacter* screenBuffer;
+    uint32 screenBufferColumns;
     CGGlyph glyphCache[256];
     uint32 lastRowIndex;
 }
@@ -32,6 +33,9 @@ typedef struct {
 
 - (id) initWithFrame: (NSRect) frameRect {
     if (self = [super initWithFrame: frameRect]) {
+        cursorPosition.column = 1;
+        cursorPosition.row = 1;
+        
         [[NSNotificationCenter defaultCenter] addObserverForName:NSWindowDidBecomeKeyNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
             NSLog(@"%@ did become key.", note.object);
             [self setNeedsDisplay: YES];
@@ -62,35 +66,85 @@ typedef struct {
     return self;
 }
 
+- (void) scrollScreenBufferRowToVisible: (uint32) screenBufferRow {
+    CGRect rect = CGRectMake(colWidth, self.bounds.size.height-screenBufferRow*rowHeight, 1.0, rowHeight);
+    [self scrollRectToVisible:rect];
+}
+
+//- (OPCharPosition) cursorScreenBufferPosition {
+//    OPCharPosition cursorScreenBufferPosition;
+//    cursorScreenBufferPosition.column = cursorPosition.column;
+//    cursorScreenBufferPosition.row = cursorPosition.row + lastRowIndex-_terminalSize.rows;
+//    return cursorScreenBufferPosition;
+//}
+//
+//- (void) setCursorScreenBufferPosition: (OPCharPosition) position {
+//    cursorPosition.column = position.column;
+//    cursorPosition.row = position.row - lastRowIndex + _terminalSize.rows;
+//}
+
 - (void)keyDown:(NSEvent *)theEvent {
+    
     // Forward to key responder:
     [self.keyResponder keyDown: theEvent];
+    
+    //[self scrollScreenBufferRowToVisible: self.cursorScreenBufferPosition.row];
 }
 
 
 - (void) setFrame:(NSRect)frameRect {
-    [super setFrame:frameRect];
-    CGSize frameSize = self.superview.frame.size;
+    
+    CGSize visibleSize = self.enclosingScrollView.bounds.size;
+
+    
+    frameRect.size.height = screenBuffer ? MAX(visibleSize.height, frameRect.size.height): visibleSize.height;
+    
+    [super setFrame: frameRect];
+    
+    NSLog(@"Setting new visibleSize: %@", NSStringFromSize(visibleSize));
+    
     OPCharSize newSize;
     
-    newSize.rows = floor(frameSize.height / rowHeight);
-    newSize.columns = floor(frameSize.width / colWidth);
-    
-    if (newSize.columns != _terminalSize.columns || ! screenBuffer) {
-        if (screenBuffer) free(screenBuffer);
-        screenBuffer = calloc(SCREENBUFFEROWS*newSize.columns, sizeof(OPAttributedScreenCharacter));
+    newSize.rows = floor(visibleSize.height / rowHeight);
+    newSize.columns = floor(visibleSize.width / colWidth)-1;
+        
+    if (_terminalSize.columns != newSize.columns || _terminalSize.rows != newSize.rows) {
+        
+        if (newSize.columns != _terminalSize.columns || ! screenBuffer) {
+            if (! screenBuffer || (screenBuffer && screenBufferColumns < newSize.columns)) {
+                OPAttributedScreenCharacter* newScreenBuffer = calloc(SCREENBUFFEROWS*newSize.columns, sizeof(OPAttributedScreenCharacter));
+                //self.enclosingScrollView.backgroundColor = [NSColor whiteColor];
+                NSLog(@"Allocating new screen buffer");
+                if (screenBuffer && screenBufferColumns < newSize.columns) {
+                    //                // Copy over old buffer to new buffer:
+                    //                NSLog(@"Copying screen buffer");
+                    //                uint32 columnBytes = MIN(newSize.columns, screenBufferColumns)*sizeof(OPAttributedScreenCharacter);
+                    //                for (NSUInteger row=0; row<SCREENBUFFEROWS; row++) {
+                    //                    memcpy(&newScreenBuffer[row*newSize.columns], &screenBuffer[row*screenBufferColumns], columnBytes);
+                    //                }
+                    free(screenBuffer);
+                }
+                screenBufferColumns = newSize.columns;
+                screenBuffer = newScreenBuffer;
+            }
+        }
+        
+        _terminalSize = newSize;
+        
+        [self.keyResponder performSelector: @selector(noteTerminalSizeChanged:) withObject: self];
     }
+    lastRowIndex = floor(frameRect.size.height / rowHeight);
+    NSLog(@"setFrame: lastRowIndex now %u", lastRowIndex);
+
+    NSAssert(lastRowIndex>=_terminalSize.rows, @"Bazinga!");
     
-    _terminalSize = newSize;
-    
-    if (! lastRowIndex) {
-        lastRowIndex = _terminalSize.rows;
-    }
+    [self.enclosingScrollView flashScrollers];
 }
 
 - (void) awakeFromNib {
-    cursorPosition.column = 1;
-    cursorPosition.row = 1;
+
+    // Start with a terminal in the size of the scroll view:
+    //self.frame = self.enclosingScrollView.bounds;
     //NSLog(@"%@ awoke.", self);
 }
 
@@ -113,8 +167,8 @@ typedef struct {
     if (*rowPtr == CUR_ROW) {
         *rowPtr = cursorPosition.row;
     } else {
-        if (*rowPtr==TOP_EDGE) *rowPtr = 1;
-        if (*rowPtr==BOTTOM_EDGE) *rowPtr = _terminalSize.rows;
+        if (*rowPtr==TOP_EDGE) *rowPtr = lastRowIndex-_terminalSize.rows;
+        if (*rowPtr==BOTTOM_EDGE) *rowPtr = lastRowIndex;
     }
 }
 
@@ -141,24 +195,33 @@ typedef struct {
     NSParameterAssert(col <= _terminalSize.columns);
     NSParameterAssert(col >= 1);
 
+    if (cursorPosition.row == row && cursorPosition.column == col) {
+        // Nothing to do.
+        return 0;
+    }
+    
     // See, if we need to scroll instead of moving the cursor:
     cursorPosition.row = row;
     cursorPosition.column = col;
 
-    if (cursorPosition.row > _terminalSize.rows) {
+    if (cursorPosition.row > lastRowIndex) {
         // do scroll by the excessive amount:
-        uint32 scrollAmount = row - _terminalSize.rows;
-        lastRowIndex += scrollAmount;
+        uint32 scrollAmount = cursorPosition.row - lastRowIndex;
+        
+        NSLog(@"Scrolling %u line(s) down.", scrollAmount);
+        
+        //lastRowIndex += scrollAmount;
         NSRect frame = self.frame;
         frame.size.height += scrollAmount * rowHeight;
         [self setFrame: frame];
-        cursorPosition.row -= scrollAmount;
-    } else {
+//        cursorPosition.row -= scrollAmount;
     }
     
-    NSAssert(cursorPosition.row <= _terminalSize.rows, @"Cursow (%u,%u) out of range. Terminal Size (%u,%u).", cursorPosition.row, cursorPosition.column, _terminalSize.rows, _terminalSize.columns);
-
     NSLog(@"Cursor moved to (%d,%d).", cursorPosition.row, cursorPosition.column);
+
+    
+    NSAssert(cursorPosition.row <= lastRowIndex, @"Cursow (%u,%u) out of range. Last Row %u.", cursorPosition.row, cursorPosition.column, lastRowIndex);
+
 
     [self setNeedsDisplay: YES];
     return 0;
@@ -176,11 +239,9 @@ typedef struct {
  */
 - (int) setOffsetCursorRow: (int) rowOffset column: (int) columnOffset {
     
+    NSLog(@"Cursor moved by (%d,%d).", rowOffset, columnOffset);
     [self setAbsoluteCursorRow: cursorPosition.row + rowOffset
                         column: cursorPosition.column + columnOffset];
-    
-    NSLog(@"Cursor moved by (%d,%d).", rowOffset, columnOffset);
-    [self setNeedsDisplay: YES];
     return 0;
 }
 
@@ -255,6 +316,11 @@ typedef struct {
  */
 - (int) writeRawText: (char*) text length: (unsigned) length {
     
+    NSString* string = [[NSString alloc] initWithBytes: text
+                                                length: length
+                                              encoding: NSISOLatin1StringEncoding];
+    NSLog(@"printing '%@' to (%u,%u)", string, cursorPosition.row, cursorPosition.column);
+    
     for (unsigned pos = 0; pos<length; pos++) {
         unichar c = text[pos];
         
@@ -268,10 +334,6 @@ typedef struct {
         }
     }
     
-    NSString* string = [[NSString alloc] initWithBytes: text
-                                                length: length
-                                              encoding: NSISOLatin1StringEncoding];
-    NSLog(@"print '%@'", string);
     
     [self setNeedsDisplay: YES];
     
@@ -479,6 +541,16 @@ typedef struct {
     return YES;
 }
 
+- (NSRect) cursorRect {
+    
+    //CGPoint glpyphPoint = CGPointMake(col*colWidth, frameSize.height-absoluteCursorRow*rowHeight);
+
+    
+    CGRect cursorRect = CGRectMake(cursorPosition.column*colWidth,
+                                   self.bounds.size.height-(cursorPosition.row*rowHeight)-2.0, 1, rowHeight);
+    return cursorRect;
+}
+
 - (void) drawRect:(NSRect)dirtyRect {
     
     CGContextRef context = [NSGraphicsContext currentContext].graphicsPort;
@@ -502,6 +574,14 @@ typedef struct {
     
     for (unsigned row = 1; row<=lastRowIndex; row++) {
         //OPAttributedScreenCharacter* rowArray = &charAt(row,1);
+        CGPoint noPoint = CGPointMake(frameSize.width-30.0, frameSize.height-row*rowHeight);
+        CGGlyph noGlyph1 = [self glyphCache][(row/10)%10+'0'];
+        CGContextShowGlyphsAtPoint(context, noPoint.x, noPoint.y, &noGlyph1, 1);
+
+        CGGlyph noGlyph2 = [self glyphCache][row%10+'0'];
+        CGContextShowGlyphsAtPoint(context, noPoint.x+colWidth, noPoint.y, &noGlyph2, 1);
+
+        
         
         for (unsigned col = 1; col <= _terminalSize.columns; col++) {
 //            unsigned len = 0;
@@ -509,7 +589,7 @@ typedef struct {
 //                break;
 //            }
             CGPoint glpyphPoint = CGPointMake(col*colWidth, frameSize.height-row*rowHeight);
-            unichar character = screenBuffer[(row-1)*_terminalSize.columns+(col)-1].character;
+            unichar character = screenBuffer[(row-1)*screenBufferColumns+(col)-1].character;
             if (character) {
                 CGGlyph glyph = [self glyphCache][character];
                 // Draw single glyph:
@@ -528,8 +608,7 @@ typedef struct {
     
     if (self.window.isKeyWindow && self.window.firstResponder == self) {
         //screenBuffer[(lastRowIndex-_terminalSize.rows+row-1)*_terminalSize.columns+(col)-1]
-        CGRect cursorRect = CGRectMake(cursorPosition.column*colWidth, (_terminalSize.rows-cursorPosition.row)*rowHeight+10.0, 1, rowHeight);
-        CGContextFillRect(context, cursorRect);
+        CGContextFillRect(context, self.cursorRect);
     }
     
     //NSLog(@"Cursor draw: key = %d", self.window.isKeyWindow);
