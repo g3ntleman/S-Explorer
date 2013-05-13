@@ -116,12 +116,12 @@ typedef struct {
                 //self.enclosingScrollView.backgroundColor = [NSColor whiteColor];
                 NSLog(@"Allocating new screen buffer");
                 if (screenBuffer && screenBufferColumns < newSize.columns) {
-                    //                // Copy over old buffer to new buffer:
-                    //                NSLog(@"Copying screen buffer");
-                    //                uint32 columnBytes = MIN(newSize.columns, screenBufferColumns)*sizeof(OPAttributedScreenCharacter);
-                    //                for (NSUInteger row=0; row<SCREENBUFFEROWS; row++) {
-                    //                    memcpy(&newScreenBuffer[row*newSize.columns], &screenBuffer[row*screenBufferColumns], columnBytes);
-                    //                }
+                    // Copy over old buffer to new buffer:
+                    NSLog(@"Copying screen buffer");
+                    uint32 columnBytes = MIN(newSize.columns, screenBufferColumns)*sizeof(OPAttributedScreenCharacter);
+                    for (NSUInteger row=0; row<SCREENBUFFEROWS; row++) {
+                        memcpy(&newScreenBuffer[row*newSize.columns], &screenBuffer[row*screenBufferColumns], columnBytes);
+                    }
                     free(screenBuffer);
                 }
                 screenBufferColumns = newSize.columns;
