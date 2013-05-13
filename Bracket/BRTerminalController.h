@@ -19,7 +19,9 @@
 
 @property (strong, nonatomic) IBOutlet OPTerminalView* terminalView;
 
-- (void) runCommand: (NSString*) command withArguments: (NSArray*) arguments;
+- (void) runCommand: (NSString*) command
+      withArguments: (NSArray*) arguments
+              error: (NSError**) errorPtr;
 
 - (void) noteTerminalSizeChanged: (id) sender;
 

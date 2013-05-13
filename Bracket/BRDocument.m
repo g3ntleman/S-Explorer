@@ -7,6 +7,8 @@
 //
 
 #import "BRDocument.h"
+#import "NSAlert+OPBlocks.h"
+
 
 @implementation BRDocument
 
@@ -29,7 +31,16 @@
     [super windowControllerDidLoadNib:aController];
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
     
-    [self.terminalController runCommand: @"/usr/local/bin/csi" withArguments: @[]];
+    NSError* error = nil;
+    [self.terminalController runCommand: @"/usr/local/bin/csi"
+                          withArguments: @[]
+                                  error: &error];
+    
+    if (error) {
+        [[NSAlert alertWithError: error] runWithCompletion:^(NSInteger buttonIndex) {
+            [self performSelector: @selector(close) withObject: nil afterDelay: 0.1];
+        }];
+    }
     
 }
 

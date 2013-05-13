@@ -102,12 +102,21 @@
     [filehandle readInBackgroundAndNotify];
 }
 
-- (void) runCommand: (NSString*) command withArguments: (NSArray*) arguments {
+- (void) runCommand: (NSString*) command
+      withArguments: (NSArray*) arguments
+              error: (NSError**) errorPtr {
     
-    NSAssert(! _task.isRunning, @"There is already a task %@ running!", _task);
+    NSAssert(! _task.isRunning, @"There is already a task (%@) running!", _task);
     
     command = [command stringByResolvingSymlinksInPath];
 
+    if (! [[NSFileManager defaultManager] isExecutableFileAtPath:command]) {
+        if (errorPtr) {
+            *errorPtr = [NSError errorWithDomain: @"org.cocoanuts.bracket" code: 404
+                                        userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No Execuable file at '%@'", command]}];
+        }
+        return;
+    }
     
     _task = [[NSTask alloc] init];
     //self.outputCache = [NSMutableData data];

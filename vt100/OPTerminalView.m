@@ -106,7 +106,7 @@ typedef struct {
     OPCharSize newSize;
     
     newSize.rows = floor(visibleSize.height / rowHeight);
-    newSize.columns = floor(visibleSize.width / colWidth)-1;
+    newSize.columns = floor((visibleSize.width-10.0) / colWidth)-1;
         
     if (_terminalSize.columns != newSize.columns || _terminalSize.rows != newSize.rows) {
         
@@ -122,6 +122,7 @@ typedef struct {
                     for (NSUInteger row=0; row<SCREENBUFFEROWS; row++) {
                         memcpy(&newScreenBuffer[row*newSize.columns], &screenBuffer[row*screenBufferColumns], columnBytes);
                     }
+                    // Get rid of the old screen buffer:
                     free(screenBuffer);
                 }
                 screenBufferColumns = newSize.columns;
@@ -144,7 +145,7 @@ typedef struct {
 - (void) awakeFromNib {
 
     // Start with a terminal in the size of the scroll view:
-    //self.frame = self.enclosingScrollView.bounds;
+    self.frame = self.enclosingScrollView.bounds;
     //NSLog(@"%@ awoke.", self);
 }
 
@@ -188,6 +189,8 @@ typedef struct {
  * or a column number.
  */
 - (int) setAbsoluteCursorRow: (int) row column: (int) col {
+    
+    NSParameterAssert(self.superview);
     
     [self interpreteRow: &row column: &col];
     
@@ -553,6 +556,9 @@ typedef struct {
 
 - (void) drawRect:(NSRect)dirtyRect {
     
+    
+    CGColorRef black = [[NSColor blackColor] CGColor];
+    CGColorRef gray = [[NSColor lightGrayColor] CGColor];
     CGContextRef context = [NSGraphicsContext currentContext].graphicsPort;
     
     // Draw Background:
@@ -565,8 +571,8 @@ typedef struct {
     // CGFontGetFontBBox(<#CGFontRef font#>)
     CGContextSetFontSize(context, self.font.pointSize);
     CGContextSetTextDrawingMode(context, kCGTextFill);
-    CGContextSetStrokeColorWithColor(context, [[NSColor blackColor] CGColor]);
-    CGContextSetFillColorWithColor(context, [[NSColor blackColor] CGColor]);
+    CGContextSetStrokeColorWithColor(context, black);
+    CGContextSetFillColorWithColor(context, black);
 
     CGContextSetTextMatrix(context, CGAffineTransformMake(1.0, 0.0, 0.0, 1.0, 0.0, 0.0) );
 
@@ -574,12 +580,15 @@ typedef struct {
     
     for (unsigned row = 1; row<=lastRowIndex; row++) {
         //OPAttributedScreenCharacter* rowArray = &charAt(row,1);
+        
+        CGContextSetFillColorWithColor(context, gray);
         CGPoint noPoint = CGPointMake(frameSize.width-30.0, frameSize.height-row*rowHeight);
         CGGlyph noGlyph1 = [self glyphCache][(row/10)%10+'0'];
         CGContextShowGlyphsAtPoint(context, noPoint.x, noPoint.y, &noGlyph1, 1);
 
         CGGlyph noGlyph2 = [self glyphCache][row%10+'0'];
         CGContextShowGlyphsAtPoint(context, noPoint.x+colWidth, noPoint.y, &noGlyph2, 1);
+        CGContextSetFillColorWithColor(context, black);
 
         
         
