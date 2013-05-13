@@ -53,7 +53,9 @@
 
     //NSLog(@"Key pressed: %@", theEvent);
     
-    switch ([theEvent keyCode]) {
+    NSString* charactersString = [theEvent characters];
+
+    switch ([charactersString characterAtIndex: 0]) {
         case NSLeftArrowFunctionKey:
             NSLog(@"Left behind.");
             code = "\e[D";
@@ -71,7 +73,6 @@
             code = "\e[A";
             break;
         default: {
-            NSString* charactersString = [theEvent characters];
             inputData = [charactersString dataUsingEncoding: NSISOLatin1StringEncoding allowLossyConversion: YES];
             break;
         }
@@ -131,7 +132,6 @@
     [environment setObject: [NSString stringWithFormat:@"%u", self.terminalView.terminalSize.rows]
                     forKey: @"LINES"];
     [environment setObject: @"en_US-iso8859-1" forKey: @"LANG"];
-
     
     [_task setEnvironment: environment];
     
