@@ -94,11 +94,14 @@ NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
     
     switch ([charactersString characterAtIndex: 0]) {
         case NSLeftArrowFunctionKey:
-            NSLog(@"Left behind.");
+            if ([self.textStorage attribute: BKCurrentCommandAttributeName atIndex: self.selectedRange.location-1 effectiveRange: NULL]) {
+                [super keyDown: theEvent];
+            }
             break;
-        case NSRightArrowFunctionKey:
-            NSLog(@"Right as always!");
-            break;
+            
+//        case NSRightArrowFunctionKey:
+//            NSLog(@"Right as always!");
+//            break;
         case NSDownArrowFunctionKey:
             NSLog(@"Downward is Heavenward");
             break;
