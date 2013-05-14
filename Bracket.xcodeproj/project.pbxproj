@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; };
 		8D604254173BE60800149409 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D604252173BE60800149409 /* InfoPlist.strings */; };
 		8D604256173BE60800149409 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604255173BE60800149409 /* main.m */; };
 		8D60425A173BE60800149409 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 8D604258173BE60800149409 /* Credits.rtf */; };
@@ -16,11 +17,11 @@
 		8D60426B173BE60900149409 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60426A173BE60900149409 /* SenTestingKit.framework */; };
 		8D604274173BE60900149409 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D604272173BE60900149409 /* InfoPlist.strings */; };
 		8D604277173BE60900149409 /* BracketTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604276173BE60900149409 /* BracketTests.m */; };
-		8D604290173C12FF00149409 /* OPTerminalEmulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D60428C173C12FF00149409 /* OPTerminalEmulator.m */; };
 		8D604292173C142A00149409 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424C173BE60800149409 /* AppKit.framework */; };
 		8D604293173C143300149409 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424E173BE60800149409 /* Foundation.framework */; };
-		8D604297173C22D600149409 /* BRTerminalController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* BRTerminalController.m */; };
-		8D60429B173C388900149409 /* OPTerminalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604299173C388900149409 /* OPTerminalView.m */; };
+		8D604297173C22D600149409 /* BRREPLController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* BRREPLController.m */; };
+		8D60429B173C388900149409 /* BRREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604299173C388900149409 /* BRREPLView.m */; };
+		8DB65DBA1742EE7600332007 /* PseudoTTY.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DB65DB91742EE7600332007 /* PseudoTTY.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +35,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8D00FA911740D31B00E1AF90 /* NSAlert+OPBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAlert+OPBlocks.h"; sourceTree = "<group>"; };
+		8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAlert+OPBlocks.m"; sourceTree = "<group>"; };
 		8D604246173BE60800149409 /* Bracket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bracket.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D60424C173BE60800149409 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		8D60424E173BE60800149409 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -52,14 +55,12 @@
 		8D604273173BE60900149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8D604275173BE60900149409 /* BracketTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = BracketTests.h; sourceTree = "<group>"; };
 		8D604276173BE60900149409 /* BracketTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BracketTests.m; sourceTree = "<group>"; };
-		8D60428A173C12FF00149409 /* console.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = console.c; sourceTree = "<group>"; };
-		8D60428B173C12FF00149409 /* OPTerminalEmulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = OPTerminalEmulator.h; sourceTree = "<group>"; };
-		8D60428C173C12FF00149409 /* OPTerminalEmulator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPTerminalEmulator.m; sourceTree = "<group>"; };
-		8D60428D173C12FF00149409 /* vt100 readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "vt100 readme.txt"; sourceTree = "<group>"; };
-		8D604294173C22D600149409 /* BRTerminalController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = BRTerminalController.h; sourceTree = "<group>"; };
-		8D604295173C22D600149409 /* BRTerminalController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRTerminalController.m; sourceTree = "<group>"; };
-		8D604298173C388900149409 /* OPTerminalView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = OPTerminalView.h; sourceTree = "<group>"; };
-		8D604299173C388900149409 /* OPTerminalView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPTerminalView.m; sourceTree = "<group>"; };
+		8D604294173C22D600149409 /* BRREPLController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = BRREPLController.h; sourceTree = "<group>"; };
+		8D604295173C22D600149409 /* BRREPLController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRREPLController.m; sourceTree = "<group>"; };
+		8D604298173C388900149409 /* BRREPLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; name = BRREPLView.h; path = ../vt100/BRREPLView.h; sourceTree = "<group>"; };
+		8D604299173C388900149409 /* BRREPLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BRREPLView.m; path = ../vt100/BRREPLView.m; sourceTree = "<group>"; };
+		8DB65DB81742EE7600332007 /* PseudoTTY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PseudoTTY.h; sourceTree = "<group>"; };
+		8DB65DB91742EE7600332007 /* PseudoTTY.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PseudoTTY.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,7 +87,6 @@
 		8D60423D173BE60800149409 = {
 			isa = PBXGroup;
 			children = (
-				8D604289173C12FF00149409 /* vt100 */,
 				8D60424F173BE60800149409 /* Bracket */,
 				8D604250173BE60800149409 /* Supporting Files */,
 				8D60426F173BE60900149409 /* BracketTests */,
@@ -117,12 +117,18 @@
 		8D60424F173BE60800149409 /* Bracket */ = {
 			isa = PBXGroup;
 			children = (
+				8DB65DB81742EE7600332007 /* PseudoTTY.h */,
+				8DB65DB91742EE7600332007 /* PseudoTTY.m */,
+				8D604298173C388900149409 /* BRREPLView.h */,
+				8D604299173C388900149409 /* BRREPLView.m */,
 				8D60425B173BE60800149409 /* BRDocument.h */,
 				8D60425C173BE60800149409 /* BRDocument.m */,
 				8D60425E173BE60800149409 /* BRDocument.xib */,
 				8D604261173BE60800149409 /* MainMenu.xib */,
-				8D604294173C22D600149409 /* BRTerminalController.h */,
-				8D604295173C22D600149409 /* BRTerminalController.m */,
+				8D604294173C22D600149409 /* BRREPLController.h */,
+				8D604295173C22D600149409 /* BRREPLController.m */,
+				8D00FA911740D31B00E1AF90 /* NSAlert+OPBlocks.h */,
+				8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */,
 			);
 			path = Bracket;
 			sourceTree = "<group>";
@@ -157,19 +163,6 @@
 				8D604272173BE60900149409 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		8D604289173C12FF00149409 /* vt100 */ = {
-			isa = PBXGroup;
-			children = (
-				8D60428D173C12FF00149409 /* vt100 readme.txt */,
-				8D60428A173C12FF00149409 /* console.c */,
-				8D60428B173C12FF00149409 /* OPTerminalEmulator.h */,
-				8D60428C173C12FF00149409 /* OPTerminalEmulator.m */,
-				8D604298173C388900149409 /* OPTerminalView.h */,
-				8D604299173C388900149409 /* OPTerminalView.m */,
-			);
-			path = vt100;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -284,9 +277,10 @@
 			files = (
 				8D604256173BE60800149409 /* main.m in Sources */,
 				8D60425D173BE60800149409 /* BRDocument.m in Sources */,
-				8D604290173C12FF00149409 /* OPTerminalEmulator.m in Sources */,
-				8D604297173C22D600149409 /* BRTerminalController.m in Sources */,
-				8D60429B173C388900149409 /* OPTerminalView.m in Sources */,
+				8D604297173C22D600149409 /* BRREPLController.m in Sources */,
+				8D60429B173C388900149409 /* BRREPLView.m in Sources */,
+				8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */,
+				8DB65DBA1742EE7600332007 /* PseudoTTY.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
