@@ -17,6 +17,11 @@
     PseudoTTY* tty;
 }
 
+static NSData* lineFeedData = nil;
+
++ (void) load {
+    lineFeedData = [NSData dataWithBytes: "\n" length: 1];
+}
 
 - (id) init {
     if (self = [super init]) {
@@ -54,9 +59,8 @@
 - (void) commitCommand: (NSString*) commandString {
     
     NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
-    
     [tty.masterFileHandle writeData: stringData];
-    [tty.masterFileHandle writeData: [NSData dataWithBytes: "\n" length: 1]];
+    [tty.masterFileHandle writeData: lineFeedData];
 }
 
 - (void) runCommand: (NSString*) command
@@ -82,7 +86,7 @@
     [_task setStandardInput: tty.slaveFileHandle];
     [_task setStandardOutput: tty.slaveFileHandle];
     [_task setStandardError: tty.slaveFileHandle];
-    //[_task setArguments: arguments];
+    [_task setArguments: arguments];
     [_task setLaunchPath: command];
     
     NSDictionary *defaultEnvironment = [[NSProcessInfo processInfo] environment];
