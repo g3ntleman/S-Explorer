@@ -7,17 +7,15 @@
 //
 
 #import <AppKit/AppKit.h>
-#import "OPTerminalEmulator.h"
-#import "OPTerminalView.h"
+#import "BRREPLView.h"
 
-@interface BRTerminalController : NSResponder <NSCoding>
+@interface BRREPLController : NSObject <NSCoding, BRREPLDelegate>
 
 @property (readonly) NSTask* task;
-@property (readonly) OPTerminalEmulator* terminalEmulator;
 
 @property (strong, nonatomic) IBOutlet NSResponder* keyResponder;
 
-@property (strong, nonatomic) IBOutlet OPTerminalView* terminalView;
+@property (strong, nonatomic) IBOutlet BRREPLView* replView;
 
 - (void) runCommand: (NSString*) command
       withArguments: (NSArray*) arguments
