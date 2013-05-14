@@ -88,7 +88,7 @@ NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
         
     //NSLog(@"Key pressed: %@", theEvent);
     
-    self.typingAttributes = self.commandAttributes;
+    //self.typingAttributes = self.commandAttributes;
     
     NSString* charactersString = [theEvent characters];
     
@@ -134,24 +134,33 @@ NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
 }
 
 - (NSDictionary*) interpreterAttributes {
-    NSFont* interpreterFont = [NSFont fontWithName:@"Menlo-Regular" size: 12.0];
+    //NSFont* interpreterFont = [NSFont fontWithName:@"Menlo-Bold" size: 12.0];
     NSMutableDictionary* interpreterAttributes = [[NSMutableDictionary alloc] init];
-    [interpreterAttributes setObject: NSFontAttributeName forKey: interpreterFont];
-    [interpreterAttributes setObject: [NSColor redColor] forKey: NSForegroundColorAttributeName];
+    [interpreterAttributes setObject: NSFontAttributeName forKey: self.font];
+    //[interpreterAttributes setObject: [NSColor redColor] forKey: NSBackgroundColorAttributeName];
     return interpreterAttributes;
+}
+
+- (NSDictionary*) commandAttributes {
+    
+    NSMutableDictionary* commandAttributes = [self.typingAttributes mutableCopy];
+    [commandAttributes setObject:@YES forKey: BKCurrentCommandAttributeName];
+    [commandAttributes setObject:self.font forKey: NSFontAttributeName];
+    
+    return commandAttributes;
 }
 
 - (void) appendString:(NSString *)aString {
     
     NSTextStorage* textStorage = self.textStorage;
     
-    self.typingAttributes = self.interpreterAttributes;
+    //self.typingAttributes = self.interpreterAttributes;
     
     [textStorage beginEditing];
-    //NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString: aString attributes: self.interpreterAttributes];
-    //[textStorage replaceCharactersInRange: NSMakeRange(textStorage.string.length, 0)
-    //                 withAttributedString: attributedString];
-    [textStorage replaceCharactersInRange: NSMakeRange(textStorage.string.length, 0) withString: aString];
+    NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString: aString attributes: self.interpreterAttributes];
+    [textStorage replaceCharactersInRange: NSMakeRange(textStorage.string.length, 0)
+                     withAttributedString: attributedString];
+    //[textStorage replaceCharactersInRange: NSMakeRange(textStorage.string.length, 0) withString: aString];
     
     [textStorage endEditing];
 }
@@ -165,25 +174,18 @@ NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
 
 }
 
-- (NSDictionary*) commandAttributes {
-    self.font = [NSFont fontWithName:@"Menlo-Bold" size: 12.0];
-    
-    NSMutableDictionary* commandAttributes = [self.typingAttributes mutableCopy];
-    [commandAttributes setObject:@YES forKey: BKCurrentCommandAttributeName];
-    [commandAttributes setObject:self.font forKey: NSFontAttributeName];
-    
-    return commandAttributes;
-}
 
 - (void) awakeFromNib {
 
     // Start with a terminal in the size of the scroll view:
     self.frame = self.enclosingScrollView.bounds;
+    self.smartInsertDeleteEnabled = NO;
 //    
 //    [self.textStorage beginEditing];
 //    [self.textStorage setAttributes: self.typingAttributes range:NSMakeRange(0, self.textStorage.string.length)];
 //    [self.textStorage endEditing];
     //NSLog(@"%@ awoke.", self);
+    self.font = [NSFont fontWithName:@"Menlo-Bold" size: 12.0];
 }
 
 - (void) setNeedsDisplay:(BOOL)flag {
@@ -193,8 +195,25 @@ NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
 //    }
 }
 
+-(void)paste:(id)sender {
+    NSPasteboard *pb = [NSPasteboard generalPasteboard];
+    NSString *pbItem = [pb readObjectsForClasses: @[[NSString class],[NSAttributedString class]] options:nil].lastObject;
+    if ([pbItem isKindOfClass:[NSAttributedString class]]) {
+        pbItem = [(NSAttributedString *)pbItem string];
+    }
+    
+    //pbItem = [[NSAttributedString alloc] initWithString: pbItem attributes: self.typingAttributes];
+//    if ([pbItem isEqualToString:@"foo"]) {
+        [self insertText:pbItem];
+//    }else{
+//        [super paste:sender];
+//    }
+}
+
 - (BOOL) shouldChangeTextInRange: (NSRange) affectedCharRange
                replacementString: (NSString*) replacementString {
+    
+    self.typingAttributes = self.commandAttributes;
     
     NSRange fullRange;
     if (self.textStorage.length==NSMaxRange(affectedCharRange) && replacementString.length) {
@@ -211,8 +230,9 @@ NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
     return NO;
 }
 
-
-
+- (void) setTypingAttributes: (NSDictionary*) attrs {
+    [super setTypingAttributes:attrs];
+}
 
 
 /* beRingBell -
