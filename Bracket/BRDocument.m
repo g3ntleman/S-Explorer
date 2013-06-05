@@ -8,7 +8,7 @@
 
 #import "BRDocument.h"
 #import "NSAlert+OPBlocks.h"
-
+#import "CSVM.h"
 
 @implementation BRDocument
 
@@ -42,6 +42,23 @@
             [self performSelector: @selector(close) withObject: nil afterDelay: 0.1];
         }];
     }
+    
+    CSVM* vm = [[CSVM alloc] init];
+    
+    NSString* input1 = @"(import (scheme base))";
+    NSString* output1 = [vm evaluateToStringFromString: input1];
+    
+    [vm loadSchemeSource: @"bracket-support"];
+
+    //NSString* input2 = @"(sort (list 5 4 2 3 1 6) <)";
+    //NSString* output2 = [vm evaluateString: input2];
+    NSString* input3 = @"(all-exports (interaction-environment))";
+    NSMutableArray* allSymbolStrings = [vm evaluateToPropertyListFromString: input3];
+
+    [allSymbolStrings sortUsingSelector:@selector(compare:)];
+    
+    
+    NSLog(@"\n> %@\n%@", input3, allSymbolStrings);
     
 }
 

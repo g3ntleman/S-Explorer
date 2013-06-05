@@ -177,7 +177,7 @@
 																		<int key="NSTCFlags">1</int>
 																	</object>
 																	<object class="NSTextViewSharedData" key="NSSharedData">
-																		<int key="NSFlags">1073769735</int>
+																		<int key="NSFlags">1140878599</int>
 																		<int key="NSTextCheckingTypes">0</int>
 																		<nil key="NSMarkedAttributes"/>
 																		<object class="NSColor" key="NSBackgroundColor" id="130519908">
@@ -211,12 +211,7 @@
 																			<integer value="1" key="NSUnderline"/>
 																		</dictionary>
 																		<nil key="NSDefaultParagraphStyle"/>
-																		<object class="NSTextFinder" key="NSTextFinder">
-																			<reference key="NSTextFinderClient" ref="229988734"/>
-																			<int key="NSTextFinderStyle">1</int>
-																			<bool key="NSIncrementalSearchingEnabled">YES</bool>
-																			<bool key="NSIncrementalSearchingShouldDimContentView">YES</bool>
-																		</object>
+																		<nil key="NSTextFinder"/>
 																		<int key="NSPreferredTextFinderStyle">1</int>
 																	</object>
 																	<int key="NSTVFlags">6</int>
@@ -584,17 +579,6 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">BRREPLView</string>
 					<string key="superclassName">NSTextView</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">clear:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">clear:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">clear:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
 					<object class="NSMutableDictionary" key="outlets">
 						<string key="NS.key.0">replDelegate</string>
 						<string key="NS.object.0">id</string>
