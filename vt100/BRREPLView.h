@@ -8,7 +8,7 @@
 
 #import <AppKit/AppKit.h>
 
-extern NSString* BKCurrentCommandAttributeName;
+extern NSString* BKTextCommandAttributeName;
 
 
 typedef struct {
@@ -31,6 +31,8 @@ typedef struct {
 
 @interface BRREPLView : NSTextView
 
+
+@property (readonly) NSDictionary* commandAttributes;
 
 @property (strong, nonatomic) NSFont* font;
 @property (strong, nonatomic) IBOutlet id <BRREPLDelegate> replDelegate;

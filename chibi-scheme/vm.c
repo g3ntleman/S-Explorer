@@ -1056,6 +1056,10 @@ sexp sexp_apply (sexp ctx, sexp proc, sexp args) {
       tmp1 = sexp_trampoline_procedure(_ARG1);
       tmp2 = sexp_trampoline_args(_ARG1);
       top--;
+      if (sexp_not(tmp1) && sexp_pairp(tmp2)) { /* noop trampoline is */
+        _PUSH(sexp_car(tmp2));                  /* a wrapped exception */
+        goto loop;
+      }
       goto apply1;
     }
     tmp1 = sexp_parameter_ref(ctx, sexp_global(ctx, SEXP_G_ERR_HANDLER));
@@ -1506,6 +1510,9 @@ sexp sexp_apply (sexp ctx, sexp proc, sexp args) {
     _ALIGN_IP();
     sexp_context_top(ctx) = top;
     _PUSH(sexp_alloc_tagged(ctx, _UWORD1, _UWORD0));
+    /* initialize fields to void */
+    for (i=(_UWORD1-sexp_sizeof_header)/sizeof(sexp_uint_t) - 1; i>=0; i--)
+      sexp_slot_set(_ARG1, i, SEXP_VOID);
     ip += sizeof(sexp)*2;
     break;
   case SEXP_OP_SLOT_REF:

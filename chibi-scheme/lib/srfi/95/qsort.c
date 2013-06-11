@@ -70,12 +70,24 @@ static int sexp_object_compare (sexp ctx, sexp a, sexp b) {
         switch (sexp_pointer_tag(a)) {
 #if SEXP_USE_FLONUMS
         case SEXP_FLONUM:
-          res = sexp_flonum_value(a) - sexp_flonum_value(b);
+          res = sexp_flonum_value(a) > sexp_flonum_value(b) ? 1 :
+                sexp_flonum_value(a) < sexp_flonum_value(b) ? -1 : 0;
           break;
 #endif
 #if SEXP_USE_BIGNUMS
         case SEXP_BIGNUM:
           res = sexp_bignum_compare(a, b);
+          break;
+#endif
+#if SEXP_USE_RATIOS
+        case SEXP_RATIO:
+          res = sexp_unbox_fixnum(sexp_ratio_compare(ctx, a, b));
+          break;
+#endif
+#if SEXP_USE_COMPLEX
+        case SEXP_COMPLEX:
+          res = sexp_object_compare(ctx, sexp_complex_real(a), sexp_complex_real(b));
+          if (res==0) res = sexp_object_compare(ctx, sexp_complex_imag(a), sexp_complex_imag(b));
           break;
 #endif
         case SEXP_STRING:
@@ -121,6 +133,7 @@ static sexp sexp_object_compare_op (sexp ctx, sexp self, sexp_sint_t n, sexp a, 
 }
 
 /* fast path when using general object-cmp comparator with no key */
+/* TODO: include another fast path when the key is a fixed offset */
 static void sexp_qsort (sexp ctx, sexp *vec, sexp_sint_t lo, sexp_sint_t hi) {
   sexp_sint_t mid, i, j, diff;
   sexp tmp, tmp2;
@@ -131,10 +144,8 @@ static void sexp_qsort (sexp ctx, sexp *vec, sexp_sint_t lo, sexp_sint_t hi) {
     /* partition */
     for (i=j=lo; i < hi; i++) {
       diff = sexp_object_compare(ctx, vec[i], tmp);
-      if (diff < 0) {
+      if (diff <= 0) {
         swap(tmp2, vec[i], vec[j]);
-        j++;
-      } else if (diff == 0) {
         j++;
       }
     }
@@ -152,9 +163,9 @@ static sexp sexp_qsort_less (sexp ctx, sexp *vec,
                              sexp_sint_t lo, sexp_sint_t hi,
                              sexp less, sexp key) {
   sexp_sint_t mid, i, j;
-  sexp tmp, res, args1;
-  sexp_gc_var3(a, b, args2);
-  sexp_gc_preserve3(ctx, a, b, args2);
+  sexp args1;
+  sexp_gc_var5(a, b, tmp, args2, res);
+  sexp_gc_preserve5(ctx, a, b, tmp, args2, res);
   args2 = sexp_list2(ctx, SEXP_VOID, SEXP_VOID);
   args1 = sexp_cdr(args2);
  loop:
@@ -169,6 +180,7 @@ static sexp sexp_qsort_less (sexp ctx, sexp *vec,
     } else {
       b = tmp;
     }
+    /* partition */
     for (i=j=lo; i < hi; i++) {
       if (sexp_truep(key)) {
         sexp_car(args1) = vec[i];
@@ -176,12 +188,12 @@ static sexp sexp_qsort_less (sexp ctx, sexp *vec,
       } else {
         a = vec[i];
       }
-      sexp_car(args2) = a;
-      sexp_car(args1) = b;
+      sexp_car(args2) = b;
+      sexp_car(args1) = a;
       res = sexp_apply(ctx, less, args2);
       if (sexp_exceptionp(res)) {
         goto done;
-      } else if (sexp_truep(res)) {
+      } else if (sexp_not(res)) {
         swap(res, vec[i], vec[j]), j++;
       } else {
         sexp_car(args2) = b;
@@ -191,6 +203,7 @@ static sexp sexp_qsort_less (sexp ctx, sexp *vec,
       }
     }
     swap(tmp, vec[j], vec[hi]);
+    /* recurse */
     res = sexp_qsort_less(ctx, vec, lo, j-1, less, key);
     if (sexp_exceptionp(res))
       goto done;
@@ -200,7 +213,7 @@ static sexp sexp_qsort_less (sexp ctx, sexp *vec,
     }
   }
  done:
-  sexp_gc_release3(ctx);
+  sexp_gc_release5(ctx);
   return res;
 }
 
@@ -232,6 +245,7 @@ static sexp sexp_sort_x (sexp ctx, sexp self, sexp_sint_t n, sexp seq,
       res = sexp_type_exception(ctx, self, SEXP_PROCEDURE, key);
     } else {
       res = sexp_qsort_less(ctx, data, 0, len-1, less, key);
+      if (!sexp_exceptionp(res)) res = vec;
     }
   }
 
@@ -245,7 +259,7 @@ static sexp sexp_sort_x (sexp ctx, sexp self, sexp_sint_t n, sexp seq,
 sexp sexp_init_library (sexp ctx, sexp self, sexp_sint_t n, sexp env, const char* version, sexp_abi_identifier_t abi) {
   if (!(sexp_version_compatible(ctx, version, sexp_version)
         && sexp_abi_compatible(ctx, abi, SEXP_ABI_IDENTIFIER)))
-    return sexp_global(ctx, SEXP_G_ABI_ERROR);
+    return SEXP_ABI_ERROR;
   sexp_define_foreign(ctx, env, "object-cmp", 2, sexp_object_compare_op);
   sexp_define_foreign_opt(ctx, env, "sort!", 3, sexp_sort_x, SEXP_FALSE);
   return SEXP_VOID;

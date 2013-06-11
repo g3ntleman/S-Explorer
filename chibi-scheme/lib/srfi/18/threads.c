@@ -37,6 +37,8 @@ struct sexp_pollfds_t {
 
 /**************************** threads *************************************/
 
+#if SEXP_USE_GREEN_THREADS
+
 static void sexp_define_type_predicate_by_tag (sexp ctx, sexp env, char *cname, sexp_uint_t type) {
   sexp_gc_var2(name, op);
   sexp_gc_preserve2(ctx, name, op);
@@ -94,7 +96,15 @@ sexp sexp_make_thread (sexp ctx, sexp self, sexp_sint_t n, sexp thunk, sexp name
   stack[2] = sexp_global(ctx, SEXP_G_FINAL_RESUMER);
   sexp_context_top(res) = 4;
   sexp_context_last_fp(res) = 0;
-  sexp_context_dk(res) = sexp_list1(ctx, SEXP_FALSE);
+  sexp_context_dk(res) = sexp_make_vector(res, SEXP_FOUR, SEXP_FALSE);
+  sexp_vector_set(sexp_context_dk(res), SEXP_ZERO, SEXP_ZERO);
+  /* reset parameters */
+  sexp_context_params(res) = SEXP_NULL;
+  /* alternately reset only the current exception handler */
+  /* for (ls1=sexp_context_params(ctx), ls2=SEXP_NULL; sexp_pairp(ls1); ls1=sexp_cdr(ls1)) */
+  /*   if (sexp_caar(ls1) != sexp_global(ctx, SEXP_G_ERR_HANDLER)) */
+  /*     ls2 = sexp_cons(ctx, sexp_car(ls1), ls2); */
+  /* sexp_context_params(res) = ls2; */
   sexp_gc_release1(ctx);
   return res;
 }
@@ -385,6 +395,8 @@ static sexp sexp_blocker (sexp ctx, sexp self, sexp_sint_t n, sexp portorfd) {
   /* register the fd */
   if (sexp_portp(portorfd))
     fd = sexp_port_fileno(portorfd);
+  else if (sexp_filenop(portorfd))
+    fd = sexp_fileno_fd(portorfd);
   else if (sexp_fixnump(portorfd))
     fd = sexp_unbox_fixnum(portorfd);
   else
@@ -435,7 +447,6 @@ sexp sexp_scheduler (sexp ctx, sexp self, sexp_sint_t n, sexp root_thread) {
   if (sexp_pollfdsp(ctx, pollfds) && sexp_pollfds_num_fds(pollfds) > 0) {
     pfds = sexp_pollfds_fds(pollfds);
     k = poll(sexp_pollfds_fds(pollfds), sexp_pollfds_num_fds(pollfds), 0);
-  unblock_io_threads:
     for (i=sexp_pollfds_num_fds(pollfds)-1; i>=0 && k>0; --i) {
       if (pfds[i].revents > 0) { /* free all threads blocked on this fd */
         k--;
@@ -544,7 +555,7 @@ sexp sexp_scheduler (sexp ctx, sexp self, sexp_sint_t n, sexp root_thread) {
         sexp_global(ctx, SEXP_G_THREADS_BACK) = SEXP_NULL;
       if (sexp_context_refuel(ctx) > 0 && sexp_not(sexp_memq(ctx, ctx, paused)))
         sexp_insert_timed(ctx, ctx, SEXP_FALSE);
-      paused = sexp_global(res, SEXP_G_THREADS_PAUSED);
+      paused = sexp_global(ctx, SEXP_G_THREADS_PAUSED);
     } else {
       /* swap with front of queue */
       sexp_car(sexp_global(ctx, SEXP_G_THREADS_FRONT)) = ctx;
@@ -599,19 +610,10 @@ sexp sexp_scheduler (sexp ctx, sexp self, sexp_sint_t n, sexp root_thread) {
           usecs += sexp_context_timeval(res).tv_usec - tval.tv_usec;
       }
     }
-    /* either wait on an fd, or just sleep */
-    pollfds = sexp_global(res, SEXP_G_THREADS_POLL_FDS);
-    if ((sexp_portp(sexp_context_event(res)) || sexp_fixnump(sexp_context_event(res)))
-        && sexp_pollfdsp(ctx, pollfds)) {
-      if ((k = poll(sexp_pollfds_fds(pollfds), sexp_pollfds_num_fds(pollfds), usecs/1000)) > 0) {
-        pfds = sexp_pollfds_fds(pollfds);
-        goto unblock_io_threads;
-      }
-    } else {
-      usleep(usecs);
-      sexp_context_waitp(res) = 0;
-      sexp_context_timeoutp(res) = 1;
-    }
+    /* take a nap to avoid busy looping */
+    usleep(usecs);
+    sexp_context_waitp(res) = 0;
+    sexp_context_timeoutp(res) = 1;
   }
 
   sexp_gc_release1(ctx);
@@ -625,12 +627,17 @@ sexp sexp_lookup_named_type (sexp ctx, sexp env, const char *name) {
   return sexp_make_fixnum((sexp_typep(t)) ? sexp_type_tag(t) : -1);
 }
 
+#endif  /* SEXP_USE_GREEN_THREADS */
+
 sexp sexp_init_library (sexp ctx, sexp self, sexp_sint_t n, sexp env, const char* version, sexp_abi_identifier_t abi) {
   sexp t;
   sexp_gc_var1(name);
   if (!(sexp_version_compatible(ctx, version, sexp_version)
         && sexp_abi_compatible(ctx, abi, SEXP_ABI_IDENTIFIER)))
-    return sexp_global(ctx, SEXP_G_ABI_ERROR);
+    return SEXP_ABI_ERROR;
+
+#if SEXP_USE_GREEN_THREADS
+
   sexp_gc_preserve1(ctx, name);
 
   sexp_global(ctx, SEXP_G_THREADS_MUTEX_ID) = sexp_lookup_named_type(ctx, env, "Mutex");
@@ -675,5 +682,8 @@ sexp sexp_init_library (sexp ctx, sexp self, sexp_sint_t n, sexp env, const char
   sexp_global(ctx, SEXP_G_THREADS_SIGNAL_RUNNER) = env;
 
   sexp_gc_release1(ctx);
+
+#endif  /* SEXP_USE_GREEN_THREADS */
+
   return SEXP_VOID;
 }

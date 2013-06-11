@@ -54,6 +54,16 @@
 (define (floor/ n m)
   (values (floor-quotient n m) (floor-remainder n m)))
 
+(define (exact-integer-sqrt x)
+  (let ((res (sqrt x)))
+    (if (exact? res)
+        (values res 0)
+        (let lp ((res (inexact->exact (truncate res))))
+          (let ((rem (- x (* res res))))
+            (if (negative? rem)
+                (lp (quotient (+ res (quotient x res)) 2))
+                (values res rem)))))))
+
 ;; Adapted from Bawden's algorithm.
 (define (rationalize x e)
   (define (sr x y return)
@@ -110,17 +120,17 @@
                   (cadr o)
                   (bytevector-length vec))))
     (if (>= start end)
-       0
-       (let* ((res (read-bytevector (- end start) in))
-              (len (bytevector-length res)))
-         (cond
-          ((zero? len)
-           (read-char (open-input-string "")))
-          (else
-           (do ((i 0 (+ i 1)))
-               ((>= i len) len)
-             (bytevector-u8-set! vec (+ i start) (bytevector-u8-ref res i))
-             )))))))
+        0
+        (let ((res (read-bytevector (- end start) in)))
+          (cond
+           ((eof-object? res)
+            res)
+           (else
+            (let ((len (bytevector-length res)))
+              (do ((i 0 (+ i 1)))
+                  ((>= i len) len)
+                (bytevector-u8-set! vec (+ i start) (bytevector-u8-ref res i))
+                ))))))))
 
 (define (write-bytevector vec . o)
   (let* ((out (if (pair? o) (car o) (current-output-port)))

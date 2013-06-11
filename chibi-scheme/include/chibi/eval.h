@@ -59,6 +59,7 @@ SEXP_API void sexp_scheme_init (void);
 SEXP_API sexp sexp_make_eval_context (sexp context, sexp stack, sexp env, sexp_uint_t size, sexp_uint_t max_size);
 SEXP_API sexp sexp_make_child_context (sexp context, sexp lambda);
 SEXP_API sexp sexp_compile_error (sexp ctx, const char *message, sexp obj);
+SEXP_API sexp sexp_maybe_wrap_error (sexp ctx, sexp obj);
 SEXP_API sexp sexp_analyze (sexp context, sexp x);
 SEXP_API sexp sexp_simplify (sexp ctx, sexp self, sexp_sint_t n, sexp ast);
 SEXP_API sexp sexp_make_lambda (sexp ctx, sexp params);
@@ -80,12 +81,14 @@ SEXP_API void sexp_stack_trace (sexp ctx, sexp out);
 SEXP_API sexp sexp_free_vars (sexp context, sexp x, sexp fv);
 SEXP_API int sexp_param_index (sexp lambda, sexp name);
 SEXP_API sexp sexp_compile_op (sexp context, sexp self, sexp_sint_t n, sexp obj, sexp env);
+SEXP_API sexp sexp_generate_op (sexp context, sexp self, sexp_sint_t n, sexp obj, sexp env);
 SEXP_API sexp sexp_eval_op (sexp context, sexp self, sexp_sint_t n, sexp obj, sexp env);
 SEXP_API sexp sexp_eval_string (sexp context, const char *str, sexp_sint_t len, sexp env);
 SEXP_API sexp sexp_load_op (sexp context, sexp self, sexp_sint_t n, sexp expr, sexp env);
 SEXP_API sexp sexp_exception_type_op (sexp ctx, sexp self, sexp_sint_t n, sexp exn);
 SEXP_API sexp sexp_make_env_op (sexp context, sexp self, sexp_sint_t n);
 SEXP_API sexp sexp_make_null_env_op (sexp context, sexp self, sexp_sint_t n, sexp version);
+SEXP_API sexp sexp_env_cell_define (sexp ctx, sexp env, sexp name, sexp value, sexp* varenv);
 SEXP_API sexp sexp_make_primitive_env (sexp context, sexp version);
 SEXP_API sexp sexp_make_standard_env_op (sexp context, sexp self, sexp_sint_t n, sexp version);
 SEXP_API void sexp_set_parameter (sexp ctx, sexp env, sexp name, sexp value);
@@ -93,6 +96,7 @@ SEXP_API sexp sexp_load_standard_ports (sexp context, sexp env, FILE* in, FILE* 
 SEXP_API sexp sexp_load_standard_env (sexp context, sexp env, sexp version);
 SEXP_API sexp sexp_find_module_file (sexp ctx, const char *file);
 SEXP_API sexp sexp_load_module_file (sexp ctx, const char *file, sexp env);
+SEXP_API sexp sexp_current_module_path_op (sexp ctx, sexp self, sexp_sint_t n);
 SEXP_API sexp sexp_find_module_file_op (sexp ctx, sexp self, sexp_sint_t n, sexp file);
 SEXP_API sexp sexp_load_module_file_op (sexp ctx, sexp self, sexp_sint_t n, sexp file, sexp env);
 SEXP_API sexp sexp_add_module_directory_op (sexp ctx, sexp self, sexp_sint_t n, sexp dir, sexp appendp);
@@ -111,6 +115,7 @@ SEXP_API sexp sexp_open_output_file_op(sexp ctx, sexp self, sexp_sint_t n, sexp 
 SEXP_API sexp sexp_open_binary_input_file(sexp ctx, sexp self, sexp_sint_t n, sexp x);
 SEXP_API sexp sexp_open_binary_output_file(sexp ctx, sexp self, sexp_sint_t n, sexp x);
 SEXP_API sexp sexp_close_port_op(sexp ctx, sexp self, sexp_sint_t n, sexp x);
+SEXP_API sexp sexp_set_port_line_op (sexp ctx, sexp self, sexp_sint_t n, sexp port, sexp line);
 SEXP_API sexp sexp_env_define (sexp ctx, sexp env, sexp sym, sexp val);
 SEXP_API sexp sexp_env_cell (sexp env, sexp sym, int localp);
 SEXP_API sexp sexp_env_ref (sexp env, sexp sym, sexp dflt);
@@ -129,9 +134,9 @@ SEXP_API sexp sexp_string_utf8_index_set (sexp ctx, sexp self, sexp_sint_t n, se
 #endif
 #if SEXP_USE_GREEN_THREADS
 SEXP_API sexp sexp_dk (sexp ctx, sexp self, sexp_sint_t n, sexp val);
+#endif
 SEXP_API sexp sexp_thread_parameters (sexp ctx, sexp self, sexp_sint_t n);
 SEXP_API sexp sexp_thread_parameters_set (sexp ctx, sexp self, sexp_sint_t n, sexp val);
-#endif
 SEXP_API sexp sexp_string_cmp_op (sexp ctx, sexp self, sexp_sint_t n, sexp a, sexp b, sexp ci);
 #if SEXP_USE_RATIOS
 SEXP_API sexp sexp_ratio_numerator_op (sexp ctx, sexp self, sexp_sint_t n, sexp rat);

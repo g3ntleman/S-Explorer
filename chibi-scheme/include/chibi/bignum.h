@@ -34,6 +34,7 @@ SEXP_API sexp sexp_bignum_sub (sexp ctx, sexp dst, sexp a, sexp b);
 SEXP_API sexp sexp_bignum_mul (sexp ctx, sexp dst, sexp a, sexp b);
 SEXP_API sexp sexp_bignum_div (sexp ctx, sexp dst, sexp a, sexp b);
 SEXP_API sexp sexp_bignum_expt (sexp ctx, sexp n, sexp e);
+SEXP_API sexp sexp_bignum_sqrt (sexp ctx, sexp a);
 SEXP_API sexp sexp_add (sexp ctx, sexp a, sexp b);
 SEXP_API sexp sexp_sub (sexp ctx, sexp a, sexp b);
 SEXP_API sexp sexp_mul (sexp ctx, sexp a, sexp b);
@@ -49,6 +50,7 @@ SEXP_API sexp sexp_ratio_round (sexp ctx, sexp a);
 SEXP_API sexp sexp_ratio_trunc (sexp ctx, sexp a);
 SEXP_API sexp sexp_ratio_floor (sexp ctx, sexp a);
 SEXP_API sexp sexp_ratio_ceiling (sexp ctx, sexp a);
+SEXP_API sexp sexp_ratio_compare (sexp ctx, sexp a, sexp b);
 #endif
 #if SEXP_USE_COMPLEX
 SEXP_API sexp sexp_make_complex (sexp ctx, sexp real, sexp image);

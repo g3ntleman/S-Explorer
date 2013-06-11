@@ -1,24 +1,27 @@
-(import (chibi ast))
+#! /usr/bin/env chibi-scheme
+
+; testing comments
+
+(import (scheme base) (chibi; comment!
+ast))
 
 (define (all-exports env)
   (let lp ((env env) (res '()))
     (if (not env)
         res
-        (lp (environment-parent env) (append (env-exports env) res)))))
+        (lp (env-parent env) (append (env-exports env) res)))))
 
-(define (buffer-make-completer generate)
-  (lambda (ch buf out return)
-    (let* ((word (buffer-previous-word buf))
-           (ls (generate buf word)))
-      (cond
-       ((null? ls)
-        (command/beep ch buf out return))
-       ((= 1 (length ls))
-        (buffer-insert! buf out (substring (car ls) (string-length word))))
-       (else
-        (newline out)
-        (buffer-format-list buf out ls)
-        (buffer-draw buf out))))))
+(define (string-common-prefix-length strings)
+  (if (null? strings)
+      0
+      (let lp ((len (string-length (car strings)))
+               (prev (car strings))
+               (ls (cdr strings)))
+        (if (or (null? ls) (zero? len))
+            len
+            (lp (min len (string-mismatch prev (car ls)))
+                (car ls)
+                (cdr ls))))))
 
 (define (make-sexp-buffer-completer)
   (buffer-make-completer
@@ -34,7 +37,3 @@
        (if (> prefix-len len)
            (list (substring (car candidates) 0 prefix-len))
            (sort candidates))))))
-
-(define (bracket-complete-string word)
-    ((make-sexp-buffer-completer) ch word out return) 
-)

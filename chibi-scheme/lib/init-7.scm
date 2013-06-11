@@ -19,7 +19,7 @@
 (define (procedure? x) (if (closure? x) #t (opcode? x)))
 
 (define (length ls)
-  (if (list? ls) (length* ls) (error "not a list" ls)))
+  (if (list? ls) (length* ls) (error "length: not a list" ls)))
 
 (define (list . args) args)
 
@@ -196,7 +196,7 @@
           (else
            (list (rename 'cons) (qq (car x) d) (qq (cdr x) d)))))
         ((vector? x) (list (rename 'list->vector) (qq (vector->list x) d)))
-        ((if (symbol? x) #t (null? x)) (list (rename 'quote) x))
+        ((if (identifier? x) #t (null? x)) (list (rename 'quote) x))
         (else x)))
      (qq (cadr expr) 0))))
 
@@ -346,22 +346,31 @@
 (define (char-upper-case? ch) (<= 65 (char->integer ch) 90))
 (define (char-lower-case? ch) (<= 97 (char->integer ch) 122))
 
-(define (char=? a b) (= (char->integer a) (char->integer b)))
-(define (char<? a b) (< (char->integer a) (char->integer b)))
-(define (char>? a b) (> (char->integer a) (char->integer b)))
-(define (char<=? a b) (<= (char->integer a) (char->integer b)))
-(define (char>=? a b) (>= (char->integer a) (char->integer b)))
+(define (char-cmp op a ls)
+  (let lp ((op op) (a (char->integer a)) (ls ls))
+    (if (null? ls)
+        #t
+        (let ((b (char->integer (car ls))))
+          (and (op a b) (lp op b (cdr ls)))))))
 
-(define (char-ci=? a b)
-  (= (char->integer (char-downcase a)) (char->integer (char-downcase b))))
-(define (char-ci<? a b)
-  (< (char->integer (char-downcase a)) (char->integer (char-downcase b))))
-(define (char-ci>? a b)
-  (> (char->integer (char-downcase a)) (char->integer (char-downcase b))))
-(define (char-ci<=? a b)
-  (<= (char->integer (char-downcase a)) (char->integer (char-downcase b))))
-(define (char-ci>=? a b)
-  (>= (char->integer (char-downcase a)) (char->integer (char-downcase b))))
+(define (char=? a . ls) (char-cmp = a ls))
+(define (char<? a . ls) (char-cmp < a ls))
+(define (char>? a . ls) (char-cmp > a ls))
+(define (char<=? a . ls) (char-cmp <= a ls))
+(define (char>=? a . ls) (char-cmp >= a ls))
+
+(define (char-cmp-ci op a ls)
+  (let lp ((op op) (a (char->integer (char-downcase a))) (ls ls))
+    (if (null? ls)
+        #t
+        (let ((b (char->integer (char-downcase (car ls)))))
+          (and (op a b) (lp op b (cdr ls)))))))
+
+(define (char-ci=? a . ls) (char-cmp-ci = a ls))
+(define (char-ci<? a . ls) (char-cmp-ci < a ls))
+(define (char-ci>? a . ls) (char-cmp-ci > a ls))
+(define (char-ci<=? a . ls) (char-cmp-ci <= a ls))
+(define (char-ci>=? a . ls) (char-cmp-ci >= a ls))
 
 ;; string utils
 
@@ -410,17 +419,23 @@
 (define (string . args) (list->string args))
 (define (string-append . args) (string-concatenate args))
 
-(define (string=? s1 s2) (eq? (string-cmp s1 s2 #f) 0))
-(define (string<? s1 s2) (< (string-cmp s1 s2 #f) 0))
-(define (string<=? s1 s2) (<= (string-cmp s1 s2 #f) 0))
-(define (string>? s1 s2) (> (string-cmp s1 s2 #f) 0))
-(define (string>=? s1 s2) (>= (string-cmp s1 s2 #f) 0))
+(define (string-cmp-ls op ci? s ls)
+  (if (null? ls)
+      #t
+      (and (op (string-cmp s (car ls) ci?) 0)
+           (string-cmp-ls op ci? (car ls) (cdr ls)))))
 
-(define (string-ci=? s1 s2) (eq? (string-cmp s1 s2 #t) 0))
-(define (string-ci<? s1 s2) (< (string-cmp s1 s2 #t) 0))
-(define (string-ci<=? s1 s2) (<= (string-cmp s1 s2 #t) 0))
-(define (string-ci>? s1 s2) (> (string-cmp s1 s2 #t) 0))
-(define (string-ci>=? s1 s2) (>= (string-cmp s1 s2 #t) 0))
+(define (string=? s . ls) (string-cmp-ls eq? #f s ls))
+(define (string<? s . ls) (string-cmp-ls < #f s ls))
+(define (string>? s . ls) (string-cmp-ls > #f s ls))
+(define (string<=? s . ls) (string-cmp-ls <= #f s ls))
+(define (string>=? s . ls) (string-cmp-ls >= #f s ls))
+
+(define (string-ci=? s . ls) (string-cmp-ls eq? #t s ls))
+(define (string-ci<? s . ls) (string-cmp-ls < #t s ls))
+(define (string-ci>? s . ls) (string-cmp-ls > #t s ls))
+(define (string-ci<=? s . ls) (string-cmp-ls <= #t s ls))
+(define (string-ci>=? s . ls) (string-cmp-ls >= #t s ls))
 
 ;; list utils
 
@@ -564,36 +579,60 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; dynamic-wind
 
+(define %make-point vector)
+(define (%point-depth point) (vector-ref point 0))
+(define (%point-in point) (vector-ref point 1))
+(define (%point-out point) (vector-ref point 2))
+(define (%point-parent point) (vector-ref point 3))
+
+(define root-point			; Shared among all state spaces
+  (%make-point 0
+	      (lambda () (error "winding in to root!"))
+	      (lambda () (error "winding out of root!"))
+	      #f))
+
 (cond-expand
  (threads)
  (else
   (define %dk
-    (let ((dk (list #f)))
+    (let ((dk root-point))
       (lambda o (if (pair? o) (set! dk (car o)) dk))))))
 
-(define (dynamic-wind before thunk after)
-  (let ((dk (%dk)))
-    (set-dk! (cons (cons before after) dk))
-    (let ((res (thunk))) (set-dk! dk) res)))
+(%dk root-point)
 
-;; TODO: Implement a non-mutating tree oriented stack so we don't need
-;; to reset the stack in child threads.
-(define (set-dk! new-dk)
-  (if (not (eq? new-dk (%dk)))
-      (begin
-        (set-dk! (cdr new-dk))
-        (let ((before (car (car new-dk)))
-	      (old-dk (%dk)))
-          (set-car! old-dk (cons (cdr (car new-dk)) before))
-          (set-cdr! old-dk new-dk)
-          (set-car! new-dk #f)
-          (set-cdr! new-dk '())
-          (%dk new-dk)
-          (before)))))
+(define (dynamic-wind in body out)
+  (in)
+  (let ((here (%dk)))
+    (%dk (%make-point (+ (%point-depth here) 1)
+                     in
+                     out
+                     here))
+    (let ((res (body)))
+      (%dk here)
+      (out)
+      res)))
+
+(define (travel-to-point! here target)
+  (cond
+   ((eq? here target)
+    'done)
+   ((< (%point-depth here) (%point-depth target))
+    (travel-to-point! here (%point-parent target))
+    ((%point-in target)))
+   (else
+    ((%point-out here))
+    (travel-to-point! (%point-parent here) target))))
+
+(define (continuation->procedure cont point)
+  (lambda res
+    (travel-to-point! (%dk) point)
+    (%dk point)
+    (cont (%values res))))
 
 (define (call-with-current-continuation proc)
-  (let ((dk (%dk)))
-    (%call/cc (lambda (k) (proc (lambda x (set-dk! dk) (k (%values x))))))))
+  (%call/cc
+   (lambda (cont)
+     (proc (continuation->procedure cont (%dk))))))
 
 (define (with-input-from-file file thunk)
   (let ((old-in (current-input-port))
@@ -631,7 +670,7 @@
            (_quote (rename 'syntax-quote)) (_apply (rename 'apply))
            (_append (rename 'append))      (_map (rename 'map))
            (_vector? (rename 'vector?))    (_list? (rename 'list?))
-           (_len (rename'len))             (_length (rename 'length))
+           (_len (rename'len))             (_length (rename 'length*))
            (_- (rename '-))   (_>= (rename '>=))   (_error (rename 'error))
            (_ls (rename 'ls)) (_res (rename 'res)) (_i (rename 'i))
            (_reverse (rename 'reverse))
@@ -802,7 +841,7 @@
                    (error "too many ...'s"))
                   ((and (null? (cdr (cdr t))) (identifier? (car t)))
                    ;; shortcut for (var ...)
-                   (lp (car t) depth))
+                   (lp (car t) ell-dim))
                   (else
                    (let* ((once (lp (car t) ell-dim))
                           (nest (if (and (null? (cdr ell-vars))
@@ -875,13 +914,22 @@
 (define (raise-continuable exn)
   (raise (list *continuable* exn)))
 
-(define (%with-exception-handler handler thunk)
-  (let* ((old (thread-parameters))
-         (new (cons (cons current-exception-handler handler) old)))
-    (dynamic-wind
-      (lambda () (thread-parameters-set! new))
-      thunk
-      (lambda () (thread-parameters-set! old)))))
+(cond-expand
+ (threads
+  (define (%with-exception-handler handler thunk)
+    (let* ((old (thread-parameters))
+           (new (cons (cons current-exception-handler handler) old)))
+      (dynamic-wind
+        (lambda () (thread-parameters-set! new))
+        thunk
+        (lambda () (thread-parameters-set! old))))))
+ (else
+  (define (%with-exception-handler handler thunk)
+    (let ((old (current-exception-handler)))
+      (dynamic-wind
+        (lambda () (current-exception-handler handler))
+        thunk
+        (lambda () (current-exception-handler old)))))))
 
 (define (with-exception-handler handler thunk)
   (letrec ((orig-handler (current-exception-handler))
@@ -899,22 +947,23 @@
 (define-syntax guard
   (syntax-rules ()
     ((guard (var clause ...) e1 e2 ...)
-     ((call-with-current-continuation
-       (lambda (guard-k)
-         (with-exception-handler
-          (lambda (condition)
-            ((call-with-current-continuation
-              (lambda (handler-k)
-                (guard-k
-                 (lambda ()
-                   (let ((var condition))
-                     (guard-aux (handler-k (lambda ()
-                                             (raise-continuable condition)))
-                                clause ...))))))))
-          (lambda ()
-            (call-with-values (lambda () e1 e2 ...)
-              (lambda args
-                (guard-k (lambda () (apply values args)))))))))))))
+     (let ((orig-handler (current-exception-handler)))
+       ((call-with-current-continuation
+         (lambda (guard-k)
+           (with-exception-handler
+            (lambda (condition)
+              ((call-with-current-continuation
+                (lambda (handler-k)
+                  (let* ((var condition)            ; clauses may set! var
+                         (res
+                          (guard-aux
+                           (handler-k (lambda ()
+                                        (raise-continuable condition)))
+                           clause ...)))
+                    (guard-k (lambda () res)))))))
+            (lambda ()
+              (let ((res (begin e1 e2 ...)))
+                (guard-k (lambda () res))))))))))))
 
 (define-syntax guard-aux
   (syntax-rules (else =>)
@@ -940,6 +989,25 @@
 (define (eval x . o)
   (let ((thunk (compile x (if (pair? o) (car o) (interaction-environment)))))
     (if (procedure? thunk) (thunk) (raise thunk))))
+
+(define (load file . o)
+  (let* ((env (if (pair? o) (car o) (interaction-environment)))
+         (len (string-length file))
+         (ext *shared-object-extension*)
+         (ext-len (string-length ext)))
+    (cond
+     ((and (> len ext-len 0) (equal? ext (substring file (- len ext-len))))
+      (%load file env))
+     (else
+      (call-with-input-file file
+        (lambda (in)
+          (set-port-line! in 1)
+          (let lp ()
+            (let ((x (read in)))
+              (cond
+               ((not (eof-object? x))
+                (eval x env)
+                (lp)))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; promises
@@ -987,11 +1055,15 @@
   (define (numerator x)
     (if (ratio? x)
         (ratio-numerator x)
-        (if (inexact? x) (ratio-numerator (inexact->exact x)) x)))
+        (if (inexact? x)
+            (exact->inexact (ratio-numerator (inexact->exact x)))
+            x)))
   (define (denominator x)
     (if (exact? x)
         (if (ratio? x) (ratio-denominator x) 1)
-        (if (integer? x) 1 (ratio-denominator (inexact->exact x))))))
+        (if (integer? x)
+            1
+            (exact->inexact (ratio-denominator (inexact->exact x)))))))
  (else
   (cond-expand
    (complex
@@ -1023,13 +1095,6 @@
   (and (real? x) (= x x) (not (= x (+ x (if (positive? x) 1 -1))))))
 
 (define (eqv? a b) (if (eq? a b) #t (and (number? a) (equal? a b))))
-
-(define (exact-integer-sqrt x)
-  (let ((res (sqrt x)))
-    (if (exact? res)
-        (values res 0)
-        (let ((res (inexact->exact (truncate res))))
-          (values res (- x (* res res)))))))
 
 (define (zero? x) (= x 0))
 (define (positive? x) (> x 0))
@@ -1066,21 +1131,33 @@
         (if (null? ls) x (lp (lcm2 x (car ls)) (cdr ls))))))
 
 (define (max x . rest)
-  (let lp ((hi x) (ls rest))
+  (define (~max hi ls)
     (if (null? ls)
-        hi
-        (lp (if (> (car ls) hi) (car ls) hi) (cdr ls)))))
+        (exact->inexact hi)
+        (~max (if (> (car ls) hi) (car ls) hi) (cdr ls))))
+  (if (inexact? x)
+      (~max x rest)
+      (let lp ((hi x) (ls rest))
+        (cond ((null? ls) hi)
+              ((inexact? (car ls)) (~max hi ls))
+              (else (lp (if (> (car ls) hi) (car ls) hi) (cdr ls)))))))
 
 (define (min x . rest)
-  (let lp ((lo x) (ls rest))
+  (define (~min lo ls)
     (if (null? ls)
-        lo
-        (lp (if (< (car ls) lo) (car ls) lo) (cdr ls)))))
+        (exact->inexact lo)
+        (~min (if (< (car ls) lo) (car ls) lo) (cdr ls))))
+  (if (inexact? x)
+      (~min x rest)
+      (let lp ((lo x) (ls rest))
+        (cond ((null? ls) lo)
+              ((inexact? (car ls)) (~min lo ls))
+              (else (lp (if (< (car ls) lo) (car ls) lo) (cdr ls)))))))
 
 (cond-expand
  (complex
   (define (real-part z) (if (%complex? z) (complex-real z) z))
-  (define (imag-part z) (if (%complex? z) (complex-imag z) 0.0))
+  (define (imag-part z) (if (%complex? z) (complex-imag z) 0))
   (define (magnitude z)
     (sqrt (+ (* (real-part z) (real-part z))
              (* (imag-part z) (imag-part z)))))
@@ -1099,14 +1176,20 @@
   (if (pair? o) (/ (ln x) (ln (car o))) (ln x)))
 
 (define (atan y . o)
+  (define (inf? z) (if (= +inf.0 z) #t (= -inf.0 z)))
   (if (null? o)
       (atan1 y)
       (let ((x (exact->inexact (car o))))
-        (if (negative? x)
-            (if (negative? y)
-                (- (atan1 (/ y x)) 3.141592653589793)
-                (- 3.141592653589793 (atan1 (/ y (- x)))))
-            (atan1 (/ y x))))))
+        (if (and (inf? x) (inf? y))
+            (* (if (< y 0) -1 1) (if (= x -inf.0) 3 1) 0.7853981633974483)
+            (if (negative? x)
+                (if (negative? y)
+                    (- (atan1 (/ y x)) 3.141592653589793)
+                    (- 3.141592653589793 (atan1 (/ y (- x)))))
+                (if (and (zero? x) (zero? y))
+                    (* (if (eqv? y -0.0) -1 1)
+                       (if (eqv? x -0.0) 3.141592653589793 x))
+                    (atan1 (/ y x))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; string cursors

@@ -19,7 +19,7 @@ CHIBI_DEPENDENCIES = ./chibi-scheme$(EXE)
 CHIBI_COMPILED_LIBS = lib/chibi/filesystem$(SO) lib/chibi/process$(SO) \
 	lib/chibi/time$(SO) lib/chibi/system$(SO) lib/chibi/stty$(SO) \
 	lib/chibi/weak$(SO) lib/chibi/heap-stats$(SO) lib/chibi/disasm$(SO) \
-	lib/chibi/net$(SO)
+	lib/chibi/net$(SO) lib/chibi/ast$(SO)
 CHIBI_IO_COMPILED_LIBS = lib/chibi/io/io$(SO)
 CHIBI_OPT_COMPILED_LIBS = lib/chibi/optimize/rest$(SO) \
 	lib/chibi/optimize/profile$(SO)
@@ -32,8 +32,8 @@ COMPILED_LIBS = $(CHIBI_COMPILED_LIBS) $(CHIBI_IO_COMPILED_LIBS) \
 BASE_INCLUDES = include/chibi/sexp.h include/chibi/features.h include/chibi/install.h include/chibi/bignum.h
 INCLUDES = $(BASE_INCLUDES) include/chibi/eval.h
 
-MODULE_DOCS := ast disasm equiv filesystem generic heap-stats io loop \
-	match mime modules net pathname process repl scribble stty \
+MODULE_DOCS := ast config disasm equiv filesystem generic heap-stats io \
+	loop match mime modules net pathname process repl scribble stty \
 	system test time trace type-inference uri weak
 
 HTML_LIBS = $(MODULE_DOCS:%=doc/lib/chibi/%.html)
@@ -68,7 +68,7 @@ endif
 
 ########################################################################
 
-all: chibi-scheme$(EXE) all-libs lib/chibi/ast$(SO)
+all: chibi-scheme$(EXE) all-libs
 
 include/chibi/install.h: Makefile
 	echo '#define sexp_so_extension "'$(SO)'"' > $@
@@ -111,15 +111,15 @@ clibs.c: $(GENSTATIC) chibi-scheme$(EXE)
 # A special case, this needs to be linked with the LDFLAGS in case
 # we're using Boehm.
 lib/chibi/ast$(SO): lib/chibi/ast.c $(INCLUDES)
-	-$(CC) $(CLIBFLAGS) $(XCPPFLAGS) $(XCFLAGS) -o $@ $< $(XLDFLAGS) -L. -lchibi-scheme
+	-$(CC) $(CLIBFLAGS) $(XCPPFLAGS) $(XCFLAGS) -o $@ $< $(GCLDFLAGS) -L. -lchibi-scheme
 
 doc/lib/chibi/%.html: lib/chibi/%.sld $(CHIBI_DOC_DEPENDENCIES)
-	$(CHIBI_DOC) chibi.$* > $@
+	$(CHIBI_DOC) --html chibi.$* > $@
 
 doc: doc/chibi.html doc-libs
 
 %.html: %.scrbl $(CHIBI_DOC_DEPENDENCIES)
-	$(CHIBI_DOC) $< > $@
+	$(CHIBI_DOC) --html $< > $@
 
 ########################################################################
 # Dist builds - rules to build generated files included in distribution
@@ -167,6 +167,9 @@ test-memory: chibi-scheme-ulimit$(EXE)
 test-build:
 	MAKE=$(MAKE) ./tests/build/build-tests.sh
 
+test-ffi: chibi-scheme$(EXE)
+	$(CHIBI) tests/ffi/ffi-tests.scm
+
 test-threads: chibi-scheme$(EXE) lib/srfi/18/threads$(SO) lib/srfi/39/param$(SO) lib/srfi/98/env$(SO) lib/chibi/ast$(SO) lib/chibi/time$(SO)
 	$(CHIBI) -xscheme tests/thread-tests.scm
 
@@ -211,6 +214,9 @@ test-system: chibi-scheme$(EXE) lib/chibi/system$(SO)
 
 test-libs: chibi-scheme$(EXE)
 	$(CHIBI) -xscheme tests/lib-tests.scm
+
+test-r7rs: chibi-scheme$(EXE)
+	$(CHIBI) tests/r7rs-tests.scm
 
 test: chibi-scheme$(EXE)
 	$(CHIBI) -xscheme tests/r5rs-tests.scm
@@ -267,7 +273,7 @@ install: all
 	$(MKDIR) $(DESTDIR)$(BINMODDIR)/chibi/optimize/
 	$(MKDIR) $(DESTDIR)$(BINMODDIR)/scheme/
 	$(MKDIR) $(DESTDIR)$(BINMODDIR)/srfi/18 $(DESTDIR)$(BINMODDIR)/srfi/27 $(DESTDIR)$(BINMODDIR)/srfi/33 $(DESTDIR)$(BINMODDIR)/srfi/39 $(DESTDIR)$(BINMODDIR)/srfi/69 $(DESTDIR)$(BINMODDIR)/srfi/95 $(DESTDIR)$(BINMODDIR)/srfi/98
-	$(INSTALL) $(CHIBI_COMPILED_LIBS) lib/chibi/ast$(SO) $(DESTDIR)$(BINMODDIR)/chibi/
+	$(INSTALL) $(CHIBI_COMPILED_LIBS) $(DESTDIR)$(BINMODDIR)/chibi/
 	$(INSTALL) $(CHIBI_IO_COMPILED_LIBS) $(DESTDIR)$(BINMODDIR)/chibi/io/
 	$(INSTALL) $(CHIBI_OPT_COMPILED_LIBS) $(DESTDIR)$(BINMODDIR)/chibi/optimize/
 	$(INSTALL) lib/scheme/time$(SO) $(DESTDIR)$(BINMODDIR)/scheme/
@@ -300,8 +306,8 @@ uninstall:
 	-$(CD) $(DESTDIR)$(INCDIR) && $(RM) $(INCLUDES)
 	-$(RM) $(DESTDIR)$(MODDIR)/srfi/99/records/*.{sld,scm}
 	-$(RM) $(DESTDIR)$(MODDIR)/*.{sld,scm} $(DESTDIR)$(MODDIR)/*/*.{sld,scm} $(DESTDIR)$(MODDIR)/*/*/*.{sld,scm}
-	-$(CD) $(DESTDIR)$(MODDIR) && $(RM) $(COMPILED_LIBS:lib/%=%) chibi/ast$(SO)
-	-$(CD) $(DESTDIR)$(BINMODDIR) && $(RM) $(COMPILED_LIBS:lib/%=%) chibi/ast$(SO)
+	-$(CD) $(DESTDIR)$(MODDIR) && $(RM) $(COMPILED_LIBS:lib/%=%)
+	-$(CD) $(DESTDIR)$(BINMODDIR) && $(RM) $(COMPILED_LIBS:lib/%=%)
 	-$(RMDIR) $(DESTDIR)$(MODDIR)/chibi/io $(DESTDIR)$(BINMODDIR)/chibi/io
 	-$(RMDIR) $(DESTDIR)$(MODDIR)/chibi/loop $(DESTDIR)$(BINMODDIR)/chibi/loop
 	-$(RMDIR) $(DESTDIR)$(MODDIR)/chibi/match $(DESTDIR)$(BINMODDIR)/chibi/match
@@ -328,13 +334,13 @@ uninstall:
 dist: dist-clean
 	$(RM) chibi-scheme-`cat VERSION`.tgz
 	$(MKDIR) chibi-scheme-`cat VERSION`
-	@for f in `hg manifest`; do $(MKDIR) chibi-scheme-`cat VERSION`/`dirname $$f`; $(SYMLINK) `pwd`/$$f chibi-scheme-`cat VERSION`/$$f; done
+	@for f in `hg manifest | grep -v ^benchmarks/`; do $(MKDIR) chibi-scheme-`cat VERSION`/`dirname $$f`; $(SYMLINK) `pwd`/$$f chibi-scheme-`cat VERSION`/$$f; done
 	$(TAR) cphzvf chibi-scheme-`cat VERSION`.tgz chibi-scheme-`cat VERSION`
 	$(RM) -r chibi-scheme-`cat VERSION`
 
 mips-dist: dist-clean
 	$(RM) chibi-scheme-`date +%Y%m%d`-`hg tags|head -1|sed -n 's/.* \([0-9]*\):.*/\1/p'`.tgz
 	$(MKDIR) chibi-scheme-`date +%Y%m%d`-`hg tags|head -1|sed -n 's/.* \([0-9]*\):.*/\1/p'`
-	@for f in `hg manifest`; do $(MKDIR) chibi-scheme-`date +%Y%m%d`-`hg tags|head -1|sed -n 's/.* \([0-9]*\):.*/\1/p'`/`dirname $$f`; $(SYMLINK) `pwd`/$$f chibi-scheme-`date +%Y%m%d`-`hg tags|head -1|sed -n 's/.* \([0-9]*\):.*/\1/p'`/$$f; done
+	@for f in `hg manifest | grep -v ^benchmarks/`; do $(MKDIR) chibi-scheme-`date +%Y%m%d`-`hg tags|head -1|sed -n 's/.* \([0-9]*\):.*/\1/p'`/`dirname $$f`; $(SYMLINK) `pwd`/$$f chibi-scheme-`date +%Y%m%d`-`hg tags|head -1|sed -n 's/.* \([0-9]*\):.*/\1/p'`/$$f; done
 	$(TAR) cphzvf chibi-scheme-`date +%Y%m%d`-`hg tags|head -1|sed -n 's/.* \([0-9]*\):.*/\1/p'`.tgz chibi-scheme-`date +%Y%m%d`-`hg tags|head -1|sed -n 's/.* \([0-9]*\):.*/\1/p'`
 	$(RM) -r chibi-scheme-`date +%Y%m%d`-`hg tags|head -1|sed -n 's/.* \([0-9]*\):.*/\1/p'`

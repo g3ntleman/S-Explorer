@@ -195,8 +195,8 @@ static struct sexp_type_struct _sexp_type_specs[] = {
 #if SEXP_USE_COMPLEX
   {SEXP_COMPLEX, sexp_offsetof(complex, real), 2, 2, 0, 0, sexp_sizeof(complex), 0, 0, 0, 0, 0, 0, 0, 0, (sexp)"Complex", SEXP_FALSE, SEXP_FALSE, NULL, SEXP_FALSE, NULL, NULL},
 #endif
-  {SEXP_IPORT, sexp_offsetof(port, name), 2, 2, 0, 0, sexp_sizeof(port), 0, 0, 0, 0, 0, 0, 0, 0, (sexp)"Input-Port", SEXP_FALSE, SEXP_FALSE, NULL, SEXP_FALSE, NULL, SEXP_FINALIZE_PORT},
-  {SEXP_OPORT, sexp_offsetof(port, name), 2, 2, 0, 0, sexp_sizeof(port), 0, 0, 0, 0, 0, 0, 0, 0, (sexp)"Output-Port", SEXP_FALSE, SEXP_FALSE, NULL, SEXP_FALSE, NULL, SEXP_FINALIZE_PORT},
+  {SEXP_IPORT, sexp_offsetof(port, name), 3, 3, 0, 0, sexp_sizeof(port), 0, 0, 0, 0, 0, 0, 0, 0, (sexp)"Input-Port", SEXP_FALSE, SEXP_FALSE, NULL, SEXP_FALSE, NULL, SEXP_FINALIZE_PORT},
+  {SEXP_OPORT, sexp_offsetof(port, name), 3, 3, 0, 0, sexp_sizeof(port), 0, 0, 0, 0, 0, 0, 0, 0, (sexp)"Output-Port", SEXP_FALSE, SEXP_FALSE, NULL, SEXP_FALSE, NULL, SEXP_FINALIZE_PORT},
   {SEXP_FILENO, 0, 0, 0, 0, 0, sexp_sizeof(fileno), 0, 0, 0, 0, 0, 0, 0, 0, (sexp)"File-Descriptor", SEXP_FALSE, SEXP_FALSE, NULL, SEXP_FALSE, NULL, SEXP_FINALIZE_FILENO},
   {SEXP_EXCEPTION, sexp_offsetof(exception, kind), 6, 6, 0, 0, sexp_sizeof(exception), 0, 0, 0, 0, 0, 0, 0, 0, (sexp)"Exception", SEXP_FALSE, SEXP_FALSE, NULL, SEXP_FALSE, (sexp)sexp_write_simple_object, NULL},
   {SEXP_PROCEDURE, sexp_offsetof(procedure, bc), 2, 2, 0, 0, sexp_sizeof(procedure), 0, 0, 0, 0, 0, 0, 0, 0, (sexp)"Procedure", SEXP_FALSE, SEXP_FALSE, NULL, SEXP_FALSE, NULL, NULL},
@@ -332,7 +332,9 @@ sexp sexp_register_simple_type_op (sexp ctx, sexp self, sexp_sint_t n, sexp name
 sexp sexp_lookup_type_op(sexp ctx, sexp self, sexp_sint_t n, sexp name, sexp id) {
   int i;
   sexp res;
-  const char* str = sexp_string_data(name);
+  const char* str;
+  sexp_assert_type(ctx, sexp_stringp, SEXP_STRING, name);
+  str = sexp_string_data(name);
   if (sexp_fixnump(id)) {
     i = sexp_unbox_fixnum(id);
     if (i < sexp_context_num_types(ctx)
@@ -374,6 +376,7 @@ void sexp_init_context_globals (sexp ctx) {
 #if ! SEXP_USE_GLOBAL_SYMBOLS
   sexp_global(ctx, SEXP_G_SYMBOLS) = sexp_make_vector(ctx, sexp_make_fixnum(SEXP_SYMBOL_TABLE_SIZE), SEXP_NULL);
 #endif
+  sexp_global(ctx, SEXP_G_STRICT_P) = SEXP_FALSE;
 #if SEXP_USE_FOLD_CASE_SYMS
   sexp_global(ctx, SEXP_G_FOLD_CASE_P) = sexp_make_boolean(SEXP_DEFAULT_FOLD_CASE_SYMS);
 #endif
@@ -775,10 +778,10 @@ sexp sexp_length_op (sexp ctx, sexp self, sexp_sint_t n, sexp ls1) {
   return sexp_make_fixnum(res + (sexp_pairp(ls2) ? 1 : 0));
 }
 
-sexp sexp_equalp_bound (sexp ctx, sexp self, sexp_sint_t n, sexp a, sexp b, sexp bound) {
+sexp sexp_equalp_bound (sexp ctx, sexp self, sexp_sint_t n, sexp a, sexp b, sexp depth, sexp bound) {
   sexp_uint_t left_size, right_size;
   sexp_sint_t i, len;
-  sexp t, *p, *q;
+  sexp t, *p, *q, depth2;
   char *p_left, *p_right, *q_left, *q_right;
 
  loop:
@@ -797,8 +800,10 @@ sexp sexp_equalp_bound (sexp ctx, sexp self, sexp_sint_t n, sexp a, sexp b, sexp
   if (sexp_pointer_tag(a) == SEXP_FLONUM)
     return sexp_flonum_eqv(a, b) ? bound : SEXP_FALSE;
 #endif
-  if (sexp_unbox_fixnum(bound) < 0) /* exceeded limit */
+  /* check limits */
+  if (sexp_unbox_fixnum(bound) < 0 || sexp_unbox_fixnum(depth) < 0)
     return bound;
+  depth2 = sexp_fx_sub(depth, SEXP_ONE);
   bound = sexp_fx_sub(bound, SEXP_ONE);
   t = sexp_object_type(ctx, a);
   p_left = ((char*)a) + offsetof(struct sexp_struct, value);
@@ -834,10 +839,10 @@ sexp sexp_equalp_bound (sexp ctx, sexp self, sexp_sint_t n, sexp a, sexp b, sexp
       }
     }
     for (i=0; i<len-1; i++) {
-      bound = sexp_equalp_bound(ctx, self, n, p[i], q[i], bound);
+      bound = sexp_equalp_bound(ctx, self, n, p[i], q[i], depth2, bound);
       if (sexp_not(bound)) return SEXP_FALSE;
     }
-    /* tail-recurse on the last value */
+    /* tail-recurse on the last value (same depth) */
     a = p[len-1]; b = q[len-1]; goto loop;
   }
   return bound;
@@ -846,6 +851,7 @@ sexp sexp_equalp_bound (sexp ctx, sexp self, sexp_sint_t n, sexp a, sexp b, sexp
 sexp sexp_equalp_op (sexp ctx, sexp self, sexp_sint_t n, sexp a, sexp b) {
   return sexp_make_boolean(
     sexp_truep(sexp_equalp_bound(ctx, self, n, a, b,
+                                 sexp_make_fixnum(SEXP_DEFAULT_EQUAL_DEPTH),
                                  sexp_make_fixnum(SEXP_DEFAULT_EQUAL_BOUND))));
 }
 
@@ -2153,7 +2159,14 @@ sexp sexp_read_string (sexp ctx, sexp in, int sentinel) {
         break;
 #if SEXP_USE_ESCAPE_NEWLINE
       default:
-        if (isspace(c)) while (isspace(c) && c!=EOF) c=sexp_read_char(ctx, in);
+        if (isspace(c)) {
+          while (c==' ' || c=='\t') c=sexp_read_char(ctx, in);
+          if (c=='\r') c=sexp_read_char(ctx, in);
+          if (c=='\n') {
+            sexp_port_line(in)++;
+            do {c=sexp_read_char(ctx, in);} while (c==' ' || c=='\t');
+          }
+        }
 #endif
       }
       if (sexp_exceptionp(res)) break;
@@ -2638,6 +2651,9 @@ sexp sexp_read_raw (sexp ctx, sexp in) {
           } else if (sexp_read_raw(ctx, in) != SEXP_CLOSE) {
             res = sexp_read_error(ctx, "multiple tokens in dotted tail",
                                   SEXP_NULL, in);
+          } else if (tmp == SEXP_RAWDOT) {
+            res = sexp_read_error(ctx, "multiple dots in list",
+                                  SEXP_NULL, in);
           } else {
             tmp2 = res;
             res = sexp_nreverse(ctx, res);
@@ -2793,7 +2809,7 @@ sexp sexp_read_raw (sexp ctx, sexp in) {
 /*     case '0': case '1': case '2': case '3': case '4': */
 /*     case '5': case '6': case '7': case '8': case '9': */
     case ';':
-      tmp = sexp_read_raw(ctx, in);   /* discard */
+      tmp = sexp_read(ctx, in);   /* discard */
       if (sexp_exceptionp(tmp))
         res = tmp;
       else
@@ -2810,6 +2826,8 @@ sexp sexp_read_raw (sexp ctx, sexp in) {
           while ((c1 = sexp_read_char(ctx, in)) == '|')
             ;
           if (c1 == '#') c2--;
+        } else if (c1 == '\n') {
+          sexp_port_line(in)++;
         }
       }
       if (c1 == EOF)

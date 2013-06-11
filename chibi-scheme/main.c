@@ -205,7 +205,7 @@ static void repl (sexp ctx, sexp env) {
 #if SEXP_USE_WARN_UNDEFS
       sexp_warn_undefs(ctx, sexp_env_bindings(env), tmp, res);
 #endif
-      if (sexp_exceptionp(res)) {
+      if (res && sexp_exceptionp(res)) {
         sexp_print_exception(ctx, res, err);
         sexp_stack_trace(ctx, err);
       } else if (res != SEXP_VOID) {
@@ -448,11 +448,15 @@ void run_main (int argc, char **argv) {
 #if SEXP_USE_FOLD_CASE_SYMS
     case 'f':
       fold_case = 1;
-      if (ctx) sexp_global(ctx, SEXP_G_FOLD_CASE_P) = SEXP_TRUE;
+      init_context();
+      sexp_global(ctx, SEXP_G_FOLD_CASE_P) = SEXP_TRUE;
       break;
 #endif
     case 'r':
       main_symbol = argv[i][2] == '\0' ? "main" : argv[i]+2;
+      break;
+    case 's':
+      init_context(); sexp_global(ctx, SEXP_G_STRICT_P) = SEXP_TRUE;
       break;
     default:
       fprintf(stderr, "unknown option: %s\n", argv[i]);
@@ -490,6 +494,16 @@ void run_main (int argc, char **argv) {
       /* load the script */
       sexp_context_tracep(ctx) = 1;
       tmp = sexp_env_bindings(env);
+#if 0 /* SEXP_USE_MODULES */
+      /* use scheme load if possible for better stack traces */
+      sym = sexp_intern(ctx, "load", -1);
+      tmp = sexp_env_ref(sexp_global(ctx, SEXP_G_META_ENV), sym, SEXP_FALSE);
+      if (sexp_procedurep(tmp)) {
+        sym = sexp_c_string(ctx, argv[i], -1);
+        sym = sexp_list2(ctx, sym, env);
+        check_exception(ctx, sexp_apply(ctx, tmp, sym));
+      } else
+#endif
       check_exception(ctx, sexp_load(ctx, sym=sexp_c_string(ctx, argv[i], -1), env));
 #if SEXP_USE_WARN_UNDEFS
       sexp_warn_undefs(ctx, env, tmp, SEXP_VOID);

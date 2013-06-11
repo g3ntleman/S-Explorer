@@ -11,16 +11,12 @@
 
 @interface BRREPLController : NSObject <NSCoding, BRREPLDelegate>
 
-@property (readonly) NSTask* task;
-
 @property (strong, nonatomic) IBOutlet NSResponder* keyResponder;
 
 @property (strong, nonatomic) IBOutlet BRREPLView* replView;
 
-- (void) runCommand: (NSString*) command
-      withArguments: (NSArray*) arguments
-              error: (NSError**) errorPtr;
+@property (readonly) NSRange currentCommandRange;
+@property (readonly) NSString* currentCommand;
 
-- (void) noteTerminalSizeChanged: (id) sender;
 
 @end

@@ -18,9 +18,11 @@
     sexp ctx;
 }
 
-- (id) evaluateToPropertyListFromString: (NSString*) expressionString;
+@property (readonly) NSArray* allSymbols;
+
+- (id) evaluateToPropertyListFromString: (NSString*) expressionString error: (NSError**) errorPtr;
 - (NSString*) evaluateToStringFromString: (NSString*) expressionString;
 
-- (BOOL) loadSchemeSource: (NSString*) filenameOrPath;
+- (BOOL) loadSchemeSource: (NSString*) filenameOrPath error: (NSError**) errorPtr;
 
 @end

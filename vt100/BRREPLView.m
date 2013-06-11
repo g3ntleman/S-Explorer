@@ -8,14 +8,7 @@
 
 #import "BRREPLView.h"
 
-
-typedef struct {
-    unichar character;
-    uint32 attrs;
-} OPAttributedScreenCharacter;
-
-NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
-
+NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 
 @implementation BRREPLView {
 }
@@ -51,6 +44,25 @@ NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
     return self;
 }
 
+
+- (void) awakeFromNib {
+    
+    // Start with a terminal in the size of the scroll view:
+    self.frame = self.enclosingScrollView.bounds;
+    self.smartInsertDeleteEnabled = NO;
+    //
+    //    [self.textStorage beginEditing];
+    //    [self.textStorage setAttributes: self.typingAttributes range:NSMakeRange(0, self.textStorage.string.length)];
+    //    [self.textStorage endEditing];
+    //NSLog(@"%@ awoke.", self);
+    self.font = [NSFont fontWithName:@"Menlo-Bold" size: 12.0];
+    
+//    NSMutableDictionary* typingAttributes = [self.typingAttributes mutableCopy];
+//    typingAttributes[BKTextCommandAttributeName] = @1;
+    self.typingAttributes = self.commandAttributes;
+    
+}
+
 //- (OPCharPosition) cursorScreenBufferPosition {
 //    OPCharPosition cursorScreenBufferPosition;
 //    cursorScreenBufferPosition.column = cursorPosition.column;
@@ -67,7 +79,7 @@ NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
     
     NSRange cursorRange = self.selectedRange;
     NSRange commandRange;
-    if ([self.textStorage attribute: BKCurrentCommandAttributeName atIndex: cursorRange.location-1 effectiveRange: &commandRange]) {
+    if ([self.textStorage attribute: BKTextCommandAttributeName atIndex: cursorRange.location-1 effectiveRange: &commandRange]) {
         if (commandRange.length) {
             NSString* currentCommand = [self.textStorage.string substringWithRange: commandRange];
             NSLog(@"Sending command '%@'", currentCommand);
@@ -94,7 +106,7 @@ NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
     
     switch ([charactersString characterAtIndex: 0]) {
         case NSLeftArrowFunctionKey:
-            if ([self.textStorage attribute: BKCurrentCommandAttributeName atIndex: self.selectedRange.location-1 effectiveRange: NULL]) {
+            if ([self.textStorage attribute: BKTextCommandAttributeName atIndex: self.selectedRange.location-1 effectiveRange: NULL]) {
                 [super keyDown: theEvent];
             }
             break;
@@ -144,7 +156,7 @@ NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
 - (NSDictionary*) commandAttributes {
     
     NSMutableDictionary* commandAttributes = [self.typingAttributes mutableCopy];
-    [commandAttributes setObject:@YES forKey: BKCurrentCommandAttributeName];
+    [commandAttributes setObject:@YES forKey: BKTextCommandAttributeName];
     [commandAttributes setObject:self.font forKey: NSFontAttributeName];
     
     return commandAttributes;
@@ -175,18 +187,7 @@ NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
 }
 
 
-- (void) awakeFromNib {
 
-    // Start with a terminal in the size of the scroll view:
-    self.frame = self.enclosingScrollView.bounds;
-    self.smartInsertDeleteEnabled = NO;
-//    
-//    [self.textStorage beginEditing];
-//    [self.textStorage setAttributes: self.typingAttributes range:NSMakeRange(0, self.textStorage.string.length)];
-//    [self.textStorage endEditing];
-    //NSLog(@"%@ awoke.", self);
-    self.font = [NSFont fontWithName:@"Menlo-Bold" size: 12.0];
-}
 
 - (void) setNeedsDisplay:(BOOL)flag {
     [super setNeedsDisplay:flag];
@@ -220,7 +221,7 @@ NSString* BKCurrentCommandAttributeName = @"BKCurrentCommand";
         // We may always append:
         return YES;
     }
-    if ([self.textStorage attribute: BKCurrentCommandAttributeName atIndex: affectedCharRange.location effectiveRange: &fullRange]) {
+    if ([self.textStorage attribute: BKTextCommandAttributeName atIndex: affectedCharRange.location effectiveRange: &fullRange]) {
         if (NSMaxRange(fullRange)>=NSMaxRange(affectedCharRange)) {
             // The whole affectedRange is editable:
             return YES;

@@ -301,6 +301,7 @@ struct sexp_struct {
   union {
     /* basic types */
     double flonum;
+    char flonum_bits[sizeof(double)];  /* for eqv? comparison on flonums */
     struct sexp_type_struct type;
     struct {
       sexp car, cdr;
@@ -453,8 +454,9 @@ struct sexp_struct {
 #define SEXP_RAWDOT SEXP_MAKE_IMMEDIATE(7) /* internal use */
 #define SEXP_STRING_OPORT SEXP_MAKE_IMMEDIATE(8)  /* internal use */
 #define SEXP_TRAMPOLINE   SEXP_MAKE_IMMEDIATE(9)  /* internal use */
+#define SEXP_ABI_ERROR    SEXP_MAKE_IMMEDIATE(10) /* internal use */
 #if SEXP_USE_OBJECT_BRACE_LITERALS
-#define SEXP_CLOSE_BRACE  SEXP_MAKE_IMMEDIATE(10) /* internal use */
+#define SEXP_CLOSE_BRACE  SEXP_MAKE_IMMEDIATE(11) /* internal use */
 #endif
 
 #if SEXP_USE_LIMITED_MALLOC
@@ -469,7 +471,7 @@ void sexp_free(void* ptr);
 
 #define sexp_gc(ctx, sum)
 
-#define sexp_gc_var(ctx, x, y)       sexp x;
+#define sexp_gc_var(x, y)            sexp x;
 #define sexp_gc_preserve(ctx, x, y)
 #define sexp_gc_release(ctx, x, y)
 
@@ -484,7 +486,7 @@ void sexp_free(void* ptr);
 
 SEXP_API sexp sexp_gc(sexp ctx, size_t *sum_freed);
 
-#define sexp_gc_var(ctx, x, y)                  \
+#define sexp_gc_var(x, y)                       \
   sexp x = SEXP_VOID;                           \
   struct sexp_gc_var_t y = {NULL, NULL};
 
@@ -516,12 +518,13 @@ void* sexp_alloc(sexp ctx, size_t size);
 #endif
 #endif
 
-#define sexp_gc_var1(x) sexp_gc_var(ctx, x, __sexp_gc_preserver1)
-#define sexp_gc_var2(x, y) sexp_gc_var1(x) sexp_gc_var(ctx, y, __sexp_gc_preserver2)
-#define sexp_gc_var3(x, y, z) sexp_gc_var2(x, y) sexp_gc_var(ctx, z, __sexp_gc_preserver3)
-#define sexp_gc_var4(x, y, z, w) sexp_gc_var3(x, y, z) sexp_gc_var(ctx, w, __sexp_gc_preserver4)
-#define sexp_gc_var5(x, y, z, w, v) sexp_gc_var4(x, y, z, w) sexp_gc_var(ctx, v, __sexp_gc_preserver5)
-#define sexp_gc_var6(x, y, z, w, v, u) sexp_gc_var5(x, y, z, w, v) sexp_gc_var(ctx, u, __sexp_gc_preserver6)
+#define sexp_gc_var1(x) sexp_gc_var(x, __sexp_gc_preserver1)
+#define sexp_gc_var2(x, y) sexp_gc_var1(x) sexp_gc_var(y, __sexp_gc_preserver2)
+#define sexp_gc_var3(x, y, z) sexp_gc_var2(x, y) sexp_gc_var(z, __sexp_gc_preserver3)
+#define sexp_gc_var4(x, y, z, w) sexp_gc_var3(x, y, z) sexp_gc_var(w, __sexp_gc_preserver4)
+#define sexp_gc_var5(x, y, z, w, v) sexp_gc_var4(x, y, z, w) sexp_gc_var(v, __sexp_gc_preserver5)
+#define sexp_gc_var6(x, y, z, w, v, u) sexp_gc_var5(x, y, z, w, v) sexp_gc_var(u, __sexp_gc_preserver6)
+#define sexp_gc_var7(x, y, z, w, v, u, t) sexp_gc_var6(x, y, z, w, v, u) sexp_gc_var(t, __sexp_gc_preserver7)
 
 #define sexp_gc_preserve1(ctx, x) sexp_gc_preserve(ctx, x, __sexp_gc_preserver1)
 #define sexp_gc_preserve2(ctx, x, y) sexp_gc_preserve1(ctx, x); sexp_gc_preserve(ctx, y, __sexp_gc_preserver2)
@@ -529,6 +532,7 @@ void* sexp_alloc(sexp ctx, size_t size);
 #define sexp_gc_preserve4(ctx, x, y, z, w) sexp_gc_preserve3(ctx, x, y, z); sexp_gc_preserve(ctx, w, __sexp_gc_preserver4)
 #define sexp_gc_preserve5(ctx, x, y, z, w, v) sexp_gc_preserve4(ctx, x, y, z, w); sexp_gc_preserve(ctx, v, __sexp_gc_preserver5)
 #define sexp_gc_preserve6(ctx, x, y, z, w, v, u) sexp_gc_preserve5(ctx, x, y, z, w, v); sexp_gc_preserve(ctx, u, __sexp_gc_preserver6)
+#define sexp_gc_preserve7(ctx, x, y, z, w, v, u, t) sexp_gc_preserve6(ctx, x, y, z, w, v, u); sexp_gc_preserve(ctx, u, __sexp_gc_preserver7)
 
 #define sexp_gc_release1(ctx) sexp_gc_release(ctx, NULL, __sexp_gc_preserver1)
 #define sexp_gc_release2(ctx) sexp_gc_release(ctx, NULL, __sexp_gc_preserver1)
@@ -536,6 +540,7 @@ void* sexp_alloc(sexp ctx, size_t size);
 #define sexp_gc_release4(ctx) sexp_gc_release(ctx, NULL, __sexp_gc_preserver1)
 #define sexp_gc_release5(ctx) sexp_gc_release(ctx, NULL, __sexp_gc_preserver1)
 #define sexp_gc_release6(ctx) sexp_gc_release(ctx, NULL, __sexp_gc_preserver1)
+#define sexp_gc_release7(ctx) sexp_gc_release(ctx, NULL, __sexp_gc_preserver1)
 
 #define sexp_align(n, bits) (((n)+(1<<(bits))-1)&(((sexp_uint_t)-1)-((1<<(bits))-1)))
 
@@ -609,6 +614,7 @@ union sexp_flonum_conv {
 SEXP_API sexp sexp_flonum_predicate (sexp ctx, sexp x);
 #if SEXP_64_BIT
 SEXP_API float sexp_flonum_value (sexp x);
+#define sexp_flonum_bits(f) ((char*)&f)
 SEXP_API sexp sexp_make_flonum(sexp ctx, float f);
 #else
 #define sexp_make_flonum(ctx, x)  ((sexp) ((((union sexp_flonum_conv)((float)(x))).bits & ~SEXP_IMMEDIATE_MASK) + SEXP_IFLONUM_TAG))
@@ -617,6 +623,7 @@ SEXP_API sexp sexp_make_flonum(sexp ctx, float f);
 #else
 #define sexp_flonump(x)      (sexp_check_tag(x, SEXP_FLONUM))
 #define sexp_flonum_value(f) ((f)->value.flonum)
+#define sexp_flonum_bits(f) ((f)->value.flonum_bits)
 sexp sexp_make_flonum(sexp ctx, double f);
 #endif
 
@@ -774,8 +781,8 @@ SEXP_API sexp sexp_make_unsigned_integer(sexp ctx, sexp_luint_t x);
 #endif
 
 #define sexp_exact_negativep(x) (sexp_fixnump(x) ? (sexp_unbox_fixnum(x) < 0) \
-                                 : (SEXP_USE_BIGNUMS && sexp_bignump(x)) \
-                                 && (sexp_bignum_sign(x) < 0))
+                                 : ((SEXP_USE_BIGNUMS && sexp_bignump(x)) \
+                                    && (sexp_bignum_sign(x) < 0)))
 #define sexp_negativep(x) (sexp_exact_negativep(x) ||                   \
                            (sexp_flonump(x) && sexp_flonum_value(x) < 0))
 #define sexp_positivep(x) (!(sexp_negativep(x)))
@@ -821,8 +828,7 @@ SEXP_API sexp sexp_make_unsigned_integer(sexp ctx, sexp_luint_t x);
 #define sexp_nanp(x) (sexp_flonump(x) && isnan(sexp_flonum_value(x)))
 
 #if SEXP_USE_IEEE_EQV
-#define sexp_flonum_bits(x)   (*(long*)(&(sexp_flonum_value(x))))
-#define sexp_flonum_eqv(x, y) (sexp_flonum_bits(x) == sexp_flonum_bits(y))
+#define sexp_flonum_eqv(x, y) (memcmp(sexp_flonum_bits(x), sexp_flonum_bits(y), sizeof(double)) == 0)
 #else
 #define sexp_flonum_eqv(x, y) (sexp_flonum_value(x) == sexp_flonum_value(y))
 #endif
@@ -1195,6 +1201,7 @@ enum sexp_context_globals {
   SEXP_G_ERR_HANDLER,
   SEXP_G_RESUMECC_BYTECODE,
   SEXP_G_FINAL_RESUMER,
+  SEXP_G_STRICT_P,
 #if SEXP_USE_FOLD_CASE_SYMS
   SEXP_G_FOLD_CASE_P,
 #endif
@@ -1312,7 +1319,7 @@ SEXP_API sexp sexp_alloc_tagged_aux(sexp ctx, size_t size, sexp_uint_t tag sexp_
 SEXP_API sexp sexp_make_context(sexp ctx, size_t size, size_t max_size);
 SEXP_API sexp sexp_cons_op(sexp ctx, sexp self, sexp_sint_t n, sexp head, sexp tail);
 SEXP_API sexp sexp_list2(sexp ctx, sexp a, sexp b);
-SEXP_API sexp sexp_equalp_bound (sexp ctx, sexp self, sexp_sint_t n, sexp a, sexp b, sexp bound);
+SEXP_API sexp sexp_equalp_bound (sexp ctx, sexp self, sexp_sint_t n, sexp a, sexp b, sexp depth, sexp bound);
 SEXP_API sexp sexp_equalp_op (sexp ctx, sexp self, sexp_sint_t n, sexp a, sexp b);
 SEXP_API sexp sexp_listp_op(sexp ctx, sexp self, sexp_sint_t n, sexp obj);
 SEXP_API sexp sexp_reverse_op(sexp ctx, sexp self, sexp_sint_t n, sexp ls);

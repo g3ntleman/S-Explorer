@@ -28,10 +28,25 @@
 (define (write-to-string x)
   (call-with-output-string (lambda (out) (write x out))))
 
-(define (buffer-complete-sexp? buf)
-  (call-with-input-string (buffer->string buf)
+(define (complete-sexp? str)
+  (call-with-input-string str
     (lambda (in)
       (let lp () (if (not (eof-object? (read/ss in))) (lp))))))
+
+(define (read-line/complete-sexp in)
+  (let lp ((res ""))
+    (let ((line (read-line in)))
+      (cond
+       ((eof-object? line)
+        (if (equal? res "") line res))
+       (else
+        (let ((res (string-append res line "\n")))
+          (if (guard (exn (else #f)) (complete-sexp? res))
+              res
+              (lp res))))))))
+
+(define (buffer-complete-sexp? buf)
+  (complete-sexp? (buffer->string buf)))
 
 (define module? vector?)
 (define (module-env mod) (vector-ref mod 1))
@@ -40,7 +55,7 @@
   (let lp ((env env) (res '()))
     (if (not env)
         res
-        (lp (environment-parent env) (append (env-exports env) res)))))
+        (lp (env-parent env) (append (env-exports env) res)))))
 
 (define (string-common-prefix-length strings)
   (if (null? strings)
@@ -68,6 +83,49 @@
        (if (> prefix-len len)
            (list (substring (car candidates) 0 prefix-len))
            (sort candidates))))))
+
+(define (describe x . o)
+  (let ((out (if (pair? o) (car o) (current-output-port))))
+    (cond
+     ((null? x)
+      (display "empty list\n" out))
+     ((list? x)
+      (display "list of length " out) (write (length x) out) (newline out)
+      (let lp ((ls x) (i 0))
+        (cond
+         ((pair? ls)
+          (display " " out) (write i out) (display ": " out)
+          (write/ss (car ls) out) (newline out)
+          (lp (cdr ls) (+ i 1))))))
+     ((pair? x)
+      (display "pair with car " out) (write/ss (car x) out) (newline out)
+      (display "and cdr " out) (write/ss (cdr x) out) (newline out))
+     ((vector? x)
+      (let ((len (vector-length x)))
+        (display "vector of length " out) (write len out) (newline out)
+        (let lp ((i 0))
+          (cond
+           ((< i len)
+            (display " " out) (write i out) (display ": " out)
+            (write/ss (vector-ref x i) out) (newline out)
+            (lp (+ i 1)))))))
+     ((boolean? x)
+      (display (if x "boolean true\n" "boolean false\n") out))
+     ((char? x)
+      (let ((n (char->integer x)))
+        (display "character " out) (write x out)
+        (display ", code: " out) (write n out)
+        (display ", #x" out) (display (number->string n 16) out)
+        (display ", #o" out) (display (number->string n 8) out)
+        (newline out)))
+     ((and (integer? x) (exact? x))
+      (display "exact integer " out) (write x out)
+      (display "\n  #x" out) (display (number->string x 16) out)
+      (display "\n  #o" out) (display (number->string x 8) out)
+      (display "\n  #b" out) (display (number->string x 2) out)
+      (newline out))
+     (else
+      (write/ss x out) (newline out)))))
 
 ;;> Runs an interactive REPL.  Repeatedly displays a prompt,
 ;;> then Reads an expression, Evaluates the expression, Prints
@@ -110,7 +168,7 @@
       (if (eof-object? x)
         (reverse l)
         (loop (cons x l))))))
-      
+
 (define (repl . o)
   (let* ((in (cond ((memq 'in: o) => cadr) (else (current-input-port))))
          (out (cond ((memq 'out: o) => cadr) (else (current-output-port))))
@@ -149,7 +207,7 @@
                (raw?
                 (display prompt out)
                 (flush-output out)
-                (read-line in))
+                (read-line/complete-sexp in))
                (else
                 (edit-line in out
                            'prompt: prompt
@@ -180,17 +238,23 @@
                               (mod+imps (eval `(resolve-import ',mod-name)
                                               meta-env)))
                          (if (pair? mod+imps)
-                             (let ((env (if (eq? op 'import-only)
-                                            (let ((env (make-environment)))
-                                              (interaction-environment env)
-                                              env)
-                                            env))
-                                   (imp-env
-                                    (vector-ref
-                                     (eval `(load-module ',(car mod+imps)) meta-env)
-                                     1)))
-                               (%import env imp-env (cdr mod+imps) #f)
-                               (continue module env meta-env))
+                             (guard
+                                 (exn
+                                  (else
+                                   (print-exception exn (current-error-port))
+                                   (fail "error loading module:" mod-name)))
+                               (let ((env (if (eq? op 'import-only)
+                                              (let ((env (make-environment)))
+                                                (interaction-environment env)
+                                                env)
+                                              env))
+                                     (imp-env
+                                      (vector-ref
+                                       (eval `(load-module ',(car mod+imps))
+                                             meta-env)
+                                       1)))
+                                 (%import env imp-env (cdr mod+imps) #f)
+                                 (continue module env meta-env)))
                              (fail "couldn't find module:" mod-name))))
                       ((in)
                        (let ((name (read/ss in)))
@@ -202,9 +266,10 @@
                                 (continue name (module-env m) meta-env)))
                           (else
                            (fail "couldn't find module:" name)))))
-                      ((meta config)
-                       (if (eq? op 'config)
-                           (display "Note: @config has been renamed @meta\n" out))
+                      ((config)
+                       (display "Note: @config has been renamed @meta\n" out)
+                       (continue module env meta-env))
+                      ((meta)
                        (let ((expr (read/ss in)))
                          (cond
                           ((and
@@ -223,6 +288,33 @@
                            => (lambda (m) (lp module env (module-env m))))
                           (else
                            (fail "couldn't find module:" name)))))
+                      ((? h help)
+                       (let* ((x (read/ss in))
+                              (y (read/ss in)))
+                         (cond
+                          ((eof-object? x)
+                           (display "Try @help <identifier> [<module>]\n" out))
+                          ((eof-object? y)
+                           (let* ((failed (list 'failed))
+                                  (val (guard (exn
+                                               (else
+                                                (print-exception exn)
+                                                failed))
+                                         (eval x env)))
+                                  (mod (and (procedure? val)
+                                            (containing-module val))))
+                             (cond
+                              (mod
+                               (write val out) (newline out) (newline out)
+                               (print-module-binding-docs (car mod) x out))
+                              ((not (eq? val failed))
+                               (describe val out)))))
+                          (else
+                           (guard (exn
+                                   (else
+                                    (print-exception exn (current-error-port))))
+                             (print-module-binding-docs y x out))))
+                         (continue module env meta-env)))
                       ((exit))
                       (else
                        (fail "unknown repl command:" op))))))))
@@ -247,23 +339,25 @@
                          ;; catches errors from eval.
                          (guard
                              (exn
-                              (else (print-exception exn (current-output-port))))
+                              (else
+                               (print-exception exn (current-output-port))))
                            (for-each
                             (lambda (expr)
                               (call-with-values
-                               (lambda ()
-                                 (eval (list 'begin expr) env))
-                               (lambda res-list
-                                 (cond
-                                  ((not (or (null? res-list)
-                                            (equal? res-list (list (if #f #f)))))
-                                   (write/ss (car res-list) out)
-                                   (for-each
-                                    (lambda (res)
-                                      (write-char #\space out)
-                                      (write/ss res out))
-                                    (cdr res-list))
-                                   (newline out))))))
+                                  (lambda ()
+                                    (eval (list 'begin expr) env))
+                                (lambda res-list
+                                  (cond
+                                   ((not (or (null? res-list)
+                                             (equal? res-list
+                                                     (list (if #f #f)))))
+                                    (write/ss (car res-list) out)
+                                    (for-each
+                                     (lambda (res)
+                                       (write-char #\space out)
+                                       (write/ss res out))
+                                     (cdr res-list))
+                                    (newline out))))))
                             expr-list))))))
                 ;; If an interrupt occurs while the child thread is
                 ;; still running, terminate it, otherwise wait for it
