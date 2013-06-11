@@ -9,7 +9,6 @@
 #import "BRProject.h"
 #import "NSAlert+OPBlocks.h"
 #import "CSVM.h"
-#import "sexp-parser.h"
 
 @implementation BRProject {
     CSVM* vm;

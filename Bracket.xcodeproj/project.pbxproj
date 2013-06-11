@@ -8,11 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; };
-		8D27BFE91765D4CF00F1F8FA /* allocator.c in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFD61765D4BD00F1F8FA /* allocator.c */; };
-		8D27BFEA1765D4CF00F1F8FA /* lispreader.c in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFE11765D4BE00F1F8FA /* lispreader.c */; };
-		8D27BFEB1765D4CF00F1F8FA /* pools.c in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFE61765D4BE00F1F8FA /* pools.c */; };
-		8D27BFF01766326700F1F8FA /* sexp-parser.h in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFEE1766326600F1F8FA /* sexp-parser.h */; };
-		8D27BFF11766326700F1F8FA /* sexp-parser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFEF1766326600F1F8FA /* sexp-parser.m */; };
 		8D27BFF51766C59D00F1F8FA /* BRSchemeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */; };
 		8D604254173BE60800149409 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D604252173BE60800149409 /* InfoPlist.strings */; };
 		8D604256173BE60800149409 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604255173BE60800149409 /* main.m */; };
@@ -46,26 +41,6 @@
 /* Begin PBXFileReference section */
 		8D00FA911740D31B00E1AF90 /* NSAlert+OPBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAlert+OPBlocks.h"; sourceTree = "<group>"; };
 		8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAlert+OPBlocks.m"; sourceTree = "<group>"; };
-		8D27BFD61765D4BD00F1F8FA /* allocator.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = allocator.c; sourceTree = "<group>"; };
-		8D27BFD71765D4BD00F1F8FA /* allocator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = allocator.h; sourceTree = "<group>"; };
-		8D27BFD81765D4BD00F1F8FA /* COPYING */ = {isa = PBXFileReference; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
-		8D27BFDA1765D4BD00F1F8FA /* lispreader.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = lispreader.html; sourceTree = "<group>"; };
-		8D27BFDB1765D4BD00F1F8FA /* lispreader.info */ = {isa = PBXFileReference; lastKnownFileType = text; path = lispreader.info; sourceTree = "<group>"; };
-		8D27BFDC1765D4BE00F1F8FA /* lispreader.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = lispreader.texi; sourceTree = "<group>"; };
-		8D27BFDD1765D4BE00F1F8FA /* lispreader_toc.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = lispreader_toc.html; sourceTree = "<group>"; };
-		8D27BFDE1765D4BE00F1F8FA /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		8D27BFDF1765D4BE00F1F8FA /* version.texi */ = {isa = PBXFileReference; lastKnownFileType = text; path = version.texi; sourceTree = "<group>"; };
-		8D27BFE01765D4BE00F1F8FA /* docexample.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = docexample.c; sourceTree = "<group>"; };
-		8D27BFE11765D4BE00F1F8FA /* lispreader.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = lispreader.c; sourceTree = "<group>"; };
-		8D27BFE21765D4BE00F1F8FA /* lispreader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = lispreader.h; sourceTree = "<group>"; };
-		8D27BFE31765D4BE00F1F8FA /* lispscan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = lispscan.h; sourceTree = "<group>"; };
-		8D27BFE41765D4BE00F1F8FA /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		8D27BFE51765D4BE00F1F8FA /* NEWS */ = {isa = PBXFileReference; lastKnownFileType = text; path = NEWS; sourceTree = "<group>"; };
-		8D27BFE61765D4BE00F1F8FA /* pools.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = pools.c; sourceTree = "<group>"; };
-		8D27BFE71765D4BE00F1F8FA /* pools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = pools.h; sourceTree = "<group>"; };
-		8D27BFE81765D4BE00F1F8FA /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		8D27BFEE1766326600F1F8FA /* sexp-parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = "sexp-parser.h"; sourceTree = "<group>"; };
-		8D27BFEF1766326600F1F8FA /* sexp-parser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "sexp-parser.m"; sourceTree = "<group>"; };
 		8D27BFF21766C59C00F1F8FA /* BRSchemeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = BRSchemeParser.h; sourceTree = "<group>"; };
 		8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRSchemeParser.m; sourceTree = "<group>"; };
 		8D604246173BE60800149409 /* Bracket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bracket.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -456,39 +431,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8D27BFD51765D4BD00F1F8FA /* lispreader */ = {
-			isa = PBXGroup;
-			children = (
-				8D27BFD71765D4BD00F1F8FA /* allocator.h */,
-				8D27BFD61765D4BD00F1F8FA /* allocator.c */,
-				8D27BFD81765D4BD00F1F8FA /* COPYING */,
-				8D27BFD91765D4BD00F1F8FA /* doc */,
-				8D27BFE01765D4BE00F1F8FA /* docexample.c */,
-				8D27BFE21765D4BE00F1F8FA /* lispreader.h */,
-				8D27BFE11765D4BE00F1F8FA /* lispreader.c */,
-				8D27BFE31765D4BE00F1F8FA /* lispscan.h */,
-				8D27BFE71765D4BE00F1F8FA /* pools.h */,
-				8D27BFE61765D4BE00F1F8FA /* pools.c */,
-				8D27BFE41765D4BE00F1F8FA /* Makefile */,
-				8D27BFE51765D4BE00F1F8FA /* NEWS */,
-				8D27BFE81765D4BE00F1F8FA /* README */,
-			);
-			path = lispreader;
-			sourceTree = SOURCE_ROOT;
-		};
-		8D27BFD91765D4BD00F1F8FA /* doc */ = {
-			isa = PBXGroup;
-			children = (
-				8D27BFDA1765D4BD00F1F8FA /* lispreader.html */,
-				8D27BFDB1765D4BD00F1F8FA /* lispreader.info */,
-				8D27BFDC1765D4BE00F1F8FA /* lispreader.texi */,
-				8D27BFDD1765D4BE00F1F8FA /* lispreader_toc.html */,
-				8D27BFDE1765D4BE00F1F8FA /* Makefile */,
-				8D27BFDF1765D4BE00F1F8FA /* version.texi */,
-			);
-			path = doc;
-			sourceTree = "<group>";
-		};
 		8D60423D173BE60800149409 = {
 			isa = PBXGroup;
 			children = (
@@ -523,9 +465,6 @@
 		8D60424F173BE60800149409 /* Bracket */ = {
 			isa = PBXGroup;
 			children = (
-				8D27BFEE1766326600F1F8FA /* sexp-parser.h */,
-				8D27BFEF1766326600F1F8FA /* sexp-parser.m */,
-				8D27BFD51765D4BD00F1F8FA /* lispreader */,
 				8DFA6CD6175EA549006780BF /* chibi-scheme */,
 				8D8298D31758088000336E2F /* bracket-support.scm */,
 				8D60425B173BE60800149409 /* BRProject.h */,
@@ -1409,11 +1348,6 @@
 				8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */,
 				8DB65DBA1742EE7600332007 /* PseudoTTY.m in Sources */,
 				8DAFB9BE17543351006C71B3 /* CSVM.m in Sources */,
-				8D27BFE91765D4CF00F1F8FA /* allocator.c in Sources */,
-				8D27BFEA1765D4CF00F1F8FA /* lispreader.c in Sources */,
-				8D27BFEB1765D4CF00F1F8FA /* pools.c in Sources */,
-				8D27BFF01766326700F1F8FA /* sexp-parser.h in Sources */,
-				8D27BFF11766326700F1F8FA /* sexp-parser.m in Sources */,
 				8D27BFF51766C59D00F1F8FA /* BRSchemeParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
