@@ -46,6 +46,8 @@
 		8D0904BE1769447100176BCF /* OPTabbedSeqmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPTabbedSeqmentedControl.m; sourceTree = "<group>"; };
 		8D0904C0176A7C4800176BCF /* BRSourceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BRSourceItem.h; sourceTree = "<group>"; };
 		8D0904C1176A7C4800176BCF /* BRSourceItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRSourceItem.m; sourceTree = "<group>"; };
+		8D120D68176D2A3C0019577E /* PSMMetalTabStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = PSMMetalTabStyle.h; sourceTree = "<group>"; };
+		8D120D69176D2A3C0019577E /* PSMMetalTabStyle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PSMMetalTabStyle.m; sourceTree = "<group>"; };
 		8D27BFF21766C59C00F1F8FA /* BRSchemeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = BRSchemeParser.h; sourceTree = "<group>"; };
 		8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRSchemeParser.m; sourceTree = "<group>"; };
 		8D604246173BE60800149409 /* Bracket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bracket.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -470,8 +472,6 @@
 		8D60424F173BE60800149409 /* Bracket */ = {
 			isa = PBXGroup;
 			children = (
-				8D0904BD1769447100176BCF /* OPTabbedSeqmentedControl.h */,
-				8D0904BE1769447100176BCF /* OPTabbedSeqmentedControl.m */,
 				8DFA6CD6175EA549006780BF /* chibi-scheme */,
 				8D8298D31758088000336E2F /* bracket-support.scm */,
 				8D60425B173BE60800149409 /* BRProject.h */,
@@ -492,6 +492,10 @@
 				8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */,
 				8D0904C0176A7C4800176BCF /* BRSourceItem.h */,
 				8D0904C1176A7C4800176BCF /* BRSourceItem.m */,
+				8D0904BD1769447100176BCF /* OPTabbedSeqmentedControl.h */,
+				8D0904BE1769447100176BCF /* OPTabbedSeqmentedControl.m */,
+				8D120D68176D2A3C0019577E /* PSMMetalTabStyle.h */,
+				8D120D69176D2A3C0019577E /* PSMMetalTabStyle.m */,
 			);
 			path = Bracket;
 			sourceTree = "<group>";

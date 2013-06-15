@@ -9,12 +9,12 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>bproj</string>
+				<string>scm</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string></string>
 			<key>CFBundleTypeName</key>
-			<string>DocumentType</string>
+			<string>Scheme Source</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>????</string>

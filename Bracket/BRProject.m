@@ -17,11 +17,29 @@
 
 
 - (id) init {
-    self = [super init];
-    if (self) {
+    
+    NSURL* sourceURL = [[NSBundle mainBundle] URLForResource: @"bracket-support" withExtension: @"scm"];
+    
+    return [self initWithContentsOfURL: sourceURL ofType:@"scm" error: NULL];
+    
+}
+
+- (id) initWithContentsOfURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)outError {
+    
+    if (self = [super init]) {
         // Add your subclass-specific initialization here.
+        BOOL isDir = NO;
+        if ([[NSFileManager defaultManager] fileExistsAtPath:url.path isDirectory:&isDir]) {
+            NSURL* projectURL = url;
+            if (! isDir) {
+                projectURL = [projectURL URLByDeletingLastPathComponent];
+            }
+            projectSourceItem = [[BRSourceItem alloc] initWithPath:projectURL.path];
+            return self;
+        }
     }
-    return self;
+    
+    return nil;
 }
 
 - (NSString *)windowNibName {
@@ -68,7 +86,7 @@
 }
 
 
-- (IBAction) colorizeFile: (id) sender {
+- (IBAction) colorizeCurrentFile: (id) sender {
     
     NSTextStorage* textStorage = self.sourceTextView.textStorage;
     
@@ -135,7 +153,7 @@
                                             
     textStorage.attributedString = attributedContent;
     
-    [self colorizeFile: self];
+    [self colorizeCurrentFile: self];
     
     
     self.fileURL = [[NSBundle mainBundle] resourceURL];
@@ -143,7 +161,7 @@
 }
 
 + (BOOL)autosavesInPlace {
-    return YES;
+    return NO; // Turn on later!
 }
 
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError {
