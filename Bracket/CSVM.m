@@ -84,7 +84,7 @@
                 } else
 #endif
                 {
-                    return [NSNumber numberWithDouble:f];
+                    return @(f);
                 }
             }
 #endif
@@ -177,9 +177,9 @@
             case (sexp_uint_t) SEXP_NULL:
                 return [NSNull null];
             case (sexp_uint_t) SEXP_TRUE:
-                return [NSNumber numberWithBool: YES];
+                return @YES;
             case (sexp_uint_t) SEXP_FALSE:
-                return [NSNumber numberWithBool: NO];
+                return @NO;
             case (sexp_uint_t) SEXP_VOID:
                 return nil;
             case (sexp_uint_t) SEXP_EOF:

@@ -10,10 +10,13 @@
 #import "BRREPLController.h"
 #import "BRSchemeParser.h"
 
-@interface BRProject : NSDocument <BRSchemeParserDelegate>
+@class BRSourceItem;
+
+@interface BRProject : NSDocument <BRSchemeParserDelegate, NSOutlineViewDataSource>
 
 @property (strong) IBOutlet BRREPLController* replController;
 @property (strong) IBOutlet NSTextView* sourceTextView;
+@property (readonly) BRSourceItem* projectSourceItem;
 
 
 @end

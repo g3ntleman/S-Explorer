@@ -9,6 +9,7 @@
 #import "BRProject.h"
 #import "NSAlert+OPBlocks.h"
 #import "CSVM.h"
+#import "BRSourceItem.h"
 
 @implementation BRProject {
     CSVM* vm;
@@ -136,6 +137,9 @@
     
     [self colorizeFile: self];
     
+    
+    self.fileURL = [[NSBundle mainBundle] resourceURL];
+    
 }
 
 + (BOOL)autosavesInPlace {
@@ -157,6 +161,55 @@
     NSException *exception = [NSException exceptionWithName:@"UnimplementedMethod" reason:[NSString stringWithFormat:@"%@ is unimplemented", NSStringFromSelector(_cmd)] userInfo:nil];
     @throw exception;
     return YES;
+}
+
+@synthesize projectSourceItem;
+
+- (BRSourceItem*) projectSourceItem {
+    if (! projectSourceItem) {
+        projectSourceItem = [[BRSourceItem alloc] initWithPath: [[self fileURL] path]];
+    }
+    return projectSourceItem;
+}
+
+@end
+
+@implementation BRProject (SourceOutlineViewDataSource)
+// Data Source methods
+
+- (NSInteger) outlineView:(NSOutlineView*) outlineView numberOfChildrenOfItem: (id) item {
+    if (item == nil) {
+        item = self.projectSourceItem;
+    }
+    return [item numberOfChildren];
+}
+
+
+- (BOOL) outlineView: (NSOutlineView*) outlineView isItemExpandable: (id) item {
+    if (item == nil) {
+        item = self.projectSourceItem;
+    }
+    return  [item numberOfChildren] != -1;
+}
+
+
+- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item {
+    
+    if (item == nil) {
+        item = self.projectSourceItem;
+    }
+        
+    return [(BRSourceItem*) item childAtIndex: index];
+}
+
+
+- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
+    
+    if (item == nil) {
+        item = self.projectSourceItem;
+    }
+    
+    return [item relativePath];
 }
 
 @end

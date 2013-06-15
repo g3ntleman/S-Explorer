@@ -7,12 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; };
-		8D27BFF51766C59D00F1F8FA /* BRSchemeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */; };
+		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		8D0904C2176A7C4800176BCF /* BRSourceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904C1176A7C4800176BCF /* BRSourceItem.m */; };
+		8D27BFF51766C59D00F1F8FA /* BRSchemeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8D604254173BE60800149409 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D604252173BE60800149409 /* InfoPlist.strings */; };
-		8D604256173BE60800149409 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604255173BE60800149409 /* main.m */; };
+		8D604256173BE60800149409 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604255173BE60800149409 /* main.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8D60425A173BE60800149409 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 8D604258173BE60800149409 /* Credits.rtf */; };
-		8D60425D173BE60800149409 /* BRProject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D60425C173BE60800149409 /* BRProject.m */; };
+		8D60425D173BE60800149409 /* BRProject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D60425C173BE60800149409 /* BRProject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8D604260173BE60800149409 /* BRProject.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D60425E173BE60800149409 /* BRProject.xib */; };
 		8D604263173BE60800149409 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D604261173BE60800149409 /* MainMenu.xib */; };
 		8D60426B173BE60900149409 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60426A173BE60900149409 /* SenTestingKit.framework */; };
@@ -20,11 +21,11 @@
 		8D604277173BE60900149409 /* BracketTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604276173BE60900149409 /* BracketTests.m */; };
 		8D604292173C142A00149409 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424C173BE60800149409 /* AppKit.framework */; };
 		8D604293173C143300149409 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424E173BE60800149409 /* Foundation.framework */; };
-		8D604297173C22D600149409 /* BRREPLController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* BRREPLController.m */; };
-		8D60429B173C388900149409 /* BRREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604299173C388900149409 /* BRREPLView.m */; };
+		8D604297173C22D600149409 /* BRREPLController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* BRREPLController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		8D60429B173C388900149409 /* BRREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604299173C388900149409 /* BRREPLView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8D8298D41758088100336E2F /* bracket-support.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8D8298D31758088000336E2F /* bracket-support.scm */; };
-		8DAFB9BE17543351006C71B3 /* CSVM.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DAFB9BC17543351006C71B3 /* CSVM.m */; };
-		8DB65DBA1742EE7600332007 /* PseudoTTY.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DB65DB91742EE7600332007 /* PseudoTTY.m */; };
+		8DAFB9BE17543351006C71B3 /* CSVM.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DAFB9BC17543351006C71B3 /* CSVM.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		8DB65DBA1742EE7600332007 /* PseudoTTY.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DB65DB91742EE7600332007 /* PseudoTTY.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8DFA6E681760F49F006780BF /* libchibi-scheme.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DFA6E671760F49F006780BF /* libchibi-scheme.dylib */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,10 @@
 /* Begin PBXFileReference section */
 		8D00FA911740D31B00E1AF90 /* NSAlert+OPBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAlert+OPBlocks.h"; sourceTree = "<group>"; };
 		8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAlert+OPBlocks.m"; sourceTree = "<group>"; };
+		8D0904BD1769447100176BCF /* OPTabbedSeqmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OPTabbedSeqmentedControl.h; sourceTree = "<group>"; };
+		8D0904BE1769447100176BCF /* OPTabbedSeqmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPTabbedSeqmentedControl.m; sourceTree = "<group>"; };
+		8D0904C0176A7C4800176BCF /* BRSourceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BRSourceItem.h; sourceTree = "<group>"; };
+		8D0904C1176A7C4800176BCF /* BRSourceItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRSourceItem.m; sourceTree = "<group>"; };
 		8D27BFF21766C59C00F1F8FA /* BRSchemeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = BRSchemeParser.h; sourceTree = "<group>"; };
 		8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRSchemeParser.m; sourceTree = "<group>"; };
 		8D604246173BE60800149409 /* Bracket.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bracket.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -465,6 +470,8 @@
 		8D60424F173BE60800149409 /* Bracket */ = {
 			isa = PBXGroup;
 			children = (
+				8D0904BD1769447100176BCF /* OPTabbedSeqmentedControl.h */,
+				8D0904BE1769447100176BCF /* OPTabbedSeqmentedControl.m */,
 				8DFA6CD6175EA549006780BF /* chibi-scheme */,
 				8D8298D31758088000336E2F /* bracket-support.scm */,
 				8D60425B173BE60800149409 /* BRProject.h */,
@@ -483,6 +490,8 @@
 				8DAFB9BC17543351006C71B3 /* CSVM.m */,
 				8D27BFF21766C59C00F1F8FA /* BRSchemeParser.h */,
 				8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */,
+				8D0904C0176A7C4800176BCF /* BRSourceItem.h */,
+				8D0904C1176A7C4800176BCF /* BRSourceItem.m */,
 			);
 			path = Bracket;
 			sourceTree = "<group>";
@@ -1349,6 +1358,7 @@
 				8DB65DBA1742EE7600332007 /* PseudoTTY.m in Sources */,
 				8DAFB9BE17543351006C71B3 /* CSVM.m in Sources */,
 				8D27BFF51766C59D00F1F8FA /* BRSchemeParser.m in Sources */,
+				8D0904C2176A7C4800176BCF /* BRSourceItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1476,6 +1486,7 @@
 		8D60427B173BE60900149409 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Bracket/Bracket-Prefix.pch";
@@ -1496,6 +1507,7 @@
 		8D60427C173BE60900149409 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Bracket/Bracket-Prefix.pch";

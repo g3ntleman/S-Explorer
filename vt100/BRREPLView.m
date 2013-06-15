@@ -148,7 +148,7 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 - (NSDictionary*) interpreterAttributes {
     //NSFont* interpreterFont = [NSFont fontWithName:@"Menlo-Bold" size: 12.0];
     NSMutableDictionary* interpreterAttributes = [[NSMutableDictionary alloc] init];
-    [interpreterAttributes setObject: NSFontAttributeName forKey: self.font];
+    interpreterAttributes[self.font] = NSFontAttributeName;
     //[interpreterAttributes setObject: [NSColor redColor] forKey: NSBackgroundColorAttributeName];
     return interpreterAttributes;
 }
@@ -156,8 +156,8 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 - (NSDictionary*) commandAttributes {
     
     NSMutableDictionary* commandAttributes = [self.typingAttributes mutableCopy];
-    [commandAttributes setObject:@YES forKey: BKTextCommandAttributeName];
-    [commandAttributes setObject:self.font forKey: NSFontAttributeName];
+    commandAttributes[BKTextCommandAttributeName] = @YES;
+    commandAttributes[NSFontAttributeName] = self.font;
     
     return commandAttributes;
 }
