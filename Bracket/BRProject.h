@@ -12,12 +12,17 @@
 
 @class BRSourceItem;
 
-@interface BRProject : NSDocument <BRSchemeParserDelegate, NSOutlineViewDataSource>
+@interface BRProject : NSDocument <BRSchemeParserDelegate, NSOutlineViewDataSource, NSUserInterfaceValidations>
 
 @property (strong, nonatomic) IBOutlet BRREPLController* replController;
 @property (strong, nonatomic) IBOutlet NSTextView* sourceTextView;
 @property (readonly) BRSourceItem* projectSourceItem;
-@property (strong, nonatomic) NSArray* tabbedSourceItems;
+@property (strong, nonatomic) NSDictionary* tabbedSourceItems;
+@property (strong, nonatomic) IBOutlet NSSegmentedControl* sourceTab;
 
+- (IBAction) selectSourceTab: (id) sender;
+
+
+- (void) setSourceItem: (BRSourceItem*) item forIndex: (NSUInteger) index;
 
 @end

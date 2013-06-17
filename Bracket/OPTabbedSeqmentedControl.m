@@ -15,60 +15,89 @@
 
 @implementation OPTabbedSeqmentedControl
 
-- (id) initWithFrame: (NSRect) frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code here.
-		[self setSelectedSegment: 0];
-    }
-    return self;
+// setWidth: width forSegment:
+- (void) sizeToFit {
+    NSLog(@"sizeToFit called.");
 }
 
-- (void) tabView: (NSTabView*) aTabView didSelectTabViewItem: (NSTabViewItem*) tabViewItem
-{
-	if (tabView == aTabView) {
-		[self setSelectedSegment: [tabView indexOfTabViewItem: tabViewItem]];
-	}
+- (void) setFrame: (NSRect) newFrame {
+    [super setFrame: newFrame];
 }
 
-- (void) awakeFromNib 
-{
-	NSRect frame = [self frame];
-	frame.size.height = SEGMENT_HEIGHT;
-	NSRect bounds = [self bounds];
-	bounds.size = frame.size;
-	[self setFrame: frame];
-	[self setBounds: bounds];
-	[self setSelectedSegment: 0];
-	[self setTarget: self];
-	[self setAction: @selector(selectTabFromSegmentedControl:)];
+- (void)calcSize {
+    [super calcSize];
 }
 
-- (void) mouseDown: (NSEvent*) event
-{
-	NSPoint point = [self convertPoint: [event locationInWindow] fromView: nil];
-	int i, xoffset = 0;
-	for (i = 0; i < [self segmentCount]; i++) {
-		float width = [self widthForSegment: i];
-		if (point.x>xoffset && point.x<xoffset+width) break;
-		xoffset += width;
-	}
-	if (i<[self segmentCount]) {
-		[self setSelectedSegment: i];
-		isDragging = YES;
-		[self setNeedsDisplay: YES];
-		[NSApp sendAction: [self action] to: [self target] from: self];
-	}
-}
-
-- (void) mouseUp: (NSEvent*) event
-{
-	isDragging = NO;
-	[self setNeedsDisplay: YES];
+- (unsigned int)autoresizingMask {
+    NSLog(@"autoresizingMask");
+    return (NSViewWidthSizable | NSViewHeightSizable);
 }
 
 
-- (void) drawRect: (NSRect) rect {
+- (BOOL)autoresizesSubviews {
+    NSLog(@"autoresizesSubviews");
+    return YES;
+}
+
+- (void)resizeWithOldSuperviewSize:(NSSize)oldBoundsSize {
+    NSLog(@"resizeWithOldSuperviewSize");
+    [ super resizeWithOldSuperviewSize:oldBoundsSize];
+}
+
+
+
+//- (id) initWithFrame: (NSRect) frame {
+//    self = [super initWithFrame:frame];
+//    if (self) {
+//        // Initialization code here.
+//		[self setSelectedSegment: 0];
+//    }
+//    return self;
+//}
+
+//- (void) tabView: (NSTabView*) aTabView didSelectTabViewItem: (NSTabViewItem*) tabViewItem
+//{
+//	if (tabView == aTabView) {
+//		[self setSelectedSegment: [tabView indexOfTabViewItem: tabViewItem]];
+//	}
+//}
+
+//- (void) awakeFromNib 
+//{
+//	NSRect frame = [self frame];
+//	frame.size.height = SEGMENT_HEIGHT;
+//	NSRect bounds = [self bounds];
+//	bounds.size = frame.size;
+//	[self setFrame: frame];
+//	[self setBounds: bounds];
+//	[self setSelectedSegment: 0];
+//	[self setTarget: self];
+//	[self setAction: @selector(selectTabFromSegmentedControl:)];
+//}
+//
+//- (void) mouseDown: (NSEvent*) event {
+//	NSPoint point = [self convertPoint: [event locationInWindow] fromView: nil];
+//	int i, xoffset = 0;
+//	for (i = 0; i < [self segmentCount]; i++) {
+//		float width = [self widthForSegment: i];
+//		if (point.x>xoffset && point.x<xoffset+width) break;
+//		xoffset += width;
+//	}
+//	if (i<[self segmentCount]) {
+//		[self setSelectedSegment: i];
+//		isDragging = YES;
+//		[self setNeedsDisplay: YES];
+//		[NSApp sendAction: [self action] to: [self target] from: self];
+//	}
+//}
+//
+//- (void) mouseUp: (NSEvent*) event {
+//	isDragging = NO;
+//	[self setNeedsDisplay: YES];
+//}
+
+
+- (void) drawRect2: (NSRect) rect {
     // Drawing code here.
 	//[super drawRect: rect];
 	
@@ -244,24 +273,24 @@
 	}	
 }
 
-- (BOOL) isFlipped
-{
-	return NO;
-}
-
-
-- (int) indexOfSelectedItem 
-{
-	return [super selectedSegment];
-}
-
-
-- (IBAction) selectTabFromSegmentedControl: (id) sender
-	/*" Sender is expected to be an NSSegmentedControl. "*/
-{
-	NSSegmentedControl* sc = sender;
-	[tabView selectTabViewItemAtIndex: [sc selectedSegment]];
-}
+//- (BOOL) isFlipped
+//{
+//	return NO;
+//}
+//
+//
+//- (int) indexOfSelectedItem 
+//{
+//	return [super selectedSegment];
+//}
+//
+//
+//- (IBAction) selectTabFromSegmentedControl: (id) sender
+//	/*" Sender is expected to be an NSSegmentedControl. "*/
+//{
+//	NSSegmentedControl* sc = sender;
+//	[tabView selectTabViewItemAtIndex: [sc selectedSegment]];
+//}
 
 @end
 

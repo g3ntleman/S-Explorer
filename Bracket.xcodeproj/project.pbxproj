@@ -26,6 +26,8 @@
 		8D8298D41758088100336E2F /* bracket-support.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8D8298D31758088000336E2F /* bracket-support.scm */; };
 		8DAFB9BE17543351006C71B3 /* CSVM.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DAFB9BC17543351006C71B3 /* CSVM.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8DB65DBA1742EE7600332007 /* PseudoTTY.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DB65DB91742EE7600332007 /* PseudoTTY.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		8DCBE8AD176F7918004B6AA2 /* NSDictionary+OPImmutablility.h in Sources */ = {isa = PBXBuildFile; fileRef = 8DCBE8AB176F7918004B6AA2 /* NSDictionary+OPImmutablility.h */; };
+		8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */; };
 		8DFA6E681760F49F006780BF /* libchibi-scheme.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DFA6E671760F49F006780BF /* libchibi-scheme.dylib */; };
 /* End PBXBuildFile section */
 
@@ -77,6 +79,8 @@
 		8DAFB9BC17543351006C71B3 /* CSVM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSVM.m; sourceTree = "<group>"; };
 		8DB65DB81742EE7600332007 /* PseudoTTY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PseudoTTY.h; sourceTree = "<group>"; };
 		8DB65DB91742EE7600332007 /* PseudoTTY.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PseudoTTY.m; sourceTree = "<group>"; };
+		8DCBE8AB176F7918004B6AA2 /* NSDictionary+OPImmutablility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = "NSDictionary+OPImmutablility.h"; sourceTree = "<group>"; };
+		8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+OPImmutablility.m"; sourceTree = "<group>"; };
 		8DFA6CD7175EA549006780BF /* .hgignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .hgignore; sourceTree = "<group>"; };
 		8DFA6CD8175EA549006780BF /* .hgtags */ = {isa = PBXFileReference; lastKnownFileType = text; path = .hgtags; sourceTree = "<group>"; };
 		8DFA6CD9175EA549006780BF /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
@@ -496,6 +500,8 @@
 				8D0904BE1769447100176BCF /* OPTabbedSeqmentedControl.m */,
 				8D120D68176D2A3C0019577E /* PSMMetalTabStyle.h */,
 				8D120D69176D2A3C0019577E /* PSMMetalTabStyle.m */,
+				8DCBE8AB176F7918004B6AA2 /* NSDictionary+OPImmutablility.h */,
+				8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */,
 			);
 			path = Bracket;
 			sourceTree = "<group>";
@@ -1363,6 +1369,8 @@
 				8DAFB9BE17543351006C71B3 /* CSVM.m in Sources */,
 				8D27BFF51766C59D00F1F8FA /* BRSchemeParser.m in Sources */,
 				8D0904C2176A7C4800176BCF /* BRSourceItem.m in Sources */,
+				8DCBE8AD176F7918004B6AA2 /* NSDictionary+OPImmutablility.h in Sources */,
+				8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

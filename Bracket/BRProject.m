@@ -10,12 +10,14 @@
 #import "NSAlert+OPBlocks.h"
 #import "CSVM.h"
 #import "BRSourceItem.h"
+#import "NSDictionary+OPImmutablility.h"
 
 @implementation BRProject {
     CSVM* vm;
 }
 
 @synthesize tabbedSourceItems;
+@synthesize sourceTab;
 
 - (id) init {
     
@@ -29,7 +31,7 @@
     
     if (self = [super init]) {
         
-        tabbedSourceItems = @[];
+        tabbedSourceItems = @{};
         BOOL isDir = NO;
         if ([[NSFileManager defaultManager] fileExistsAtPath:url.path isDirectory:&isDir]) {
             if (isDir) {
@@ -39,7 +41,7 @@
 
                 BRSourceItem* singleSourceItem = [projectSourceItem childWithName: [url lastPathComponent]];
                 
-                tabbedSourceItems = @[singleSourceItem];
+                [self setSourceItem: singleSourceItem forIndex: 0];
             }
             return self;
         }
@@ -48,11 +50,48 @@
     return nil;
 }
 
+/**
+ * index should be 0..3 while item may be nil to indicate a removal.
+ */
+- (void) setSourceItem: (BRSourceItem*) item forIndex: (NSUInteger) index {
+    
+    if (item) {
+        tabbedSourceItems = [tabbedSourceItems dictionaryBySettingObject: item forKey: @(index)];
+    } else {
+        tabbedSourceItems = [tabbedSourceItems dictionaryByRemovingObjectForKey: @(index)];
+    }
+    
+    [sourceTab setEnabled: item!=nil forSegment: index];
+    [sourceTab setLabel: item.relativePath forSegment: index];
+}
+
+- (BOOL) validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>) anItem {
+
+//    if (anItem == sourceTab) {
+//        
+//        [sourceTab setEnabled: tabbedSourceItems[@0] != nil forSegment: 0];
+//        [sourceTab setEnabled: tabbedSourceItems[@1] != nil forSegment: 1];
+//        [sourceTab setEnabled: tabbedSourceItems[@2] != nil forSegment: 2];
+//        [sourceTab setEnabled: tabbedSourceItems[@3] != nil forSegment: 3];
+//    }
+    return YES;
+}
+
 - (NSString *)windowNibName {
     // If you need to use a subclass of NSWindowController or if your document supports multiple NSWindowControllers, you should remove this method and override -makeWindowControllers instead.
     return @"BRProject";
 }
 
+- (IBAction) selectSourceTab: (id) sender {
+    NSLog(@"selected tab #%lu", [sourceTab integerValue]);
+    
+}
+
+
+- (void) awakeFromNib {
+    
+    [self setSourceItem: tabbedSourceItems[@(sourceTab.selectedSegment)] forIndex: sourceTab.selectedSegment];
+}
 
 - (void) parser: (BRSchemeParser*) parser
      foundToken: (TokenOccurrence) tokenInstance
@@ -230,7 +269,7 @@
 
 - (id) outlineView: (NSOutlineView*) outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
     
-    NSLog(@"Finding objectValue for %@", item);
+    //NSLog(@"Finding objectValue for %@", item);
     if (item == nil) {
         item = self.projectSourceItem;
     }
