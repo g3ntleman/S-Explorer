@@ -14,9 +14,10 @@
 
 @interface BRProject : NSDocument <BRSchemeParserDelegate, NSOutlineViewDataSource>
 
-@property (strong) IBOutlet BRREPLController* replController;
-@property (strong) IBOutlet NSTextView* sourceTextView;
+@property (strong, nonatomic) IBOutlet BRREPLController* replController;
+@property (strong, nonatomic) IBOutlet NSTextView* sourceTextView;
 @property (readonly) BRSourceItem* projectSourceItem;
+@property (strong, nonatomic) NSArray* tabbedSourceItems;
 
 
 @end

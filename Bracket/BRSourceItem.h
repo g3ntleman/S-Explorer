@@ -9,18 +9,20 @@
 #import <Foundation/Foundation.h>
 
 @interface BRSourceItem : NSObject
-{
-    NSString *path;
-    NSMutableArray *children;
-}
+
 
 @property (weak, readonly) BRSourceItem* parent;
+@property (weak, nonatomic) NSMutableString* content;
 
-- (id)initWithPath:(NSString *)aPath;
+@property (readonly) NSString* absolutePath;
+@property (readonly) NSString* relativePath;
 
-- (NSInteger)numberOfChildren;// Returns -1 for leaf nodes
-- (BRSourceItem *)childAtIndex:(NSUInteger)n; // Invalid to call on leaf nodes
-- (NSString *)absolutePath;
-- (NSString *)relativePath;
+- (id) initWithFileURL: (NSURL*) aURL;
+
+- (BRSourceItem*) childWithName: (NSString*) name;
+
+- (BOOL) contentHasChanged;
+- (BOOL) saveContentWithError: (NSError**) errorPtr;
+- (void) contentDidChange;
 
 @end

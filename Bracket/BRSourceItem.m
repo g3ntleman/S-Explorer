@@ -8,14 +8,19 @@
 
 #import "BRSourceItem.h"
 
-@implementation BRSourceItem
+@implementation BRSourceItem {
+    NSString* path;
+    NSMutableArray* children;
+    NSMutableString* changedContent;
+}
 
 static NSMutableArray *leafNode = nil;
 
 
 @synthesize parent;
+@synthesize content;
 
-- (id)initWithPath: (NSString*) aPath parent: (BRSourceItem*) parentItem {
+- (id) initWithPath: (NSString*) aPath parent: (BRSourceItem*) parentItem {
 
     if (self = [self init]) {
         if (parentItem) {
@@ -29,10 +34,48 @@ static NSMutableArray *leafNode = nil;
 }
 
 
-- (id)initWithPath: (NSString*) aPath {
-    return [self initWithPath: aPath parent: nil];
+- (id) initWithFileURL: (NSURL*) aURL {
+    return [self initWithPath: aURL.path parent: nil];
 }
 
+- (NSMutableString*) content {
+    if (! content) {
+        NSError* error = nil;
+        content = [NSMutableString stringWithContentsOfFile: self.absolutePath encoding: NSUTF8StringEncoding error: &error];
+    }
+    
+    return content;
+}
+
+- (void) contentDidChange {
+    changedContent = self.content;
+}
+
+- (BOOL) saveContentWithError: (NSError**) errorPtr  {
+    if (changedContent) {
+        BOOL result = [changedContent writeToFile: self.absolutePath atomically: YES encoding: NSUTF8StringEncoding error: errorPtr];
+        if (result) {
+            content = changedContent;
+            changedContent = nil;
+        }
+    }
+    NSLog(@"Warning - igornig save to unchanged file %@", self.relativePath);
+    return YES; // nothing to do.
+}
+
+- (BOOL) contentHasChanged {
+    return changedContent != nil;
+}
+
+
+- (BRSourceItem*) childWithName: (NSString*) name {
+    for (BRSourceItem* child in self.children) {
+        if ([child.relativePath isEqualToString: name]) {
+            return child;
+        }
+    }
+    return nil;
+}
 
 // Creates, caches, and returns the array of children
 // Loads children incrementally
@@ -88,14 +131,5 @@ static NSMutableArray *leafNode = nil;
 }
 
 
-- (BRSourceItem*) childAtIndex: (NSUInteger) n {
-    return [self children][n];
-}
-
-
-- (NSInteger)numberOfChildren {
-    NSArray *tmp = [self children];
-    return (tmp == leafNode) ? (-1) : [tmp count];
-}
 
 @end

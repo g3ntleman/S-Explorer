@@ -59,13 +59,13 @@
          shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "Bracket/BRProject.m"
-         timestampString = "393033168.072263"
+         filePath = "Bracket/BRSourceItem.m"
+         timestampString = "393150124.751968"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "37"
-         endingLineNumber = "37"
-         landmarkName = "-initWithContentsOfURL:ofType:error:"
+         startingLineNumber = "77"
+         endingLineNumber = "77"
+         landmarkName = "-childWithName:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

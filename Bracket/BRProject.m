@@ -15,6 +15,7 @@
     CSVM* vm;
 }
 
+@synthesize tabbedSourceItems;
 
 - (id) init {
     
@@ -27,14 +28,19 @@
 - (id) initWithContentsOfURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)outError {
     
     if (self = [super init]) {
-        // Add your subclass-specific initialization here.
+        
+        tabbedSourceItems = @[];
         BOOL isDir = NO;
         if ([[NSFileManager defaultManager] fileExistsAtPath:url.path isDirectory:&isDir]) {
-            NSURL* projectURL = url;
-            if (! isDir) {
-                projectURL = [projectURL URLByDeletingLastPathComponent];
+            if (isDir) {
+                projectSourceItem = [[BRSourceItem alloc] initWithFileURL: url];
+            } else {
+                projectSourceItem = [[BRSourceItem alloc] initWithFileURL: [url URLByDeletingLastPathComponent]];
+
+                BRSourceItem* singleSourceItem = [projectSourceItem childWithName: [url lastPathComponent]];
+                
+                tabbedSourceItems = @[singleSourceItem];
             }
-            projectSourceItem = [[BRSourceItem alloc] initWithPath:projectURL.path];
             return self;
         }
     }
@@ -185,7 +191,7 @@
 
 - (BRSourceItem*) projectSourceItem {
     if (! projectSourceItem) {
-        projectSourceItem = [[BRSourceItem alloc] initWithPath: [[self fileURL] path]];
+        projectSourceItem = [[BRSourceItem alloc] initWithFileURL: [self fileURL]];
     }
     return projectSourceItem;
 }
@@ -199,7 +205,8 @@
     if (item == nil) {
         item = self.projectSourceItem;
     }
-    return [item numberOfChildren];
+    NSInteger noc = [[item children] count];
+    return noc;
 }
 
 
@@ -207,22 +214,23 @@
     if (item == nil) {
         item = self.projectSourceItem;
     }
-    return  [item numberOfChildren] != -1;
+    return  [item children] != nil;
 }
 
 
-- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item {
+- (id) outlineView: (NSOutlineView*) outlineView child:(NSInteger)index ofItem:(id)item {
     
     if (item == nil) {
         item = self.projectSourceItem;
     }
         
-    return [(BRSourceItem*) item childAtIndex: index];
+    return [item children][index];
 }
 
 
-- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
+- (id) outlineView: (NSOutlineView*) outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
     
+    NSLog(@"Finding objectValue for %@", item);
     if (item == nil) {
         item = self.projectSourceItem;
     }
