@@ -83,8 +83,17 @@
 }
 
 - (IBAction) selectSourceTab: (id) sender {
-    NSLog(@"selected tab #%lu", [sourceTab integerValue]);
     
+    NSLog(@"selected tab #%lu", [sourceTab integerValue]);
+
+    NSTextStorage* textStorage = self.sourceTextView.textStorage;
+    BRSourceItem* sourceItem = self.tabbedSourceItems[@(sourceTab.selectedSegment)];
+    NSString* fileContent = sourceItem.content;
+    NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [NSFont fontWithName:@"Menlo-Bold" size: 12.0], NSFontAttributeName, nil, nil];
+    NSAttributedString* attributedContent = [[NSAttributedString alloc] initWithString: fileContent attributes: attributes];
+    textStorage.attributedString = attributedContent;
+    
+    [self colorizeCurrentFile: self];
 }
 
 

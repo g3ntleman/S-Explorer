@@ -311,7 +311,7 @@
 																				<int key="NSTCFlags">1</int>
 																			</object>
 																			<object class="NSTextViewSharedData" key="NSSharedData">
-																				<int key="NSFlags">1140854531</int>
+																				<int key="NSFlags">1107300099</int>
 																				<int key="NSTextCheckingTypes">0</int>
 																				<nil key="NSMarkedAttributes"/>
 																				<reference key="NSBackgroundColor" ref="130519908"/>
@@ -345,8 +345,8 @@
 																				<nil key="NSTextFinder"/>
 																				<int key="NSPreferredTextFinderStyle">2</int>
 																			</object>
-																			<int key="NSTVFlags">6</int>
-																			<string key="NSMaxSize">{971, 10000000}</string>
+																			<int key="NSTVFlags">7</int>
+																			<string key="NSMaxSize">{544, 10000000}</string>
 																			<nil key="NSDelegate"/>
 																		</object>
 																	</array>
@@ -698,6 +698,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
+						<string key="label">sourceTextView</string>
+						<reference key="source" ref="512844837"/>
+						<reference key="destination" ref="440672122"/>
+					</object>
+					<int key="connectionID">100150</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="275939982"/>
 						<reference key="destination" ref="512844837"/>
@@ -973,7 +981,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">100149</int>
+			<int key="maxID">100150</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">

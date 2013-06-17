@@ -46,14 +46,18 @@
 
 
 
-//- (id) initWithFrame: (NSRect) frame {
-//    self = [super initWithFrame:frame];
-//    if (self) {
-//        // Initialization code here.
-//		[self setSelectedSegment: 0];
-//    }
-//    return self;
-//}
+- (id) initWithFrame: (NSRect) frame {
+    
+    if (self = [super initWithFrame:frame]) {
+        // Initialization code here.
+		//[self setSelectedSegment: 0];
+    }
+    return self;
+}
+
+- (void) awakeFromNib {
+    NSLog(@"awakeFromNib");
+}
 
 //- (void) tabView: (NSTabView*) aTabView didSelectTabViewItem: (NSTabViewItem*) tabViewItem
 //{
