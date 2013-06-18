@@ -18,6 +18,7 @@
 
 @synthesize tabbedSourceItems;
 @synthesize sourceTab;
+@synthesize sourceList;
 
 - (id) init {
     
@@ -31,7 +32,7 @@
     
     if (self = [super init]) {
         
-        tabbedSourceItems = @{};
+        self.tabbedSourceItems = @{};
         BOOL isDir = NO;
         if ([[NSFileManager defaultManager] fileExistsAtPath:url.path isDirectory:&isDir]) {
             if (isDir) {
@@ -55,10 +56,11 @@
  */
 - (void) setSourceItem: (BRSourceItem*) item forIndex: (NSUInteger) index {
     
+    NSParameterAssert([item isKindOfClass: [BRSourceItem class]]);
     if (item) {
-        tabbedSourceItems = [tabbedSourceItems dictionaryBySettingObject: item forKey: @(index)];
+        self.tabbedSourceItems = [self.tabbedSourceItems dictionaryBySettingObject: item forKey: @(index)];
     } else {
-        tabbedSourceItems = [tabbedSourceItems dictionaryByRemovingObjectForKey: @(index)];
+        self.tabbedSourceItems = [self.tabbedSourceItems dictionaryByRemovingObjectForKey: @(index)];
     }
     
     [sourceTab setEnabled: item!=nil forSegment: index];
@@ -82,24 +84,36 @@
     return @"BRProject";
 }
 
-- (IBAction) selectSourceTab: (id) sender {
-    
-    NSLog(@"selected tab #%lu", [sourceTab integerValue]);
-
-    NSTextStorage* textStorage = self.sourceTextView.textStorage;
+- (BRSourceItem*) currentSourceItem {
     BRSourceItem* sourceItem = self.tabbedSourceItems[@(sourceTab.selectedSegment)];
+    return sourceItem;
+}
+
+- (void) setCurrentSourceItem: (BRSourceItem*) sourceItem {
+    
+    NSTextStorage* textStorage = self.sourceTextView.textStorage;
     NSString* fileContent = sourceItem.content;
+    if (! fileContent)
+        fileContent = @"";
     NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [NSFont fontWithName:@"Menlo-Bold" size: 12.0], NSFontAttributeName, nil, nil];
     NSAttributedString* attributedContent = [[NSAttributedString alloc] initWithString: fileContent attributes: attributes];
     textStorage.attributedString = attributedContent;
     
-    [self colorizeCurrentFile: self];
+    if ([sourceItem.relativePath.pathExtension isEqualToString: @"scm"]) {
+        [self colorizeCurrentFile: self];
+    }
 }
+
+- (void) selectSourceTabWithIndex: (NSUInteger) tabIndex {
+    BRSourceItem* sourceItem = self.tabbedSourceItems[@(tabIndex)];
+    [self setCurrentSourceItem: sourceItem];
+}
+
 
 
 - (void) awakeFromNib {
     
-    [self setSourceItem: tabbedSourceItems[@(sourceTab.selectedSegment)] forIndex: sourceTab.selectedSegment];
+
 }
 
 - (void) parser: (BRSchemeParser*) parser
@@ -162,6 +176,20 @@
 
 }
 
+- (IBAction) sourceTableAction: (id) sender {
+    NSLog(@"sourceTableAction.");
+    BRSourceItem* selectedSourceItem = [self.sourceList itemAtRow: self.sourceList.selectedRow];
+    [self setCurrentSourceItem: selectedSourceItem];
+}
+
+- (IBAction) selectSourceTab: (id) sender {
+    
+    NSLog(@"selected tab #%lu", sourceTab.selectedSegment);
+    BRSourceItem* sourceItem = self.tabbedSourceItems[@(sourceTab.selectedSegment)];
+    
+    [self setCurrentSourceItem: sourceItem];
+}
+
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
     
@@ -195,23 +223,8 @@
     //NSLog(@"All symbols: %@\n%@", input3, allSymbolStrings);
     NSLog(@"All VM symbols: %@", vm.allSymbols);
     
-    NSTextStorage* textStorage = self.sourceTextView.textStorage;
-    
-    NSString* sourcePath = [[NSBundle mainBundle] pathForResource:@"bracket-support" ofType:@"scm"];
-    NSString* fileContent = [NSString stringWithContentsOfFile: sourcePath
-                                                      encoding: NSUTF8StringEncoding
-                                                         error: NULL];
-    NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [NSFont fontWithName:@"Menlo-Bold" size: 12.0], NSFontAttributeName, nil, nil];
-    NSAttributedString* attributedContent = [[NSAttributedString alloc] initWithString: fileContent attributes: attributes];
-
-                                            
-    textStorage.attributedString = attributedContent;
-    
-    [self colorizeCurrentFile: self];
-    
-    
-    self.fileURL = [[NSBundle mainBundle] resourceURL];
-    
+    [self setSourceItem: tabbedSourceItems[@(sourceTab.selectedSegment)] forIndex: sourceTab.selectedSegment];
+    [self selectSourceTabWithIndex: 0];    
 }
 
 + (BOOL)autosavesInPlace {

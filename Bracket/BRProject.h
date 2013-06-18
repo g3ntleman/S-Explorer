@@ -19,9 +19,10 @@
 @property (readonly) BRSourceItem* projectSourceItem;
 @property (strong, nonatomic) NSDictionary* tabbedSourceItems;
 @property (strong, nonatomic) IBOutlet NSSegmentedControl* sourceTab;
+@property (strong, nonatomic) IBOutlet NSOutlineView* sourceList;
 
 - (IBAction) selectSourceTab: (id) sender;
-
+- (IBAction) sourceTableAction: (id) sender;
 
 - (void) setSourceItem: (BRSourceItem*) item forIndex: (NSUInteger) index;
 

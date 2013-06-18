@@ -23,7 +23,7 @@
     
     static NSSet* keywords = nil;
     if (! keywords) {
-    keywords = [NSSet setWithArray: @[@"else", @"=>", @"define", @"unquote", @"unquote-splicing", @"quote", @"lambda", @"if", @"set!", @"begin", @"cond", @"and", @"or", @"case", @"let", @"let*", @"letrec", @"do", @"delay", @"quasiquote"]];
+        keywords = [[NSSet alloc] initWithArray: @[@"else", @"=>", @"define", @"unquote", @"unquote-splicing", @"quote", @"lambda", @"if", @"set!", @"begin", @"cond", @"and", @"or", @"case", @"let", @"let*", @"letrec", @"do", @"delay", @"quasiquote"]];
     }
     return keywords;
 }
