@@ -23,7 +23,7 @@
 
 - (id) init {
     
-    NSURL* sourceURL = [[NSBundle mainBundle] URLForResource: @"bracket-support" withExtension: @"scm"];
+    NSURL* sourceURL = [[NSBundle mainBundle] URLForResource: @"S-Explorer-support" withExtension: @"scm"];
     
     return [self initWithContentsOfURL: sourceURL ofType:@"scm" error: NULL];
     
@@ -231,7 +231,7 @@
     //[vm evaluateToStringFromString: @"(import (chibi ast))"];
 
     
-    [vm loadSchemeSource: @"bracket-support" error: &error];
+    [vm loadSchemeSource: @"S-Explorer-support" error: &error];
 
     //NSString* input2 = @"(sort (list 5 4 2 3 1 6) <)";
     //NSString* output2 = [vm evaluateString: input2];
