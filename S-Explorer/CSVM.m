@@ -335,7 +335,6 @@
 
 - (void) dealloc {
     sexp_destroy_context(ctx);
-    [super dealloc];
 }
 
 

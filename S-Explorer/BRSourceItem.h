@@ -16,10 +16,12 @@
 
 @property (readonly) NSString* absolutePath;
 @property (readonly) NSString* relativePath;
+@property (readonly) NSString* longRelativePath;
 
 - (id) initWithFileURL: (NSURL*) aURL;
 
 - (BRSourceItem*) childWithName: (NSString*) name;
+- (BRSourceItem*) childWithPath: (NSString*) path;
 
 - (BOOL) contentHasChanged;
 - (BOOL) saveContentWithError: (NSError**) errorPtr;

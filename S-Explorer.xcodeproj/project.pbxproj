@@ -7,13 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; };
 		8D0904C2176A7C4800176BCF /* BRSourceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904C1176A7C4800176BCF /* BRSourceItem.m */; };
-		8D27BFF51766C59D00F1F8FA /* BRSchemeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		8D27BFF51766C59D00F1F8FA /* BRSchemeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */; };
+		8D2AAB6417778E5F008F07C4 /* CSVM.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DAFB9BC17543351006C71B3 /* CSVM.m */; };
 		8D604254173BE60800149409 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D604252173BE60800149409 /* InfoPlist.strings */; };
-		8D604256173BE60800149409 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604255173BE60800149409 /* main.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		8D604256173BE60800149409 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604255173BE60800149409 /* main.m */; };
 		8D60425A173BE60800149409 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 8D604258173BE60800149409 /* Credits.rtf */; };
-		8D60425D173BE60800149409 /* BRProject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D60425C173BE60800149409 /* BRProject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		8D60425D173BE60800149409 /* BRProject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D60425C173BE60800149409 /* BRProject.m */; };
 		8D604260173BE60800149409 /* BRProject.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D60425E173BE60800149409 /* BRProject.xib */; };
 		8D604263173BE60800149409 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D604261173BE60800149409 /* MainMenu.xib */; };
 		8D60426B173BE60900149409 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60426A173BE60900149409 /* SenTestingKit.framework */; };
@@ -21,11 +22,10 @@
 		8D604277173BE60900149409 /* S-ExplorerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604276173BE60900149409 /* S-ExplorerTests.m */; };
 		8D604292173C142A00149409 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424C173BE60800149409 /* AppKit.framework */; };
 		8D604293173C143300149409 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424E173BE60800149409 /* Foundation.framework */; };
-		8D604297173C22D600149409 /* BRREPLController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* BRREPLController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		8D60429B173C388900149409 /* BRREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604299173C388900149409 /* BRREPLView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		8D604297173C22D600149409 /* BRREPLController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* BRREPLController.m */; };
+		8D60429B173C388900149409 /* BRREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604299173C388900149409 /* BRREPLView.m */; };
 		8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8D8298D31758088000336E2F /* S-Explorer-support.scm */; };
-		8DAFB9BE17543351006C71B3 /* CSVM.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DAFB9BC17543351006C71B3 /* CSVM.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		8DB65DBA1742EE7600332007 /* PseudoTTY.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DB65DB91742EE7600332007 /* PseudoTTY.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		8DB65DBA1742EE7600332007 /* PseudoTTY.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DB65DB91742EE7600332007 /* PseudoTTY.m */; };
 		8DCBE8AD176F7918004B6AA2 /* NSDictionary+OPImmutablility.h in Sources */ = {isa = PBXBuildFile; fileRef = 8DCBE8AB176F7918004B6AA2 /* NSDictionary+OPImmutablility.h */; };
 		8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */; };
 		8DFA6E681760F49F006780BF /* libchibi-scheme.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DFA6E671760F49F006780BF /* libchibi-scheme.dylib */; };
@@ -1366,8 +1366,8 @@
 				8D60429B173C388900149409 /* BRREPLView.m in Sources */,
 				8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */,
 				8DB65DBA1742EE7600332007 /* PseudoTTY.m in Sources */,
-				8DAFB9BE17543351006C71B3 /* CSVM.m in Sources */,
 				8D27BFF51766C59D00F1F8FA /* BRSchemeParser.m in Sources */,
+				8D2AAB6417778E5F008F07C4 /* CSVM.m in Sources */,
 				8D0904C2176A7C4800176BCF /* BRSourceItem.m in Sources */,
 				8DCBE8AD176F7918004B6AA2 /* NSDictionary+OPImmutablility.h in Sources */,
 				8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */,

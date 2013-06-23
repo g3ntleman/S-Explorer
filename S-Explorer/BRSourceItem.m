@@ -77,26 +77,38 @@ static NSMutableArray *leafNode = nil;
     return nil;
 }
 
+- (BRSourceItem*) childWithPath: (NSString*) aPath {
+    NSArray* pathComponents = [aPath pathComponents];
+    BRSourceItem* current = self;
+    for (NSString* name in pathComponents) {
+        current = [current childWithName: name];
+        if (! current) return nil;
+    }
+    return current;
+}
+
+
 // Creates, caches, and returns the array of children
 // Loads children incrementally
 - (NSArray *)children {
     
     if (children == nil) {
         NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSString *fullPath = [self absolutePath];
+        NSString* fullPath = self.absolutePath;
         BOOL isDir, valid;
         
-        valid = [fileManager fileExistsAtPath:fullPath isDirectory:&isDir];
+        valid = [fileManager fileExistsAtPath: fullPath isDirectory: &isDir];
         
         if (valid && isDir) {
-            NSArray *array = [fileManager contentsOfDirectoryAtPath:fullPath error:NULL];
+            NSArray *array = [fileManager contentsOfDirectoryAtPath: fullPath error:NULL];
                         
-            NSUInteger numChildren = array.count;
-            children = [[NSMutableArray alloc] initWithCapacity:numChildren];
+            children = [[NSMutableArray alloc] initWithCapacity: array.count];
             
             for (NSString* childPath in array) {
-                BRSourceItem* newChild = [[[self class] alloc] initWithPath: childPath parent: self];
-                [children addObject: newChild];
+                if (! [childPath hasPrefix: @"."]) {
+                    BRSourceItem* newChild = [[[self class] alloc] initWithPath: childPath parent: self];
+                    [children addObject: newChild];
+                }
             }
         } else {
             children = leafNode;
@@ -107,16 +119,25 @@ static NSMutableArray *leafNode = nil;
 }
 
 
-- (NSString *)relativePath {
+- (NSString*) relativePath {
     if (parent == nil) {
-        return [path lastPathComponent];
+        return @"";
     }
     
     return path;
 }
 
+/**
+ * Returns the path relative to the root parent. For the root item, returns the empty string.
+ */
+- (NSString*) longRelativePath {
+    if (! parent) {
+        return @"";
+    }
+    return [[parent longRelativePath] stringByAppendingPathComponent: path];
+}
 
-- (NSString *)absolutePath {
+- (NSString*) absolutePath {
     // If no parent, return path
     if (parent == nil) {
         return path;

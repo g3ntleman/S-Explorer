@@ -14,12 +14,14 @@
 
 @implementation BRProject {
     CSVM* vm;
+    NSMutableDictionary* uiSettings;
 }
 
 @synthesize tabbedSourceItems;
 @synthesize sourceTab;
 @synthesize sourceList;
-@synthesize settings;
+@synthesize projectSettings;
+//@synthesize uiSettings;
 
 - (id) init {
     
@@ -111,24 +113,63 @@
     [self setCurrentSourceItem: sourceItem];
 }
 
-- (NSMutableDictionary*) settings {
-    if (! settings) {
+- (NSMutableDictionary*) projectSettings {
+    
+    if (! projectSettings) {
         NSString* projectFolderPath = self.projectSourceItem.absolutePath;
         NSString* projectFilePath = [projectFolderPath stringByAppendingPathComponent: [self.projectSourceItem.relativePath stringByAppendingPathExtension:@"sproj"]];
         NSError* error = nil;
         NSData* projectData = [NSData dataWithContentsOfFile: projectFilePath];
         if (projectData) {
-            settings = [NSPropertyListSerialization propertyListWithData: projectData options: kCFPropertyListMutableContainers format:kCFPropertyListXMLFormat_v1_0 error: &error];
+            projectSettings = [NSPropertyListSerialization propertyListWithData: projectData options: NSPropertyListMutableContainers format: NULL error: &error];
         } else {
-            settings = [[NSMutableDictionary alloc]init];
+            projectSettings = [[NSMutableDictionary alloc] init];
         }
     }
-    return settings;
+    return projectSettings;
+}
+
+- (NSString*) uiSettingsPath {
+    NSString* uiFolderPath = self.projectSourceItem.absolutePath;
+    NSString* uiFilePath = [uiFolderPath stringByAppendingPathComponent: @".UISettings.plist"];
+    return uiFilePath;
+}
+
+- (NSMutableDictionary*) uiSettings {
+    
+    if (! uiSettings) {
+        NSError* error = nil;
+        NSData* uiData = [NSData dataWithContentsOfFile: [self uiSettingsPath]];
+        if (uiData) {
+            uiSettings = [NSPropertyListSerialization propertyListWithData: uiData
+                                                                   options: NSPropertyListMutableContainers
+                                                                    format: NULL
+                                                                     error: &error];
+        }
+        if (error) {
+            NSLog(@"Error reading '%@': %@", [self uiSettingsPath], error);
+        }
+        
+        if (! uiSettings) {
+            uiSettings = [[NSMutableDictionary alloc] init];
+        }
+        if (! uiSettings[@"expandedFolders"]) {
+            uiSettings[@"expandedFolders"] = [[NSMutableDictionary alloc] init];
+        }
+    }
+    return uiSettings;
+}
+
+- (void) uiSettingsNeedSave {
+    // TODO: save later (on idle?)
+    BOOL done = [self.uiSettings writeToFile: [self uiSettingsPath] atomically: YES];
+    if (! done) {
+        NSLog(@"Warning: Unable to write uiSettings to '%@'.", [self uiSettingsPath]);
+    }
 }
 
 
 - (void) awakeFromNib {
-    
 
 }
 
@@ -240,7 +281,13 @@
     NSLog(@"All VM symbols: %@", vm.allSymbols);
     
     [self setSourceItem: tabbedSourceItems[@(sourceTab.selectedSegment)] forIndex: sourceTab.selectedSegment];
-    [self selectSourceTabWithIndex: 0];    
+    [self selectSourceTabWithIndex: 0];
+    
+    for (NSString* path in self.uiSettings[@"expandedFolders"]) {
+        BRSourceItem* item = [self.projectSourceItem childWithPath: path];
+        [self.sourceList expandItem: item];
+    }
+    
 }
 
 + (BOOL)autosavesInPlace {
@@ -314,5 +361,22 @@
     
     return [item relativePath];
 }
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item {
+    BRSourceItem* sourceItem = item;
+    NSString* path = sourceItem.longRelativePath;
+    self.uiSettings[@"expandedFolders"][path] = @YES;
+    [self uiSettingsNeedSave];
+    return YES;
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldCollapseItem:(id)item {
+    BRSourceItem* sourceItem = item;
+    NSString* path = sourceItem.longRelativePath;
+    [self.uiSettings[@"expandedFolders"] removeObjectForKey: path];
+    [self uiSettingsNeedSave];
+    return YES;
+}
+
 
 @end
