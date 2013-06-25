@@ -37,3 +37,10 @@ ast))
        (if (> prefix-len len)
            (list (substring (car candidates) 0 prefix-len))
            (sort candidates))))))
+
+;(define (procedure-source-location procedure)
+;  (let location-vector (bytecode-source (procedure-code procedure)))
+;  (cdr (vector-ref location-vector 0)))
+
+(define (procedure-source-location x)
+(if (closure? x) (cdr (vector-ref (bytecode-source (procedure-code x)) 0)) (vector)))

@@ -52,7 +52,7 @@
                     if (element) [array addObject: element];
                 }
                 if (! sexp_nullp(x)) {
-                    element = [self propertyListFromSExpression: sexp_car(x)];
+                    element = [self propertyListFromSExpression: x];
                     if (element) [array addObject: element];
                 }
                 return array;
@@ -171,9 +171,13 @@
         return result;
     }
 #endif
-       else {
-           // Simple inline expressions:
-           switch ((sexp_uint_t) obj) {
+    
+    else if (sexp_fixnump(obj)) {
+        NSNumber* result = [NSNumber numberWithLong: (long)sexp_unbox_fixnum(obj)];
+        return result;
+    } else {
+        // Simple inline expressions:
+        switch ((sexp_uint_t) obj) {
             case (sexp_uint_t) SEXP_NULL:
                 return [NSNull null];
             case (sexp_uint_t) SEXP_TRUE:
@@ -321,6 +325,15 @@
     sexp_release_object(ctx, resultExpression);
     
     return result;
+}
+
+- (NSArray*) locationOfProcedureNamed: (NSString*) procedureName {
+    
+    NSString* locationQuery = [NSString stringWithFormat: @"(procedure-source-location %@)", procedureName];
+    id allLocations = [self evaluateToPropertyListFromString: locationQuery error: nil];
+    NSLog(@"all locations for '%@': %@", procedureName, allLocations);
+    
+    return [allLocations firstObject];
 }
 
 - (NSArray*) allSymbols {

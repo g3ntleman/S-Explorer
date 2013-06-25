@@ -25,4 +25,6 @@
 
 - (BOOL) loadSchemeSource: (NSString*) filenameOrPath error: (NSError**) errorPtr;
 
+- (NSArray*) locationOfProcedureNamed: (NSString*) procedureName;
+
 @end

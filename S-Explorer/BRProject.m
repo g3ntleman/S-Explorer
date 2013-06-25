@@ -280,6 +280,8 @@
     //NSLog(@"All symbols: %@\n%@", input3, allSymbolStrings);
     NSLog(@"All VM symbols: %@", vm.allSymbols);
     
+    [vm locationOfProcedureNamed: @"map"];
+    
     [self setSourceItem: tabbedSourceItems[@(sourceTab.selectedSegment)] forIndex: sourceTab.selectedSegment];
     [self selectSourceTabWithIndex: 0];
     
