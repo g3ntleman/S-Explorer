@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import "BracketTests.h"
+#import "S-ExplorerTests.h"
 
 @implementation BracketTests
 

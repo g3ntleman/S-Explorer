@@ -11,6 +11,8 @@
 		8D0904C2176A7C4800176BCF /* BRSourceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904C1176A7C4800176BCF /* BRSourceItem.m */; };
 		8D27BFF51766C59D00F1F8FA /* BRSchemeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */; };
 		8D2AAB6417778E5F008F07C4 /* CSVM.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DAFB9BC17543351006C71B3 /* CSVM.m */; };
+		8D2AAB6C177A8E50008F07C4 /* NoodleLineNumberView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AAB68177A8E50008F07C4 /* NoodleLineNumberView.m */; };
+		8D2AAB71177A94A8008F07C4 /* NoodleLineNumberMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AAB66177A8E50008F07C4 /* NoodleLineNumberMarker.m */; };
 		8D604254173BE60800149409 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D604252173BE60800149409 /* InfoPlist.strings */; };
 		8D604256173BE60800149409 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604255173BE60800149409 /* main.m */; };
 		8D60425A173BE60800149409 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 8D604258173BE60800149409 /* Credits.rtf */; };
@@ -52,6 +54,12 @@
 		8D120D69176D2A3C0019577E /* PSMMetalTabStyle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PSMMetalTabStyle.m; sourceTree = "<group>"; };
 		8D27BFF21766C59C00F1F8FA /* BRSchemeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = BRSchemeParser.h; sourceTree = "<group>"; };
 		8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRSchemeParser.m; sourceTree = "<group>"; };
+		8D2AAB65177A8E50008F07C4 /* NoodleLineNumberMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = NoodleLineNumberMarker.h; sourceTree = "<group>"; };
+		8D2AAB66177A8E50008F07C4 /* NoodleLineNumberMarker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoodleLineNumberMarker.m; sourceTree = "<group>"; };
+		8D2AAB67177A8E50008F07C4 /* NoodleLineNumberView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = NoodleLineNumberView.h; sourceTree = "<group>"; };
+		8D2AAB68177A8E50008F07C4 /* NoodleLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoodleLineNumberView.m; sourceTree = "<group>"; };
+		8D2AAB6D177A93EB008F07C4 /* MarkerLineNumberView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = MarkerLineNumberView.h; sourceTree = "<group>"; };
+		8D2AAB6E177A93EB008F07C4 /* MarkerLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerLineNumberView.m; sourceTree = "<group>"; };
 		8D604246173BE60800149409 /* S-Explorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "S-Explorer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D60424C173BE60800149409 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		8D60424E173BE60800149409 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -485,6 +493,12 @@
 				8DB65DB91742EE7600332007 /* PseudoTTY.m */,
 				8D604298173C388900149409 /* BRREPLView.h */,
 				8D604299173C388900149409 /* BRREPLView.m */,
+				8D2AAB6D177A93EB008F07C4 /* MarkerLineNumberView.h */,
+				8D2AAB6E177A93EB008F07C4 /* MarkerLineNumberView.m */,
+				8D2AAB65177A8E50008F07C4 /* NoodleLineNumberMarker.h */,
+				8D2AAB66177A8E50008F07C4 /* NoodleLineNumberMarker.m */,
+				8D2AAB67177A8E50008F07C4 /* NoodleLineNumberView.h */,
+				8D2AAB68177A8E50008F07C4 /* NoodleLineNumberView.m */,
 				8D604261173BE60800149409 /* MainMenu.xib */,
 				8D604294173C22D600149409 /* BRREPLController.h */,
 				8D604295173C22D600149409 /* BRREPLController.m */,
@@ -1371,6 +1385,8 @@
 				8D0904C2176A7C4800176BCF /* BRSourceItem.m in Sources */,
 				8DCBE8AD176F7918004B6AA2 /* NSDictionary+OPImmutablility.h in Sources */,
 				8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */,
+				8D2AAB6C177A8E50008F07C4 /* NoodleLineNumberView.m in Sources */,
+				8D2AAB71177A94A8008F07C4 /* NoodleLineNumberMarker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

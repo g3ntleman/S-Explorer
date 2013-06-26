@@ -327,13 +327,17 @@
     return result;
 }
 
+/**
+ * Returns an array with two elements: the source path (NSString) and the line number (NSNumber).
+ * If no source is available, the empty array is returned.
+ */
 - (NSArray*) locationOfProcedureNamed: (NSString*) procedureName {
     
     NSString* locationQuery = [NSString stringWithFormat: @"(procedure-source-location %@)", procedureName];
-    id allLocations = [self evaluateToPropertyListFromString: locationQuery error: nil];
-    NSLog(@"all locations for '%@': %@", procedureName, allLocations);
+    id location = [self evaluateToPropertyListFromString: locationQuery error: nil];
+    NSLog(@"all locations for '%@': %@", procedureName, location);
     
-    return [allLocations firstObject];
+    return location;
 }
 
 - (NSArray*) allSymbols {

@@ -11,6 +11,7 @@
 #import "CSVM.h"
 #import "BRSourceItem.h"
 #import "NSDictionary+OPImmutablility.h"
+#import "NoodleLineNumberView.h"
 
 @implementation BRProject {
     CSVM* vm;
@@ -252,6 +253,15 @@
     
     [super windowControllerDidLoadNib:aController];
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
+    
+    NSScrollView* scrollView = self.sourceTextView.enclosingScrollView;
+    NoodleLineNumberView* lineNumberView = [[NoodleLineNumberView alloc] initWithScrollView: scrollView];
+    [scrollView setVerticalRulerView: lineNumberView];
+    [scrollView setHasHorizontalRuler: NO];
+    [scrollView setHasVerticalRuler: YES];
+    [scrollView setRulersVisible: YES];
+
+    
     
     NSError* error = nil;
 //    [self.replController runCommand: @"/usr/local/bin/csi"

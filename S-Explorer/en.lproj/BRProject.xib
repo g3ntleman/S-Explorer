@@ -311,7 +311,7 @@
 																				<int key="NSTCFlags">1</int>
 																			</object>
 																			<object class="NSTextViewSharedData" key="NSSharedData">
-																				<int key="NSFlags">1107300099</int>
+																				<int key="NSFlags">1073745731</int>
 																				<int key="NSTextCheckingTypes">0</int>
 																				<nil key="NSMarkedAttributes"/>
 																				<reference key="NSBackgroundColor" ref="130519908"/>
@@ -1072,6 +1072,17 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">BRREPLView</string>
 					<string key="superclassName">NSTextView</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">clear:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">clear:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">clear:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
 					<object class="NSMutableDictionary" key="outlets">
 						<string key="NS.key.0">replDelegate</string>
 						<string key="NS.object.0">id</string>

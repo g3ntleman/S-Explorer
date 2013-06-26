@@ -177,25 +177,12 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "S-Explorer/BRProject.m"
-         timestampString = "393710221.595946"
+         timestampString = "393909116.971488"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "150"
-         endingLineNumber = "150"
+         startingLineNumber = "151"
+         endingLineNumber = "151"
          landmarkName = "-uiSettings"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         filePath = "S-Explorer/CSVM.m"
-         timestampString = "393894524.521959"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "336"
-         endingLineNumber = "336"
-         landmarkName = "-locationOfProcedureNamed:"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
