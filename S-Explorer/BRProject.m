@@ -248,8 +248,32 @@
     [self setCurrentSourceItem: sourceItem];
 }
 
+- (IBAction) saveCurrentSourceItem: (id) sender {
+    
+    BRSourceItem* currentSource = self.currentSourceItem;
+    
+    if (currentSource.contentHasChanged) {
+        NSError* error = nil;
+        [currentSource saveContentWithError: &error];
+        if (error) {
+            NSBeep();
+            NSLog(@"Error saving %@: %@", currentSource, error);
+        }
+    }
+}
 
-- (void)windowControllerDidLoadNib:(NSWindowController *)aController {
+- (IBAction) revertCurrentSourceItemToSaved: (id) sender {
+    
+    BRSourceItem* currentSource = self.currentSourceItem;
+    if (currentSource.contentHasChanged) {
+        [currentSource revertContent];
+        [self setCurrentSourceItem: currentSource];
+    }
+}
+
+
+
+- (void) windowControllerDidLoadNib: (NSWindowController*) aController {
     
     [super windowControllerDidLoadNib:aController];
     // Add any code here that needs to be executed once the windowController has loaded the document's window.

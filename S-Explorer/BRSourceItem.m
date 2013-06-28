@@ -51,6 +51,10 @@ static NSMutableArray *leafNode = nil;
     changedContent = self.content;
 }
 
+- (BOOL) contentHasChanged {
+    return changedContent != nil;
+}
+
 - (BOOL) saveContentWithError: (NSError**) errorPtr  {
     if (changedContent) {
         BOOL result = [changedContent writeToFile: self.absolutePath atomically: YES encoding: NSUTF8StringEncoding error: errorPtr];
@@ -58,13 +62,19 @@ static NSMutableArray *leafNode = nil;
             content = changedContent;
             changedContent = nil;
         }
+        return result;
     }
     NSLog(@"Warning - igornig save to unchanged file %@", self.relativePath);
     return YES; // nothing to do.
 }
 
-- (BOOL) contentHasChanged {
-    return changedContent != nil;
+- (BOOL) revertContent {
+    if (content) {
+        content = nil;
+        changedContent = nil;
+        return YES;
+    }
+    return NO;
 }
 
 

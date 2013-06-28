@@ -26,5 +26,6 @@
 - (BOOL) contentHasChanged;
 - (BOOL) saveContentWithError: (NSError**) errorPtr;
 - (void) contentDidChange;
+- (BOOL) revertContent;
 
 @end

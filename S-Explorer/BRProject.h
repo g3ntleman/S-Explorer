@@ -25,6 +25,11 @@
 
 - (IBAction) selectSourceTab: (id) sender;
 - (IBAction) sourceTableAction: (id) sender;
+- (IBAction) saveCurrentSourceItem: (id) sender;
+- (IBAction) revertCurrentSourceItemToSaved: (id) sender;
+
+- (BRSourceItem*) currentSourceItem;
+
 
 - (void) setSourceItem: (BRSourceItem*) item forIndex: (NSUInteger) index;
 
