@@ -69,6 +69,11 @@
     
     [sourceTab setEnabled: item!=nil forSegment: index];
     [sourceTab setLabel: item.relativePath forSegment: index];
+    
+    if (index == sourceTab.selectedSegment) {
+        [sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: [sourceList rowForItem: item]] byExtendingSelection: NO];
+    }
+    
 }
 
 - (BOOL) validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>) anItem {

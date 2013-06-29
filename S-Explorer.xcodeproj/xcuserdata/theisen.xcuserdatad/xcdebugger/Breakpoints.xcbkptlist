@@ -177,11 +177,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "S-Explorer/BRProject.m"
-         timestampString = "393909116.971488"
+         timestampString = "394161518.557696"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "151"
-         endingLineNumber = "151"
+         startingLineNumber = "156"
+         endingLineNumber = "156"
          landmarkName = "-uiSettings"
          landmarkType = "5">
       </FileBreakpoint>
@@ -196,6 +196,19 @@
          startingLineNumber = "192"
          endingLineNumber = "192"
          landmarkName = "-propertyListFromSExpression:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "S-Explorer/BRProject.m"
+         timestampString = "394161516.084695"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "74"
+         endingLineNumber = "74"
+         landmarkName = "-setSourceItem:forIndex:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>
