@@ -429,23 +429,24 @@
 }
 
 
+
 - (BOOL) outlineView: (NSOutlineView*) outlineView writeItems: (NSArray*) items toPasteboard:(NSPasteboard *)pboard {
     // Set the pasteboard for File promises only
-    [pboard declareTypes: @[NSFilesPromisePboardType] owner:self];
+    [pboard declareTypes: @[NSURLPboardType] owner:self];
     
     // The pasteboard must know the type of files being promised:
     
-    NSMutableSet* extensions = [NSMutableSet set];
+    NSMutableSet* urlStrings = [NSMutableSet set];
     for (BRSourceItem* item in items) {
-        NSString* extension = item.relativePath.pathExtension;
-        if (extension.length) {
-            [extensions addObject: extension];
+        NSString* urlString = [[NSURL fileURLWithPath: item.absolutePath] absoluteString];
+        if (urlString.length) {
+            [urlStrings addObject: urlString];
         }
     }
     
-    if (extensions.count) {
+    if (urlStrings.count) {
         // Give the pasteboard the file extensions:
-        [pboard setPropertyList: extensions.allObjects forType: NSFilesPromisePboardType];
+        [pboard setPropertyList: urlStrings.allObjects forType: NSURLPboardType];
     }
     return YES;
 }
@@ -458,14 +459,48 @@
         //return what you want to happen if it's coming from your app;
     }
     //return what you want to happen if it isn't;
-    return NSDragOperationCopy;
+    return NSDragOperationLink;
 }
 
 
 /* In 10.7 multiple drag images are supported by using this delegate method. */
-- (id <NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem: (id) item {
+- (id <NSPasteboardWriting>)outlineView: (NSOutlineView*) outlineView pasteboardWriterForItem: (id) item {
     return (BRSourceItem*)item;
 }
+
+- (NSView*) outlineView: (NSOutlineView*) outlineView viewForTableColumn: (NSTableColumn*) tableColumn item:(id) item {
+    
+    NSTableCellView *result = [outlineView makeViewWithIdentifier: [tableColumn identifier] owner: self];
+
+    result.textField.stringValue = [item relativePath];
+    result.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType: [item relativePath].pathExtension];
+    
+    return result;
+}
+
+
+
+//- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+//    if ([item isKindOfClass:[ATDesktopFolderEntity class]]) {
+//        // Everything is setup in bindings
+//        return [outlineView makeViewWithIdentifier:@"GroupCell" owner:self];
+//    } else {
+//        NSView *result = [outlineView makeViewWithIdentifier:[tableColumn identifier] owner:self];
+//        if ([result isKindOfClass:[ATTableCellView class]]) {
+//            ATTableCellView *cellView = (ATTableCellView *)result;
+//            // setup the color; we can't do this in bindings
+//            cellView.colorView.drawBorder = YES;
+//            cellView.colorView.backgroundColor = [item fillColor];
+//        }
+//        // Use a shared date formatter on the DateCell for better performance. Otherwise, it is encoded in every NSTextField
+//        if ([[tableColumn identifier] isEqualToString:@"DateCell"]) {
+//            [(id)result setFormatter:_sharedDateFormatter];
+//        }
+//        return result;
+//    }
+//    return nil;
+//}
+
 
 
 //- (NSArray*) outlineView:(NSOutlineView *)outlineView namesOfPromisedFilesDroppedAtDestination:(NSURL*)dropDestination forDraggedRowsWithIndexes:(NSIndexSet*)indexSet

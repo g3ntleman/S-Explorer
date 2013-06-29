@@ -16,6 +16,10 @@
 
 @property (strong, nonatomic) IBOutlet BRREPLController* replController;
 @property (strong, nonatomic) IBOutlet NSTextView* sourceTextView;
+@property (strong, nonatomic) IBOutlet NSView* sourceCellView;
+@property (strong, nonatomic) IBOutlet NSImageView* sourceCellIconView;
+@property (strong, nonatomic) IBOutlet NSTextField* sourceCellTextField;
+
 @property (readonly) BRSourceItem* projectSourceItem;
 @property (strong, nonatomic) NSDictionary* tabbedSourceItems;
 @property (strong, nonatomic) IBOutlet NSSegmentedControl* sourceTab;
