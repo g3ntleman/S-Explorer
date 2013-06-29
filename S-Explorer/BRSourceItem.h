@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface BRSourceItem : NSObject
+@interface BRSourceItem : NSObject <NSPasteboardWriting>
 
 
 @property (weak, readonly) BRSourceItem* parent;

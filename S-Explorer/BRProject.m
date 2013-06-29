@@ -280,8 +280,11 @@
 
 - (void) windowControllerDidLoadNib: (NSWindowController*) aController {
     
-    [super windowControllerDidLoadNib:aController];
+    [super windowControllerDidLoadNib: aController];
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
+    
+    [self.sourceList setDraggingSourceOperationMask: NSDragOperationLink forLocal: NO];
+
     
     NSScrollView* scrollView = self.sourceTextView.enclosingScrollView;
     NoodleLineNumberView* lineNumberView = [[NoodleLineNumberView alloc] initWithScrollView: scrollView];
@@ -403,7 +406,7 @@
     return [item relativePath];
 }
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item {
+- (BOOL) outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item {
     BRSourceItem* sourceItem = item;
     NSString* path = sourceItem.longRelativePath;
     self.uiSettings[@"expandedFolders"][path] = @YES;
@@ -411,13 +414,92 @@
     return YES;
 }
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView shouldCollapseItem:(id)item {
+- (BOOL) outlineView:(NSOutlineView *)outlineView shouldCollapseItem:(id)item {
     BRSourceItem* sourceItem = item;
     NSString* path = sourceItem.longRelativePath;
     [self.uiSettings[@"expandedFolders"] removeObjectForKey: path];
     [self uiSettingsNeedSave];
     return YES;
 }
+
+- (IBAction) revealInFinder: (id) sender {
+    BRSourceItem* selectedItem  = [sourceList itemAtRow: sourceList.selectedRowIndexes.firstIndex];
+    NSString* selectedItemPath = selectedItem.absolutePath;
+    [[NSWorkspace sharedWorkspace] selectFile: selectedItemPath inFileViewerRootedAtPath: nil];
+}
+
+
+- (BOOL) outlineView: (NSOutlineView*) outlineView writeItems: (NSArray*) items toPasteboard:(NSPasteboard *)pboard {
+    // Set the pasteboard for File promises only
+    [pboard declareTypes: @[NSFilesPromisePboardType] owner:self];
+    
+    // The pasteboard must know the type of files being promised:
+    
+    NSMutableSet* extensions = [NSMutableSet set];
+    for (BRSourceItem* item in items) {
+        NSString* extension = item.relativePath.pathExtension;
+        if (extension.length) {
+            [extensions addObject: extension];
+        }
+    }
+    
+    if (extensions.count) {
+        // Give the pasteboard the file extensions:
+        [pboard setPropertyList: extensions.allObjects forType: NSFilesPromisePboardType];
+    }
+    return YES;
+}
+
+- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal {
+    // Return one of the following:
+    // NSDragOperation{Copy, Link, Generic, Private, Move,
+    //                 Delete, Every, None}
+    if (isLocal) {
+        //return what you want to happen if it's coming from your app;
+    }
+    //return what you want to happen if it isn't;
+    return NSDragOperationCopy;
+}
+
+
+/* In 10.7 multiple drag images are supported by using this delegate method. */
+- (id <NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem: (id) item {
+    return (BRSourceItem*)item;
+}
+
+
+//- (NSArray*) outlineView:(NSOutlineView *)outlineView namesOfPromisedFilesDroppedAtDestination:(NSURL*)dropDestination forDraggedRowsWithIndexes:(NSIndexSet*)indexSet
+//{
+//    // return of the array of file names
+//    NSMutableArray *draggedFilenames = [NSMutableArray array];
+//    
+//    // iterate the selected files
+//    NSArray * selectedObjects = [yourNSArrayController selectedObjects];
+//    
+//    for (NSManagedObject *o in selectedObjects)
+//    {
+//        [draggedFilenames addObject:[o valueForKey:@"filename"]];
+//        
+//        // the file's pretty filename (i.e. filename.txt)
+//        NSString *filename = [o valueForKey:@"filename"];
+//        
+//        // the file's most recent version's unique id
+//        NSString *fullPathToOriginal = [NSString stringWithFormat:@"%@/%@", @"path to the original file", filename];
+//        NSString *destPath = [[dropDestination path] stringByAppendingPathComponent:filename];
+//        
+//        // if a file with the same name exists on the destination, append " - Copy" to the filename
+//        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:destPath];
+//        
+//        if (fileExists)
+//        {
+//            filename = [NSString stringWithFormat:@"%@ - Copy.%@", [[filename lastPathComponent] stringByDeletingPathExtension],[filename pathExtension]];
+//        }
+//        
+//        // now perform the actual copy using the method of your choosing
+//    }
+//    
+//    return draggedFilenames;
+//}
 
 
 @end

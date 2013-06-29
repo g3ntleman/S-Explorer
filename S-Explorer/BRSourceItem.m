@@ -164,3 +164,25 @@ static NSMutableArray *leafNode = nil;
 
 
 @end
+
+@implementation BRSourceItem (PB)
+
+- (NSArray*) writableTypesForPasteboard: (NSPasteboard*) pasteboard {
+    return @[(NSString *)kPasteboardTypeFileURLPromise, NSPasteboardTypeString];
+}
+
+
+/* Returns the appropriate property list object for the provided type.  This will commonly be the NSData for that data type.  However, if this method returns either a string, or any other property-list type, the pasteboard will automatically convert these items to the correct NSData format required for the pasteboard.
+ */
+- (id) pasteboardPropertyListForType: (NSString*) type {
+    
+    if (type == NSPasteboardTypeString) {
+        return self.absolutePath;
+    }
+    NSURL* url = [NSURL fileURLWithPath: self.absolutePath];
+    //NSLog(@"pasteboardPropertyListForType %@ is %@", type, url);
+    return url.absoluteString;
+}
+
+
+@end
