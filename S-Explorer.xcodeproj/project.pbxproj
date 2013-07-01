@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; };
 		8D0904C2176A7C4800176BCF /* BRSourceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904C1176A7C4800176BCF /* BRSourceItem.m */; };
+		8D2445B9178107C200C4072C /* OPTabbedSeqmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904BE1769447100176BCF /* OPTabbedSeqmentedControl.m */; };
 		8D27BFF51766C59D00F1F8FA /* BRSchemeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFF31766C59C00F1F8FA /* BRSchemeParser.m */; };
 		8D2AAB6417778E5F008F07C4 /* CSVM.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DAFB9BC17543351006C71B3 /* CSVM.m */; };
 		8D2AAB6C177A8E50008F07C4 /* NoodleLineNumberView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AAB68177A8E50008F07C4 /* NoodleLineNumberView.m */; };
@@ -1387,6 +1388,7 @@
 				8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */,
 				8D2AAB6C177A8E50008F07C4 /* NoodleLineNumberView.m in Sources */,
 				8D2AAB71177A94A8008F07C4 /* NoodleLineNumberMarker.m in Sources */,
+				8D2445B9178107C200C4072C /* OPTabbedSeqmentedControl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

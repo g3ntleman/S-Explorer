@@ -18,6 +18,7 @@
 // setWidth: width forSegment:
 - (void) sizeToFit {
     NSLog(@"sizeToFit called.");
+    [super sizeToFit];
 }
 
 - (void) setFrame: (NSRect) newFrame {
@@ -28,22 +29,33 @@
     [super calcSize];
 }
 
-- (unsigned int)autoresizingMask {
-    NSLog(@"autoresizingMask");
-    return (NSViewWidthSizable | NSViewHeightSizable);
+- (NSUInteger)autoresizingMask {
+    return (NSViewWidthSizable);
 }
 
 
 - (BOOL)autoresizesSubviews {
-    NSLog(@"autoresizesSubviews");
+//    NSLog(@"autoresizesSubviews");
     return YES;
 }
 
-- (void)resizeWithOldSuperviewSize:(NSSize)oldBoundsSize {
-    NSLog(@"resizeWithOldSuperviewSize");
-    [ super resizeWithOldSuperviewSize:oldBoundsSize];
-}
+    
+    
+- (void) resizeWithOldSuperviewSize: (NSSize) oldSuperSize {
 
+    if (self.autoresizingMask | NSViewWidthSizable) {
+        // Adjust sizes of the cells proportionally:
+        NSSize newSuperSize = self.superview.frame.size;
+        double factor = newSuperSize.width / oldSuperSize.width;
+        NSUInteger count = self.segmentCount;
+        for (int i=0; i < count; i++) {
+            CGFloat oldWidth = [self widthForSegment: i];
+            CGFloat newWidth = oldWidth * factor;
+            [self setWidth: newWidth forSegment: i];
+        }
+    }
+    [super resizeWithOldSuperviewSize: oldSuperSize];
+}
 
 
 - (id) initWithFrame: (NSRect) frame {

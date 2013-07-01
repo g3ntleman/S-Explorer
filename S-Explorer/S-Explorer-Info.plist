@@ -9,32 +9,6 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>scm</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string></string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>text/x-scheme</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>Scheme Source</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>????</string>
-			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>org.cocoanuts.scheme-source</string>
-			</array>
-			<key>NSDocumentClass</key>
-			<string>BRProject</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
 				<string>sproj</string>
 			</array>
 			<key>CFBundleTypeName</key>
@@ -47,6 +21,68 @@
 			</array>
 			<key>NSDocumentClass</key>
 			<string>BRProject</string>
+		</dict>
+		<dict>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.cocoanuts.scheme-source</string>
+				<string>public.plain-text</string>
+				<string>public.html</string>
+				<string>public.xml</string>
+				<string>public.c-source</string>
+				<string>public.objective-c-source</string>
+				<string>public.c-plus-plus-source</string>
+				<string>public.objective-c-plus-plus-source</string>
+				<string>public.c-header</string>
+				<string>public.c-plus-plus-header</string>
+				<string>com.netscape.javascript-source</string>
+				<string>com.apple.traditional-mac-plain-text</string>
+				<string>public.shell-script</string>
+				<string>public.csh-script</string>
+				<string>public.perl-script</string>
+				<string>public.php-script</string>
+				<string>public.utf8-plain-text</string>
+				<string>public.utf16-external-plain-​text</string>
+				<string>public.utf16-plain-text</string>
+				<string>public.source-code</string>
+				<string>public.script</string>
+			</array>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>scm</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string></string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array/>
+			<key>CFBundleTypeName</key>
+			<string>Scheme Source</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>????</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>NSDocumentClass</key>
+			<string>BRProject</string>
+		</dict>
+		<dict>
+			<key>NSDocumentClass</key>
+			<string>BRProject</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>*</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>All documents</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>****</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
