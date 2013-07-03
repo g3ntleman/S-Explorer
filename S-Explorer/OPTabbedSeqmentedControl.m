@@ -15,42 +15,25 @@
 
 @implementation OPTabbedSeqmentedControl
 
-// setWidth: width forSegment:
-- (void) sizeToFit {
-    NSLog(@"sizeToFit called.");
-    [super sizeToFit];
-}
 
-- (void) setFrame: (NSRect) newFrame {
-    [super setFrame: newFrame];
-}
-
-- (void)calcSize {
-    [super calcSize];
-}
-
-- (NSUInteger)autoresizingMask {
-    return (NSViewWidthSizable);
-}
-
-
-- (BOOL)autoresizesSubviews {
-//    NSLog(@"autoresizesSubviews");
-    return YES;
-}
-
-    
-    
 - (void) resizeWithOldSuperviewSize: (NSSize) oldSuperSize {
 
     if (self.autoresizingMask | NSViewWidthSizable) {
         // Adjust sizes of the cells proportionally:
         NSSize newSuperSize = self.superview.frame.size;
+        CGFloat rest = 0.0;
         double factor = newSuperSize.width / oldSuperSize.width;
         NSUInteger count = self.segmentCount;
         for (int i=0; i < count; i++) {
             CGFloat oldWidth = [self widthForSegment: i];
             CGFloat newWidth = oldWidth * factor;
+//            if (rest>=1.0) {
+//                newWidth += floor(rest);
+//                rest -= floor(rest);
+//            }
+//            CGFloat newRoundedWidth = floor(newWidth);
+//            rest += newWidth-newRoundedWidth;
+            
             [self setWidth: newWidth forSegment: i];
         }
     }

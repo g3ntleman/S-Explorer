@@ -277,6 +277,14 @@
 }
 
 
+- (IBAction) run: (id) sender {
+    
+    NSString* res = [vm evaluateToStringFromString: @"(repl)"];
+    
+    NSLog(@"repl result = %@", res);
+    
+}
+
 
 - (void) windowControllerDidLoadNib: (NSWindowController*) aController {
     
@@ -311,7 +319,7 @@
 //    NSString* input1 = @"(import (scheme base))";
 //    NSString* output1 = [vm evaluateToStringFromString: input1];
     
-    //[vm evaluateToStringFromString: @"(import (chibi ast))"];
+    [vm evaluateToStringFromString: @"(import (chibi repl))"];
 
     
     [vm loadSchemeSource: @"S-Explorer-support" error: &error];
@@ -477,8 +485,6 @@
     
     return result;
 }
-
-
 
 //- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
 //    if ([item isKindOfClass:[ATDesktopFolderEntity class]]) {

@@ -306,6 +306,15 @@
 //    return res;
 //}
 
+/**
+ * The caller is responsible for closing the given files.
+ */
+- (void) setStandardPortsForIn: (FILE*) inPort
+                           out: (FILE*) outPort
+                         error: (FILE*) errPort {
+    sexp_load_standard_ports(ctx, NULL, inPort, outPort, errPort, 0);
+}
+
 
 - (NSString*) evaluateToStringFromString: (NSString*) expressionString {
     

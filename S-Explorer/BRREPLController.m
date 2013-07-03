@@ -8,9 +8,11 @@
 
 #import "BRREPLController.h"
 #import "BRREPLView.h"
+#import "CSVM.h"
 
 @implementation BRREPLController {
 
+    CSVM* vm;
     NSUInteger commandOffset; // where the current command starts
 }
 
@@ -36,8 +38,19 @@ static NSData* lineFeedData = nil;
     
 }
 
+- (void) setVirtualMachine: (CSVM*) aVM {
+    vm = aVM;
+    
+    NSFileHandle* typingHandle = [[NSPipe pipe] fileHandleForWriting];
+    NSFileHandle* displayHandle = [[NSPipe pipe] fileHandleForReading];
+    NSFileHandle* errorDisplayHandle = [[NSPipe pipe] fileHandleForReading];
+    
+    FILE* in = fdopen(typingHandle.fileDescriptor, "r");
+    FILE* out = fdopen(displayHandle.fileDescriptor, "r");
+    FILE* err = fdopen(errorDisplayHandle.fileDescriptor, "r");
 
-
+    [vm setStandardPortsForIn: in out: out error: err];
+}
 
 
 - (void) taskOutputReceived: (NSNotification*) n {

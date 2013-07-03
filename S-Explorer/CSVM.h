@@ -27,4 +27,8 @@
 
 - (NSArray*) locationOfProcedureNamed: (NSString*) procedureName;
 
+- (void) setStandardPortsForIn: (FILE*) inPort
+                           out: (FILE*) outPort
+                         error: (FILE*) errPort;
+
 @end

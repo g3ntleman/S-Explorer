@@ -216,11 +216,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "S-Explorer/BRProject.m"
-         timestampString = "394206445.183978"
+         timestampString = "394425298.307351"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "428"
-         endingLineNumber = "428"
+         startingLineNumber = "436"
+         endingLineNumber = "436"
          landmarkName = "-revealInFinder:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -229,11 +229,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "S-Explorer/BRProject.m"
-         timestampString = "394208013.908569"
+         timestampString = "394425298.307351"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "435"
-         endingLineNumber = "435"
+         startingLineNumber = "443"
+         endingLineNumber = "443"
          landmarkName = "-outlineView:writeItems:toPasteboard:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -242,12 +242,25 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "S-Explorer/BRProject.m"
-         timestampString = "394208013.908569"
+         timestampString = "394425298.307351"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "462"
-         endingLineNumber = "462"
+         startingLineNumber = "470"
+         endingLineNumber = "470"
          landmarkName = "-draggingSourceOperationMaskForLocal:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "S-Explorer/BRProject.m"
+         timestampString = "394425315.787715"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "282"
+         endingLineNumber = "282"
+         landmarkName = "-run:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

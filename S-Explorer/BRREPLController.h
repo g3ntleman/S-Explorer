@@ -11,7 +11,7 @@
 
 @interface BRREPLController : NSObject <NSCoding, BRREPLDelegate>
 
-@property (strong, nonatomic) IBOutlet NSResponder* keyResponder;
+//@property (strong, nonatomic) IBOutlet NSResponder* keyResponder;
 
 @property (strong, nonatomic) IBOutlet BRREPLView* replView;
 

@@ -32,6 +32,8 @@
 - (IBAction) saveCurrentSourceItem: (id) sender;
 - (IBAction) revertCurrentSourceItemToSaved: (id) sender;
 
+- (IBAction) run: (id) sender;
+
 - (BRSourceItem*) currentSourceItem;
 
 
