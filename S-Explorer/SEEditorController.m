@@ -45,7 +45,6 @@
 
 
 @implementation SEEditorController {
-    NSRange flashingParRange;
     NSTimer* flashParTimer;
     
 }
@@ -177,20 +176,23 @@
 
 
 - (void) flashParCorrespondingToParAtIndex: (NSUInteger) index {
-    
+        
     NSTextStorage* textStorage = self.textEditorView.textStorage;
     
+    if (index >= textStorage.string.length) {
+        return;
+    }
+
+    
     // Remove old flashing, if necessary:
-    if (flashingParRange.length) {
+    if (flashParTimer) {
         [flashParTimer fire];
-        [flashParTimer invalidate];
         flashParTimer = nil;
-       // [textStorage invertParsAtRange: flashingParRange];
     }
     
     unichar par = [textStorage.string characterAtIndex: index];
-    flashingParRange = NSMakeRange(index, 1);
-    BOOL    match = [self expandRange: &flashingParRange toParMatchingPar: par];
+    NSRange flashingParRange = NSMakeRange(index, 1);
+    BOOL match = [self expandRange: &flashingParRange toParMatchingPar: par];
     
     if (match) {
         
@@ -207,8 +209,14 @@
 }
 
 - (void) textDidChange: (NSNotification*) notification {
-    NSLog(@"Editor changed text: %@", notification.object);
+    NSLog(@"Editor changed text.");
 }
+
+void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC*delay),
+                   dispatch_get_current_queue(), block);
+}
+ 
 
 - (void) textViewDidChangeSelection: (NSNotification*) notification {
     NSRange newRange = [[[notification.object selectedRanges] lastObject] rangeValue];
@@ -216,9 +224,11 @@
     
     if (newRange.length+oldRange.length == 0 && (newRange.location+1 == oldRange.location || newRange.location == oldRange.location+1)) {
         NSLog(@"Cursor moved one char.");
-        [self flashParCorrespondingToParAtIndex: MIN(oldRange.location, newRange.location)];
+        
+        OPRunBlockAfterDelay(0.0, ^{
+            [self flashParCorrespondingToParAtIndex: MIN(oldRange.location, newRange.location)];
+        });
     }
-    
     
     NSLog(@"Selection changed from %@ to %@", NSStringFromRange(oldRange), NSStringFromRange(newRange));
 }
