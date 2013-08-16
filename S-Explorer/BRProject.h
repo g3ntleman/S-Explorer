@@ -8,14 +8,15 @@
 
 #import <AppKit/AppKit.h>
 #import "BRREPLController.h"
-#import "BRSchemeParser.h"
+#import "SESchemeParser.h"
+#import "BRSourceItem.h"
+#import "SEEditorController.h"
 
 @class BRSourceItem;
 
-@interface BRProject : NSDocument <BRSchemeParserDelegate, NSOutlineViewDataSource, NSUserInterfaceValidations>
+@interface BRProject : NSDocument <NSOutlineViewDataSource, NSUserInterfaceValidations>
 
 @property (strong, nonatomic) IBOutlet BRREPLController* replController;
-@property (strong, nonatomic) IBOutlet NSTextView* sourceTextView;
 @property (strong, nonatomic) IBOutlet NSView* sourceCellView;
 @property (strong, nonatomic) IBOutlet NSImageView* sourceCellIconView;
 @property (strong, nonatomic) IBOutlet NSTextField* sourceCellTextField;
@@ -26,6 +27,8 @@
 @property (strong, nonatomic) IBOutlet NSOutlineView* sourceList;
 @property (strong, readonly) NSMutableDictionary* projectSettings;
 @property (strong, readonly) NSMutableDictionary* uiSettings;
+@property (strong, nonatomic) IBOutlet SEEditorController* editorController;
+
 
 - (IBAction) selectSourceTab: (id) sender;
 - (IBAction) sourceTableAction: (id) sender;

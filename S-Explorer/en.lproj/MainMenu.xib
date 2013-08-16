@@ -705,6 +705,7 @@
 							<array class="NSMutableArray" key="NSMenuItems">
 								<object class="NSMenuItem" id="253952766">
 									<reference key="NSMenu" ref="388842427"/>
+									<bool key="NSIsDisabled">YES</bool>
 									<string key="NSTitle">S-Explorer Help</string>
 									<string key="NSKeyEquiv">?</string>
 									<int key="NSKeyEquivModMask">1048576</int>
@@ -1695,6 +1696,8 @@
 					<string key="className">BRProject</string>
 					<string key="superclassName">NSDocument</string>
 					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="colorizeCurrentFile:">id</string>
+						<string key="revealInFinder:">id</string>
 						<string key="revertCurrentSourceItemToSaved:">id</string>
 						<string key="run:">id</string>
 						<string key="saveCurrentSourceItem:">id</string>
@@ -1702,6 +1705,14 @@
 						<string key="sourceTableAction:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="colorizeCurrentFile:">
+							<string key="name">colorizeCurrentFile:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="revealInFinder:">
+							<string key="name">revealInFinder:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="revertCurrentSourceItemToSaved:">
 							<string key="name">revertCurrentSourceItemToSaved:</string>
 							<string key="candidateClassName">id</string>

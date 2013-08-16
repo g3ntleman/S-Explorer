@@ -6,11 +6,10 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import "BRSchemeParser.h"
+#import "SESchemeParser.h"
 #include <ctype.h>
 
-@implementation BRSchemeParser {
-    NSString* schemeString;
+@implementation SESchemeParser {
     unichar* characters;
     NSUInteger length;
     NSUInteger position;
@@ -33,7 +32,7 @@
     if (! schemeSource) return nil;
     
     if (self = [self init]) {
-        schemeString = schemeSource;
+        _string = schemeSource;
         length = schemeSource.length;
         characters = malloc(sizeof(unichar) * length + 1);
         [schemeSource getCharacters: characters];

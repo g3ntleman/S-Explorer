@@ -30,7 +30,7 @@
 	    perror("setsid");
 	
 	if (ioctl(slavefd, TIOCSCTTY, NULL) < 0)
-	    perror("setting conttrol terminal");
+	    perror("setting control terminal");
     }
     return self;
 }

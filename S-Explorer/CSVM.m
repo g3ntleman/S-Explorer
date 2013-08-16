@@ -309,10 +309,15 @@
 /**
  * The caller is responsible for closing the given files.
  */
-- (void) setStandardPortsForIn: (FILE*) inPort
-                           out: (FILE*) outPort
-                         error: (FILE*) errPort {
-    sexp_load_standard_ports(ctx, NULL, inPort, outPort, errPort, 0);
+- (void) setStandardFileHandlesForIn: (NSFileHandle*) inHandle
+                                 out: (NSFileHandle*) outHandle
+                               error: (NSFileHandle*) errHandle {
+    
+    FILE* in = fdopen(inHandle.fileDescriptor, "w");
+    FILE* out = fdopen(outHandle.fileDescriptor, "r");
+    FILE* err = fdopen(errHandle.fileDescriptor, "r");
+    
+    sexp_load_standard_ports(ctx, NULL, in, out, err, 0);
 }
 
 

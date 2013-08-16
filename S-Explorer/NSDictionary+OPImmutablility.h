@@ -12,6 +12,6 @@
 
 - (id) dictionaryByRemovingObjectForKey: (id<NSCopying>) key;
 
--(id) dictionaryBySettingObject: (id) value forKey: (id<NSCopying>) key;
+- (id) dictionaryBySettingObject: (id) value forKey: (id<NSCopying>) key;
 
 @end

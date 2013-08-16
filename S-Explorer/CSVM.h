@@ -18,7 +18,7 @@
     sexp ctx;
 }
 
-@property (readonly) NSArray* allSymbols;
+@property (readonly) NSArray* allSymbols; // sorted
 
 - (id) evaluateToPropertyListFromString: (NSString*) expressionString error: (NSError**) errorPtr;
 - (NSString*) evaluateToStringFromString: (NSString*) expressionString;
@@ -27,8 +27,8 @@
 
 - (NSArray*) locationOfProcedureNamed: (NSString*) procedureName;
 
-- (void) setStandardPortsForIn: (FILE*) inPort
-                           out: (FILE*) outPort
-                         error: (FILE*) errPort;
+- (void) setStandardFileHandlesForIn: (NSFileHandle*) inHandle
+                                 out: (NSFileHandle*) outHandle
+                               error: (NSFileHandle*) errHandle;
 
 @end

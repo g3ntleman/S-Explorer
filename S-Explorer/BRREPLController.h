@@ -8,6 +8,8 @@
 
 #import <AppKit/AppKit.h>
 #import "BRREPLView.h"
+#import "CSVM.h"
+
 
 @interface BRREPLController : NSObject <NSCoding, BRREPLDelegate>
 
@@ -18,5 +20,6 @@
 @property (readonly) NSRange currentCommandRange;
 @property (readonly) NSString* currentCommand;
 
+@property (strong) CSVM* virtualMachine;
 
 @end

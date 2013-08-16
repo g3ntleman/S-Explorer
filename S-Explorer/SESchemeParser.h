@@ -27,20 +27,21 @@ typedef struct  {
 } TokenOccurrence;
 
 
-@class BRSchemeParser;
+@class SESchemeParser;
 
-@protocol BRSchemeParserDelegate <NSObject>
+@protocol SESchemeParserDelegate <NSObject>
 
-- (void) parser: (BRSchemeParser*) parser
+- (void) parser: (SESchemeParser*) parser
      foundToken: (TokenOccurrence) tokenInstance
         atDepth: (NSInteger) depth
    elementCount: (NSUInteger) elementCount;
 
 @end
 
-@interface BRSchemeParser : NSObject
+@interface SESchemeParser : NSObject
 
-@property (strong) id <BRSchemeParserDelegate> delegate;
+@property (strong) id <SESchemeParserDelegate> delegate;
+@property (strong, readonly) NSString* string;
 
 + (NSSet*) keywords;
 

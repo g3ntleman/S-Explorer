@@ -100,7 +100,7 @@
 
 - (void) setCurrentSourceItem: (BRSourceItem*) sourceItem {
     
-    NSTextStorage* textStorage = self.sourceTextView.textStorage;
+    NSTextStorage* textStorage = self.editorController.textEditorView.textStorage;
     NSString* fileContent = sourceItem.content;
     if (! fileContent)
         fileContent = @"";
@@ -110,7 +110,7 @@
     
     // Colorize scheme files:
     if ([sourceItem.relativePath.pathExtension isEqualToString: @"scm"]) {
-        [self colorizeCurrentFile: self];
+        [self.editorController colorize: self];
     }
 }
 
@@ -176,68 +176,9 @@
 
 
 - (void) awakeFromNib {
-
-}
-
-- (void) parser: (BRSchemeParser*) parser
-     foundToken: (TokenOccurrence) tokenInstance
-        atDepth: (NSInteger) depth
-   elementCount: (NSUInteger) elementCount {
-    
-    NSTextStorage* textStorage = self.sourceTextView.textStorage;
-    
-    switch (tokenInstance.token) {
-        case COMMENT: {
-            NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: [NSColor greenColor]};
-            [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
-            break;
-        }
-        case ATOM: {
-            if (elementCount == 0 && depth>=1) {
-                NSColor* color = nil;
-                NSString* word = [textStorage.string substringWithRange: tokenInstance.occurrence];
-                
-                
-                if ([[BRSchemeParser keywords] containsObject: word]) {
-                    color = [NSColor purpleColor];
-                } else if ([[vm allSymbols] containsObject: word]) {
-                    color = [NSColor blueColor];
-                }
-                
-                if (color) {
-                    NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: color};
-                    [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
-                }
-            }
-            break;
-        }
-        default:
-            break;
-    }
 }
 
 
-- (IBAction) colorizeCurrentFile: (id) sender {
-    
-    NSTextStorage* textStorage = self.sourceTextView.textStorage;
-    
-//    struct sexp_callbacks parserCallbacks;
-//    parserCallbacks.handle_atom = &parser_handle_atom;
-//    parserCallbacks.begin_list = &parser_begin_list;
-//    parserCallbacks.end_list = &parser_end_list;
-//    parserCallbacks.handle_error = &parser_handle_error;
-//
-//    // Parse parserCString calling the callbacks above:
-//    int res = sexp_parse(parserCString, &parserCallbacks, (__bridge void*)self);
-
-    BRSchemeParser* parser = [[BRSchemeParser alloc] initWithString: textStorage.string];
-    parser.delegate = self;
-    NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
-    [parser parse];
-    NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
-    NSLog(@"Parsing & Highlighting took %lf seconds.", endTime-startTime);
-
-}
 
 - (IBAction) sourceTableAction: (id) sender {
     NSLog(@"sourceTableAction.");
@@ -293,13 +234,7 @@
     
     [self.sourceList setDraggingSourceOperationMask: NSDragOperationLink forLocal: NO];
 
-    
-    NSScrollView* scrollView = self.sourceTextView.enclosingScrollView;
-    NoodleLineNumberView* lineNumberView = [[NoodleLineNumberView alloc] initWithScrollView: scrollView];
-    [scrollView setVerticalRulerView: lineNumberView];
-    [scrollView setHasHorizontalRuler: NO];
-    [scrollView setHasVerticalRuler: YES];
-    [scrollView setRulersVisible: YES];
+
 
     
     
@@ -330,6 +265,8 @@
     //NSLog(@"All symbols: %@\n%@", input3, allSymbolStrings);
     NSLog(@"All VM symbols: %@", vm.allSymbols);
     
+    self.editorController.keywords = vm.allSymbols;
+    
     [vm locationOfProcedureNamed: @"map"];
     
     [self setSourceItem: tabbedSourceItems[@(sourceTab.selectedSegment)] forIndex: sourceTab.selectedSegment];
@@ -339,6 +276,8 @@
         BRSourceItem* item = [self.projectSourceItem childWithPath: path];
         [self.sourceList expandItem: item];
     }
+    
+    self.replController.virtualMachine = vm;
     
 }
 
