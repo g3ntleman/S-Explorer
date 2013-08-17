@@ -152,7 +152,7 @@
                 (*rangePtr).location -= 1;
                 unichar matchingPar = [textStorage.string characterAtIndex: (*rangePtr).location];
                 NSColor* color = [textStorage attribute: NSForegroundColorAttributeName atIndex: (*rangePtr).location effectiveRange: NULL];
-                if (color != self.commentColor) {
+                if (color != self.commentColor && color != self.stringColor) {
                     if (matchingPar == '(') {
                         return YES;
                     }
