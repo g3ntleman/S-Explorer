@@ -90,6 +90,14 @@
             result.token = DOT;
             result.occurrence.length = 1;
             return result;
+        case '"':
+            result.token = STRING;
+            do {
+                c = [self getc];
+            } while (c != 0 && c != '"');
+            result.occurrence.length = position-result.occurrence.location;
+
+            return result;
 
         default:
             
@@ -125,6 +133,7 @@
                 depth -= 1;
                 break;
             case ATOM:
+            case STRING:
                 [delegate parser: self foundToken: tokenInstance atDepth: depth elementCount: elementCount];
                 elementCount += 1;
                 break;

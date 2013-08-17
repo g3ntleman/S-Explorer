@@ -44,11 +44,20 @@
 @end
 
 
+
+
 @implementation SEEditorController {
     NSTimer* flashParTimer;
     
 }
 
+- (NSColor*) commentColor {
+    return [NSColor greenColor];
+}
+
+- (NSColor*) stringColor {
+    return [NSColor redColor];
+}
 
 - (void) parser: (SESchemeParser*) parser
      foundToken: (TokenOccurrence) tokenInstance
@@ -59,25 +68,36 @@
     
     switch (tokenInstance.token) {
         case COMMENT: {
-            NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: [NSColor greenColor]};
+            NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: self.commentColor};
+            [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
+            break;
+        }
+        case STRING: {
+            NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: self.stringColor};
             [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
             break;
         }
         case ATOM: {
-            if (elementCount == 0 && depth>=1) {
-                NSColor* color = nil;
-                NSString* word = [textStorage.string substringWithRange: tokenInstance.occurrence];
+            
+            if (depth>=1) {
+                NSString* tokenString = [textStorage.string substringWithRange: tokenInstance.occurrence];
+                NSLog(@"Colorizer found word '%@'", tokenString);
                 
-                
-                if ([[SESchemeParser keywords] containsObject: word]) {
-                    color = [NSColor purpleColor];
-                } else if ([self.keywords containsObject: word]) {
-                    color = [NSColor blueColor];
-                }
-                
-                if (color) {
-                    NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: color};
-                    [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
+                if (elementCount == 0) {
+                    NSColor* color = nil;
+                    NSString* word = [textStorage.string substringWithRange: tokenInstance.occurrence];
+                    
+                    //NSLog(@"Colorizer found word '%@'", word);
+                    if ([[SESchemeParser keywords] containsObject: word]) {
+                        color = [NSColor purpleColor];
+                    } else if ([self.keywords containsObject: word]) {
+                        color = [NSColor blueColor];
+                    }
+                    
+                    if (color) {
+                        NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: color};
+                        [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
+                    }
                 }
             }
             break;
@@ -123,23 +143,26 @@
 
 - (BOOL) expandRange: (NSRange*) rangePtr toParMatchingPar: (unichar) par {
 
-    NSString* string = self.textEditorView.textStorage.string;
+    NSTextStorage* textStorage = self.textEditorView.textStorage;
     switch (par) {
         case ')': {
             while ((*rangePtr).location > 0) {
                 // Search left:
                 (*rangePtr).length += 1;
                 (*rangePtr).location -= 1;
-                unichar matchingPar = [string characterAtIndex: (*rangePtr).location];
-                if (matchingPar == '(') {
-                    return YES;
-                }
-                if (matchingPar == ')') {
-                    NSRange newRange = NSMakeRange((*rangePtr).location, 1);
-                    if ([self expandRange: &newRange toParMatchingPar: matchingPar]) {
-                        *rangePtr = NSUnionRange(*rangePtr, newRange);
-                    } else {
-                        return NO;
+                unichar matchingPar = [textStorage.string characterAtIndex: (*rangePtr).location];
+                NSColor* color = [textStorage attribute: NSForegroundColorAttributeName atIndex: (*rangePtr).location effectiveRange: NULL];
+                if (color != self.commentColor) {
+                    if (matchingPar == '(') {
+                        return YES;
+                    }
+                    if (matchingPar == ')') {
+                        NSRange newRange = NSMakeRange((*rangePtr).location, 1);
+                        if ([self expandRange: &newRange toParMatchingPar: matchingPar]) {
+                            *rangePtr = NSUnionRange(*rangePtr, newRange);
+                        } else {
+                            return NO;
+                        }
                     }
                 }
                 // Continue search...
@@ -147,11 +170,11 @@
             return NO;
         }
         case '(': {
-            NSUInteger stringLength = string.length;
+            NSUInteger stringLength = textStorage.string.length;
             while (NSMaxRange(*rangePtr) < stringLength) {
                 // Search left:
                 (*rangePtr).length += 1;
-                unichar matchingPar = [string characterAtIndex: NSMaxRange(*rangePtr)-1];
+                unichar matchingPar = [textStorage.string characterAtIndex: NSMaxRange(*rangePtr)-1];
                 if (matchingPar == ')') {
                     return YES;
                 }
@@ -180,6 +203,13 @@
     NSTextStorage* textStorage = self.textEditorView.textStorage;
     
     if (index >= textStorage.string.length) {
+        return;
+    }
+    
+    NSColor* colorAtIndex = [textStorage attribute:NSForegroundColorAttributeName atIndex:index effectiveRange:NULL];
+    
+    // Do not flash within comments or strings:
+    if (colorAtIndex == self.stringColor || colorAtIndex == self.commentColor) {
         return;
     }
 
@@ -225,9 +255,9 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     if (newRange.length+oldRange.length == 0 && (newRange.location+1 == oldRange.location || newRange.location == oldRange.location+1)) {
         NSLog(@"Cursor moved one char.");
         
-        OPRunBlockAfterDelay(0.0, ^{
+        //OPRunBlockAfterDelay(0.0, ^{
             [self flashParCorrespondingToParAtIndex: MIN(oldRange.location, newRange.location)];
-        });
+        //});
     }
     
     NSLog(@"Selection changed from %@ to %@", NSStringFromRange(oldRange), NSStringFromRange(newRange));

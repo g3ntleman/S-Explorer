@@ -2,6 +2,8 @@
 
 ; testing comments
 
+(define test "test1" "test2")
+
 (import (scheme base) (chibi; comment!
 ast))
 
