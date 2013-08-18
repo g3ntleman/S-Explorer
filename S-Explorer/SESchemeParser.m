@@ -107,7 +107,12 @@
                 
             if (c) position -= 1;
             result.occurrence.length = position-result.occurrence.location;
-            result.token = ATOM;
+            unichar firstChar = characters[result.occurrence.location];
+            if (firstChar == '#' || isdigit(firstChar)) {
+                result.token = NUMBER;
+            } else {
+                result.token = ATOM;
+            }
             return result;
     }
 }
@@ -133,6 +138,7 @@
                 depth -= 1;
                 break;
             case ATOM:
+            case NUMBER:
             case STRING:
                 [delegate parser: self foundToken: tokenInstance atDepth: depth elementCount: elementCount];
                 elementCount += 1;

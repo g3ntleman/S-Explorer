@@ -17,7 +17,8 @@ typedef enum {
     END_OF_INPUT,
     ATOM,
     COMMENT,
-    STRING
+    STRING,
+    NUMBER
 } scheme_token;
 
 

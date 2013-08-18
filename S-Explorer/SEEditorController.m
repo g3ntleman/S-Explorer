@@ -59,6 +59,11 @@
     return [NSColor redColor];
 }
 
+- (NSColor*) numberColor {
+    return [NSColor orangeColor];
+}
+
+
 - (void) parser: (SESchemeParser*) parser
      foundToken: (TokenOccurrence) tokenInstance
         atDepth: (NSInteger) depth
@@ -77,17 +82,23 @@
             [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
             break;
         }
+        case NUMBER: {
+            NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: self.numberColor};
+            [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
+            break;
+        }
         case ATOM: {
             
             if (depth>=1) {
-                NSString* tokenString = [textStorage.string substringWithRange: tokenInstance.occurrence];
-                NSLog(@"Colorizer found word '%@'", tokenString);
+                //NSString* tokenString = [textStorage.string substringWithRange: tokenInstance.occurrence];
+                //NSLog(@"Colorizer found word '%@'", tokenString);
                 
                 if (elementCount == 0) {
+                    // Found first list element
                     NSColor* color = nil;
                     NSString* word = [textStorage.string substringWithRange: tokenInstance.occurrence];
                     
-                    //NSLog(@"Colorizer found word '%@'", word);
+                    NSLog(@"Colorizer found word '%@'", word);
                     if ([[SESchemeParser keywords] containsObject: word]) {
                         color = [NSColor purpleColor];
                     } else if ([self.keywords containsObject: word]) {
