@@ -209,6 +209,8 @@
 }
 
 
+
+
 - (void) flashParCorrespondingToParAtIndex: (NSUInteger) index {
         
     NSTextStorage* textStorage = self.textEditorView.textStorage;
@@ -217,7 +219,7 @@
         return;
     }
     
-    NSColor* colorAtIndex = [textStorage attribute:NSForegroundColorAttributeName atIndex:index effectiveRange:NULL];
+    NSColor* colorAtIndex = [textStorage attribute: NSForegroundColorAttributeName atIndex:index effectiveRange:NULL];
     
     // Do not flash within comments or strings:
     if (colorAtIndex == self.stringColor || colorAtIndex == self.commentColor) {
@@ -249,6 +251,8 @@
     }
 }
 
+
+
 - (void) textDidChange: (NSNotification*) notification {
     NSLog(@"Editor changed text.");
 }
@@ -257,7 +261,28 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC*delay),
                    dispatch_get_current_queue(), block);
 }
- 
+
+
+- (NSRange) textView: (NSTextView*) textView willChangeSelectionFromCharacterRange: (NSRange) oldRange toCharacterRange: (NSRange) newRange {
+    
+    if (newRange.length == 1) {
+        // Check, if user selected one par:
+        if (YES) {
+
+            NSTextStorage* textStorage = self.textEditorView.textStorage;
+            unichar par = [textStorage.string characterAtIndex: newRange.location];
+            NSRange parRange = NSMakeRange(newRange.location, 1);
+            BOOL match = [self expandRange: &parRange toParMatchingPar: par];
+            
+            if (match) {
+                return parRange;
+            }
+        
+        }
+    }
+    return newRange;
+}
+
 
 - (void) textViewDidChangeSelection: (NSNotification*) notification {
     NSRange newRange = [[[notification.object selectedRanges] lastObject] rangeValue];
@@ -267,7 +292,7 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
         NSLog(@"Cursor moved one char.");
         
         //OPRunBlockAfterDelay(0.0, ^{
-            [self flashParCorrespondingToParAtIndex: MIN(oldRange.location, newRange.location)];
+        [self flashParCorrespondingToParAtIndex: MIN(oldRange.location, newRange.location)];
         //});
     }
     

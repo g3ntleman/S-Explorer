@@ -16,7 +16,6 @@ ast))
 
 (define (string-common-prefix-length strings)
   (if (null? strings)
-      0
       (let lp ((len (string-length (car strings)))
                (prev (car strings))
                (ls (cdr strings)))
