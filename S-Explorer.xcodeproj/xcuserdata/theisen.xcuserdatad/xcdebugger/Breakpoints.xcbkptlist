@@ -203,11 +203,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "S-Explorer/BRSourceItem.m"
-         timestampString = "394163945.991101"
+         timestampString = "398575967.773289"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "171"
-         endingLineNumber = "171"
+         startingLineNumber = "186"
+         endingLineNumber = "186"
          landmarkName = "-writableTypesForPasteboard:"
          landmarkType = "5">
       </FileBreakpoint>
@@ -261,6 +261,19 @@
          startingLineNumber = "223"
          endingLineNumber = "223"
          landmarkName = "-run:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "S-Explorer/SEProject.m"
+         timestampString = "398576002.237627"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "64"
+         endingLineNumber = "64"
+         landmarkName = "-setSourceItem:forIndex:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

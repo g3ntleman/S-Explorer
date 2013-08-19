@@ -14,7 +14,7 @@
 
 @class BRSourceItem;
 
-@interface BRProject : NSDocument <NSOutlineViewDataSource, NSUserInterfaceValidations>
+@interface SEProject : NSDocument <NSOutlineViewDataSource, NSUserInterfaceValidations>
 
 @property (strong, nonatomic) IBOutlet BRREPLController* replController;
 @property (strong, nonatomic) IBOutlet NSView* sourceCellView;

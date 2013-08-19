@@ -17,8 +17,8 @@
 		8D604254173BE60800149409 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D604252173BE60800149409 /* InfoPlist.strings */; };
 		8D604256173BE60800149409 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604255173BE60800149409 /* main.m */; };
 		8D60425A173BE60800149409 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 8D604258173BE60800149409 /* Credits.rtf */; };
-		8D60425D173BE60800149409 /* BRProject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D60425C173BE60800149409 /* BRProject.m */; };
-		8D604260173BE60800149409 /* BRProject.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D60425E173BE60800149409 /* BRProject.xib */; };
+		8D60425D173BE60800149409 /* SEProject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D60425C173BE60800149409 /* SEProject.m */; };
+		8D604260173BE60800149409 /* SEProject.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D60425E173BE60800149409 /* SEProject.xib */; };
 		8D604263173BE60800149409 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D604261173BE60800149409 /* MainMenu.xib */; };
 		8D60426B173BE60900149409 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60426A173BE60900149409 /* SenTestingKit.framework */; };
 		8D604274173BE60900149409 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D604272173BE60900149409 /* InfoPlist.strings */; };
@@ -32,6 +32,7 @@
 		8D99612717BDB9740058FD0B /* SEEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D99612617BDB9730058FD0B /* SEEditorController.m */; };
 		8D99612B17BE42150058FD0B /* NSTimer-NoodleExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D99612917BE41520058FD0B /* NSTimer-NoodleExtensions.m */; };
 		8D99612F17BE42FF0058FD0B /* NoodleGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D99612D17BE42EC0058FD0B /* NoodleGlue.m */; };
+		8D99613117C1C7DF0058FD0B /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D99613017C1C7DF0058FD0B /* CoreServices.framework */; };
 		8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */; };
 		8DFA6E681760F49F006780BF /* libchibi-scheme.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DFA6E671760F49F006780BF /* libchibi-scheme.dylib */; };
 /* End PBXBuildFile section */
@@ -71,9 +72,9 @@
 		8D604255173BE60800149409 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8D604257173BE60800149409 /* S-Explorer-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "S-Explorer-Prefix.pch"; sourceTree = "<group>"; };
 		8D604259173BE60800149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		8D60425B173BE60800149409 /* BRProject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = BRProject.h; sourceTree = "<group>"; };
-		8D60425C173BE60800149409 /* BRProject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BRProject.m; sourceTree = "<group>"; };
-		8D60425F173BE60800149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BRProject.xib; sourceTree = "<group>"; };
+		8D60425B173BE60800149409 /* SEProject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SEProject.h; sourceTree = "<group>"; };
+		8D60425C173BE60800149409 /* SEProject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SEProject.m; sourceTree = "<group>"; };
+		8D60425F173BE60800149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/SEProject.xib; sourceTree = "<group>"; };
 		8D604262173BE60800149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		8D604269173BE60900149409 /* S-ExplorerTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "S-ExplorerTests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D60426A173BE60900149409 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -94,6 +95,7 @@
 		8D99612917BE41520058FD0B /* NSTimer-NoodleExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTimer-NoodleExtensions.m"; sourceTree = "<group>"; };
 		8D99612C17BE42EB0058FD0B /* NoodleGlue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoodleGlue.h; sourceTree = "<group>"; };
 		8D99612D17BE42EC0058FD0B /* NoodleGlue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoodleGlue.m; sourceTree = "<group>"; };
+		8D99613017C1C7DF0058FD0B /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		8DAFB9BB17543351006C71B3 /* CSVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = CSVM.h; sourceTree = "<group>"; };
 		8DAFB9BC17543351006C71B3 /* CSVM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSVM.m; sourceTree = "<group>"; };
 		8DCBE8AB176F7918004B6AA2 /* NSDictionary+OPImmutablility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = "NSDictionary+OPImmutablility.h"; sourceTree = "<group>"; };
@@ -442,6 +444,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D99613117C1C7DF0058FD0B /* CoreServices.framework in Frameworks */,
 				8D604293173C143300149409 /* Foundation.framework in Frameworks */,
 				8D604292173C142A00149409 /* AppKit.framework in Frameworks */,
 				8DFA6E681760F49F006780BF /* libchibi-scheme.dylib in Frameworks */,
@@ -462,6 +465,7 @@
 		8D60423D173BE60800149409 = {
 			isa = PBXGroup;
 			children = (
+				8D99613017C1C7DF0058FD0B /* CoreServices.framework */,
 				8D60424F173BE60800149409 /* S-Explorer */,
 				8D604250173BE60800149409 /* Supporting Files */,
 				8D60426F173BE60900149409 /* S-ExplorerTests */,
@@ -497,9 +501,9 @@
 				8D99612C17BE42EB0058FD0B /* NoodleGlue.h */,
 				8D99612D17BE42EC0058FD0B /* NoodleGlue.m */,
 				8D8298D31758088000336E2F /* S-Explorer-support.scm */,
-				8D60425B173BE60800149409 /* BRProject.h */,
-				8D60425C173BE60800149409 /* BRProject.m */,
-				8D60425E173BE60800149409 /* BRProject.xib */,
+				8D60425B173BE60800149409 /* SEProject.h */,
+				8D60425C173BE60800149409 /* SEProject.m */,
+				8D60425E173BE60800149409 /* SEProject.xib */,
 				8D604298173C388900149409 /* BRREPLView.h */,
 				8D604299173C388900149409 /* BRREPLView.m */,
 				8D2AAB6D177A93EB008F07C4 /* MarkerLineNumberView.h */,
@@ -1352,7 +1356,7 @@
 			files = (
 				8D604254173BE60800149409 /* InfoPlist.strings in Resources */,
 				8D60425A173BE60800149409 /* Credits.rtf in Resources */,
-				8D604260173BE60800149409 /* BRProject.xib in Resources */,
+				8D604260173BE60800149409 /* SEProject.xib in Resources */,
 				8D604263173BE60800149409 /* MainMenu.xib in Resources */,
 				8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */,
 			);
@@ -1390,7 +1394,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D604256173BE60800149409 /* main.m in Sources */,
-				8D60425D173BE60800149409 /* BRProject.m in Sources */,
+				8D60425D173BE60800149409 /* SEProject.m in Sources */,
 				8D604297173C22D600149409 /* BRREPLController.m in Sources */,
 				8D60429B173C388900149409 /* BRREPLView.m in Sources */,
 				8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */,
@@ -1443,12 +1447,12 @@
 			name = Credits.rtf;
 			sourceTree = "<group>";
 		};
-		8D60425E173BE60800149409 /* BRProject.xib */ = {
+		8D60425E173BE60800149409 /* SEProject.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				8D60425F173BE60800149409 /* en */,
 			);
-			name = BRProject.xib;
+			name = SEProject.xib;
 			sourceTree = "<group>";
 		};
 		8D604261173BE60800149409 /* MainMenu.xib */ = {

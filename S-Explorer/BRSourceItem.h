@@ -10,7 +10,7 @@
 
 @interface BRSourceItem : NSObject <NSPasteboardWriting>
 
-
+@property (readonly) BOOL isTextItem;
 @property (weak, readonly) BRSourceItem* parent;
 @property (weak, nonatomic) NSMutableString* content;
 

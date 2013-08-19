@@ -6,14 +6,14 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import "BRProject.h"
+#import "SEProject.h"
 #import "NSAlert+OPBlocks.h"
 #import "CSVM.h"
 #import "BRSourceItem.h"
 #import "NSDictionary+OPImmutablility.h"
 #import "NoodleLineNumberView.h"
 
-@implementation BRProject {
+@implementation SEProject {
     CSVM* vm;
     NSMutableDictionary* uiSettings;
 }
@@ -60,8 +60,8 @@
  */
 - (void) setSourceItem: (BRSourceItem*) item forIndex: (NSUInteger) index {
     
-    NSParameterAssert([item isKindOfClass: [BRSourceItem class]]);
     if (item) {
+        NSParameterAssert([item isKindOfClass: [BRSourceItem class]]);
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryBySettingObject: item forKey: @(index)];
     } else {
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryByRemovingObjectForKey: @(index)];
@@ -90,7 +90,7 @@
 
 - (NSString *)windowNibName {
     // If you need to use a subclass of NSWindowController or if your document supports multiple NSWindowControllers, you should remove this method and override -makeWindowControllers instead.
-    return @"BRProject";
+    return @"SEProject";
 }
 
 - (BRSourceItem*) currentSourceItem {
@@ -183,7 +183,10 @@
 - (IBAction) sourceTableAction: (id) sender {
     NSLog(@"sourceTableAction.");
     BRSourceItem* selectedSourceItem = [self.sourceList itemAtRow: self.sourceList.selectedRow];
-    [self setCurrentSourceItem: selectedSourceItem];
+    
+    if (selectedSourceItem.isTextItem) {
+        [self setCurrentSourceItem: selectedSourceItem];
+    }
 }
 
 - (IBAction) selectSourceTab: (id) sender {
@@ -231,6 +234,12 @@
     
     [super windowControllerDidLoadNib: aController];
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
+    
+    
+    // Check, wether the oser wants to create a project (from a folder):
+    
+    
+    
     
     [self.sourceList setDraggingSourceOperationMask: NSDragOperationLink forLocal: NO];
 
@@ -281,7 +290,7 @@
     
 }
 
-+ (BOOL)autosavesInPlace {
++ (BOOL) autosavesInPlace {
     return NO; // Turn on later!
 }
 
@@ -313,7 +322,7 @@
 
 @end
 
-@implementation BRProject (SourceOutlineViewDataSource)
+@implementation SEProject (SourceOutlineViewDataSource)
 // Data Source methods
 
 - (NSInteger) outlineView:(NSOutlineView*) outlineView numberOfChildrenOfItem: (id) item {

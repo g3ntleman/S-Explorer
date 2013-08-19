@@ -20,7 +20,7 @@
 				<string>org.cocoanuts.s-explorer-project</string>
 			</array>
 			<key>NSDocumentClass</key>
-			<string>BRProject</string>
+			<string>SEProject</string>
 		</dict>
 		<dict>
 			<key>LSItemContentTypes</key>
@@ -64,11 +64,11 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>NSDocumentClass</key>
-			<string>BRProject</string>
+			<string>SEProject</string>
 		</dict>
 		<dict>
 			<key>NSDocumentClass</key>
-			<string>BRProject</string>
+			<string>SEProject</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>*</string>

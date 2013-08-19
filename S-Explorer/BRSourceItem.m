@@ -47,6 +47,21 @@ static NSMutableArray *leafNode = nil;
     return content;
 }
 
+- (BOOL) isTextItem {
+    
+    BOOL result = YES;
+    NSString* extension = path.pathExtension;
+    if (extension.length) {
+        // If the UTI is any kind of text (RTF, plain text, Unicode, and so forth), the function UTTypeConformsTo returns true.
+        CFStringRef itemUTI = UTTypeCreatePreferredIdentifierForTag (kUTTagClassFilenameExtension, (__bridge CFStringRef)(extension), NULL);
+
+        
+        result = UTTypeConformsTo(itemUTI, CFSTR("public.text"));
+        CFRelease(itemUTI);
+     }
+    return result;
+}
+
 - (void) contentDidChange {
     changedContent = self.content;
 }
