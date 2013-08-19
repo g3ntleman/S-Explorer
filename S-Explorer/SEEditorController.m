@@ -11,6 +11,18 @@
 #import "NSTimer-NoodleExtensions.h"
 
 
+static BOOL isPar(unichar aChar) {
+    return aChar == '(' || aChar == ')' || aChar == '[' || aChar == ']' ;
+}
+
+static BOOL matchingPar(unichar aPar) {
+    if (aPar == '(') return ')';
+    if (aPar == ')') return '(';
+    if (aPar == '[') return ']';
+    if (aPar == ']') return '[';
+    return 0;
+}
+
 @interface  NSMutableAttributedString (SEExtensions)
 - (void) invertRange: (NSRange) range;
 - (void) invertParsAtRange: (NSRange) parRange;
@@ -52,7 +64,7 @@
 }
 
 - (NSColor*) commentColor {
-    return [NSColor greenColor];
+    return [NSColor colorWithDeviceRed:0.0 green:0.6 blue:0.0 alpha:1.0];
 }
 
 - (NSColor*) stringColor {
@@ -60,7 +72,7 @@
 }
 
 - (NSColor*) numberColor {
-    return [NSColor orangeColor];
+    return [NSColor redColor];
 }
 
 
@@ -98,7 +110,7 @@
                     NSColor* color = nil;
                     NSString* word = [textStorage.string substringWithRange: tokenInstance.occurrence];
                     
-                    NSLog(@"Colorizer found word '%@'", word);
+                    //NSLog(@"Colorizer found word '%@'", word);
                     if ([[SESchemeParser keywords] containsObject: word]) {
                         color = [NSColor purpleColor];
                     } else if ([self.keywords containsObject: word]) {
@@ -142,6 +154,10 @@
     //
     //    // Parse parserCString calling the callbacks above:
     //    int res = sexp_parse(parserCString, &parserCallbacks, (__bridge void*)self);
+    
+    NSRange fullRange = NSMakeRange(0, textStorage.string.length);
+    [textStorage removeAttribute: NSForegroundColorAttributeName range: fullRange];
+    [textStorage removeAttribute: NSBackgroundColorAttributeName range: fullRange];
     
     SESchemeParser* parser = [[SESchemeParser alloc] initWithString: textStorage.string];
     parser.delegate = self;
@@ -234,6 +250,9 @@
     }
     
     unichar par = [textStorage.string characterAtIndex: index];
+    
+    if (! isPar(par)) return;
+    
     NSRange flashingParRange = NSMakeRange(index, 1);
     BOOL match = [self expandRange: &flashingParRange toParMatchingPar: par];
     
@@ -251,11 +270,31 @@
     }
 }
 
-
++ (void) recolorTextNotification: (NSNotification*) notification {
+    [notification.object colorize: nil];
+}
 
 - (void) textDidChange: (NSNotification*) notification {
+    
     NSLog(@"Editor changed text.");
+    NSNotification* textChangedNotification = [NSNotification notificationWithName: @"SETextNeedsRecoloring" object: self];
+    [[NSNotificationQueue defaultQueue] enqueueNotification: textChangedNotification
+                                                 postingStyle: NSPostWhenIdle
+                                                 coalesceMask: NSNotificationCoalescingOnName | NSNotificationCoalescingOnSender
+                                                     forModes: nil];
 }
+
++ (void) load {
+    
+    static BOOL loaded = NO;
+    if (! loaded) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recolorTextNotification:) name: @"SETextNeedsRecoloring" object: nil];
+        
+        loaded = YES;
+    }
+    
+}
+
 
 void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC*delay),
@@ -263,41 +302,42 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 }
 
 
+
+
 - (NSRange) textView: (NSTextView*) textView willChangeSelectionFromCharacterRange: (NSRange) oldRange toCharacterRange: (NSRange) newRange {
     
     if (newRange.length == 1) {
         // Check, if user selected one par:
-        if (YES) {
+        NSTextStorage* textStorage = self.textEditorView.textStorage;
+        unichar theChar = [textStorage.string characterAtIndex: newRange.location];
 
-            NSTextStorage* textStorage = self.textEditorView.textStorage;
-            unichar par = [textStorage.string characterAtIndex: newRange.location];
+        if (isPar(theChar)) {
             NSRange parRange = NSMakeRange(newRange.location, 1);
-            BOOL match = [self expandRange: &parRange toParMatchingPar: par];
+            BOOL match = [self expandRange: &parRange toParMatchingPar: theChar];
             
             if (match) {
                 return parRange;
             }
-        
         }
-    }
-    return newRange;
-}
-
-
-- (void) textViewDidChangeSelection: (NSNotification*) notification {
-    NSRange newRange = [[[notification.object selectedRanges] lastObject] rangeValue];
-    NSRange oldRange = [[notification.userInfo objectForKey: @"NSOldSelectedCharacterRange"] rangeValue];
-    
-    if (newRange.length+oldRange.length == 0 && (newRange.location+1 == oldRange.location || newRange.location == oldRange.location+1)) {
+    } else if (newRange.length+oldRange.length == 0 && (newRange.location+1 == oldRange.location || newRange.location == oldRange.location+1)) {
         NSLog(@"Cursor moved one char.");
         
         //OPRunBlockAfterDelay(0.0, ^{
         [self flashParCorrespondingToParAtIndex: MIN(oldRange.location, newRange.location)];
         //});
     }
-    
-    NSLog(@"Selection changed from %@ to %@", NSStringFromRange(oldRange), NSStringFromRange(newRange));
+
+    return newRange;
 }
+
+
+//- (void) textViewDidChangeSelection: (NSNotification*) notification {
+//    NSRange newRange = [[[notification.object selectedRanges] lastObject] rangeValue];
+//    NSRange oldRange = [[notification.userInfo objectForKey: @"NSOldSelectedCharacterRange"] rangeValue];
+//    
+//    
+//    NSLog(@"Selection changed from %@ to %@", NSStringFromRange(oldRange), NSStringFromRange(newRange));
+//}
 
 
 
