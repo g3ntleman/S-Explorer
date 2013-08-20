@@ -271,6 +271,7 @@ static BOOL matchingPar(unichar aPar) {
 }
 
 + (void) recolorTextNotification: (NSNotification*) notification {
+    NSLog(@"recolorTextNotification1.");
     [notification.object colorize: nil];
 }
 
@@ -302,6 +303,14 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 }
 
 
+- (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString {
+    
+    if (flashParTimer) {
+        [flashParTimer fire];
+        flashParTimer = nil;
+    }
+    return YES;
+}
 
 
 - (NSRange) textView: (NSTextView*) textView willChangeSelectionFromCharacterRange: (NSRange) oldRange toCharacterRange: (NSRange) newRange {
