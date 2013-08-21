@@ -33,34 +33,36 @@ static BOOL matchingPar(unichar aPar) {
 }
 
 @interface  NSMutableAttributedString (SEExtensions)
-- (void) invertRange: (NSRange) range;
-- (void) invertParsAtRange: (NSRange) parRange;
+- (void) markCharsAtRange: (NSRange) parRange;
+- (void) unmarkChars;
 
 @end
 
 @implementation NSMutableAttributedString (SEExtensions) 
 
-- (void) invertParsAtRange: (NSRange) parRange {
+- (void) markCharsAtRange: (NSRange) parRange {
     
     [self beginEditing];
-    [self invertRange: NSMakeRange(parRange.location, 1)];
-    [self invertRange: NSMakeRange(NSMaxRange(parRange)-1, 1)];
+    [self addAttribute: NSBackgroundColorAttributeName value: [NSColor yellowColor] range: NSMakeRange(parRange.location, 1)];
+    [self addAttribute: NSBackgroundColorAttributeName value: [NSColor yellowColor] range: NSMakeRange(NSMaxRange(parRange)-1, 1)];
     [self endEditing];
 }
 
-- (void) invertRange: (NSRange) range {
-    // Invert range:
-    NSDictionary* attrs = [self attributesAtIndex: range.location effectiveRange: NULL];
-    NSColor* foregroundColor = attrs[NSForegroundColorAttributeName];
-    if (! foregroundColor) foregroundColor = [NSColor blackColor];
-    NSColor* backgroundColor = attrs[NSBackgroundColorAttributeName];
-    if (! backgroundColor) backgroundColor = [NSColor whiteColor];
-    
-    NSDictionary* invertedAttrs = @{NSForegroundColorAttributeName: backgroundColor,
-                                    NSBackgroundColorAttributeName: foregroundColor};
-    
-    [self addAttributes: invertedAttrs range: range];
+- (void) unmarkChars {
+    [self removeAttribute: NSBackgroundColorAttributeName range: NSMakeRange(0, self.string.length)];
 }
+
+//- (void) invertRange: (NSRange) range {
+//    // Invert range:
+//    NSDictionary* attrs = [self attributesAtIndex: range.location effectiveRange: NULL];
+//    NSColor* backgroundColor = attrs[NSBackgroundColorAttributeName];
+//    if (backgroundColor) {
+//        [self removeAttribute: NSBackgroundColorAttributeName range: range];
+//    } else {
+//        backgroundColor = [NSColor yellowColor];
+//        [self addAttribute: NSBackgroundColorAttributeName value: backgroundColor range: range];
+//    }
+//}
 
 @end
 
@@ -166,7 +168,7 @@ static BOOL matchingPar(unichar aPar) {
     
     NSRange fullRange = NSMakeRange(0, textStorage.string.length);
     [textStorage removeAttribute: NSForegroundColorAttributeName range: fullRange];
-    [textStorage removeAttribute: NSBackgroundColorAttributeName range: fullRange];
+    //[textStorage removeAttribute: NSBackgroundColorAttributeName range: fullRange];
     
     SESchemeParser* parser = [[SESchemeParser alloc] initWithString: textStorage.string];
     parser.delegate = self;
@@ -270,9 +272,9 @@ static BOOL matchingPar(unichar aPar) {
     
     if (match) {
         
-        [textStorage invertParsAtRange: flashingParRange];
+        [textStorage markCharsAtRange: flashingParRange];
         flashParTimer = [NSTimer timerWithTimeInterval: 1.0 repeats: NO block: ^(NSTimer *timer) {
-            [textStorage invertParsAtRange: flashingParRange];
+            [textStorage unmarkChars];
         }];
         [[NSRunLoop currentRunLoop] addTimer: flashParTimer forMode: NSDefaultRunLoopMode];
         
@@ -283,7 +285,7 @@ static BOOL matchingPar(unichar aPar) {
 }
 
 + (void) recolorTextNotification: (NSNotification*) notification {
-    NSLog(@"recolorTextNotification1.");
+    NSLog(@"recolorTextNotification.");
     [notification.object colorize: nil];
 }
 
