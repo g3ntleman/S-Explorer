@@ -502,7 +502,6 @@
 		8D60424F173BE60800149409 /* S-Explorer */ = {
 			isa = PBXGroup;
 			children = (
-				8D16399717C57FAE000DD491 /* S-Explorer.iconset */,
 				8DFA6CD6175EA549006780BF /* chibi-scheme */,
 				8D604261173BE60800149409 /* MainMenu.xib */,
 				8D8298D31758088000336E2F /* S-Explorer-support.scm */,
@@ -550,6 +549,7 @@
 		8D604250173BE60800149409 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				8D16399717C57FAE000DD491 /* S-Explorer.iconset */,
 				8D604251173BE60800149409 /* S-Explorer-Info.plist */,
 				8D604252173BE60800149409 /* InfoPlist.strings */,
 				8D604255173BE60800149409 /* main.m */,

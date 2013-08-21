@@ -8,7 +8,9 @@
 
 #import "SEEditorTextView.h"
 
-@implementation SEEditorTextView
+@implementation SEEditorTextView {
+    NSMutableArray* selectionStack;
+}
 
 - (id)initWithFrame:(NSRect)frame
 {
@@ -55,10 +57,51 @@ static NSCharacterSet* SEWordCharacters() {
     return [super selectionRangeForProposedRange: proposedSelRange granularity:granularity];
 }
 
+- (NSMutableArray*) selectionStack {
+    if (! selectionStack) {
+        selectionStack = [[NSMutableArray alloc] initWithCapacity: 10];
+    }
+    return selectionStack;
+}
+
+- (BOOL) validateMenuItem: (NSMenuItem*) item {
+    
+    if ([item action] == @selector(contractSelection:)) {
+        return self.selectionStack.count > 0;
+    }
+    return [super validateMenuItem: item];
+}
+- (void) didChangeText {
+    [super didChangeText];
+    [self.selectionStack removeAllObjects];
+}
+
+- (void)moveToEndOfDocumentAndModifySelection: (id) sender {
+    // NOP
+}
+
+- (void)moveToBeginningOfDocumentAndModifySelection: (id) sender {
+    // NOP
+}
+
+- (IBAction) contractSelection: (id) sender {
+    if (self.selectionStack.count == 0) {
+        NSBeep();
+        return;
+    }
+    NSRange oldSelectionRange = [[self.selectionStack lastObject] rangeValue];
+    [self.selectionStack removeLastObject];
+    self.selectedRange = oldSelectionRange;
+}
+
 
 - (IBAction) expandSelection: (id) sender {
     if ([self.delegate respondsToSelector:_cmd]) {
+        NSRange oldSelectionRange = self.selectedRange;
         [self.delegate performSelector: _cmd withObject: sender];
+        if (! NSEqualRanges(oldSelectionRange, self.selectedRange)) {
+            [self.selectionStack addObject: [NSValue valueWithRange: oldSelectionRange]];
+        }
     }
 }
 

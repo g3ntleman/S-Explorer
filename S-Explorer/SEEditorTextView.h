@@ -11,5 +11,6 @@
 @interface SEEditorTextView : NSTextView
 
 - (IBAction) expandSelection: (id) sender;
+- (IBAction) contractSelection: (id) sender;
 
 @end
