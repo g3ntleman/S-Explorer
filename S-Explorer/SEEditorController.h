@@ -17,4 +17,6 @@
 
 - (IBAction) colorize: (id) sender;
 
+- (IBAction) expandSelection: (id) sender;
+
 @end

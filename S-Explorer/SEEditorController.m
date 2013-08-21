@@ -15,6 +15,15 @@ static BOOL isPar(unichar aChar) {
     return aChar == '(' || aChar == ')' || aChar == '[' || aChar == ']' ;
 }
 
+static inline BOOL isOpeningPar(unichar aChar) {
+    return aChar == '(' || aChar == '[' ;
+}
+
+static inline BOOL isClosingPar(unichar aChar) {
+    return aChar == ')' || aChar == ']' ;
+}
+
+
 static BOOL matchingPar(unichar aPar) {
     if (aPar == '(') return ')';
     if (aPar == ')') return '(';
@@ -171,7 +180,9 @@ static BOOL matchingPar(unichar aPar) {
 - (BOOL) expandRange: (NSRange*) rangePtr toParMatchingPar: (unichar) par {
 
     NSTextStorage* textStorage = self.textEditorView.textStorage;
+    unichar targetPar = matchingPar(par);
     switch (par) {
+        case ']':
         case ')': {
             while ((*rangePtr).location > 0) {
                 // Search left:
@@ -180,10 +191,10 @@ static BOOL matchingPar(unichar aPar) {
                 unichar matchingPar = [textStorage.string characterAtIndex: (*rangePtr).location];
                 NSColor* color = [textStorage attribute: NSForegroundColorAttributeName atIndex: (*rangePtr).location effectiveRange: NULL];
                 if (color != self.commentColor && color != self.stringColor) {
-                    if (matchingPar == '(') {
+                    if (matchingPar == targetPar) {
                         return YES;
                     }
-                    if (matchingPar == ')') {
+                    if (matchingPar == par) {
                         NSRange newRange = NSMakeRange((*rangePtr).location, 1);
                         if ([self expandRange: &newRange toParMatchingPar: matchingPar]) {
                             *rangePtr = NSUnionRange(*rangePtr, newRange);
@@ -196,16 +207,17 @@ static BOOL matchingPar(unichar aPar) {
             }
             return NO;
         }
+        case '[':
         case '(': {
             NSUInteger stringLength = textStorage.string.length;
             while (NSMaxRange(*rangePtr) < stringLength) {
                 // Search left:
                 (*rangePtr).length += 1;
                 unichar matchingPar = [textStorage.string characterAtIndex: NSMaxRange(*rangePtr)-1];
-                if (matchingPar == ')') {
+                if (matchingPar == targetPar) {
                     return YES;
                 }
-                if (matchingPar == '(') {
+                if (matchingPar == par) {
                     NSRange newRange = NSMakeRange(NSMaxRange(*rangePtr)-1, 1);
                     if ([self expandRange: &newRange toParMatchingPar: matchingPar]) {
                         *rangePtr = NSUnionRange(*rangePtr, newRange);
@@ -348,6 +360,40 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 //    NSLog(@"Selection changed from %@ to %@", NSStringFromRange(oldRange), NSStringFromRange(newRange));
 //}
 
+- (IBAction) expandSelection: (id) sender {
+    
+    NSRange oldRange = self.textEditorView.selectedRange;
+    NSRange newRange = oldRange;
 
+    NSString* text = self.textEditorView.textStorage.string;
+    
+    // Check, if expanstion is possible at all:
+    if (oldRange.location < 1 || NSMaxRange(oldRange) >= text.length) {
+        NSBeep();
+        return;
+    }
+    
+    unichar leftChar = [text characterAtIndex: oldRange.location-1];
+    unichar rightChar = [text characterAtIndex: NSMaxRange(oldRange)];
+    if (rightChar == matchingPar(leftChar)) {
+        // Extend to pars:
+        newRange.location -= 1;
+        newRange.length += 2;
+    } else {
+        [self expandRange: &newRange toParMatchingPar: ')'];
+        [self expandRange: &newRange toParMatchingPar: '('];
+        // Exclude pars:
+        if (newRange.length >= 2) {
+            newRange.location += 1;
+            newRange.length -= 2;
+        }
+    }
+    
+    
+    NSLog(@"Expanding selection from %@ to %@", NSStringFromRange(oldRange), NSStringFromRange(newRange));
+    
+    self.textEditorView.selectedRange = newRange;
+}
 
 @end
+

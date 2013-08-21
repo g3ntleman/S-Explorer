@@ -30,7 +30,7 @@ static NSCharacterSet* SEWordCharacters() {
     return SEWordCharacters;
 }
 
-
+/* Change word selection behaviour to include hythens and other characters common in function names. */
 - (NSRange) selectionRangeForProposedRange: (NSRange) proposedSelRange
                                granularity: (NSSelectionGranularity)granularity {
     if (granularity == NSSelectByWord) {
@@ -48,11 +48,18 @@ static NSCharacterSet* SEWordCharacters() {
                 resultRange.length += 1;
             }
             
-            NSLog(@"proposed: %@, result: %@", NSStringFromRange(proposedSelRange), NSStringFromRange(resultRange));
+            //NSLog(@"proposed: %@, result: %@", NSStringFromRange(proposedSelRange), NSStringFromRange(resultRange));
             return resultRange;
         }
     }
     return [super selectionRangeForProposedRange: proposedSelRange granularity:granularity];
+}
+
+
+- (IBAction) expandSelection: (id) sender {
+    if ([self.delegate respondsToSelector:_cmd]) {
+        [self.delegate performSelector: _cmd withObject: sender];
+    }
 }
 
 

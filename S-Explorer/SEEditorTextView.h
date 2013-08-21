@@ -10,4 +10,6 @@
 
 @interface SEEditorTextView : NSTextView
 
+- (IBAction) expandSelection: (id) sender;
+
 @end
