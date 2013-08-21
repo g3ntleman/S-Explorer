@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; };
 		8D0904C2176A7C4800176BCF /* BRSourceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904C1176A7C4800176BCF /* BRSourceItem.m */; };
+		8D16399617C3B7A6000DD491 /* SEEditorTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D16399517C3B7A6000DD491 /* SEEditorTextView.m */; };
+		8D16399817C57FAE000DD491 /* S-Explorer.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 8D16399717C57FAE000DD491 /* S-Explorer.iconset */; };
 		8D2445B9178107C200C4072C /* OPTabbedSeqmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904BE1769447100176BCF /* OPTabbedSeqmentedControl.m */; };
 		8D27BFF51766C59D00F1F8FA /* SESchemeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFF31766C59C00F1F8FA /* SESchemeParser.m */; };
 		8D2AAB6417778E5F008F07C4 /* CSVM.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DAFB9BC17543351006C71B3 /* CSVM.m */; };
@@ -56,6 +58,9 @@
 		8D0904C1176A7C4800176BCF /* BRSourceItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRSourceItem.m; sourceTree = "<group>"; };
 		8D120D68176D2A3C0019577E /* PSMMetalTabStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = PSMMetalTabStyle.h; sourceTree = "<group>"; };
 		8D120D69176D2A3C0019577E /* PSMMetalTabStyle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PSMMetalTabStyle.m; sourceTree = "<group>"; };
+		8D16399417C3B7A6000DD491 /* SEEditorTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEEditorTextView.h; sourceTree = "<group>"; };
+		8D16399517C3B7A6000DD491 /* SEEditorTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEEditorTextView.m; sourceTree = "<group>"; };
+		8D16399717C57FAE000DD491 /* S-Explorer.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = "S-Explorer.iconset"; path = "Resources/S-Explorer.iconset"; sourceTree = "<group>"; };
 		8D27BFF21766C59C00F1F8FA /* SESchemeParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SESchemeParser.h; sourceTree = "<group>"; };
 		8D27BFF31766C59C00F1F8FA /* SESchemeParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SESchemeParser.m; sourceTree = "<group>"; };
 		8D2AAB65177A8E50008F07C4 /* NoodleLineNumberMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = NoodleLineNumberMarker.h; sourceTree = "<group>"; };
@@ -465,7 +470,6 @@
 		8D60423D173BE60800149409 = {
 			isa = PBXGroup;
 			children = (
-				8D99613017C1C7DF0058FD0B /* CoreServices.framework */,
 				8D60424F173BE60800149409 /* S-Explorer */,
 				8D604250173BE60800149409 /* Supporting Files */,
 				8D60426F173BE60900149409 /* S-ExplorerTests */,
@@ -487,6 +491,7 @@
 			isa = PBXGroup;
 			children = (
 				8DFA6E671760F49F006780BF /* libchibi-scheme.dylib */,
+				8D99613017C1C7DF0058FD0B /* CoreServices.framework */,
 				8D60424C173BE60800149409 /* AppKit.framework */,
 				8D60424E173BE60800149409 /* Foundation.framework */,
 				8D60426A173BE60900149409 /* SenTestingKit.framework */,
@@ -497,9 +502,9 @@
 		8D60424F173BE60800149409 /* S-Explorer */ = {
 			isa = PBXGroup;
 			children = (
+				8D16399717C57FAE000DD491 /* S-Explorer.iconset */,
 				8DFA6CD6175EA549006780BF /* chibi-scheme */,
-				8D99612C17BE42EB0058FD0B /* NoodleGlue.h */,
-				8D99612D17BE42EC0058FD0B /* NoodleGlue.m */,
+				8D604261173BE60800149409 /* MainMenu.xib */,
 				8D8298D31758088000336E2F /* S-Explorer-support.scm */,
 				8D60425B173BE60800149409 /* SEProject.h */,
 				8D60425C173BE60800149409 /* SEProject.m */,
@@ -508,13 +513,14 @@
 				8D604299173C388900149409 /* BRREPLView.m */,
 				8D2AAB6D177A93EB008F07C4 /* MarkerLineNumberView.h */,
 				8D2AAB6E177A93EB008F07C4 /* MarkerLineNumberView.m */,
+				8D99612C17BE42EB0058FD0B /* NoodleGlue.h */,
+				8D99612D17BE42EC0058FD0B /* NoodleGlue.m */,
 				8D2AAB65177A8E50008F07C4 /* NoodleLineNumberMarker.h */,
 				8D2AAB66177A8E50008F07C4 /* NoodleLineNumberMarker.m */,
 				8D2AAB67177A8E50008F07C4 /* NoodleLineNumberView.h */,
 				8D2AAB68177A8E50008F07C4 /* NoodleLineNumberView.m */,
 				8D99612817BE41520058FD0B /* NSTimer-NoodleExtensions.h */,
 				8D99612917BE41520058FD0B /* NSTimer-NoodleExtensions.m */,
-				8D604261173BE60800149409 /* MainMenu.xib */,
 				8D94C2451783AA8B00D8595B /* PseudoTTY.h */,
 				8D94C2461783AA8B00D8595B /* PseudoTTY.m */,
 				8D604294173C22D600149409 /* BRREPLController.h */,
@@ -535,6 +541,8 @@
 				8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */,
 				8D99612517BDB9730058FD0B /* SEEditorController.h */,
 				8D99612617BDB9730058FD0B /* SEEditorController.m */,
+				8D16399417C3B7A6000DD491 /* SEEditorTextView.h */,
+				8D16399517C3B7A6000DD491 /* SEEditorTextView.m */,
 			);
 			path = "S-Explorer";
 			sourceTree = "<group>";
@@ -1359,6 +1367,7 @@
 				8D604260173BE60800149409 /* SEProject.xib in Resources */,
 				8D604263173BE60800149409 /* MainMenu.xib in Resources */,
 				8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */,
+				8D16399817C57FAE000DD491 /* S-Explorer.iconset in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1409,6 +1418,7 @@
 				8D99612717BDB9740058FD0B /* SEEditorController.m in Sources */,
 				8D99612B17BE42150058FD0B /* NSTimer-NoodleExtensions.m in Sources */,
 				8D99612F17BE42FF0058FD0B /* NoodleGlue.m in Sources */,
+				8D16399617C3B7A6000DD491 /* SEEditorTextView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
