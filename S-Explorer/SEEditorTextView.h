@@ -12,5 +12,6 @@
 
 - (IBAction) expandSelection: (id) sender;
 - (IBAction) contractSelection: (id) sender;
+- (IBAction) jumpToLine: (id) sender;
 
 @end

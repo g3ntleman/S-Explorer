@@ -7,6 +7,7 @@
 //
 
 #import "SEEditorTextView.h"
+#import "NoodleLineNumberView.h"
 
 @implementation SEEditorTextView {
     NSMutableArray* selectionStack;
@@ -98,11 +99,27 @@ static NSCharacterSet* SEWordCharacters() {
 - (IBAction) expandSelection: (id) sender {
     if ([self.delegate respondsToSelector:_cmd]) {
         NSRange oldSelectionRange = self.selectedRange;
-        [self.delegate performSelector: _cmd withObject: sender];
+        [self.delegate performSelector: @selector(expandSelection:) withObject: sender];
         if (! NSEqualRanges(oldSelectionRange, self.selectedRange)) {
             [self.selectionStack addObject: [NSValue valueWithRange: oldSelectionRange]];
         }
     }
+}
+
+- (IBAction) jumpToLine: (id) sender {
+    
+    NSUInteger line = 49;
+    
+    NoodleLineNumberView* lineNumberView = (NoodleLineNumberView*)self.enclosingScrollView.verticalRulerView;
+    
+    if (line > lineNumberView.numberOfLines) {
+        NSBeep();
+        return;
+    }
+    
+    NSRange lineRange = [lineNumberView rangeOfLine: line];
+    self.selectedRange = lineRange;
+    [self scrollRangeToVisible: lineRange];
 }
 
 

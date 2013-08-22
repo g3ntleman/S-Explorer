@@ -442,6 +442,25 @@
     }
 }
 
+- (NSUInteger) numberOfLines {
+    return self.lineIndices.count;
+}
+
+- (NSRange) rangeOfLine:(NSUInteger)line {
+    
+    NSParameterAssert(line<=self.lineIndices.count);
+    NSParameterAssert(line>0);
+    NSRange lineRange;
+    lineRange.location = [self.lineIndices[line-1] unsignedIntegerValue];
+    if (line==self.lineIndices.count) {
+        NSTextView* clientView = (NSTextView*)self.clientView;
+        lineRange.length = [clientView string].length-lineRange.location;
+    } else {
+        lineRange.length = [self.lineIndices[line] unsignedIntegerValue]-lineRange.location;
+    }
+    return lineRange;
+}
+
 
 - (NSUInteger)lineNumberForLocation:(CGFloat)location
 {
