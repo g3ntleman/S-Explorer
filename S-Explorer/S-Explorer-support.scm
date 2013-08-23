@@ -29,16 +29,15 @@ ast))
   (buffer-make-completer
    (lambda (buf word)
      (let* ((len (string-length word))
-            (candidates
-             (filter
-              (lambda (w)
-                (and (>= (string-length w) len)
-                     (equal? word (substring w 0 len))))
-              (map symbol->string (all-exports (interaction-environment)))))
+            (candidates (filter (lambda (w)
+                                  (and (>= (string-length w) len)
+                                       (equal? word (substring w 0 len))))
+                                (map symbol->string (all-exports (interaction-environment)))))
             (prefix-len (string-common-prefix-length candidates)))
        (if (> prefix-len len)
            (list (substring (car candidates) 0 prefix-len))
            (sort candidates))))))
+
 
 ;(define (procedure-source-location procedure)
 ;  (let location-vector (bytecode-source (procedure-code procedure)))

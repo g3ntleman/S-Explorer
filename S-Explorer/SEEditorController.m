@@ -15,7 +15,7 @@
 NSSet* SESingleIndentFunctions() {
     static NSSet* SESingleIndentFunctions = nil;
     if (! SESingleIndentFunctions) {
-        SESingleIndentFunctions = [NSSet setWithObjects: @"define", @"lambda", @"module", nil];
+        SESingleIndentFunctions = [NSSet setWithObjects: @"define", @"lambda", @"module", @"let", @"let*", nil];
     }
     return SESingleIndentFunctions;
 }
@@ -180,14 +180,6 @@ static BOOL matchingPar(unichar aPar) {
     NSLog(@"Parsing & Highlighting took %lf seconds.", endTime-startTime);
 }
 
-- (NSUInteger) columnForLocation: (NSUInteger) location {
-    NSString* text = self.textEditorView.textStorage.string;
-    NSUInteger column = 0;
-    while (location>=column && [text characterAtIndex: location-column] != '\n') {
-        column += 1;
-    }
-    return column;
-}
 
 - (BOOL) expandRange: (NSRange*) rangePtr toParMatchingPar: (unichar) par {
 
@@ -247,35 +239,68 @@ static BOOL matchingPar(unichar aPar) {
     }
 }
 
-- (void) indentInRange: (NSRange) range {
-    NSLog(@"Should indent in %@", NSStringFromRange(range));
-    NSRange currentExpressionRange = NSMakeRange(range.location, 0);
-    [self expandRange: &currentExpressionRange toParMatchingPar: ')'];
-    NSLog(@"Next opening par is %@", NSStringFromRange(currentExpressionRange));
-    NSUInteger parColumn = [self columnForLocation: currentExpressionRange.location];
-    NSLog(@"Parent par is at column %lu", parColumn);
-    NSUInteger indentation = parColumn+1;
-
-    
+- (NSUInteger) columnForLocation: (NSUInteger) location {
     NSString* text = self.textEditorView.textStorage.string;
-    NSUInteger location = currentExpressionRange.location+1;
-    
+    NSUInteger column = 0;
+    while (location>=column && [text characterAtIndex: location-column] != '\n') {
+        column += 1;
+    }
+    return column;
+}
+
+- (NSUInteger) indentationAtLocation: (NSUInteger) lineStart {
+    NSString* text = self.textEditorView.textStorage.string;
+    NSUInteger location = lineStart;
+    NSUInteger length = text.length;
     unichar locationChar;
-    while (location < text.length) {
+    do {
         locationChar = [text characterAtIndex: location];
-        if (locationChar == ' ' || isPar(locationChar) || locationChar == '\n') {
-            break;
-        }
-        location += 1;
-    }
-    if (locationChar == ' ') {
-        NSRange wordRange = NSMakeRange(currentExpressionRange.location+1, location - currentExpressionRange.location-1);
-        NSString* word = [text substringWithRange: wordRange];
-        if (! [SESingleIndentFunctions() containsObject: word]) {
-            indentation += wordRange.length;
-        }
-    }
+    } while (location++<length && locationChar != '\n' && locationChar == ' ');
+
+    return location-lineStart-1;
+}
+
+- (void) indentInRange: (NSRange) range {
     
+    NSRange previouslySelectedRange = self.textEditorView.selectedRange;
+    NSString* text = self.textEditorView.textStorage.string;
+    range = [text lineRangeForRange: range];
+    NSUInteger previousIndentation = [self indentationAtLocation: range.location];
+    self.textEditorView.selectedRange = NSMakeRange(range.location, previousIndentation);
+    
+    NSLog(@"Should indent in %@", NSStringFromRange(range));
+    //NSLog(@"line is %@", NSStringFromRange(lineRange));
+    NSRange currentExpressionRange = NSMakeRange(range.location, 0);
+    NSUInteger indentation = 0;
+    
+    if ([self expandRange: &currentExpressionRange toParMatchingPar: ')']) {
+        NSLog(@"Next opening par is %@", NSStringFromRange(currentExpressionRange));
+        
+        NSUInteger parColumn = [self columnForLocation: currentExpressionRange.location];
+        NSLog(@"Parent par is at column %lu", parColumn);
+        indentation = parColumn;
+        
+        // Read beginning of outer expression:
+        NSUInteger location = currentExpressionRange.location+1;
+        unichar locationChar;
+        while (location < text.length) {
+            locationChar = [text characterAtIndex: location];
+            if (locationChar == ' ' || isPar(locationChar) || locationChar == '\n') {
+                break;
+            }
+            location += 1;
+        }
+        NSRange wordRange = NSMakeRange(currentExpressionRange.location+1, location - currentExpressionRange.location-1);
+        
+        if (wordRange.length) {
+            indentation += 1;
+            NSString* word = [text substringWithRange: wordRange];
+            if (! [SESingleIndentFunctions() containsObject: word]) {
+                indentation += wordRange.length;
+            }
+        }
+    }
+
     
     // Create an NSString with indentation number of spaces:
     unsigned char indentChars[indentation];
@@ -287,6 +312,14 @@ static BOOL matchingPar(unichar aPar) {
     // Insert the spaces:
     [self.textEditorView insertText: spaces];
     
+    if (previouslySelectedRange.length > 0) {
+        self.textEditorView.selectedRange = range;
+    } else {
+        if (previouslySelectedRange.location > range.location+indentation) {
+            self.textEditorView.selectedRange = previouslySelectedRange;
+        }
+    }
+    
 }
 
 - (IBAction) insertNewline: (id) sender {
@@ -294,8 +327,9 @@ static BOOL matchingPar(unichar aPar) {
     [self indentInRange: self.textEditorView.selectedRange];
 }
 
-- (IBAction) insertTab:(id)sender {
-    NSLog(@"Should indent current line.");
+- (IBAction) insertTab: (id) sender {
+    NSLog(@"Should indent current selected lines.");
+    [self indentInRange: self.textEditorView.selectedRange];
 }
 
 
@@ -368,7 +402,6 @@ static BOOL matchingPar(unichar aPar) {
         
         loaded = YES;
     }
-    
 }
 
 
