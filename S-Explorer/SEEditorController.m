@@ -9,7 +9,8 @@
 #import "SEEditorController.h"
 #import "NoodleLineNumberView.h"
 #import "NSTimer-NoodleExtensions.h"
-
+#import "SEApplicationDelegate.h"
+#import "NSColor+OPExtensions.h"
 
 static BOOL isPar(unichar aChar) {
     return aChar == '(' || aChar == ')' || aChar == '[' || aChar == ']' ;
@@ -42,9 +43,11 @@ static BOOL matchingPar(unichar aPar) {
 
 - (void) markCharsAtRange: (NSRange) parRange {
     
+    NSColor* markColor = [NSColor colorFromHexRGB: @"F0E609"];
+                              
     [self beginEditing];
-    [self addAttribute: NSBackgroundColorAttributeName value: [NSColor yellowColor] range: NSMakeRange(parRange.location, 1)];
-    [self addAttribute: NSBackgroundColorAttributeName value: [NSColor yellowColor] range: NSMakeRange(NSMaxRange(parRange)-1, 1)];
+    [self addAttribute: NSBackgroundColorAttributeName value: markColor range: NSMakeRange(parRange.location, 1)];
+    [self addAttribute: NSBackgroundColorAttributeName value: markColor range: NSMakeRange(NSMaxRange(parRange)-1, 1)];
     [self endEditing];
 }
 
@@ -156,15 +159,6 @@ static BOOL matchingPar(unichar aPar) {
 - (IBAction) colorize: (id) sender {
     
     NSTextStorage* textStorage = self.textEditorView.textStorage;
-    
-    //    struct sexp_callbacks parserCallbacks;
-    //    parserCallbacks.handle_atom = &parser_handle_atom;
-    //    parserCallbacks.begin_list = &parser_begin_list;
-    //    parserCallbacks.end_list = &parser_end_list;
-    //    parserCallbacks.handle_error = &parser_handle_error;
-    //
-    //    // Parse parserCString calling the callbacks above:
-    //    int res = sexp_parse(parserCString, &parserCallbacks, (__bridge void*)self);
     
     NSRange fullRange = NSMakeRange(0, textStorage.string.length);
     [textStorage removeAttribute: NSForegroundColorAttributeName range: fullRange];

@@ -13,8 +13,7 @@
     NSMutableArray* selectionStack;
 }
 
-- (id)initWithFrame:(NSRect)frame
-{
+- (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code here.
@@ -106,20 +105,57 @@ static NSCharacterSet* SEWordCharacters() {
     }
 }
 
-- (IBAction) jumpToLine: (id) sender {
-    
-    NSUInteger line = 49;
+
+/**
+  * selects the given line number. Must be >=1. Does nothing but beep, if given line number is too high.
+  */
+ 
+- (NSRange) selectLineNumber: (NSUInteger) line {
     
     NoodleLineNumberView* lineNumberView = (NoodleLineNumberView*)self.enclosingScrollView.verticalRulerView;
     
     if (line > lineNumberView.numberOfLines) {
         NSBeep();
-        return;
+        return NSMakeRange(0,0);
     }
     
     NSRange lineRange = [lineNumberView rangeOfLine: line];
     self.selectedRange = lineRange;
-    [self scrollRangeToVisible: lineRange];
+    return lineRange;
+}
+
+- (IBAction) ok: (id) sender {
+    [self.gotoPanel orderOut: sender];
+}
+
+- (IBAction) selectLine: (id) sender {
+    
+    
+    NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
+    NSAlert *alert = [NSAlert alertWithMessageText: @"Select Line Number …"
+                                     defaultButton: @"OK"
+                                   alternateButton: @"Cancel"
+                                       otherButton: nil
+                         informativeTextWithFormat: @""];
+    
+    NSTextField *lineNumberField = [[NSTextField alloc] initWithFrame: NSMakeRect(0, 0, 50, 22)];
+    [lineNumberField setAlignment: NSCenterTextAlignment];
+    [lineNumberField setIntegerValue: [ud integerForKey: @"GotoPanelLineNumber"]];
+    [alert setAccessoryView: lineNumberField];
+    NSInteger button = [alert runModal];
+    if (button == NSAlertDefaultReturn) {
+        [lineNumberField validateEditing];
+        NSUInteger line = [lineNumberField integerValue];
+        
+        NoodleLineNumberView* lineNumberView = (NoodleLineNumberView*)self.enclosingScrollView.verticalRulerView;
+        if ([lineNumberView isKindOfClass: [NoodleLineNumberView class]]) {
+            
+            NSRange lineRange = [self selectLineNumber: line];
+            [self scrollRangeToVisible: lineRange];
+        }
+        
+        [ud setInteger: line forKey: @"GotoPanelLineNumber"];
+    } 
 }
 
 

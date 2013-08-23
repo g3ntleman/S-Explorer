@@ -10,8 +10,11 @@
 
 @interface SEEditorTextView : NSTextView
 
+@property (strong, nonatomic) IBOutlet NSPanel* gotoPanel;
+
 - (IBAction) expandSelection: (id) sender;
 - (IBAction) contractSelection: (id) sender;
-- (IBAction) jumpToLine: (id) sender;
+- (IBAction) selectLine: (id) sender;
+- (NSRange) selectLineNumber: (NSUInteger) line;
 
 @end

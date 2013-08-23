@@ -8,10 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 #import "SESchemeParser.h"
+#import "SEEditorTextView.h"
 
 @interface SEEditorController : NSController <SESchemeParserDelegate, NSTextDelegate, NSTextViewDelegate>
 
-@property (strong, nonatomic) IBOutlet NSTextView* textEditorView;
+@property (strong, nonatomic) IBOutlet SEEditorTextView* textEditorView;
 @property (strong, nonatomic) NSArray* keywords; // sorted array
 
 

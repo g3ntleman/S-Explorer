@@ -462,8 +462,7 @@
 }
 
 
-- (NSUInteger)lineNumberForLocation:(CGFloat)location
-{
+- (NSUInteger)lineNumberForLocation:(CGFloat)location {
 	NSUInteger		line, count, index, rectCount, i;
 	NSRectArray		rects;
 	NSRect			visibleRect;
