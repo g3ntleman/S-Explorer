@@ -14,7 +14,7 @@
 
 - (IBAction) expandSelection: (id) sender;
 - (IBAction) contractSelection: (id) sender;
-- (IBAction) selectLine: (id) sender;
+- (IBAction) selectSpecificLine: (id) sender;
 - (NSRange) selectLineNumber: (NSUInteger) line;
 
 @end

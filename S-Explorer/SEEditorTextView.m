@@ -96,7 +96,7 @@ static NSCharacterSet* SEWordCharacters() {
 
 
 - (IBAction) expandSelection: (id) sender {
-    if ([self.delegate respondsToSelector:_cmd]) {
+    if ([self.delegate respondsToSelector: _cmd]) {
         NSRange oldSelectionRange = self.selectedRange;
         [self.delegate performSelector: @selector(expandSelection:) withObject: sender];
         if (! NSEqualRanges(oldSelectionRange, self.selectedRange)) {
@@ -124,11 +124,19 @@ static NSCharacterSet* SEWordCharacters() {
     return lineRange;
 }
 
-- (IBAction) ok: (id) sender {
-    [self.gotoPanel orderOut: sender];
+
+/**
+ * Make sure, all actions can also be implemented by the delegate.
+ */
+- (void) doCommandBySelector: (SEL) aSelector {
+    if ([self.delegate respondsToSelector: aSelector]) {
+        [self.delegate performSelector: aSelector withObject: self];
+        return;
+    }
+    return [super doCommandBySelector: aSelector];
 }
 
-- (IBAction) selectLine: (id) sender {
+- (IBAction) selectSpecificLine: (id) sender {
     
     
     NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
