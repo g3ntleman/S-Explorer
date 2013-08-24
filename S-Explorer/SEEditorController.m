@@ -260,11 +260,11 @@ static BOOL isPar(unichar aChar) {
     NSUInteger indentation;
     NSRange previouslySelectedRange = self.textEditorView.selectedRange;
     NSTextStorage* textStorage = self.textEditorView.textStorage;
-    NSString* text = textStorage.mutableString;
+    NSString* text = textStorage.string;
     NSRange initialRange = range = [text lineRangeForRange: range];
     NSUInteger lineNo = 0;
     
-    [textStorage beginEditing];
+    //[textStorage beginEditing];
     
     do {
         lineNo++;
@@ -301,21 +301,25 @@ static BOOL isPar(unichar aChar) {
             }
         }
         
-        // Create an NSString with indentation number of spaces:
-        unsigned char indentChars[indentation];
-        memset(&indentChars, ' ', indentation);
-        NSString* spaces = [[NSString alloc] initWithBytesNoCopy: indentChars
-                                                          length: indentation
-                                                        encoding: NSASCIIStringEncoding
-                                                    freeWhenDone: NO];
-        
-        // Insert spaces, replacing the old indenting ones:
         NSUInteger previousIndentation = [self indentationAtLocation: range.location];
-        //self.textEditorView.selectedRange = NSMakeRange(range.location, previousIndentation);
-        [textStorage replaceCharactersInRange: NSMakeRange(range.location, previousIndentation) withString: spaces];
-        NSInteger indentationChange = indentation-previousIndentation;
-        initialRange.length += indentationChange;
-        range.length += indentationChange;
+        if (indentation != previousIndentation) {
+            // Create an NSString with indentation number of spaces:
+            unsigned char indentChars[indentation];
+            memset(&indentChars, ' ', indentation);
+            NSString* spaces = [[NSString alloc] initWithBytesNoCopy: indentChars
+                                                              length: indentation
+                                                            encoding: NSASCIIStringEncoding
+                                                        freeWhenDone: NO];
+            
+            // Insert spaces, replacing the old indenting ones:
+            //self.textEditorView.selectedRange = NSMakeRange(range.location, previousIndentation);
+            [self.textEditorView insertText: spaces
+                           replacementRange: NSMakeRange(range.location, previousIndentation)];
+            //[textStorage replaceCharactersInRange: NSMakeRange(range.location, previousIndentation) withString: spaces];
+            NSInteger indentationChange = indentation-previousIndentation;
+            initialRange.length += indentationChange;
+            range.length += indentationChange;
+        }
 //        if (previouslySelectedRange.length > 0) {
 //            previouslySelectedRange.length += indentationChange;
 //        }
@@ -328,7 +332,7 @@ static BOOL isPar(unichar aChar) {
         } else break;
     } while (YES);
     
-    [textStorage endEditing];
+    //[textStorage endEditing];
     
     NSLog(@"Indented %lu lines.", lineNo);
     
