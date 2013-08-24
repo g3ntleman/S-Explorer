@@ -68,17 +68,6 @@ static BOOL isPar(unichar aChar) {
     [self removeAttribute: NSBackgroundColorAttributeName range: NSMakeRange(0, self.string.length)];
 }
 
-//- (void) invertRange: (NSRange) range {
-//    // Invert range:
-//    NSDictionary* attrs = [self attributesAtIndex: range.location effectiveRange: NULL];
-//    NSColor* backgroundColor = attrs[NSBackgroundColorAttributeName];
-//    if (backgroundColor) {
-//        [self removeAttribute: NSBackgroundColorAttributeName range: range];
-//    } else {
-//        backgroundColor = [NSColor yellowColor];
-//        [self addAttribute: NSBackgroundColorAttributeName value: backgroundColor range: range];
-//    }
-//}
 
 @end
 
@@ -273,10 +262,12 @@ static BOOL isPar(unichar aChar) {
     NSTextStorage* textStorage = self.textEditorView.textStorage;
     NSString* text = textStorage.mutableString;
     NSRange initialRange = range = [text lineRangeForRange: range];
+    NSUInteger lineNo = 0;
     
     [textStorage beginEditing];
     
     do {
+        lineNo++;
         NSLog(@"Should indent in %@", NSStringFromRange(range));
         //NSLog(@"line is %@", NSStringFromRange(lineRange));
         NSRange currentExpressionRange = NSMakeRange(range.location, 0);
@@ -324,6 +315,7 @@ static BOOL isPar(unichar aChar) {
         [textStorage replaceCharactersInRange: NSMakeRange(range.location, previousIndentation) withString: spaces];
         NSInteger indentationChange = indentation-previousIndentation;
         initialRange.length += indentationChange;
+        range.length += indentationChange;
 //        if (previouslySelectedRange.length > 0) {
 //            previouslySelectedRange.length += indentationChange;
 //        }
@@ -337,6 +329,8 @@ static BOOL isPar(unichar aChar) {
     } while (YES);
     
     [textStorage endEditing];
+    
+    NSLog(@"Indented %lu lines.", lineNo);
     
     if (previouslySelectedRange.length > 0) {
         self.textEditorView.selectedRange = initialRange;
