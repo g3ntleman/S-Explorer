@@ -93,16 +93,23 @@ static NSData* lineFeedData = nil;
  *
  */
 - (IBAction) moveDown: (id) sender {
-    NSLog(@"Down key action.");
+    if (self.replView.isCommandMode) {
+        NSLog(@"History action.");
+        return;
+    }
+    [self.replView moveDown: sender];
 }
 
 /**
  *
  */
 - (IBAction) moveUp: (id) sender {
-    NSLog(@"Up key action.");
+    if (self.replView.isCommandMode) {
+    NSLog(@"History action.");
+        return;
+    }
+    [self.replView moveUp: sender];
 }
-
 
 
 - (void) appendString:(NSString *)aString {

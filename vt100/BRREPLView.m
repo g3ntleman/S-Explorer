@@ -170,6 +170,8 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 //    }
 }
 
+
+
 - (BOOL) shouldChangeTextInRange: (NSRange) affectedCharRange
                replacementString: (NSString*) replacementString {
     
@@ -186,8 +188,12 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
             return YES;
         }
     }
-    NSBeep();
+    //NSBeep();
     return NO;
+}
+
+- (BOOL) isCommandMode {
+    return [self shouldChangeTextInRange: self.selectedRange replacementString: @" "];
 }
 
 - (void) setTypingAttributes: (NSDictionary*) attrs {

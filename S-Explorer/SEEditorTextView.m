@@ -41,7 +41,7 @@ static NSCharacterSet* SEWordCharacters() {
         NSRange resultRange = proposedSelRange;
         if ([wordCharSet characterIsMember: [text characterAtIndex: resultRange.location]]) {
             // Search backward:
-            while (([wordCharSet characterIsMember: [text characterAtIndex: resultRange.location-1]])) {
+            while (resultRange.location && ([wordCharSet characterIsMember: [text characterAtIndex: resultRange.location-1]])) {
                 resultRange.location -= 1;
                 resultRange.length += 1;
             }

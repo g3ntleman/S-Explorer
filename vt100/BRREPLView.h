@@ -38,6 +38,7 @@ typedef struct {
 
 @property (strong, nonatomic) NSFont* font;
 
+- (BOOL) isCommandMode;
 
 @end
 
