@@ -51,7 +51,7 @@
 }
 
 - (void) awakeFromNib {
-    NSLog(@"awakeFromNib");
+   // NSLog(@"awakeFromNib");
 }
 
 //- (void) tabView: (NSTabView*) aTabView didSelectTabViewItem: (NSTabViewItem*) tabViewItem

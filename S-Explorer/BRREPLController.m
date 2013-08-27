@@ -12,7 +12,7 @@
 
 @implementation BRREPLController {
 
-    CSVM* vm;
+//    CSVM* vm;
     PseudoTTY* tty;
     NSUInteger commandOffset; // where the current command starts
 }
@@ -39,19 +39,18 @@ static NSData* lineFeedData = nil;
     
 }
 
-- (CSVM*) virtualMachine {
-    return vm;
-}
+//- (CSVM*) virtualMachine {
+//    return vm;
+//}
 
-- (void) setVirtualMachine: (CSVM*) aVM {
+- (void) setTask: (NSTask*) aTask {
     
-    vm = aVM;    
     
     tty = [[PseudoTTY alloc] init];
     
-    [vm setStandardFileHandlesForIn: tty.slaveFileHandle
-                                out: tty.slaveFileHandle
-                              error: tty.slaveFileHandle];
+//    [vm setStandardFileHandlesForIn: tty.slaveFileHandle
+//                                out: tty.slaveFileHandle
+//                              error: tty.slaveFileHandle];
 
     tty.masterFileHandle.readabilityHandler = ^(NSFileHandle* handle) {
         NSData* dataRead = handle.availableData;

@@ -15,7 +15,7 @@
 NSSet* SESingleIndentFunctions() {
     static NSSet* SESingleIndentFunctions = nil;
     if (! SESingleIndentFunctions) {
-        SESingleIndentFunctions = [NSSet setWithObjects: @"define", @"lambda", @"module", @"let", @"letrec", @"let*", nil];
+        SESingleIndentFunctions = [NSSet setWithObjects: @"define", @"lambda", @"module", @"let", @"letrec", @"let*", @"and-let*", nil];
     }
     return SESingleIndentFunctions;
 }
@@ -171,7 +171,7 @@ static BOOL isPar(unichar aChar) {
     NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
     [parser parse];
     NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
-    NSLog(@"Parsing & Highlighting took %lf seconds.", endTime-startTime);
+    NSLog(@"Parsing & Highlighting took %ld milliseconds.", lround((endTime-startTime)*1000.0));
 }
 
 
@@ -249,7 +249,7 @@ static BOOL isPar(unichar aChar) {
     unichar locationChar;
     do {
         locationChar = [text characterAtIndex: location];
-    } while (location++<length && locationChar != '\n' && locationChar == ' ');
+    } while (location++<length && locationChar != '\n' && (locationChar == ' ' || locationChar == '\t'));
 
     return location-lineStart-1;
 }
@@ -283,19 +283,30 @@ static BOOL isPar(unichar aChar) {
             // Read beginning of outer expression:
             NSUInteger location = currentExpressionRange.location+1;
             unichar locationChar;
-            while (location < text.length) {
+            NSRange wordRange;
+            BOOL isSingleItem = YES;
+            while (location < NSMaxRange(range)) {
                 locationChar = [text characterAtIndex: location];
                 if (locationChar == ' ' || isPar(locationChar) || locationChar == '\n') {
+                    wordRange = NSMakeRange(currentExpressionRange.location+1, location - currentExpressionRange.location-1);
+                    // Check, if something follows:
+                    do {
+                        if (locationChar == '\n') break;
+                        if (locationChar != ' ') {
+                            isSingleItem = NO; // more elements coming
+                            break;
+                        }
+                        locationChar = [text characterAtIndex: ++location];
+                    } while (location < NSMaxRange(range));
                     break;
                 }
                 location += 1;
             }
-            NSRange wordRange = NSMakeRange(currentExpressionRange.location+1, location - currentExpressionRange.location-1);
             
             if (wordRange.length) {
                 indentation += 1;
                 NSString* word = [text substringWithRange: wordRange];
-                if (! [SESingleIndentFunctions() containsObject: word]) {
+                if (! [SESingleIndentFunctions() containsObject: word] && !isSingleItem) {
                     indentation += wordRange.length;
                 }
             }

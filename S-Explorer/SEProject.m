@@ -8,13 +8,11 @@
 
 #import "SEProject.h"
 #import "NSAlert+OPBlocks.h"
-#import "CSVM.h"
 #import "BRSourceItem.h"
 #import "NSDictionary+OPImmutablility.h"
 #import "NoodleLineNumberView.h"
 
 @implementation SEProject {
-    CSVM* vm;
     NSMutableDictionary* uiSettings;
 }
 
@@ -223,9 +221,9 @@
 
 - (IBAction) run: (id) sender {
     
-    NSString* res = [vm evaluateToStringFromString: @"(repl)"];
+    // NSString* res = [vm evaluateToStringFromString: @"(repl)"];
     
-    NSLog(@"repl result = %@", res);
+    NSLog(@"Should run REPL here.");
     
 }
 
@@ -258,26 +256,27 @@
 //        }];
 //    }
     
-    vm = [[CSVM alloc] init];
+//    vm = [[CSVM alloc] init];
     
 //    NSString* input1 = @"(import (scheme base))";
 //    NSString* output1 = [vm evaluateToStringFromString: input1];
     
-    [vm evaluateToStringFromString: @"(import (chibi repl))"];
+//    [vm evaluateToStringFromString: @"(import (chibi repl))"];
+//
+//    
+//    [vm loadSchemeSource: @"S-Explorer-support" error: &error];
+//
+//    //NSString* input2 = @"(sort (list 5 4 2 3 1 6) <)";
+//    //NSString* output2 = [vm evaluateString: input2];
+//
+//    //NSLog(@"All symbols: %@\n%@", input3, allSymbolStrings);
+//    NSLog(@"All VM symbols: %@", vm.allSymbols);
+//    
+//    self.editorController.keywords = vm.allSymbols;
+//    
+//    [vm locationOfProcedureNamed: @"map"];
+//    self.replController.virtualMachine = vm;
 
-    
-    [vm loadSchemeSource: @"S-Explorer-support" error: &error];
-
-    //NSString* input2 = @"(sort (list 5 4 2 3 1 6) <)";
-    //NSString* output2 = [vm evaluateString: input2];
-
-    //NSLog(@"All symbols: %@\n%@", input3, allSymbolStrings);
-    NSLog(@"All VM symbols: %@", vm.allSymbols);
-    
-    self.editorController.keywords = vm.allSymbols;
-    
-    [vm locationOfProcedureNamed: @"map"];
-    
     [self setSourceItem: tabbedSourceItems[@(sourceTab.selectedSegment)] forIndex: sourceTab.selectedSegment];
     [self selectSourceTabWithIndex: 0];
     
@@ -285,8 +284,6 @@
         BRSourceItem* item = [self.projectSourceItem childWithPath: path];
         [self.sourceList expandItem: item];
     }
-    
-    self.replController.virtualMachine = vm;
     
 }
 
