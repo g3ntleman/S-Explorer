@@ -24,6 +24,9 @@
 @property (strong, readonly) NSArray* commandArguments;
 @property (strong, readonly) NSString* greeting;
 
+@property (readonly) NSArray* previousCommands;
+@property (readonly) NSArray* nextCommands;
+
 - (void) setCommand: (NSString*) command
       withArguments: (NSArray*) arguments
            greeting: (NSString*) greeting
@@ -31,7 +34,7 @@
 
 - (IBAction) run: (id) sender;
 - (IBAction) clear: (id) sender;
-- (void) appendString: (NSString*) aString;
+- (void) appendInterpreterString: (NSString*) aString;
 
 
 @end

@@ -13,6 +13,10 @@
 @implementation BRREPLController {
 
     PseudoTTY* tty;
+    
+    
+    NSMutableArray* previousCommands;
+    NSMutableArray* nextCommands;
 }
 
 static NSData* lineFeedData = nil;
@@ -23,6 +27,8 @@ static NSData* lineFeedData = nil;
 
 - (id) init {
     if (self = [super init]) {
+        previousCommands = [[NSMutableArray alloc] init];
+        nextCommands = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -49,7 +55,7 @@ static NSData* lineFeedData = nil;
     NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
     
     
-    [self appendString: string];
+    [self appendInterpreterString: string];
     
     [filehandle readInBackgroundAndNotify];
 }
@@ -61,25 +67,57 @@ static NSData* lineFeedData = nil;
     [tty.masterFileHandle writeData: lineFeedData];
 }
 
+- (NSArray*) nextCommands {
+    return  nextCommands;
+}
+
+- (NSArray*) previousCommands {
+    return  previousCommands;
+}
+
+- (NSRange) currentCommandRange {
+    NSRange cursorRange = self.replView.selectedRange;
+    NSRange commandRange = cursorRange;
+    [self.replView.textStorage attribute: BKTextCommandAttributeName atIndex: cursorRange.location-1 effectiveRange: &commandRange];
+    return commandRange;
+}
+
+- (NSString*) currentCommand {
+    return [self.replView.string substringWithRange: self.currentCommandRange];
+}
+
+- (void) setCurrentCommand:(NSString *)currentCommand {
+    
+    NSTextStorage* textStorage = self.replView.textStorage;
+    NSRange commandRange = self.currentCommandRange;
+    [textStorage beginEditing];
+    [textStorage replaceCharactersInRange: commandRange withString: currentCommand];
+    commandRange.length = currentCommand.length;
+    [textStorage setAttributes: self.replView.typingAttributes range: commandRange];
+    [textStorage endEditing];
+    
+    // Place cursor behind new command:
+    self.replView.selectedRange = NSMakeRange(commandRange.location+currentCommand.length, 0);
+}
+
 - (BOOL) sendCurrentCommand {
     
-    NSRange cursorRange = self.replView.selectedRange;
-    NSRange commandRange;
-    NSTextStorage* textStorage = self.replView.textStorage;
-    if ([textStorage attribute: BKTextCommandAttributeName atIndex: cursorRange.location-1 effectiveRange: &commandRange]) {
-        if (commandRange.length) {
-            NSString* currentCommand = [textStorage.string substringWithRange: commandRange];
-            NSLog(@"Sending command '%@'", currentCommand);
-            
-            [textStorage beginEditing];
-            [textStorage replaceCharactersInRange:commandRange withString:@""];
-            [textStorage endEditing];
-            
-            [self commitCommand: currentCommand];
-            
-            return YES;
-        }
+    NSRange commandRange = self.currentCommandRange;
+    if (commandRange.length) {
+        NSString* currentCommand = [self.replView.string substringWithRange: commandRange];
+        NSLog(@"Sending command '%@'", currentCommand);
+        
+
+        self.currentCommand = @"";
+        [self commitCommand: currentCommand];
+        
+        [previousCommands addObjectsFromArray: nextCommands];
+        [nextCommands removeAllObjects];
+        [previousCommands insertObject: currentCommand atIndex: 0];
+        
+        return YES;
     }
+    
     return NO;
 }
 
@@ -93,8 +131,16 @@ static NSData* lineFeedData = nil;
  *
  */
 - (IBAction) moveDown: (id) sender {
+    
     if (self.replView.isCommandMode) {
-        NSLog(@"History action.");
+        NSLog(@"History next action.");
+        if (! nextCommands.count) {
+            return;
+        }
+        [previousCommands insertObject: self.currentCommand atIndex: 0];
+        self.currentCommand = nextCommands[0];
+        [nextCommands removeObjectAtIndex: 0];
+        
         return;
     }
     [self.replView moveDown: sender];
@@ -104,15 +150,24 @@ static NSData* lineFeedData = nil;
  *
  */
 - (IBAction) moveUp: (id) sender {
+    
     if (self.replView.isCommandMode) {
-    NSLog(@"History action.");
+        NSLog(@"History prev action.");
+        
+        if (! previousCommands.count) {
+            return;
+        }
+        [nextCommands insertObject: self.currentCommand atIndex: 0];
+        self.currentCommand = previousCommands[0];
+        [previousCommands removeObjectAtIndex: 0];
+        
         return;
     }
     [self.replView moveUp: sender];
 }
 
 
-- (void) appendString:(NSString *)aString {
+- (void) appendInterpreterString: (NSString*) aString {
     
     NSTextStorage* textStorage = self.replView.textStorage;
     
@@ -154,8 +209,8 @@ static NSData* lineFeedData = nil;
     [self clear: sender];
     
     if (self.greeting) {
-        [self appendString: self.greeting];
-        [self appendString: @"\n\n"];
+        [self appendInterpreterString: self.greeting];
+        [self appendInterpreterString: @"\n\n"];
     }
     [self.replView moveToEndOfDocument: self];
     

@@ -12,16 +12,6 @@
 extern NSString* BKTextCommandAttributeName;
 
 
-typedef struct {
-    uint32 rows;
-    uint32 columns;
-} OPCharSize;
-
-typedef struct {
-    uint32 row;
-    uint32 column;
-} OPCharPosition;
-
 //@protocol BRREPLDelegate <NSObject>
 //
 //- (void) commitCommand: (NSString*) command;

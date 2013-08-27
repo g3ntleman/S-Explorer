@@ -38,43 +38,21 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 }
 
 
-- (id) initWithCoder:(NSCoder *)aDecoder {
-    if (self = [self initWithFrame:NSZeroRect]) {
-    }
-    return self;
-}
-
-
 - (void) awakeFromNib {
     
-    // Start with a terminal in the size of the scroll view:
-    self.frame = self.enclosingScrollView.bounds;
     self.smartInsertDeleteEnabled = NO;
     //
     //    [self.textStorage beginEditing];
     //    [self.textStorage setAttributes: self.typingAttributes range:NSMakeRange(0, self.textStorage.string.length)];
     //    [self.textStorage endEditing];
     //NSLog(@"%@ awoke.", self);
-    self.font = [NSFont fontWithName:@"Menlo-Bold" size: 12.0];
+    self.font = [NSFont fontWithName:@"Menlo-Bold" size: 13.0];
     
 //    NSMutableDictionary* typingAttributes = [self.typingAttributes mutableCopy];
 //    typingAttributes[BKTextCommandAttributeName] = @1;
-    self.typingAttributes = self.commandAttributes;
+    //self.typingAttributes = self.commandAttributes;
     
 }
-
-//- (OPCharPosition) cursorScreenBufferPosition {
-//    OPCharPosition cursorScreenBufferPosition;
-//    cursorScreenBufferPosition.column = cursorPosition.column;
-//    cursorScreenBufferPosition.row = cursorPosition.row + lastRowIndex-_terminalSize.rows;
-//    return cursorScreenBufferPosition;
-//}
-//
-//- (void) setCursorScreenBufferPosition: (OPCharPosition) position {
-//    cursorPosition.column = position.column;
-//    cursorPosition.row = position.row - lastRowIndex + _terminalSize.rows;
-//}
-
 
 
 //- (void) keyDown: (NSEvent*) theEvent {
@@ -128,19 +106,23 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 
 
 - (NSDictionary*) interpreterAttributes {
-    //NSFont* interpreterFont = [NSFont fontWithName:@"Menlo-Bold" size: 12.0];
+    
     NSMutableDictionary* interpreterAttributes = [[NSMutableDictionary alloc] init];
     interpreterAttributes[self.font] = NSFontAttributeName;
-    //[interpreterAttributes setObject: [NSColor redColor] forKey: NSBackgroundColorAttributeName];
+    interpreterAttributes[NSBackgroundColorAttributeName] = [NSColor yellowColor];
+
     return interpreterAttributes;
 }
 
 - (NSDictionary*) commandAttributes {
     
-    NSMutableDictionary* commandAttributes = [self.typingAttributes mutableCopy];
-    commandAttributes[BKTextCommandAttributeName] = @YES;
-    commandAttributes[NSFontAttributeName] = self.font;
+    NSMutableDictionary* commandAttributes = nil;
     
+    if (self.font) {
+        commandAttributes = [self.interpreterAttributes mutableCopy];
+        commandAttributes[BKTextCommandAttributeName] = @YES;
+        commandAttributes[NSBackgroundColorAttributeName] = [NSColor greenColor];
+    }
     return commandAttributes;
 }
 
@@ -175,7 +157,7 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 - (BOOL) shouldChangeTextInRange: (NSRange) affectedCharRange
                replacementString: (NSString*) replacementString {
     
-    self.typingAttributes = self.commandAttributes;
+    //self.typingAttributes = self.commandAttributes;
     
     NSRange fullRange;
     if (self.textStorage.length==NSMaxRange(affectedCharRange) && replacementString.length) {
@@ -192,12 +174,21 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
     return NO;
 }
 
+/**
+ * Returns true, if the selection is at the end of the text, 
+ * where the user can enter text.
+ **/
 - (BOOL) isCommandMode {
     return [self shouldChangeTextInRange: self.selectedRange replacementString: @" "];
 }
 
+
+- (NSDictionary*) typingAttributes {
+    return self.commandAttributes;
+}
+
 - (void) setTypingAttributes: (NSDictionary*) attrs {
-    [super setTypingAttributes:attrs];
+    [super setTypingAttributes: self.commandAttributes];
 }
 
 

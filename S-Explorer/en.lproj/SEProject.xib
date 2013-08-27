@@ -315,7 +315,7 @@
 																				<int key="NSTCFlags">1</int>
 																			</object>
 																			<object class="NSTextViewSharedData" key="NSSharedData">
-																				<int key="NSFlags">1140854083</int>
+																				<int key="NSFlags">1107299651</int>
 																				<int key="NSTextCheckingTypes">0</int>
 																				<nil key="NSMarkedAttributes"/>
 																				<object class="NSColor" key="NSBackgroundColor" id="130519908">
@@ -512,7 +512,7 @@
 																		<string>WebURLsWithTitlesPboardType</string>
 																		<string>public.url</string>
 																	</set>
-																	<string key="NSFrameSize">{544, 139}</string>
+																	<string key="NSFrameSize">{0, 0}</string>
 																	<reference key="NSSuperview" ref="417645489"/>
 																	<reference key="NSWindow"/>
 																	<reference key="NSNextKeyView" ref="19183322"/>
@@ -532,11 +532,11 @@
 																			<nil key="NSDelegate"/>
 																		</object>
 																		<reference key="NSTextView" ref="229988734"/>
-																		<double key="NSWidth">544</double>
+																		<double key="NSWidth">0.0</double>
 																		<int key="NSTCFlags">1</int>
 																	</object>
 																	<object class="NSTextViewSharedData" key="NSSharedData">
-																		<int key="NSFlags">1140878599</int>
+																		<int key="NSFlags">1107323911</int>
 																		<int key="NSTextCheckingTypes">0</int>
 																		<nil key="NSMarkedAttributes"/>
 																		<reference key="NSBackgroundColor" ref="130519908"/>
@@ -554,8 +554,7 @@
 																		<nil key="NSTextFinder"/>
 																		<int key="NSPreferredTextFinderStyle">1</int>
 																	</object>
-																	<int key="NSTVFlags">6</int>
-																	<string key="NSMaxSize">{548, 10000000}</string>
+																	<int key="NSTVFlags">7</int>
 																	<nil key="NSDelegate"/>
 																	<array key="NSAllowedInputLocales">
 																		<string>NSAllRomanInputSourcesLocaleIdentifier</string>
@@ -568,7 +567,7 @@
 															<reference key="NSNextKeyView" ref="229988734"/>
 															<string key="NSReuseIdentifierKey">_NS:11</string>
 															<reference key="NSDocView" ref="229988734"/>
-															<reference key="NSBGColor" ref="130519908"/>
+															<reference key="NSBGColor" ref="65933726"/>
 															<object class="NSCursor" key="NSCursor">
 																<string key="NSHotSpot">{4, 5}</string>
 																<object class="NSImage" key="NSImage">
@@ -621,7 +620,7 @@
 													<reference key="NSWindow"/>
 													<reference key="NSNextKeyView" ref="741263398"/>
 													<string key="NSReuseIdentifierKey">_NS:9</string>
-													<int key="NSsFlags">133139</int>
+													<int key="NSsFlags">722963</int>
 													<reference key="NSVScroller" ref="19183322"/>
 													<reference key="NSHScroller" ref="741263398"/>
 													<reference key="NSContentView" ref="417645489"/>
@@ -752,14 +751,6 @@
 						<reference key="destination" ref="229988734"/>
 					</object>
 					<int key="connectionID">100065</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">replDelegate</string>
-						<reference key="source" ref="229988734"/>
-						<reference key="destination" ref="946461524"/>
-					</object>
-					<int key="connectionID">100066</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -997,8 +988,8 @@
 						<int key="objectID">100089</int>
 						<reference key="object" ref="76941315"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="324063804"/>
 							<reference ref="964386515"/>
+							<reference ref="324063804"/>
 						</array>
 						<reference key="parent" ref="143460848"/>
 					</object>
@@ -1260,8 +1251,6 @@
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="colorize:">id</string>
 						<string key="expandSelection:">id</string>
-						<string key="insertNewline:">id</string>
-						<string key="insertTab:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="colorize:">
@@ -1270,14 +1259,6 @@
 						</object>
 						<object class="IBActionInfo" key="expandSelection:">
 							<string key="name">expandSelection:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="insertNewline:">
-							<string key="name">insertNewline:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="insertTab:">
-							<string key="name">insertTab:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>
@@ -1340,6 +1321,7 @@
 					<string key="superclassName">NSDocument</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="revertCurrentSourceItemToSaved:">id</string>
+						<string key="runProject:">id</string>
 						<string key="saveCurrentSourceItem:">id</string>
 						<string key="selectSourceTab:">id</string>
 						<string key="sourceTableAction:">id</string>
@@ -1347,6 +1329,10 @@
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="revertCurrentSourceItemToSaved:">
 							<string key="name">revertCurrentSourceItemToSaved:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="runProject:">
+							<string key="name">runProject:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="saveCurrentSourceItem:">
