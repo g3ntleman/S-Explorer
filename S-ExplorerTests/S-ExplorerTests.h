@@ -1,6 +1,6 @@
 //
-//  BracketTests.h
-//  BracketTests
+//  S-ExplorerTests.h
+//  S-ExplorerTests
 //
 //  Created by Dirk Theisen on 09.05.13.
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.

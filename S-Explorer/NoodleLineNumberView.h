@@ -63,7 +63,6 @@
 
 - (NSUInteger)lineNumberForLocation:(CGFloat)location;
 - (NoodleLineNumberMarker *)markerAtLine:(NSUInteger)line;
-- (NSRange) characterRangeForLine:(NSUInteger)line;
 
 - (NSUInteger) numberOfLines;
 - (NSRange) rangeOfLine:(NSUInteger)line;

@@ -1,6 +1,6 @@
 //
 //  BRProject
-//  Bracket
+//  S-Explorer
 //
 //  Created by Dirk Theisen on 09.05.13.
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
@@ -246,15 +246,15 @@
     
     
     NSError* error = nil;
-//    [self.replController runCommand: @"/usr/local/bin/csi"
-//                      withArguments: @[@"-n"]
-//                              error: &error];
-//    
-//    if (error) {
-//        [[NSAlert alertWithError: error] runWithCompletion:^(NSInteger buttonIndex) {
-//            [self performSelector: @selector(close) withObject: nil afterDelay: 0.1];
-//        }];
-//    }
+    [self.replController runCommand: @"/usr/local/bin/chibi-scheme"
+                      withArguments: @[]
+                              error: &error];
+    
+    if (error) {
+        [[NSAlert alertWithError: error] runWithCompletion:^(NSInteger buttonIndex) {
+            [self performSelector: @selector(close) withObject: nil afterDelay: 0.1];
+        }];
+    }
     
 //    vm = [[CSVM alloc] init];
     

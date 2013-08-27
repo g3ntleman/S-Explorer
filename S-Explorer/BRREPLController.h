@@ -1,6 +1,6 @@
 //
 //  BRTerminalController.h
-//  Bracket
+//  S-Explorer
 //
 //  Created by Dirk Theisen on 09.05.13.
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
@@ -11,7 +11,7 @@
 // #import "CSVM.h"
 
 
-@interface BRREPLController : NSObject <NSCoding, BRREPLDelegate>
+@interface BRREPLController : NSObject <NSCoding>
 
 //@property (strong, nonatomic) IBOutlet NSResponder* keyResponder;
 
@@ -19,7 +19,9 @@
 
 @property (readonly) NSRange currentCommandRange;
 @property (readonly) NSString* currentCommand;
+@property (strong) NSTask* task;
 
-// @property (strong) CSVM* virtualMachine;
-
+- (void) runCommand: (NSString*) command
+      withArguments: (NSArray*) arguments
+              error: (NSError**) errorPtr;
 @end

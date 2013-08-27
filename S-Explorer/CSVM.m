@@ -1,372 +1,109 @@
 //
-//  OPChibiVM.m
-//  Bracket
+//  BRTerminalController.m
+//  S-Explorer
 //
-//  Created by Dirk Theisen on 28.05.13.
+//  Created by Dirk Theisen on 09.05.13.
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-// #import "CSVM.h"
-#include <chibi/sexp.h>
+#import "BRREPLController.h"
+#import "BRREPLView.h"
+#import "PseudoTTY.h"
 
+@implementation BRREPLController {
+    PseudoTTY* tty;
+}
 
-@implementation CSVM
+static NSData* lineFeedData = nil;
 
-@synthesize allSymbols;
++ (void) load {
+    lineFeedData = [NSData dataWithBytes: "\n" length: 1];
+}
 
 - (id) init {
     if (self = [super init]) {
-        ctx = sexp_make_eval_context(NULL, NULL, NULL, 0, 0);
-        sexp_load_standard_env(ctx, NULL, SEXP_SEVEN);
-        sexp_load_standard_ports(ctx, NULL, stdin, stdout, stderr, 0);
     }
     return self;
 }
 
-#define NUMBUF_LEN 32
-
-
-- (id) propertyListFromSExpression: (sexp) obj {
- 
-    unsigned long len;
-//    unsigned long c;
-    long i=0;
-#if SEXP_USE_FLONUMS
-    double f;
-#endif
-    sexp x, *elts;
-    char *str=NULL, numbuf[NUMBUF_LEN];
+- (id) initWithCoder:(NSCoder *)aDecoder {
     
-    if (! obj) {
-        return nil; // shouldn't happen
-    } else if (sexp_pointerp(obj)) {
-        switch (sexp_pointer_tag(obj)) {
-            case SEXP_PAIR: {
-                // Turn lists into Arrays:
-                
-                NSMutableArray* array = [[NSMutableArray alloc] init];
-                id element; // = [self propertyListFromSExpression: sexp_car(obj)];
-//                if (element) [array addObject: element];
-                for (x=obj; sexp_pairp(x); x=sexp_cdr(x)) {
-                    element = [self propertyListFromSExpression: sexp_car(x)];
-                    if (element) [array addObject: element];
-                }
-                if (! sexp_nullp(x)) {
-                    element = [self propertyListFromSExpression: x];
-                    if (element) [array addObject: element];
-                }
-                return array;
-            }
-            case SEXP_VECTOR: {
-                len = sexp_vector_length(obj);
-                elts = sexp_vector_data(obj);
-                if (len == 0) {
-                    return [[NSArray alloc] init];
-                } else {
-                    NSMutableArray* array = [[NSMutableArray alloc] initWithCapacity: len];
-                    for (i=0; i<len; i++) {
-                        id element = [self propertyListFromSExpression: elts[i]];
-                        if (element) [array addObject: element];
-                    }
-                    return array;
-                }
-            }
-#if SEXP_USE_FLONUMS
-#if ! SEXP_USE_IMMEDIATE_FLONUMS
-            case SEXP_FLONUM: {
-                f = sexp_flonum_value(obj);
-#if SEXP_USE_INFINITIES
-                if (isnan(f)) {
-                    return (id)kCFNumberNaN;
-                }
-                if (isinf(f)) {
-                    return f < 0 ? (id)kCFNumberNegativeInfinity : (id)kCFNumberPositiveInfinity;
-                } else
-#endif
-                {
-                    return @(f);
-                }
-            }
-#endif
-#endif
-                //            case SEXP_PROCEDURE:
-                //                sexp_write_string(ctx, "#<procedure ", out);
-                //                x = sexp_bytecode_name(sexp_procedure_code(obj));
-                //                sexp_write_one(ctx, sexp_synclop(x) ? sexp_synclo_expr(x): x, out);
-                //#if SEXP_USE_DEBUG_VM
-                //                if (sexp_procedure_source(obj)) {
-                //                    sexp_write_string(ctx, " ", out);
-                //                    sexp_write(ctx, sexp_procedure_source(obj), out);
-                //                }
-                //#endif
-                //                sexp_write_string(ctx, ">", out);
-                //                break;
-                //            case SEXP_TYPE:
-                //                sexp_write_string(ctx, "#<type ", out);
-                //                sexp_write(ctx, sexp_type_name(obj), out);
-                //                sexp_write_string(ctx, ">", out);
-                //                break;
-            case SEXP_STRING: {
-                
-                NSUInteger offset = sexp_string_offset(obj);
-                NSString* string = [[NSString alloc] initWithBytes: sexp_string_data(obj)+offset
-                                                            length: sexp_string_length(obj)-offset
-                                                          encoding: NSUTF8StringEncoding];
-                return string;
-            };
-            case SEXP_SYMBOL: {
-                str = sexp_lsymbol_data(obj);
-                NSString* symbolString = [[NSString alloc] initWithBytes: str
-                                                                  length: sexp_lsymbol_length(obj)
-                                                                encoding: NSUTF8StringEncoding];
-                
-                //                c = sexp_lsymbol_length(obj) > 0 ? EOF : '|';
-                //                for (i=sexp_lsymbol_length(obj)-1; i>=0; i--)
-                //                    if (str[i] <= ' ' || str[i] == '\\' || sexp_is_separator(str[i])) c = '|';
-                //                if (c!=EOF) sexp_write_char(ctx, c, out);
-                //                for (i=sexp_lsymbol_length(obj); i>0; str++, i--) {
-                //                    if (str[0] == '\\') sexp_write_char(ctx, '\\', out);
-                //                    sexp_write_char(ctx, str[0], out);
-                //                }
-                //                if (c!=EOF) sexp_write_char(ctx, c, out);
-                // NSLog(@"Found Symbol '%@'", symbolString);
-                
-                return symbolString;
-            };
-            case SEXP_EXCEPTION: {
-                
-                sexp_gc_var5(message, kind, irritants, procedure, source);
-                sexp_gc_preserve5(ctx, message, kind, irritants, procedure, source);
-
-                //sexp_print_exception(ctx, obj, outputPort);
-                //NSString* exceptionString = [self stringFromSExpression: sexp_print_exception_op obj];
-                
-                message = sexp_exception_message(obj);
-                
-                kind = sexp_exception_kind(obj);
-                irritants = sexp_exception_irritants(obj);
-                procedure = sexp_exception_procedure(obj);
-                source = sexp_exception_source(obj);
-                
-                sexp_gc_release5(ctx);
-                
-                NSString* messageString = [self propertyListFromSExpression: message];
-                NSString* procedureString = [self propertyListFromSExpression: procedure];
-                NSString* kindString = [self propertyListFromSExpression: kind];
-                NSArray* irritantsArray = [self propertyListFromSExpression: irritants];
-                NSString* sourceString = [self propertyListFromSExpression: source];
-                NSLog(@"Scheme Exception '%@' (%@)", messageString, [irritantsArray componentsJoinedByString:@","]);
-                return [NSError errorWithDomain:@"BKSchemeDomain" code:-1 userInfo:@{NSLocalizedFailureReasonErrorKey: messageString}];
-            }
-                
-        }
-    }
-#if SEXP_USE_HUFF_SYMS
-    else if (sexp_isymbolp(obj)) {
-        sexp_gc_var1(str);
-        sexp_gc_preserve1(ctx, str);
-        str = sexp_symbol_to_string(ctx, obj);
-        NSString* result = [self propertyListFromSExpression: str];
-        sexp_gc_release1(ctx);
-        return result;
-    }
-#endif
     
-    else if (sexp_fixnump(obj)) {
-        NSNumber* result = [NSNumber numberWithLong: (long)sexp_unbox_fixnum(obj)];
-        return result;
-    } else {
-        // Simple inline expressions:
-        switch ((sexp_uint_t) obj) {
-            case (sexp_uint_t) SEXP_NULL:
-                return [NSNull null];
-            case (sexp_uint_t) SEXP_TRUE:
-                return @YES;
-            case (sexp_uint_t) SEXP_FALSE:
-                return @NO;
-            case (sexp_uint_t) SEXP_VOID:
-                return nil;
-            case (sexp_uint_t) SEXP_EOF:
-            case (sexp_uint_t) SEXP_UNDEF:
-            default: {
-                NSLog(@"invalid immediate sexp.");
-            }
-                
-        }
-    }
-    return nil;
-}
- 
-
-
-    
-//    sexp_tag_t tag = expression->tag;
-//    switch (tag) {
-//        case SEXP_STRING: {
-//            NSUInteger offset = sexp_string_offset(expression);
-//            NSString* resultString = [[NSString alloc] initWithBytes: sexp_string_data(expression)+offset
-//                                                              length: sexp_string_length(expression)-offset
-//                                                            encoding: NSUTF8StringEncoding];
-//            return resultString;
-//        }
-//        case SEXP_OBJECT: {
-//            
-//            
-//            break;
-//        }
-//        default:
-//            break;
-//    }
-    
-- (NSString*) stringFromSExpression: (sexp) obj {
-
-    if (! sexp_stringp(obj)) {
-        sexp_gc_var1(str);
-        sexp_gc_preserve1(ctx, str);
-        str = sexp_write_to_string(ctx, obj);
-        NSString* result = [self propertyListFromSExpression: str];
-        sexp_gc_release1(ctx);
-        return result;
-    }
-
-    return [self propertyListFromSExpression: obj];
+    return self;
 }
 
-- (BOOL) loadSchemeSource: (NSString*) filenameOrPath error: (NSError**) errorPtr {
+- (void) encodeWithCoder:(NSCoder *)aCoder {
     
-    NSString* path = filenameOrPath;
-    if (! [[NSFileManager defaultManager] fileExistsAtPath: path]) {
-        path = [[NSBundle mainBundle] pathForResource: filenameOrPath ofType: @"scm"];
-    }
-    if (! path.length) {
-        return NO;
-    }
-    
-    BOOL result = YES;
-    
-    sexp_gc_var2(pathExpression, res);
-    sexp_gc_preserve2(ctx, pathExpression, res);
+}
 
-    pathExpression = sexp_c_string(ctx, [path UTF8String], -1);
+- (void) awakeFromNib {
+}
+
+
+
+- (void) taskOutputReceived: (NSNotification*) n {
+    NSFileHandle* filehandle = n.object;
+    //NSData* data = filehandle.availableData;
+    NSData* data = n.userInfo[NSFileHandleNotificationDataItem];
+    NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
     
-    res = sexp_load(ctx, pathExpression, NULL);
     
-    id resultPlist = [self propertyListFromSExpression: res];
+    [self.replView appendString: string];
     
-    if (sexp_exceptionp(res) ){
-        sexp_print_exception(ctx, res, sexp_current_error_port(ctx));
+    [filehandle readInBackgroundAndNotify];
+}
+
+- (void) commitCommand: (NSString*) commandString {
+    
+    NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
+    [tty.masterFileHandle writeData: stringData];
+    [tty.masterFileHandle writeData: lineFeedData];
+}
+
+- (void) runCommand: (NSString*) command
+      withArguments: (NSArray*) arguments
+              error: (NSError**) errorPtr {
+    
+    NSAssert(! _task.isRunning, @"There is already a task (%@) running!", _task);
+    
+    command = [command stringByResolvingSymlinksInPath];
+    
+    if (! [[NSFileManager defaultManager] isExecutableFileAtPath:command]) {
         if (errorPtr) {
-            *errorPtr = resultPlist;
+            *errorPtr = [NSError errorWithDomain: @"org.cocoanuts.bracket" code: 404
+                                        userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No Executable file at '%@'", command]}];
         }
-        result = NO;
-    }
-    sexp_gc_release2(ctx);
-    
-    allSymbols = nil; // clear cache
-    
-    return result;
-}
-
-- (id) evaluateToPropertyListFromString: (NSString*) expressionString error: (NSError**) errorPtr {
-    
-    const char* cString = [expressionString cStringUsingEncoding:NSUTF8StringEncoding];
-    
-    sexp_gc_var1(resultExpression);
-    sexp_gc_preserve1(ctx, resultExpression);
-    
-    resultExpression = sexp_eval_string(ctx, cString, -1, NULL);
-    
-    id result = [self propertyListFromSExpression: resultExpression];
-
-    if ( sexp_exceptionp(resultExpression) ){
-        sexp_print_exception(ctx, resultExpression, sexp_current_error_port(ctx));
-        
-        if (errorPtr) {
-            *errorPtr = result;
-        }
-        
-        result = nil;
+        return;
     }
     
-    sexp_release_object(ctx, resultExpression);
+    _task = [[NSTask alloc] init];
     
-    return result;
+    tty = [[PseudoTTY alloc] init];
+    
+    [_task setStandardInput: tty.slaveFileHandle];
+    [_task setStandardOutput: tty.slaveFileHandle];
+    [_task setStandardError: tty.slaveFileHandle];
+    [_task setArguments: arguments];
+    [_task setLaunchPath: command];
+    
+    NSDictionary *defaultEnvironment = [[NSProcessInfo processInfo] environment];
+    NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary:defaultEnvironment];
+    [environment setObject: @"YES" forKey: @"NSUnbufferedIO"];
+    [environment setObject: @"en_US-iso8859-1" forKey: @"LANG"];
+    
+    [_task setEnvironment: environment];
+    
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(taskOutputReceived:)
+                                                 name:  NSFileHandleReadCompletionNotification
+                                               object: tty.masterFileHandle];
+    
+    
+    [tty.masterFileHandle readInBackgroundAndNotify];
+    //[_task.standardError readInBackgroundAndNotify];
+    
+    [_task launch];
+    
 }
-
-//static sexp check_exception (sexp ctx, sexp res) {
-//    sexp err;
-//    if (res && sexp_exceptionp(res)) {
-//        err = sexp_current_error_port(ctx);
-//        if (! sexp_oportp(err))
-//            err = sexp_make_output_port(ctx, stderr, SEXP_FALSE);
-//        sexp_print_exception(ctx, res, err);
-//        sexp_stack_trace(ctx, err);
-//        exit_failure();
-//    }
-//    return res;
-//}
-
-/**
- * The caller is responsible for closing the given files.
- */
-- (void) setStandardFileHandlesForIn: (NSFileHandle*) inHandle
-                                 out: (NSFileHandle*) outHandle
-                               error: (NSFileHandle*) errHandle {
-    
-    FILE* in = fdopen(inHandle.fileDescriptor, "w");
-    FILE* out = fdopen(outHandle.fileDescriptor, "r");
-    FILE* err = fdopen(errHandle.fileDescriptor, "r");
-    
-    sexp_load_standard_ports(ctx, NULL, in, out, err, 0);
-}
-
-
-- (NSString*) evaluateToStringFromString: (NSString*) expressionString {
-    
-    const char* cString = [expressionString cStringUsingEncoding:NSUTF8StringEncoding];
-    
-    sexp_gc_var1(resultExpression);
-    sexp_gc_preserve1(ctx, resultExpression);
-
-    resultExpression = sexp_eval_string(ctx, cString, -1, NULL);
-    
-    if ( sexp_exceptionp(resultExpression) ){
-        sexp_print_exception(ctx, resultExpression, sexp_current_error_port(ctx));
-    }
-    
-    NSString*  result = [self stringFromSExpression: resultExpression];
-    
-    sexp_release_object(ctx, resultExpression);
-    
-    return result;
-}
-
-/**
- * Returns an array with two elements: the source path (NSString) and the line number (NSNumber).
- * If no source is available, the empty array is returned.
- */
-- (NSArray*) locationOfProcedureNamed: (NSString*) procedureName {
-    
-    NSString* locationQuery = [NSString stringWithFormat: @"(procedure-source-location %@)", procedureName];
-    id location = [self evaluateToPropertyListFromString: locationQuery error: nil];
-    NSLog(@"all locations for '%@': %@", procedureName, location);
-    
-    return location;
-}
-
-- (NSArray*) allSymbols {
-    if (!allSymbols) {
-        NSString* symbolQuery = @"(all-exports (interaction-environment))";
-        NSMutableArray* allSymbolStrings = [self evaluateToPropertyListFromString: symbolQuery error: nil];
-        [allSymbolStrings sortUsingSelector:@selector(compare:)];
-        allSymbols = allSymbolStrings;
-    }
-    return allSymbols;
-}
-
-- (void) dealloc {
-    sexp_destroy_context(ctx);
-}
-
 
 @end

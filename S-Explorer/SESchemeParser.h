@@ -1,6 +1,6 @@
 //
 //  BRSchemeParser.h
-//  Bracket
+//  S-Explorer
 //
 //  Created by Dirk Theisen on 11.06.13.
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.

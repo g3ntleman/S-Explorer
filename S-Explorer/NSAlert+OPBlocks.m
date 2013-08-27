@@ -1,6 +1,6 @@
 //
 //  NSAlert+OPBlocks.m
-//  Bracket
+//  S-Explorer
 //
 //  Created by Dirk Theisen on 13.05.13.
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.

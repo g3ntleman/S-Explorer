@@ -21,7 +21,7 @@
     if (self.autoresizingMask | NSViewWidthSizable) {
         // Adjust sizes of the cells proportionally:
         NSSize newSuperSize = self.superview.frame.size;
-        CGFloat rest = 0.0;
+        //CGFloat rest = 0.0;
         double factor = newSuperSize.width / oldSuperSize.width;
         NSUInteger count = self.segmentCount;
         for (int i=0; i < count; i++) {

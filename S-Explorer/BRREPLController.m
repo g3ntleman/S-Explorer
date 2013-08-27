@@ -1,6 +1,6 @@
 //
 //  BRTerminalController.m
-//  Bracket
+//  S-Explorer
 //
 //  Created by Dirk Theisen on 09.05.13.
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
@@ -12,9 +12,7 @@
 
 @implementation BRREPLController {
 
-//    CSVM* vm;
     PseudoTTY* tty;
-    NSUInteger commandOffset; // where the current command starts
 }
 
 static NSData* lineFeedData = nil;
@@ -30,7 +28,7 @@ static NSData* lineFeedData = nil;
 }
 
 - (id) initWithCoder:(NSCoder *)aDecoder {
-
+    
     
     return self;
 }
@@ -39,40 +37,9 @@ static NSData* lineFeedData = nil;
     
 }
 
-//- (CSVM*) virtualMachine {
-//    return vm;
-//}
-
-- (void) setTask: (NSTask*) aTask {
-    
-    
-    tty = [[PseudoTTY alloc] init];
-    
-//    [vm setStandardFileHandlesForIn: tty.slaveFileHandle
-//                                out: tty.slaveFileHandle
-//                              error: tty.slaveFileHandle];
-
-    tty.masterFileHandle.readabilityHandler = ^(NSFileHandle* handle) {
-        NSData* dataRead = handle.availableData;
-        if (dataRead.length) {
-            NSString* stringRead = [[NSString alloc] initWithData: dataRead encoding: NSUTF8StringEncoding];
-            NSLog(@"read '%@'", stringRead);
-            
-            [self.replView appendString: stringRead];
-        }
-    };
-    
-    tty.masterFileHandle.writeabilityHandler =  ^(NSFileHandle* handle) {
-        NSData* dataRead = handle.availableData;
-        if (dataRead.length) {
-            NSString* stringRead = [[NSString alloc] initWithData: dataRead encoding: NSUTF8StringEncoding];
-            NSLog(@"wrote '%@'", stringRead);
-            
-            [self.replView appendString: stringRead];
-        }
-    };
-    
+- (void) awakeFromNib {
 }
+
 
 
 - (void) taskOutputReceived: (NSNotification*) n {
@@ -89,26 +56,97 @@ static NSData* lineFeedData = nil;
 
 - (void) commitCommand: (NSString*) commandString {
     
-    //NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
+    NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
+    [tty.masterFileHandle writeData: stringData];
+    [tty.masterFileHandle writeData: lineFeedData];
 }
 
-//- (void) runCommand: (NSString*) command
-//      withArguments: (NSArray*) arguments
-//              error: (NSError**) errorPtr {
-//    
-//    NSAssert(! _task.isRunning, @"There is already a task (%@) running!", _task);
-//    
-//    command = [command stringByResolvingSymlinksInPath];
-//
-//    if (! [[NSFileManager defaultManager] isExecutableFileAtPath:command]) {
-//        if (errorPtr) {
-//            *errorPtr = [NSError errorWithDomain: @"org.cocoanuts.bracket" code: 404
-//                                        userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No Executable file at '%@'", command]}];
-//        }
-//        return;
-//    }
-//    
-//
-//}
+- (BOOL) sendCurrentCommand {
+    
+    NSRange cursorRange = self.replView.selectedRange;
+    NSRange commandRange;
+    NSTextStorage* textStorage = self.replView.textStorage;
+    if ([textStorage attribute: BKTextCommandAttributeName atIndex: cursorRange.location-1 effectiveRange: &commandRange]) {
+        if (commandRange.length) {
+            NSString* currentCommand = [textStorage.string substringWithRange: commandRange];
+            NSLog(@"Sending command '%@'", currentCommand);
+            
+            [textStorage beginEditing];
+            [textStorage replaceCharactersInRange:commandRange withString:@""];
+            [textStorage endEditing];
+            
+            [self commitCommand: currentCommand];
+            
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (IBAction) insertNewline: (id) sender {
+    NSLog(@"Down key action.");
+    [self sendCurrentCommand];
+}
+
+
+/**
+ *
+ */
+- (IBAction) moveDown: (id) sender {
+    NSLog(@"Down key action.");
+}
+
+/**
+ *
+ */
+- (IBAction) moveUp: (id) sender {
+    NSLog(@"Up key action.");
+}
+
+- (void) runCommand: (NSString*) command
+      withArguments: (NSArray*) arguments
+              error: (NSError**) errorPtr {
+    
+    NSAssert(! _task.isRunning, @"There is already a task (%@) running!", _task);
+    
+    command = [command stringByResolvingSymlinksInPath];
+    
+    if (! [[NSFileManager defaultManager] isExecutableFileAtPath:command]) {
+        if (errorPtr) {
+            *errorPtr = [NSError errorWithDomain: @"org.cocoanuts.bracket" code: 404
+                                        userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No Executable file at '%@'", command]}];
+        }
+        return;
+    }
+    
+    _task = [[NSTask alloc] init];
+    
+    tty = [[PseudoTTY alloc] init];
+    
+    [_task setStandardInput: tty.slaveFileHandle];
+    [_task setStandardOutput: tty.slaveFileHandle];
+    [_task setStandardError: tty.slaveFileHandle];
+    [_task setArguments: arguments];
+    [_task setLaunchPath: command];
+    
+    NSDictionary *defaultEnvironment = [[NSProcessInfo processInfo] environment];
+    NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary:defaultEnvironment];
+    [environment setObject: @"YES" forKey: @"NSUnbufferedIO"];
+    [environment setObject: @"en_US-iso8859-1" forKey: @"LANG"];
+    
+    [_task setEnvironment: environment];
+    
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(taskOutputReceived:)
+                                                 name:  NSFileHandleReadCompletionNotification
+                                               object: tty.masterFileHandle];
+    
+    
+    [tty.masterFileHandle readInBackgroundAndNotify];
+    //[_task.standardError readInBackgroundAndNotify];
+    
+    [_task launch];
+    
+}
 
 @end

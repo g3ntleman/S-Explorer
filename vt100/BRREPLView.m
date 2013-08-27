@@ -1,6 +1,6 @@
 //
 //  OPTerminalView.m
-//  Bracket
+//  S-Explorer
 //
 //  Created by Dirk Theisen on 09.05.13.
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
@@ -75,75 +75,57 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 //    cursorPosition.row = position.row - lastRowIndex + _terminalSize.rows;
 //}
 
-- (BOOL) sendCurrentCommand {
-    
-    NSRange cursorRange = self.selectedRange;
-    NSRange commandRange;
-    if ([self.textStorage attribute: BKTextCommandAttributeName atIndex: cursorRange.location-1 effectiveRange: &commandRange]) {
-        if (commandRange.length) {
-            NSString* currentCommand = [self.textStorage.string substringWithRange: commandRange];
-            NSLog(@"Sending command '%@'", currentCommand);
-            
-            [self.textStorage beginEditing];
-            [self.textStorage replaceCharactersInRange:commandRange withString:@""];
-            [self.textStorage endEditing];
 
-            [self.replDelegate commitCommand: currentCommand];
-            
-            return YES;
-        }
-    }
-    return NO;
-}
 
-- (void) keyDown: (NSEvent*) theEvent {
-        
-    //NSLog(@"Key pressed: %@", theEvent);
-    
-    //self.typingAttributes = self.commandAttributes;
-    
-    NSString* charactersString = [theEvent characters];
-    
-    switch ([charactersString characterAtIndex: 0]) {
-        case NSLeftArrowFunctionKey:
-            if ([self.textStorage attribute: BKTextCommandAttributeName atIndex: self.selectedRange.location-1 effectiveRange: NULL]) {
-                [super keyDown: theEvent];
-            }
-            break;
-            
-//        case NSRightArrowFunctionKey:
-//            NSLog(@"Right as always!");
+//- (void) keyDown: (NSEvent*) theEvent {
+//        
+//    //NSLog(@"Key pressed: %@", theEvent);
+//    
+//    //self.typingAttributes = self.commandAttributes;
+//    
+//    NSString* charactersString = [theEvent characters];
+//    
+//    switch ([charactersString characterAtIndex: 0]) {
+//        case NSLeftArrowFunctionKey:
+//            if ([self.textStorage attribute: BKTextCommandAttributeName atIndex: self.selectedRange.location-1 effectiveRange: NULL]) {
+//                [super keyDown: theEvent];
+//            }
 //            break;
-        case NSDownArrowFunctionKey:
-            NSLog(@"Downward is Heavenward");
-            break;
-        case NSUpArrowFunctionKey:
-            NSLog(@"Up, up, and away!");
-            break;
-        case 13:
-            NSLog(@"CR!");
-            if ([self sendCurrentCommand]) {
-                break;
-            }
-            // Otherwise, insert a blank line
-            
-        default: {
-            [super keyDown: theEvent];
-            break;
-        }
-            
-            //        if (code) {
-            //            inputData = [NSData dataWithBytes: code length: strlen(code)];
-            //        }
-            //
-            //        if (inputData) {
-            //            // Pipe keys entered by the user into the external task:
-            //            [_inputPipe.fileHandleForWriting writeData: inputData];
-            //        }
-    }
-    
-    //[self scrollScreenBufferRowToVisible: self.cursorScreenBufferPosition.row];
-}
+//            
+////        case NSRightArrowFunctionKey:
+////            NSLog(@"Right as always!");
+////            break;
+//        case NSDownArrowFunctionKey:
+//            NSLog(@"Downward is Heavenward");
+//            break;
+//        case NSUpArrowFunctionKey:
+//            NSLog(@"Up, up, and away!");
+//            break;
+//        case 13:
+//            NSLog(@"CR!");
+//            if ([self sendCurrentCommand]) {
+//                break;
+//            }
+//            // Otherwise, insert a blank line
+//            
+//        default: {
+//            [super keyDown: theEvent];
+//            break;
+//        }
+//            
+//            //        if (code) {
+//            //            inputData = [NSData dataWithBytes: code length: strlen(code)];
+//            //        }
+//            //
+//            //        if (inputData) {
+//            //            // Pipe keys entered by the user into the external task:
+//            //            [_inputPipe.fileHandleForWriting writeData: inputData];
+//            //        }
+//    }
+//    
+//    //[self scrollScreenBufferRowToVisible: self.cursorScreenBufferPosition.row];
+//}
+
 
 - (NSDictionary*) interpreterAttributes {
     //NSFont* interpreterFont = [NSFont fontWithName:@"Menlo-Bold" size: 12.0];
@@ -234,17 +216,6 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 - (void) setTypingAttributes: (NSDictionary*) attrs {
     [super setTypingAttributes:attrs];
 }
-
-
-/* beRingBell -
- *
- *  Ring the system bell once.
- */
-- (int) ringBell {
-    NSBeep();
-    return 0;
-}
-
 
 
 //- (BOOL) canBecomeKeyView {
