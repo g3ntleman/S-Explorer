@@ -18,18 +18,17 @@
     hexColorCString[6] = 0; // temination
 	long colorCode = strtol(hexColorCString, (char **)NULL, 16);
 	
-    unsigned char alphaByte = 1.0;
+    unsigned char alphaByte = 255;
     
     if (inColorString.length > 6) {
-        (unsigned char) (colorCode);
+        alphaByte = colorCode % 0xff;
         colorCode = colorCode >> 8;
     }
-    (unsigned char) (colorCode);
 	unsigned char redByte	= (unsigned char) (colorCode >> 16);
 	unsigned char greenByte = (unsigned char) (colorCode >> 8);
 	unsigned char blueByte = (unsigned char) (colorCode);
     
-	return [NSColor colorWithGenericRed: (float)redByte/0xff green:(float)greenByte/0xff blue:(float)blueByte/0xff alpha: alphaByte];
+	return [NSColor colorWithGenericRed: (float)redByte/0xff green:(float)greenByte/0xff blue:(float)blueByte/0xff alpha: alphaByte/0xff];
 }
 
 

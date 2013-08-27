@@ -51,4 +51,9 @@
     return [NSString stringWithFormat: @"%@ %@", [super description], self.name];
 }
 
+- (void) dealloc {
+    masterFH = nil;
+    slaveFH = nil;
+}
+
 @end

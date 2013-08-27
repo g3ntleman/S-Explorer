@@ -49,7 +49,7 @@ static NSData* lineFeedData = nil;
     NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
     
     
-    [self.replView appendString: string];
+    [self appendString: string];
     
     [filehandle readInBackgroundAndNotify];
 }
@@ -103,31 +103,56 @@ static NSData* lineFeedData = nil;
     NSLog(@"Up key action.");
 }
 
-- (void) runCommand: (NSString*) command
-      withArguments: (NSArray*) arguments
-              error: (NSError**) errorPtr {
+
+
+- (void) appendString:(NSString *)aString {
     
-    NSAssert(! _task.isRunning, @"There is already a task (%@) running!", _task);
+    NSTextStorage* textStorage = self.replView.textStorage;
     
-    command = [command stringByResolvingSymlinksInPath];
+    //self.typingAttributes = self.interpreterAttributes;
     
-    if (! [[NSFileManager defaultManager] isExecutableFileAtPath:command]) {
-        if (errorPtr) {
-            *errorPtr = [NSError errorWithDomain: @"org.cocoanuts.bracket" code: 404
-                                        userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No Executable file at '%@'", command]}];
-        }
-        return;
+    [textStorage beginEditing];
+    NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString: aString attributes: self.replView.interpreterAttributes];
+    [textStorage replaceCharactersInRange: NSMakeRange(textStorage.string.length, 0)
+                     withAttributedString: attributedString];
+    //[textStorage replaceCharactersInRange: NSMakeRange(textStorage.string.length, 0) withString: aString];
+    
+    [textStorage endEditing];
+}
+
+- (IBAction) clear: (id) sender {
+    
+    NSTextStorage* textStorage = self.replView.textStorage;
+    [textStorage beginEditing];
+    [textStorage replaceCharactersInRange:NSMakeRange(textStorage.string.length, 0) withString: @""];
+    [textStorage endEditing];
+}
+
+- (IBAction) run: (id) sender {
+    
+    [self.task terminate];
+    
+    NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
+
+    [self clear: sender];
+    
+    if (self.greeting) {
+        [self appendString: self.greeting];
+        [self appendString: @"\n\n"];
     }
+    [self.replView moveToEndOfDocument: self];
     
     _task = [[NSTask alloc] init];
     
-    tty = [[PseudoTTY alloc] init];
+    if (! tty) {
+        tty = [[PseudoTTY alloc] init];
+    }
     
     [_task setStandardInput: tty.slaveFileHandle];
     [_task setStandardOutput: tty.slaveFileHandle];
     [_task setStandardError: tty.slaveFileHandle];
-    [_task setArguments: arguments];
-    [_task setLaunchPath: command];
+    _task.arguments = self.commandArguments;
+    _task.launchPath = self.commandString;
     
     NSDictionary *defaultEnvironment = [[NSProcessInfo processInfo] environment];
     NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary:defaultEnvironment];
@@ -145,8 +170,37 @@ static NSData* lineFeedData = nil;
     [tty.masterFileHandle readInBackgroundAndNotify];
     //[_task.standardError readInBackgroundAndNotify];
     
+    //    _task.terminationHandler =  ^void (NSTask* task) {
+    //        if (task == _task) {
+    //            _task = nil;
+    //        }
+    //    };
+    
     [_task launch];
+
+    
     
 }
+
+- (void) setCommand: (NSString*) command
+      withArguments: (NSArray*) arguments
+           greeting: (NSString*) greeting
+              error: (NSError**) errorPtr {
+
+    _commandString = [command stringByResolvingSymlinksInPath];
+    _commandArguments = arguments;
+    _greeting = greeting;
+    
+    if (! [[NSFileManager defaultManager] isExecutableFileAtPath: command]) {
+        if (errorPtr) {
+            *errorPtr = [NSError errorWithDomain: @"org.cocoanuts.bracket" code: 404
+                                        userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No Executable file at '%@'", command]}];
+        }
+        return;
+    }
+
+}
+
+
 
 @end

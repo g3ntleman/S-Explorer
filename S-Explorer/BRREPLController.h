@@ -20,8 +20,18 @@
 @property (readonly) NSRange currentCommandRange;
 @property (readonly) NSString* currentCommand;
 @property (strong) NSTask* task;
+@property (strong, readonly) NSString* commandString;
+@property (strong, readonly) NSArray* commandArguments;
+@property (strong, readonly) NSString* greeting;
 
-- (void) runCommand: (NSString*) command
+- (void) setCommand: (NSString*) command
       withArguments: (NSArray*) arguments
+           greeting: (NSString*) greeting
               error: (NSError**) errorPtr;
+
+- (IBAction) run: (id) sender;
+- (IBAction) clear: (id) sender;
+- (void) appendString: (NSString*) aString;
+
+
 @end

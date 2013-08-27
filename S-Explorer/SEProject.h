@@ -29,15 +29,17 @@
 @property (strong, readonly) NSMutableDictionary* uiSettings;
 @property (strong, nonatomic) IBOutlet SEEditorController* editorController;
 
+@property (strong, readonly) NSArray* availableLanguages; // NSArray of strings
+@property (strong, nonatomic) NSString* currentLanguage;
+@property (strong, readonly) NSDictionary* languageDictionary;
 
 - (IBAction) selectSourceTab: (id) sender;
 - (IBAction) sourceTableAction: (id) sender;
 - (IBAction) saveCurrentSourceItem: (id) sender;
 - (IBAction) revertCurrentSourceItemToSaved: (id) sender;
 
-- (IBAction) run: (id) sender;
-
 - (BRSourceItem*) currentSourceItem;
+
 
 
 - (void) setSourceItem: (BRSourceItem*) item forIndex: (NSUInteger) index;

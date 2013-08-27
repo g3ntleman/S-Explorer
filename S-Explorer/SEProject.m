@@ -219,12 +219,15 @@
 }
 
 
-- (IBAction) run: (id) sender {
-    
-    // NSString* res = [vm evaluateToStringFromString: @"(repl)"];
-    
-    NSLog(@"Should run REPL here.");
-    
+
+
+- (NSString*) currentLanguage {
+    return @"Chibi-Scheme";
+}
+
+- (NSDictionary*) languageDictionary {
+    NSDictionary* languageDictionaries = [[NSBundle mainBundle] infoDictionary][@"LanguageSupport"];
+    return languageDictionaries[self.currentLanguage];
 }
 
 
@@ -241,14 +244,14 @@
     
     [self.sourceList setDraggingSourceOperationMask: NSDragOperationLink forLocal: NO];
 
-
-
-    
     
     NSError* error = nil;
-    [self.replController runCommand: @"/usr/local/bin/chibi-scheme"
+    [self.replController setCommand: @"/usr/local/bin/chibi-scheme"
                       withArguments: @[]
+                           greeting: self.languageDictionary[@"WelcomeMessage"]
                               error: &error];
+    
+    [self.replController run: self];
     
     if (error) {
         [[NSAlert alertWithError: error] runWithCompletion:^(NSInteger buttonIndex) {
@@ -258,23 +261,7 @@
     
 //    vm = [[CSVM alloc] init];
     
-//    NSString* input1 = @"(import (scheme base))";
-//    NSString* output1 = [vm evaluateToStringFromString: input1];
-    
-//    [vm evaluateToStringFromString: @"(import (chibi repl))"];
-//
-//    
-//    [vm loadSchemeSource: @"S-Explorer-support" error: &error];
-//
-//    //NSString* input2 = @"(sort (list 5 4 2 3 1 6) <)";
-//    //NSString* output2 = [vm evaluateString: input2];
-//
-//    //NSLog(@"All symbols: %@\n%@", input3, allSymbolStrings);
-//    NSLog(@"All VM symbols: %@", vm.allSymbols);
-//    
-//    self.editorController.keywords = vm.allSymbols;
-//    
-//    [vm locationOfProcedureNamed: @"map"];
+//    NSString*sage"//    [vm locationOfProcedureNamed: @"map"];
 //    self.replController.virtualMachine = vm;
 
     [self setSourceItem: tabbedSourceItems[@(sourceTab.selectedSegment)] forIndex: sourceTab.selectedSegment];

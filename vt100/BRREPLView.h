@@ -33,12 +33,11 @@ typedef struct {
 @interface BRREPLView : SEEditorTextView
 
 
+@property (readonly) NSDictionary* interpreterAttributes;
 @property (readonly) NSDictionary* commandAttributes;
 
 @property (strong, nonatomic) NSFont* font;
 
-
-- (void) appendString: (NSString*) aString;
 
 @end
 

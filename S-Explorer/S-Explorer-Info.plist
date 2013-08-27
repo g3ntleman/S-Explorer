@@ -15,13 +15,15 @@
 			<dict/>
 		</dict>
 	</array>
-	<key>development-support</key>
+	<key>LanguageSupport</key>
 	<dict>
 		<key>Chibi-Scheme</key>
 		<dict>
-			<key>library-directory</key>
+			<key>LibraryDirectory</key>
 			<string></string>
-			<key>commandline-repl</key>
+			<key>WelcomeMessage</key>
+			<string>Welcome to Chibi Scheme!</string>
+			<key>REPLCommandline</key>
 			<string>chibi-scheme</string>
 		</dict>
 	</dict>

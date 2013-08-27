@@ -144,29 +144,6 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
     return commandAttributes;
 }
 
-- (void) appendString:(NSString *)aString {
-    
-    NSTextStorage* textStorage = self.textStorage;
-    
-    //self.typingAttributes = self.interpreterAttributes;
-    
-    [textStorage beginEditing];
-    NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString: aString attributes: self.interpreterAttributes];
-    [textStorage replaceCharactersInRange: NSMakeRange(textStorage.string.length, 0)
-                     withAttributedString: attributedString];
-    //[textStorage replaceCharactersInRange: NSMakeRange(textStorage.string.length, 0) withString: aString];
-    
-    [textStorage endEditing];
-}
-
-- (IBAction) clear: (id) sender {
-    
-    NSTextStorage* textStorage = self.textStorage;
-    [textStorage beginEditing];
-    [textStorage replaceCharactersInRange:NSMakeRange(textStorage.string.length, 0) withString: @""];
-    [textStorage endEditing];
-
-}
 
 
 
@@ -178,7 +155,7 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 //    }
 }
 
--(void)paste:(id)sender {
+-(void) paste: (id) sender {
     NSPasteboard *pb = [NSPasteboard generalPasteboard];
     NSString *pbItem = [pb readObjectsForClasses: @[[NSString class],[NSAttributedString class]] options:nil].lastObject;
     if ([pbItem isKindOfClass:[NSAttributedString class]]) {

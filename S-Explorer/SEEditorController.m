@@ -106,13 +106,13 @@ static BOOL isPar(unichar aChar) {
             break;
         }
         case STRING: {
-            NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: self.stringColor};
-            [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
+            NSDictionary* stringAttributes = @{NSForegroundColorAttributeName: self.stringColor};
+            [textStorage addAttributes: stringAttributes range: tokenInstance.occurrence];
             break;
         }
         case NUMBER: {
-            NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: self.numberColor};
-            [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
+            NSDictionary* constantAttributes = @{NSForegroundColorAttributeName: self.numberColor};
+            [textStorage addAttributes: constantAttributes range: tokenInstance.occurrence];
             break;
         }
         case ATOM: {
@@ -134,8 +134,8 @@ static BOOL isPar(unichar aChar) {
                     }
                     
                     if (color) {
-                        NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: color};
-                        [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
+                        NSDictionary* keywordAttributes = @{NSForegroundColorAttributeName: color};
+                        [textStorage addAttributes: keywordAttributes range: tokenInstance.occurrence];
                     }
                 }
             }
