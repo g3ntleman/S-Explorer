@@ -33,12 +33,17 @@
 @property (strong, nonatomic) NSString* currentLanguage;
 @property (strong, readonly) NSDictionary* languageDictionary;
 
+@property (strong, readonly) BRSourceItem* currentSourceItem;
+
+// IBActions:
+
 - (IBAction) selectSourceTab: (id) sender;
 - (IBAction) sourceTableAction: (id) sender;
 - (IBAction) saveCurrentSourceItem: (id) sender;
 - (IBAction) revertCurrentSourceItemToSaved: (id) sender;
+- (IBAction) runProject: (id) sender;
 
-- (BRSourceItem*) currentSourceItem;
+
 
 
 

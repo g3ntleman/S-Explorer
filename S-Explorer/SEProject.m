@@ -74,6 +74,10 @@
     
 }
 
+//- (BOOL) validateMenuItem:(NSMenuItem *)menuItem {
+//    return YES;
+//}
+
 - (BOOL) validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>) anItem {
 
 //    if (anItem == sourceTab) {
@@ -230,6 +234,9 @@
     return languageDictionaries[self.currentLanguage];
 }
 
+- (IBAction) runProject: (id) sender {
+    [self.replController run: sender];
+}
 
 - (void) windowControllerDidLoadNib: (NSWindowController*) aController {
     

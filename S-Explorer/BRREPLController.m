@@ -122,17 +122,27 @@ static NSData* lineFeedData = nil;
 
 - (IBAction) clear: (id) sender {
     
-    NSTextStorage* textStorage = self.replView.textStorage;
-    [textStorage beginEditing];
-    [textStorage replaceCharactersInRange:NSMakeRange(textStorage.string.length, 0) withString: @""];
-    [textStorage endEditing];
+    self.replView.string = @"";
+    
+}
+
+- (IBAction) stop: (id) sender {
+    
+    if (self.task) {
+        
+         [_task terminate];
+        [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                        name: NSFileHandleReadCompletionNotification
+                                                      object: tty.masterFileHandle];
+        _task = nil;
+    }
 }
 
 - (IBAction) run: (id) sender {
     
-    [self.task terminate];
-    
-    NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
+
+    [self stop: sender];
+    //NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
 
     [self clear: sender];
     
@@ -177,9 +187,6 @@ static NSData* lineFeedData = nil;
     //    };
     
     [_task launch];
-
-    
-    
 }
 
 - (void) setCommand: (NSString*) command
@@ -198,7 +205,6 @@ static NSData* lineFeedData = nil;
         }
         return;
     }
-
 }
 
 

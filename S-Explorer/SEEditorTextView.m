@@ -66,9 +66,15 @@ static NSCharacterSet* SEWordCharacters() {
 
 - (BOOL) validateMenuItem: (NSMenuItem*) item {
     
+    
+    NSLog(@"Validating Item '%@'", NSStringFromSelector(item.action));
     if ([item action] == @selector(contractSelection:)) {
         return self.selectionStack.count > 0;
     }
+    if ([self.delegate respondsToSelector: item.action]) {
+        return YES;
+    }
+
     return [super validateMenuItem: item];
 }
 - (void) didChangeText {
