@@ -79,72 +79,6 @@ static BOOL isPar(unichar aChar) {
     
 }
 
-- (NSColor*) commentColor {
-    return [NSColor colorWithDeviceRed:0.0 green:0.6 blue:0.0 alpha:1.0];
-}
-
-- (NSColor*) stringColor {
-    return [NSColor redColor];
-}
-
-- (NSColor*) numberColor {
-    return [NSColor redColor];
-}
-
-
-- (void) parser: (SESchemeParser*) parser
-     foundToken: (TokenOccurrence) tokenInstance
-        atDepth: (NSInteger) depth
-   elementCount: (NSUInteger) elementCount {
-    
-    NSTextStorage* textStorage = self.textEditorView.textStorage;
-    
-    switch (tokenInstance.token) {
-        case COMMENT: {
-            NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: self.commentColor};
-            [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
-            break;
-        }
-        case STRING: {
-            NSDictionary* stringAttributes = @{NSForegroundColorAttributeName: self.stringColor};
-            [textStorage addAttributes: stringAttributes range: tokenInstance.occurrence];
-            break;
-        }
-        case NUMBER: {
-            NSDictionary* constantAttributes = @{NSForegroundColorAttributeName: self.numberColor};
-            [textStorage addAttributes: constantAttributes range: tokenInstance.occurrence];
-            break;
-        }
-        case ATOM: {
-            
-            if (depth>=1) {
-                //NSString* tokenString = [textStorage.string substringWithRange: tokenInstance.occurrence];
-                //NSLog(@"Colorizer found word '%@'", tokenString);
-                
-                if (elementCount == 0) {
-                    // Found first list element
-                    NSColor* color = nil;
-                    NSString* word = [textStorage.string substringWithRange: tokenInstance.occurrence];
-                    
-                    //NSLog(@"Colorizer found word '%@'", word);
-                    if ([[SESchemeParser keywords] containsObject: word]) {
-                        color = [NSColor purpleColor];
-                    } else if ([self.keywords containsObject: word]) {
-                        color = [NSColor blueColor];
-                    }
-                    
-                    if (color) {
-                        NSDictionary* keywordAttributes = @{NSForegroundColorAttributeName: color};
-                        [textStorage addAttributes: keywordAttributes range: tokenInstance.occurrence];
-                    }
-                }
-            }
-            break;
-        }
-        default:
-            break;
-    }
-}
 
 - (void) awakeFromNib {
     
@@ -166,10 +100,11 @@ static BOOL isPar(unichar aChar) {
     [textStorage removeAttribute: NSForegroundColorAttributeName range: fullRange];
     //[textStorage removeAttribute: NSBackgroundColorAttributeName range: fullRange];
     
-    SESchemeParser* parser = [[SESchemeParser alloc] initWithString: textStorage.string];
-    parser.delegate = self;
+    SESchemeParser* parser = [[SESchemeParser alloc] initWithString: textStorage.string
+                                                              range: fullRange
+                                                           delegate: self.textEditorView];
     NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
-    [parser parse];
+    [parser parseAll];
     NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
     NSLog(@"Parsing & Highlighting took %ld milliseconds.", lround((endTime-startTime)*1000.0));
 }
@@ -188,7 +123,7 @@ static BOOL isPar(unichar aChar) {
                 (*rangePtr).location -= 1;
                 unichar matchingPar = [textStorage.string characterAtIndex: (*rangePtr).location];
                 NSColor* color = [textStorage attribute: NSForegroundColorAttributeName atIndex: (*rangePtr).location effectiveRange: NULL];
-                if (color != self.commentColor && color != self.stringColor) {
+                if (color != [SEEditorTextView commentColor] && color != [SEEditorTextView stringColor]) {
                     if (matchingPar == targetPar) {
                         return YES;
                     }
@@ -382,7 +317,7 @@ static BOOL isPar(unichar aChar) {
     NSColor* colorAtIndex = [textStorage attribute: NSForegroundColorAttributeName atIndex:index effectiveRange:NULL];
     
     // Do not flash within comments or strings:
-    if (colorAtIndex == self.stringColor || colorAtIndex == self.commentColor) {
+    if (colorAtIndex == [SEEditorTextView stringColor] || colorAtIndex == [SEEditorTextView commentColor]) {
         return;
     }
 

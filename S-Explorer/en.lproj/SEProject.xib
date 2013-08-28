@@ -1113,7 +1113,7 @@
 													<reference key="NSWindow"/>
 													<reference key="NSNextKeyView" ref="741263398"/>
 													<string key="NSReuseIdentifierKey">_NS:9</string>
-													<int key="NSsFlags">722963</int>
+													<int key="NSsFlags">153619</int>
 													<reference key="NSVScroller" ref="19183322"/>
 													<reference key="NSHScroller" ref="741263398"/>
 													<reference key="NSContentView" ref="417645489"/>
@@ -1821,7 +1821,6 @@
 					<string key="className">SEProject</string>
 					<string key="superclassName">NSDocument</string>
 					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="revealInFinder:">id</string>
 						<string key="revertCurrentSourceItemToSaved:">id</string>
 						<string key="runProject:">id</string>
 						<string key="saveCurrentSourceItem:">id</string>
@@ -1829,10 +1828,6 @@
 						<string key="sourceTableAction:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="revealInFinder:">
-							<string key="name">revealInFinder:</string>
-							<string key="candidateClassName">id</string>
-						</object>
 						<object class="IBActionInfo" key="revertCurrentSourceItemToSaved:">
 							<string key="name">revertCurrentSourceItemToSaved:</string>
 							<string key="candidateClassName">id</string>

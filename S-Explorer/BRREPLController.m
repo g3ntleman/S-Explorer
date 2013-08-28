@@ -10,12 +10,15 @@
 #import "BRREPLController.h"
 #import "BRREPLView.h"
 #import "PseudoTTY.h"
+#import "SESchemeParser.h"
 
 @implementation BRREPLController {
 
     PseudoTTY* tty;
     NSMutableArray* previousCommands;
     NSMutableArray* nextCommands;
+    
+    NSUInteger currentOutputStart;
 }
 
 static NSData* lineFeedData = nil;
@@ -48,6 +51,7 @@ static NSData* lineFeedData = nil;
 
 
 - (void) taskOutputReceived: (NSNotification*) n {
+    
     NSFileHandle* filehandle = n.object;
     //NSData* data = filehandle.availableData;
     NSData* data = n.userInfo[NSFileHandleNotificationDataItem];
@@ -56,10 +60,21 @@ static NSData* lineFeedData = nil;
     
     [self.replView appendInterpreterString: string];
     
+    NSString* outputString = self.replView.string;
+    NSRange outputRange = NSMakeRange(currentOutputStart, outputString.length-currentOutputStart);
+    
+    NSLog(@"Colorizing '%@' ", [outputString substringWithRange: outputRange]);
+    
+    SESchemeParser* parser = [[SESchemeParser alloc] initWithString: outputString
+                                                              range: outputRange
+                                                           delegate: self.replView];
+    [parser parseAll];
+
+    
     [filehandle readInBackgroundAndNotify];
 }
 
-- (void) commitCommand: (NSString*) commandString {
+- (void) sendCommand: (NSString*) commandString {
     
     NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
     [tty.masterFileHandle writeData: stringData];
@@ -73,7 +88,6 @@ static NSData* lineFeedData = nil;
 - (NSArray*) previousCommands {
     return  previousCommands;
 }
-
 
 
 - (NSString*) currentCommand {
@@ -98,16 +112,16 @@ static NSData* lineFeedData = nil;
     
     NSRange commandRange = self.replView.commandRange;
     if (commandRange.length) {
-        NSString* currentCommand = [self.replView.string substringWithRange: commandRange];
-        NSLog(@"Sending command '%@'", currentCommand);
+        NSString* command = [self.replView.string substringWithRange: commandRange];
+        NSLog(@"Sending command '%@'", command);
         
-
         self.currentCommand = @"";
-        [self commitCommand: currentCommand];
-        
+        [self sendCommand: command];
         [previousCommands addObjectsFromArray: nextCommands];
         [nextCommands removeAllObjects];
-        [previousCommands insertObject: currentCommand atIndex: 0];
+        [previousCommands insertObject: command atIndex: 0];
+        
+        currentOutputStart = self.replView.string.length;
         
         return YES;
     }
@@ -116,7 +130,7 @@ static NSData* lineFeedData = nil;
 }
 
 - (IBAction) insertNewline: (id) sender {
-    NSLog(@"Return key action.");
+    //NSLog(@"Return key action.");
     [self sendCurrentCommand];
 }
 

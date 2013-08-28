@@ -13,7 +13,7 @@
     unichar* characters;
     NSUInteger length;
     NSUInteger position;
-    //unsigned short depth;
+    NSRange stringRange;
 }
 
 @synthesize delegate;
@@ -22,22 +22,32 @@
     
     static NSSet* keywords = nil;
     if (! keywords) {
-        keywords = [[NSSet alloc] initWithArray: @[@"else", @"=>", @"define", @"unquote", @"unquote-splicing", @"quote", @"lambda", @"if", @"set!", @"begin", @"cond", @"and", @"or", @"case", @"let", @"let*", @"letrec", @"do", @"delay", @"quasiquote"]];
+        keywords = [[NSSet alloc] initWithArray: @[@"else", @"=>", @"define", @"unquote", @"unquote-splicing", @"quote", @"lambda", @"if", @"set!", @"begin", @"cond", @"and", @"or", @"case", @"let", @"let*", @"letrec", @"do", @"delay", @"quasiquote", @"import", @"null?"]];
     }
     return keywords;
 }
 
-- (id) initWithString: (NSString*) schemeSource {
+- (id) initWithString: (NSString*) schemeSource
+                range: (NSRange) range
+             delegate: (id) parserDelegate {
     
-    if (! schemeSource) return nil;
+    if (! schemeSource.length) return nil;
+    
+    NSParameterAssert(NSMaxRange(range) <= schemeSource.length);
     
     if (self = [self init]) {
+        delegate = parserDelegate;
         _string = schemeSource;
-        length = schemeSource.length;
+        length = range.length;
+        stringRange = range;
         characters = malloc(sizeof(unichar) * length + 1);
-        [schemeSource getCharacters: characters];
+        [schemeSource getCharacters: characters range: stringRange];
     }
     return self;
+}
+
+- (void) dealloc {
+    free(characters);
 }
 
 - (unichar) getc {
@@ -96,7 +106,7 @@
                 c = [self getc];
             } while (c != 0 && c != '"');
             result.occurrence.length = position-result.occurrence.location;
-
+            
             return result;
 
         default:
@@ -117,14 +127,16 @@
     }
 }
 
-- (void) parse {
+- (void) parseAll {
     
+    position = 0;
     NSInteger depth = 0;
     NSUInteger elementCount = 0;
     TokenOccurrence tokenInstance;
     while ((tokenInstance = [self nextToken]).token != END_OF_INPUT) {
         //NSLog(@"Found Token '%@'(%d) at %@", [schemeString substringWithRange:tokenInstance.occurrence], tokenInstance.token, NSStringFromRange(tokenInstance.occurrence));
         
+        tokenInstance.occurrence.location += stringRange.location;
         
         switch (tokenInstance.token) {
             case LEFT_PAR:
@@ -148,8 +160,8 @@
                 break;
         }
     }
-    
 }
+
 //
 ///* Read just one more cdr for this s-expression. */
 //lisp_object

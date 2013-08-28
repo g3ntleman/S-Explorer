@@ -42,12 +42,16 @@ typedef struct  {
 
 @interface SESchemeParser : NSObject
 
-@property (strong) id <SESchemeParserDelegate> delegate;
+@property (strong, nonatomic) id <SESchemeParserDelegate> delegate;
+@property (strong, nonatomic) NSSet* keywords;
 @property (strong, readonly) NSString* string;
 
 + (NSSet*) keywords;
 
-- (id) initWithString: (NSString*) schemeSource;
-- (void) parse;
+- (id) initWithString: (NSString*) schemeSource
+                range: (NSRange) range
+             delegate: (id) delegate;
+
+- (void) parseAll;
 
 @end

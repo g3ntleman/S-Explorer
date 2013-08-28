@@ -15,24 +15,24 @@
 }
 
 
-- (id) initWithFrame: (NSRect) frameRect {
-    if (self = [super initWithFrame: frameRect]) {
-        
-//        [[NSNotificationCenter defaultCenter] addObserverForName:NSWindowDidBecomeKeyNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
-//            NSLog(@"%@ did become key.", note.object);
-//            [self setNeedsDisplay: YES];
-//        }];
-//        [[NSNotificationCenter defaultCenter] addObserverForName:NSApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
-//            NSLog(@"%@ NSApplicationDidBecomeActiveNotification", note.object);
-//            [self setNeedsDisplay: YES];
-//        }];
-//        [[NSNotificationCenter defaultCenter] addObserverForName:NSApplicationDidResignActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
-//            NSLog(@"%@ NSApplicationDidResignActiveNotification.", note.object);
-//            [self setNeedsDisplay: YES];
-//        }];        
-    }
-    return self;
-}
+//- (id) initWithFrame: (NSRect) frameRect {
+//    if (self = [super initWithFrame: frameRect]) {
+//        
+////        [[NSNotificationCenter defaultCenter] addObserverForName:NSWindowDidBecomeKeyNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+////            NSLog(@"%@ did become key.", note.object);
+////            [self setNeedsDisplay: YES];
+////        }];
+////        [[NSNotificationCenter defaultCenter] addObserverForName:NSApplicationDidBecomeActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+////            NSLog(@"%@ NSApplicationDidBecomeActiveNotification", note.object);
+////            [self setNeedsDisplay: YES];
+////        }];
+////        [[NSNotificationCenter defaultCenter] addObserverForName:NSApplicationDidResignActiveNotification object:nil queue:nil usingBlock:^(NSNotification *note) {
+////            NSLog(@"%@ NSApplicationDidResignActiveNotification.", note.object);
+////            [self setNeedsDisplay: YES];
+////        }];        
+//    }
+//    return self;
+//}
 
 - (void) dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
@@ -110,7 +110,7 @@
     
     NSMutableDictionary* interpreterAttributes = [[NSMutableDictionary alloc] init];
     interpreterAttributes[NSFontAttributeName] = self.font;
-    interpreterAttributes[NSForegroundColorAttributeName] = [NSColor blueColor];
+    interpreterAttributes[NSForegroundColorAttributeName] = [NSColor blackColor];
 
     return interpreterAttributes;
 }
@@ -122,14 +122,10 @@
     if (self.font) {
         commandAttributes = [self.interpreterAttributes mutableCopy];
         //commandAttributes[BKTextCommandAttributeName] = @YES;
-        commandAttributes[NSForegroundColorAttributeName] = [NSColor blackColor];
+        commandAttributes[NSForegroundColorAttributeName] = [NSColor blueColor];
     }
     return commandAttributes;
 }
-
-
-
-
 
 - (void) setNeedsDisplay:(BOOL)flag {
     [super setNeedsDisplay:flag];
@@ -147,7 +143,7 @@
     
     //pbItem = [[NSAttributedString alloc] initWithString: pbItem attributes: self.typingAttributes];
 //    if ([pbItem isEqualToString:@"foo"]) {
-        [self insertText:pbItem];
+        [self insertText: pbItem];
 //    }else{
 //        [super paste:sender];
 //    }
@@ -177,25 +173,11 @@
 - (BOOL) shouldChangeTextInRange: (NSRange) affectedCharRange
                replacementString: (NSString*) replacementString {
     
-    //self.typingAttributes = self.commandAttributes;
-    
-    return affectedCharRange.location>=commandLocation;
-    
-//    NSRange fullRange;
-//    if (self.textStorage.length==NSMaxRange(affectedCharRange) && replacementString.length) {
-//        // We may always append:
-//        return YES;
-//    }
-//    if (NSLocationInRange(commandLocation, affectedCharRange)
-//    
-//    if ([self.textStorage attribute: BKTextCommandAttributeName atIndex: affectedCharRange.location effectiveRange: &fullRange]) {
-//        if (NSMaxRange(fullRange)>=NSMaxRange(affectedCharRange)) {
-//            // The whole affectedRange is editable:
-//            return YES;
-//        }
-//    }
-//    //NSBeep();
-//    return NO;
+    if (affectedCharRange.location<commandLocation) {
+        NSBeep();
+        return NO;
+    }
+    return YES;
 }
 
 /**
@@ -203,7 +185,7 @@
  * where the user can enter text.
  **/
 - (BOOL) isCommandMode {
-    return [self shouldChangeTextInRange: self.selectedRange replacementString: @" "];
+    return (self.selectedRange.location >= commandLocation);
 }
 
 

@@ -6,7 +6,8 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
+#import "SESchemeParser.h"
 
 @interface SEEditorTextView : NSTextView
 
@@ -16,5 +17,9 @@
 - (IBAction) contractSelection: (id) sender;
 - (IBAction) selectSpecificLine: (id) sender;
 - (NSRange) selectLineNumber: (NSUInteger) line;
+
++ (NSColor*) commentColor;
++ (NSColor*) stringColor;
++ (NSColor*) numberColor;
 
 @end
