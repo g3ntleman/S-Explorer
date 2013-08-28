@@ -168,6 +168,9 @@
     [textStorage setAttributes: self.interpreterAttributes range: range];
     [textStorage endEditing];
     self.typingAttributes = self.commandAttributes;
+    
+    
+    [self.enclosingScrollView flashScrollers];
 }
 
 - (BOOL) shouldChangeTextInRange: (NSRange) affectedCharRange

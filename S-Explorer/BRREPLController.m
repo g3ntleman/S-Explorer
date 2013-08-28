@@ -125,6 +125,12 @@ static NSData* lineFeedData = nil;
         currentOutputStart = self.replView.string.length;
         
         return YES;
+    } else if (self.replView.isCommandMode) {
+        NSString* log = self.replView.string;
+        NSRange promptRange = [log lineRangeForRange: self.replView.selectedRange];
+        NSString* prompt = [log substringWithRange: promptRange];
+        [self.replView appendInterpreterString: @"\n"];
+        [self.replView appendInterpreterString: prompt];
     }
     
     return NO;
