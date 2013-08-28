@@ -69,6 +69,7 @@ static NSData* lineFeedData = nil;
                                                               range: outputRange
                                                            delegate: self.replView];
     [parser parseAll];
+    [self.replView moveToEndOfDocument: self];
 
     
     [filehandle readInBackgroundAndNotify];
@@ -132,6 +133,8 @@ static NSData* lineFeedData = nil;
 - (IBAction) insertNewline: (id) sender {
     //NSLog(@"Return key action.");
     [self sendCurrentCommand];
+    [self.replView moveToEndOfDocument: sender];
+    //[self.replView scrollRangeToVisible: self.replView.selectedRange];
 }
 
 
