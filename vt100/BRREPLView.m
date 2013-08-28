@@ -8,9 +8,10 @@
 
 #import "BRREPLView.h"
 
-NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
+//NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 
 @implementation BRREPLView {
+    NSUInteger commandLocation;
 }
 
 
@@ -108,8 +109,8 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 - (NSDictionary*) interpreterAttributes {
     
     NSMutableDictionary* interpreterAttributes = [[NSMutableDictionary alloc] init];
-    interpreterAttributes[self.font] = NSFontAttributeName;
-    interpreterAttributes[NSBackgroundColorAttributeName] = [NSColor yellowColor];
+    interpreterAttributes[NSFontAttributeName] = self.font;
+    interpreterAttributes[NSForegroundColorAttributeName] = [NSColor blueColor];
 
     return interpreterAttributes;
 }
@@ -120,8 +121,8 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
     
     if (self.font) {
         commandAttributes = [self.interpreterAttributes mutableCopy];
-        commandAttributes[BKTextCommandAttributeName] = @YES;
-        commandAttributes[NSBackgroundColorAttributeName] = [NSColor greenColor];
+        //commandAttributes[BKTextCommandAttributeName] = @YES;
+        commandAttributes[NSForegroundColorAttributeName] = [NSColor blackColor];
     }
     return commandAttributes;
 }
@@ -152,26 +153,49 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 //    }
 }
 
+- (NSRange) commandRange {
+    return NSMakeRange(commandLocation, self.string.length-commandLocation);
+}
 
+- (void) appendInterpreterString: (NSString*) aString {
+    
+    NSTextStorage* textStorage = self.textStorage;
+    
+    //self.typingAttributes = self.interpreterAttributes;
+    
+    [textStorage beginEditing];
+    
+    NSRange range = NSMakeRange(commandLocation, 0);
+    [textStorage replaceCharactersInRange: range withString: aString];
+    commandLocation += aString.length;
+    range.length += aString.length;
+    [textStorage setAttributes: self.interpreterAttributes range: range];
+    [textStorage endEditing];
+    self.typingAttributes = self.commandAttributes;
+}
 
 - (BOOL) shouldChangeTextInRange: (NSRange) affectedCharRange
                replacementString: (NSString*) replacementString {
     
     //self.typingAttributes = self.commandAttributes;
     
-    NSRange fullRange;
-    if (self.textStorage.length==NSMaxRange(affectedCharRange) && replacementString.length) {
-        // We may always append:
-        return YES;
-    }
-    if ([self.textStorage attribute: BKTextCommandAttributeName atIndex: affectedCharRange.location effectiveRange: &fullRange]) {
-        if (NSMaxRange(fullRange)>=NSMaxRange(affectedCharRange)) {
-            // The whole affectedRange is editable:
-            return YES;
-        }
-    }
-    //NSBeep();
-    return NO;
+    return affectedCharRange.location>=commandLocation;
+    
+//    NSRange fullRange;
+//    if (self.textStorage.length==NSMaxRange(affectedCharRange) && replacementString.length) {
+//        // We may always append:
+//        return YES;
+//    }
+//    if (NSLocationInRange(commandLocation, affectedCharRange)
+//    
+//    if ([self.textStorage attribute: BKTextCommandAttributeName atIndex: affectedCharRange.location effectiveRange: &fullRange]) {
+//        if (NSMaxRange(fullRange)>=NSMaxRange(affectedCharRange)) {
+//            // The whole affectedRange is editable:
+//            return YES;
+//        }
+//    }
+//    //NSBeep();
+//    return NO;
 }
 
 /**
@@ -210,5 +234,11 @@ NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 //    return YES;
 //}
 
+- (IBAction) clear: (id) sender {
+    
+    self.string = @"";
+    commandLocation = 0;
+    
+}
 
 @end

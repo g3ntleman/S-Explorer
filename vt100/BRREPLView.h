@@ -9,7 +9,7 @@
 #import <AppKit/AppKit.h>
 #import "SEEditorTextView.h"
 
-extern NSString* BKTextCommandAttributeName;
+// extern NSString* BKTextCommandAttributeName;
 
 
 //@protocol BRREPLDelegate <NSObject>
@@ -29,6 +29,12 @@ extern NSString* BKTextCommandAttributeName;
 @property (strong, nonatomic) NSFont* font;
 
 - (BOOL) isCommandMode;
+
+- (NSRange) commandRange;
+
+- (IBAction) clear: (id) sender;
+- (void) appendInterpreterString: (NSString*) aString;
+
 
 @end
 

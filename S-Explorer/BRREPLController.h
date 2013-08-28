@@ -17,7 +17,6 @@
 
 @property (strong, nonatomic) IBOutlet BRREPLView* replView;
 
-@property (readonly) NSRange currentCommandRange;
 @property (readonly) NSString* currentCommand;
 @property (strong) NSTask* task;
 @property (strong, readonly) NSString* commandString;
@@ -33,8 +32,6 @@
               error: (NSError**) errorPtr;
 
 - (IBAction) run: (id) sender;
-- (IBAction) clear: (id) sender;
-- (void) appendInterpreterString: (NSString*) aString;
 
 
 @end

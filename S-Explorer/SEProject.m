@@ -106,7 +106,7 @@
     NSString* fileContent = sourceItem.content;
     if (! fileContent)
         fileContent = @"";
-    NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [NSFont fontWithName:@"Menlo-Bold" size: 12.0], NSFontAttributeName, nil, nil];
+    NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [NSFont fontWithName:@"Menlo-Bold" size: 13.0], NSFontAttributeName, nil, nil];
     NSAttributedString* attributedContent = [[NSAttributedString alloc] initWithString: fileContent attributes: attributes];
     textStorage.attributedString = attributedContent;
     
