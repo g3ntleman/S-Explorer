@@ -137,7 +137,11 @@ static NSData* lineFeedData = nil;
             [self moveDown: self];
         }
         [self.previousCommands insertObject: command atIndex: 0];
-
+        if (self.previousCommands.count > 50) {
+            [self.previousCommands removeLastObject];
+        }
+        
+        
         self.currentCommand = @"";
         [self sendCommand: command];
         
@@ -174,6 +178,7 @@ static NSData* lineFeedData = nil;
     if (self.replView.isCommandMode) {
         NSLog(@"History next action.");
         if (! self.nextCommands.count) {
+            NSBeep();
             return;
         }
         [self.previousCommands insertObject: self.currentCommand atIndex: 0];
@@ -194,6 +199,7 @@ static NSData* lineFeedData = nil;
         NSLog(@"History prev action.");
         
         if (! self.previousCommands.count) {
+            NSBeep();
             return;
         }
         [self.nextCommands addObject: self.currentCommand];

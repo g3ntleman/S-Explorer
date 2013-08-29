@@ -11,7 +11,7 @@
 #import "SEEditorTextView.h"
 #import "NoodleLineNumberView.h"
 
-@interface SEEditorController : NSController <SESchemeParserDelegate, NSTextDelegate, NSTextViewDelegate>
+@interface SEEditorController : NSController <NSTextDelegate, NSTextViewDelegate>
 
 @property (strong, nonatomic) IBOutlet SEEditorTextView* textEditorView;
 @property (strong, nonatomic) NSArray* keywords; // sorted array

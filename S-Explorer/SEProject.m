@@ -22,7 +22,7 @@
 @synthesize sourceTab;
 @synthesize sourceList;
 @synthesize projectSettings;
-//@synthesize uiSettings;
+@synthesize currentLanguage;
 
 - (id) init {
     
@@ -224,11 +224,26 @@
     }
 }
 
-
+- (void) checkLibraryAlias {
+    
+    NSString* libraryFolder = self.languageDictionary[@"libraryFolder"];
+    BOOL isDir = NO;
+    if ([[NSFileManager defaultManager] fileExistsAtPath: libraryFolder isDirectory: &isDir] && isDir) {
+        
+    }
+}
 
 
 - (NSString*) currentLanguage {
-    return @"Chibi-Scheme";
+    return currentLanguage; //@"Chibi-Scheme";
+}
+
+- (void) setCurrentLanguage:(NSString *)language {
+    currentLanguage = language;
+    NSDictionary* langDict = self.languageDictionary;
+    NSAssert(langDict, @"No language definition for %@ in info.plist.", language);
+    
+    [self checkLibraryAlias];
 }
 
 - (NSDictionary*) languageDictionary {

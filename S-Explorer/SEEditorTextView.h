@@ -9,7 +9,7 @@
 #import <AppKit/AppKit.h>
 #import "SESchemeParser.h"
 
-@interface SEEditorTextView : NSTextView
+@interface SEEditorTextView : NSTextView <SESchemeParserDelegate>
 
 @property (strong, nonatomic) IBOutlet NSPanel* gotoPanel;
 
