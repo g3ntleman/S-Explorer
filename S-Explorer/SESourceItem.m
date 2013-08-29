@@ -6,9 +6,9 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import "BRSourceItem.h"
+#import "SESourceItem.h"
 
-@implementation BRSourceItem {
+@implementation SESourceItem {
     NSString* path;
     NSMutableArray* children;
     NSMutableString* changedContent;
@@ -20,7 +20,7 @@ static NSMutableArray *leafNode = nil;
 @synthesize parent;
 @synthesize content;
 
-- (id) initWithPath: (NSString*) aPath parent: (BRSourceItem*) parentItem {
+- (id) initWithPath: (NSString*) aPath parent: (SESourceItem*) parentItem {
 
     if (self = [self init]) {
         if (parentItem) {
@@ -93,8 +93,8 @@ static NSMutableArray *leafNode = nil;
 }
 
 
-- (BRSourceItem*) childWithName: (NSString*) name {
-    for (BRSourceItem* child in self.children) {
+- (SESourceItem*) childWithName: (NSString*) name {
+    for (SESourceItem* child in self.children) {
         if ([child.relativePath isEqualToString: name]) {
             return child;
         }
@@ -102,9 +102,9 @@ static NSMutableArray *leafNode = nil;
     return nil;
 }
 
-- (BRSourceItem*) childWithPath: (NSString*) aPath {
+- (SESourceItem*) childWithPath: (NSString*) aPath {
     NSArray* pathComponents = [aPath pathComponents];
-    BRSourceItem* current = self;
+    SESourceItem* current = self;
     for (NSString* name in pathComponents) {
         current = [current childWithName: name];
         if (! current) return nil;
@@ -131,7 +131,7 @@ static NSMutableArray *leafNode = nil;
             
             for (NSString* childPath in array) {
                 if (! [childPath hasPrefix: @"."]) {
-                    BRSourceItem* newChild = [[[self class] alloc] initWithPath: childPath parent: self];
+                    SESourceItem* newChild = [[[self class] alloc] initWithPath: childPath parent: self];
                     [children addObject: newChild];
                 }
             }
@@ -180,7 +180,7 @@ static NSMutableArray *leafNode = nil;
 
 @end
 
-@implementation BRSourceItem (PB)
+@implementation SESourceItem (PB)
 
 - (NSArray*) writableTypesForPasteboard: (NSPasteboard*) pasteboard {
     return @[(NSString *)kPasteboardTypeFileURLPromise, NSPasteboardTypeString];

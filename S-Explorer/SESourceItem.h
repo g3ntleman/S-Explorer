@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface BRSourceItem : NSObject <NSPasteboardWriting>
+@interface SESourceItem : NSObject <NSPasteboardWriting>
 
 @property (readonly) BOOL isTextItem;
-@property (weak, readonly) BRSourceItem* parent;
+@property (weak, readonly) SESourceItem* parent;
 @property (weak, nonatomic) NSMutableString* content;
 
 @property (readonly) NSString* absolutePath;
@@ -20,8 +20,8 @@
 
 - (id) initWithFileURL: (NSURL*) aURL;
 
-- (BRSourceItem*) childWithName: (NSString*) name;
-- (BRSourceItem*) childWithPath: (NSString*) path;
+- (SESourceItem*) childWithName: (NSString*) name;
+- (SESourceItem*) childWithPath: (NSString*) path;
 
 - (BOOL) contentHasChanged;
 - (BOOL) saveContentWithError: (NSError**) errorPtr;

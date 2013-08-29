@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; };
-		8D0904C2176A7C4800176BCF /* BRSourceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904C1176A7C4800176BCF /* BRSourceItem.m */; };
+		8D0904C2176A7C4800176BCF /* SESourceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904C1176A7C4800176BCF /* SESourceItem.m */; };
 		8D16399617C3B7A6000DD491 /* SEEditorTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D16399517C3B7A6000DD491 /* SEEditorTextView.m */; };
 		8D16399817C57FAE000DD491 /* S-Explorer.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 8D16399717C57FAE000DD491 /* S-Explorer.iconset */; };
 		8D16399C17C6BC1D000DD491 /* SEApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D16399B17C6BC1D000DD491 /* SEApplicationDelegate.m */; };
@@ -27,8 +27,8 @@
 		8D604277173BE60900149409 /* S-ExplorerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604276173BE60900149409 /* S-ExplorerTests.m */; };
 		8D604292173C142A00149409 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424C173BE60800149409 /* AppKit.framework */; };
 		8D604293173C143300149409 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424E173BE60800149409 /* Foundation.framework */; };
-		8D604297173C22D600149409 /* BRREPLController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* BRREPLController.m */; };
-		8D60429B173C388900149409 /* BRREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604299173C388900149409 /* BRREPLView.m */; };
+		8D604297173C22D600149409 /* SEREPLController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* SEREPLController.m */; };
+		8D60429B173C388900149409 /* SEREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604299173C388900149409 /* SEREPLView.m */; };
 		8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8D8298D31758088000336E2F /* S-Explorer-support.scm */; };
 		8D94C2471783AA8B00D8595B /* PseudoTTY.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D94C2461783AA8B00D8595B /* PseudoTTY.m */; };
 		8D99612717BDB9740058FD0B /* SEEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D99612617BDB9730058FD0B /* SEEditorController.m */; };
@@ -57,8 +57,8 @@
 		8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAlert+OPBlocks.m"; sourceTree = "<group>"; };
 		8D0904BD1769447100176BCF /* OPTabbedSeqmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OPTabbedSeqmentedControl.h; sourceTree = "<group>"; };
 		8D0904BE1769447100176BCF /* OPTabbedSeqmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPTabbedSeqmentedControl.m; sourceTree = "<group>"; };
-		8D0904C0176A7C4800176BCF /* BRSourceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BRSourceItem.h; sourceTree = "<group>"; };
-		8D0904C1176A7C4800176BCF /* BRSourceItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRSourceItem.m; sourceTree = "<group>"; };
+		8D0904C0176A7C4800176BCF /* SESourceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SESourceItem.h; sourceTree = "<group>"; };
+		8D0904C1176A7C4800176BCF /* SESourceItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SESourceItem.m; sourceTree = "<group>"; };
 		8D120D68176D2A3C0019577E /* PSMMetalTabStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = PSMMetalTabStyle.h; sourceTree = "<group>"; };
 		8D120D69176D2A3C0019577E /* PSMMetalTabStyle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PSMMetalTabStyle.m; sourceTree = "<group>"; };
 		8D16399417C3B7A6000DD491 /* SEEditorTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEEditorTextView.h; sourceTree = "<group>"; };
@@ -92,10 +92,10 @@
 		8D604273173BE60900149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8D604275173BE60900149409 /* S-ExplorerTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = "S-ExplorerTests.h"; sourceTree = "<group>"; };
 		8D604276173BE60900149409 /* S-ExplorerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "S-ExplorerTests.m"; sourceTree = "<group>"; };
-		8D604294173C22D600149409 /* BRREPLController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = BRREPLController.h; sourceTree = "<group>"; };
-		8D604295173C22D600149409 /* BRREPLController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRREPLController.m; sourceTree = "<group>"; };
-		8D604298173C388900149409 /* BRREPLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; name = BRREPLView.h; path = ../vt100/BRREPLView.h; sourceTree = "<group>"; };
-		8D604299173C388900149409 /* BRREPLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BRREPLView.m; path = ../vt100/BRREPLView.m; sourceTree = "<group>"; };
+		8D604294173C22D600149409 /* SEREPLController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEREPLController.h; sourceTree = "<group>"; };
+		8D604295173C22D600149409 /* SEREPLController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEREPLController.m; sourceTree = "<group>"; };
+		8D604298173C388900149409 /* SEREPLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SEREPLView.h; path = ../vt100/SEREPLView.h; sourceTree = "<group>"; };
+		8D604299173C388900149409 /* SEREPLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SEREPLView.m; path = ../vt100/SEREPLView.m; sourceTree = "<group>"; };
 		8D8298D31758088000336E2F /* S-Explorer-support.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "S-Explorer-support.scm"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.python; };
 		8D94C2451783AA8B00D8595B /* PseudoTTY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PseudoTTY.h; sourceTree = "<group>"; };
 		8D94C2461783AA8B00D8595B /* PseudoTTY.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PseudoTTY.m; sourceTree = "<group>"; };
@@ -538,14 +538,14 @@
 				8D16399517C3B7A6000DD491 /* SEEditorTextView.m */,
 				8D99612517BDB9730058FD0B /* SEEditorController.h */,
 				8D99612617BDB9730058FD0B /* SEEditorController.m */,
-				8D604298173C388900149409 /* BRREPLView.h */,
-				8D604299173C388900149409 /* BRREPLView.m */,
-				8D604294173C22D600149409 /* BRREPLController.h */,
-				8D604295173C22D600149409 /* BRREPLController.m */,
+				8D604298173C388900149409 /* SEREPLView.h */,
+				8D604299173C388900149409 /* SEREPLView.m */,
+				8D604294173C22D600149409 /* SEREPLController.h */,
+				8D604295173C22D600149409 /* SEREPLController.m */,
 				8D27BFF21766C59C00F1F8FA /* SESchemeParser.h */,
 				8D27BFF31766C59C00F1F8FA /* SESchemeParser.m */,
-				8D0904C0176A7C4800176BCF /* BRSourceItem.h */,
-				8D0904C1176A7C4800176BCF /* BRSourceItem.m */,
+				8D0904C0176A7C4800176BCF /* SESourceItem.h */,
+				8D0904C1176A7C4800176BCF /* SESourceItem.m */,
 				8D0904BD1769447100176BCF /* OPTabbedSeqmentedControl.h */,
 				8D0904BE1769447100176BCF /* OPTabbedSeqmentedControl.m */,
 				8D120D68176D2A3C0019577E /* PSMMetalTabStyle.h */,
@@ -1434,11 +1434,11 @@
 			files = (
 				8D604256173BE60800149409 /* main.m in Sources */,
 				8D60425D173BE60800149409 /* SEProject.m in Sources */,
-				8D604297173C22D600149409 /* BRREPLController.m in Sources */,
-				8D60429B173C388900149409 /* BRREPLView.m in Sources */,
+				8D604297173C22D600149409 /* SEREPLController.m in Sources */,
+				8D60429B173C388900149409 /* SEREPLView.m in Sources */,
 				8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */,
 				8D27BFF51766C59D00F1F8FA /* SESchemeParser.m in Sources */,
-				8D0904C2176A7C4800176BCF /* BRSourceItem.m in Sources */,
+				8D0904C2176A7C4800176BCF /* SESourceItem.m in Sources */,
 				8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */,
 				8D2AAB6C177A8E50008F07C4 /* NoodleLineNumberView.m in Sources */,
 				8D2AAB71177A94A8008F07C4 /* NoodleLineNumberMarker.m in Sources */,

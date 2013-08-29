@@ -8,7 +8,7 @@
 
 #import "SEProject.h"
 #import "NSAlert+OPBlocks.h"
-#import "BRSourceItem.h"
+#import "SESourceItem.h"
 #import "NSDictionary+OPImmutablility.h"
 #import "NoodleLineNumberView.h"
 #import "OPUtilityFunctions.h"
@@ -40,11 +40,11 @@
         BOOL isDir = NO;
         if ([[NSFileManager defaultManager] fileExistsAtPath:url.path isDirectory:&isDir]) {
             if (isDir) {
-                projectSourceItem = [[BRSourceItem alloc] initWithFileURL: url];
+                projectSourceItem = [[SESourceItem alloc] initWithFileURL: url];
             } else {
-                projectSourceItem = [[BRSourceItem alloc] initWithFileURL: [url URLByDeletingLastPathComponent]];
+                projectSourceItem = [[SESourceItem alloc] initWithFileURL: [url URLByDeletingLastPathComponent]];
 
-                BRSourceItem* singleSourceItem = [projectSourceItem childWithName: [url lastPathComponent]];
+                SESourceItem* singleSourceItem = [projectSourceItem childWithName: [url lastPathComponent]];
                 
                 [self setSourceItem: singleSourceItem forIndex: 0];
             }
@@ -58,10 +58,10 @@
 /**
  * index should be 0..3 while item may be nil to indicate a removal.
  */
-- (void) setSourceItem: (BRSourceItem*) item forIndex: (NSUInteger) index {
+- (void) setSourceItem: (SESourceItem*) item forIndex: (NSUInteger) index {
     
     if (item) {
-        NSParameterAssert([item isKindOfClass: [BRSourceItem class]]);
+        NSParameterAssert([item isKindOfClass: [SESourceItem class]]);
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryBySettingObject: item forKey: @(index)];
     } else {
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryByRemovingObjectForKey: @(index)];
@@ -97,12 +97,12 @@
     return @"SEProject";
 }
 
-- (BRSourceItem*) currentSourceItem {
-    BRSourceItem* sourceItem = self.tabbedSourceItems[@(sourceTab.selectedSegment)];
+- (SESourceItem*) currentSourceItem {
+    SESourceItem* sourceItem = self.tabbedSourceItems[@(sourceTab.selectedSegment)];
     return sourceItem;
 }
 
-- (void) setCurrentSourceItem: (BRSourceItem*) sourceItem {
+- (void) setCurrentSourceItem: (SESourceItem*) sourceItem {
     
     NSTextStorage* textStorage = self.editorController.textEditorView.textStorage;
     NSString* fileContent = sourceItem.content;
@@ -119,7 +119,7 @@
 }
 
 - (void) selectSourceTabWithIndex: (NSUInteger) tabIndex {
-    BRSourceItem* sourceItem = self.tabbedSourceItems[@(tabIndex)];
+    SESourceItem* sourceItem = self.tabbedSourceItems[@(tabIndex)];
     [self setCurrentSourceItem: sourceItem];
 }
 
@@ -186,7 +186,7 @@
 
 - (IBAction) sourceTableAction: (id) sender {
     NSLog(@"sourceTableAction.");
-    BRSourceItem* selectedSourceItem = [self.sourceList itemAtRow: self.sourceList.selectedRow];
+    SESourceItem* selectedSourceItem = [self.sourceList itemAtRow: self.sourceList.selectedRow];
     
     if (selectedSourceItem.isTextItem) {
         [self setCurrentSourceItem: selectedSourceItem];
@@ -196,14 +196,14 @@
 - (IBAction) selectSourceTab: (id) sender {
     
     NSLog(@"selected tab #%lu", sourceTab.selectedSegment);
-    BRSourceItem* sourceItem = self.tabbedSourceItems[@(sourceTab.selectedSegment)];
+    SESourceItem* sourceItem = self.tabbedSourceItems[@(sourceTab.selectedSegment)];
     
     [self setCurrentSourceItem: sourceItem];
 }
 
 - (IBAction) saveCurrentSourceItem: (id) sender {
     
-    BRSourceItem* currentSource = self.currentSourceItem;
+    SESourceItem* currentSource = self.currentSourceItem;
     
     if (currentSource.contentHasChanged) {
         NSError* error = nil;
@@ -217,7 +217,7 @@
 
 - (IBAction) revertCurrentSourceItemToSaved: (id) sender {
     
-    BRSourceItem* currentSource = self.currentSourceItem;
+    SESourceItem* currentSource = self.currentSourceItem;
     if (currentSource.contentHasChanged) {
         [currentSource revertContent];
         [self setCurrentSourceItem: currentSource];
@@ -257,6 +257,7 @@
     NSError* error = nil;
     [self.replController setCommand: @"/usr/local/bin/chibi-scheme"
                       withArguments: @[]
+                   workingDirectory: self.self.projectSourceItem.absolutePath
                            greeting: self.languageDictionary[@"WelcomeMessage"]
                               error: &error];
     
@@ -277,7 +278,7 @@
     [self selectSourceTabWithIndex: 0];
     
     for (NSString* path in self.uiSettings[@"expandedFolders"]) {
-        BRSourceItem* item = [self.projectSourceItem childWithPath: path];
+        SESourceItem* item = [self.projectSourceItem childWithPath: path];
         [self.sourceList expandItem: item];
     }
     
@@ -306,9 +307,9 @@
 
 @synthesize projectSourceItem;
 
-- (BRSourceItem*) projectSourceItem {
+- (SESourceItem*) projectSourceItem {
     if (! projectSourceItem) {
-        projectSourceItem = [[BRSourceItem alloc] initWithFileURL: [self fileURL]];
+        projectSourceItem = [[SESourceItem alloc] initWithFileURL: [self fileURL]];
     }
     return projectSourceItem;
 }
@@ -356,7 +357,7 @@
 }
 
 - (BOOL) outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item {
-    BRSourceItem* sourceItem = item;
+    SESourceItem* sourceItem = item;
     NSString* path = sourceItem.longRelativePath;
     self.uiSettings[@"expandedFolders"][path] = @YES;
     [self uiSettingsNeedSave];
@@ -364,7 +365,7 @@
 }
 
 - (BOOL) outlineView:(NSOutlineView *)outlineView shouldCollapseItem:(id)item {
-    BRSourceItem* sourceItem = item;
+    SESourceItem* sourceItem = item;
     NSString* path = sourceItem.longRelativePath;
     [self.uiSettings[@"expandedFolders"] removeObjectForKey: path];
     [self uiSettingsNeedSave];
@@ -372,7 +373,7 @@
 }
 
 - (IBAction) revealInFinder: (id) sender {
-    BRSourceItem* selectedItem  = [sourceList itemAtRow: sourceList.selectedRowIndexes.firstIndex];
+    SESourceItem* selectedItem  = [sourceList itemAtRow: sourceList.selectedRowIndexes.firstIndex];
     NSString* selectedItemPath = selectedItem.absolutePath;
     [[NSWorkspace sharedWorkspace] selectFile: selectedItemPath inFileViewerRootedAtPath: nil];
 }
@@ -386,7 +387,7 @@
     // The pasteboard must know the type of files being promised:
     
     NSMutableSet* urlStrings = [NSMutableSet set];
-    for (BRSourceItem* item in items) {
+    for (SESourceItem* item in items) {
         NSString* urlString = [[NSURL fileURLWithPath: item.absolutePath] absoluteString];
         if (urlString.length) {
             [urlStrings addObject: urlString];
@@ -414,7 +415,7 @@
 
 /* In 10.7 multiple drag images are supported by using this delegate method. */
 - (id <NSPasteboardWriting>)outlineView: (NSOutlineView*) outlineView pasteboardWriterForItem: (id) item {
-    return (BRSourceItem*)item;
+    return (SESourceItem*)item;
 }
 
 - (NSView*) outlineView: (NSOutlineView*) outlineView viewForTableColumn: (NSTableColumn*) tableColumn item:(id) item {

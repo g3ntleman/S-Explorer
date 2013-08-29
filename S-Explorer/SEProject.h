@@ -7,21 +7,21 @@
 //
 
 #import <AppKit/AppKit.h>
-#import "BRREPLController.h"
+#import "SEREPLController.h"
 #import "SESchemeParser.h"
-#import "BRSourceItem.h"
+#import "SESourceItem.h"
 #import "SEEditorController.h"
 
-@class BRSourceItem;
+@class SESourceItem;
 
 @interface SEProject : NSDocument <NSOutlineViewDataSource, NSUserInterfaceValidations>
 
-@property (strong, nonatomic) IBOutlet BRREPLController* replController;
+@property (strong, nonatomic) IBOutlet SEREPLController* replController;
 @property (strong, nonatomic) IBOutlet NSView* sourceCellView;
 @property (strong, nonatomic) IBOutlet NSImageView* sourceCellIconView;
 @property (strong, nonatomic) IBOutlet NSTextField* sourceCellTextField;
 
-@property (readonly) BRSourceItem* projectSourceItem;
+@property (readonly) SESourceItem* projectSourceItem;
 @property (strong, nonatomic) NSDictionary* tabbedSourceItems;
 @property (strong, nonatomic) IBOutlet NSSegmentedControl* sourceTab;
 @property (strong, nonatomic) IBOutlet NSOutlineView* sourceList;
@@ -33,7 +33,7 @@
 @property (strong, nonatomic) NSString* currentLanguage;
 @property (strong, readonly) NSDictionary* languageDictionary;
 
-@property (strong, readonly) BRSourceItem* currentSourceItem;
+@property (strong, readonly) SESourceItem* currentSourceItem;
 
 // IBActions:
 
@@ -47,6 +47,6 @@
 
 
 
-- (void) setSourceItem: (BRSourceItem*) item forIndex: (NSUInteger) index;
+- (void) setSourceItem: (SESourceItem*) item forIndex: (NSUInteger) index;
 
 @end

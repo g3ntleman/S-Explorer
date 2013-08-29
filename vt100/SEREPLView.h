@@ -20,7 +20,7 @@
 //
 //@end
 
-@interface BRREPLView : SEEditorTextView
+@interface SEREPLView : SEEditorTextView
 
 
 @property (readonly) NSDictionary* interpreterAttributes;

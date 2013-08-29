@@ -7,12 +7,12 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import "BRREPLController.h"
-#import "BRREPLView.h"
+#import "SEREPLController.h"
+#import "SEREPLView.h"
 #import "PseudoTTY.h"
 #import "SESchemeParser.h"
 
-@implementation BRREPLController {
+@implementation SEREPLController {
 
     PseudoTTY* tty;
     NSMutableArray* previousCommands;
@@ -29,8 +29,6 @@ static NSData* lineFeedData = nil;
 
 - (id) init {
     if (self = [super init]) {
-        previousCommands = [[NSMutableArray alloc] init];
-        nextCommands = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -82,11 +80,18 @@ static NSData* lineFeedData = nil;
     [tty.masterFileHandle writeData: lineFeedData];
 }
 
-- (NSArray*) nextCommands {
+- (NSMutableArray*) nextCommands {
+    if (! nextCommands) {
+        nextCommands = [[NSMutableArray alloc] init];
+    }
     return  nextCommands;
 }
 
-- (NSArray*) previousCommands {
+- (NSMutableArray*) previousCommands {
+    
+    if (! previousCommands) {
+        previousCommands = [[NSMutableArray alloc] init];
+    }
     return  previousCommands;
 }
 
@@ -109,12 +114,15 @@ static NSData* lineFeedData = nil;
     self.replView.selectedRange = NSMakeRange(commandRange.location+currentCommand.length, 0);
 }
 
+- (NSURL*) historyFileURL {
+    NSString* filename = [NSString stringWithFormat: @".REPL-History-%@.plist", @"1"];
+    NSString* path = [self.workingDirectory stringByAppendingPathComponent: filename];
+    return [NSURL fileURLWithPath: path];
+}
+
 - (void) saveHistory {
     
-    NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
-    
-    [ud setObject: self.previousCommands
-           forKey: [NSString stringWithFormat: @"REPL-History-%@", @"1"]];
+    [self.previousCommands writeToURL: self.historyFileURL atomically: YES];
 }
 
 - (BOOL) sendCurrentCommand {
@@ -125,10 +133,10 @@ static NSData* lineFeedData = nil;
         NSLog(@"Sending command '%@'", command);
         
         
-        while (nextCommands.count) {
+        while (self.nextCommands.count) {
             [self moveDown: self];
         }
-        [previousCommands insertObject: command atIndex: 0];
+        [self.previousCommands insertObject: command atIndex: 0];
 
         self.currentCommand = @"";
         [self sendCommand: command];
@@ -165,12 +173,12 @@ static NSData* lineFeedData = nil;
     
     if (self.replView.isCommandMode) {
         NSLog(@"History next action.");
-        if (! nextCommands.count) {
+        if (! self.nextCommands.count) {
             return;
         }
-        [previousCommands insertObject: self.currentCommand atIndex: 0];
-        self.currentCommand = [nextCommands lastObject];
-        [nextCommands removeLastObject];
+        [self.previousCommands insertObject: self.currentCommand atIndex: 0];
+        self.currentCommand = [self.nextCommands lastObject];
+        [self.nextCommands removeLastObject];
         
         return;
     }
@@ -185,12 +193,12 @@ static NSData* lineFeedData = nil;
     if (self.replView.isCommandMode) {
         NSLog(@"History prev action.");
         
-        if (! previousCommands.count) {
+        if (! self.previousCommands.count) {
             return;
         }
-        [nextCommands addObject: self.currentCommand];
-        self.currentCommand = previousCommands[0];
-        [previousCommands removeObjectAtIndex: 0];
+        [self.nextCommands addObject: self.currentCommand];
+        self.currentCommand = self.previousCommands[0];
+        [self.previousCommands removeObjectAtIndex: 0];
         
         return;
     }
@@ -229,7 +237,7 @@ static NSData* lineFeedData = nil;
     [self.replView moveToEndOfDocument: self];
     
     _task = [[NSTask alloc] init];
-    
+        
     if (! tty) {
         tty = [[PseudoTTY alloc] init];
     }
@@ -267,12 +275,16 @@ static NSData* lineFeedData = nil;
 
 - (void) setCommand: (NSString*) command
       withArguments: (NSArray*) arguments
+   workingDirectory: (NSString*) workingDirectory
            greeting: (NSString*) greeting
               error: (NSError**) errorPtr {
 
+    _workingDirectory = workingDirectory;
     _commandString = [command stringByResolvingSymlinksInPath];
     _commandArguments = arguments;
     _greeting = greeting;
+    
+    previousCommands = [NSArray arrayWithContentsOfURL: self.historyFileURL];
     
     if (! [[NSFileManager defaultManager] isExecutableFileAtPath: command]) {
         if (errorPtr) {

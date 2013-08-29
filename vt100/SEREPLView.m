@@ -6,11 +6,11 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import "BRREPLView.h"
+#import "SEREPLView.h"
 
 //NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 
-@implementation BRREPLView {
+@implementation SEREPLView {
     NSUInteger commandLocation;
 }
 
