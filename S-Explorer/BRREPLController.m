@@ -116,15 +116,19 @@ static NSData* lineFeedData = nil;
         NSString* command = [self.replView.string substringWithRange: commandRange];
         NSLog(@"Sending command '%@'", command);
         
+        
+        while (nextCommands.count) {
+            [self moveDown: self];
+        }
+        [previousCommands insertObject: command atIndex: 0];
+
         self.currentCommand = @"";
         [self sendCommand: command];
-        [previousCommands addObjectsFromArray: nextCommands];
-        [nextCommands removeAllObjects];
-        [previousCommands insertObject: command atIndex: 0];
         
         currentOutputStart = self.replView.string.length;
         
         return YES;
+        
     } else if (self.replView.isCommandMode) {
         NSString* log = self.replView.string;
         NSRange promptRange = [log lineRangeForRange: self.replView.selectedRange];
@@ -155,8 +159,8 @@ static NSData* lineFeedData = nil;
             return;
         }
         [previousCommands insertObject: self.currentCommand atIndex: 0];
-        self.currentCommand = nextCommands[0];
-        [nextCommands removeObjectAtIndex: 0];
+        self.currentCommand = [nextCommands lastObject];
+        [nextCommands removeLastObject];
         
         return;
     }
@@ -174,7 +178,7 @@ static NSData* lineFeedData = nil;
         if (! previousCommands.count) {
             return;
         }
-        [nextCommands insertObject: self.currentCommand atIndex: 0];
+        [nextCommands addObject: self.currentCommand];
         self.currentCommand = previousCommands[0];
         [previousCommands removeObjectAtIndex: 0];
         

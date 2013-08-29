@@ -2,7 +2,7 @@
 
 ; testing comments
 
-(define test "test1" "test2")
+(define test (list "test1" "test2"))
 (+ 2 3)
 
 (import (scheme base) (chibi; comment!
