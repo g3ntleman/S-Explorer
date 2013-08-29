@@ -11,6 +11,8 @@
 #import "BRSourceItem.h"
 #import "NSDictionary+OPImmutablility.h"
 #import "NoodleLineNumberView.h"
+#import "OPUtilityFunctions.h"
+
 
 @implementation SEProject {
     NSMutableDictionary* uiSettings;

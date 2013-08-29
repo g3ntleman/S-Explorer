@@ -38,6 +38,8 @@
 		8DCBE48D17C76EBB00A872A7 /* NSColor+OPExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DCBE48C17C76EBB00A872A7 /* NSColor+OPExtensions.m */; };
 		8DCBE48F17C9B4CD00A872A7 /* scheme-indexer.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8DCBE48E17C9B4CD00A872A7 /* scheme-indexer.scm */; };
 		8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */; };
+		8DEB1AA217CF7BEC0088C7C1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8DEB1AA117CF7BEC0088C7C1 /* README.md */; };
+		8DF3C39617CFA3D200C75197 /* OPUtilityFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DF3C39517CFA3D200C75197 /* OPUtilityFunctions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,6 +111,9 @@
 		8DCBE48E17C9B4CD00A872A7 /* scheme-indexer.scm */ = {isa = PBXFileReference; explicitFileType = text.plist; fileEncoding = 4; path = "scheme-indexer.scm"; sourceTree = "<group>"; };
 		8DCBE8AB176F7918004B6AA2 /* NSDictionary+OPImmutablility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = "NSDictionary+OPImmutablility.h"; sourceTree = "<group>"; };
 		8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+OPImmutablility.m"; sourceTree = "<group>"; };
+		8DEB1AA117CF7BEC0088C7C1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = "S-Explorer/README.md"; sourceTree = "<group>"; };
+		8DF3C39417CFA3D200C75197 /* OPUtilityFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OPUtilityFunctions.h; sourceTree = "<group>"; };
+		8DF3C39517CFA3D200C75197 /* OPUtilityFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPUtilityFunctions.m; sourceTree = "<group>"; };
 		8DFA6CD7175EA549006780BF /* .hgignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .hgignore; sourceTree = "<group>"; };
 		8DFA6CD8175EA549006780BF /* .hgtags */ = {isa = PBXFileReference; lastKnownFileType = text; path = .hgtags; sourceTree = "<group>"; };
 		8DFA6CD9175EA549006780BF /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
@@ -489,6 +494,7 @@
 		8D60423D173BE60800149409 = {
 			isa = PBXGroup;
 			children = (
+				8DEB1AA117CF7BEC0088C7C1 /* README.md */,
 				8DFA6CD6175EA549006780BF /* chibi-scheme */,
 				8D60424F173BE60800149409 /* S-Explorer */,
 				8D604250173BE60800149409 /* Supporting Files */,
@@ -595,6 +601,8 @@
 				8D94C2461783AA8B00D8595B /* PseudoTTY.m */,
 				8DCBE48B17C76EBB00A872A7 /* NSColor+OPExtensions.h */,
 				8DCBE48C17C76EBB00A872A7 /* NSColor+OPExtensions.m */,
+				8DF3C39417CFA3D200C75197 /* OPUtilityFunctions.h */,
+				8DF3C39517CFA3D200C75197 /* OPUtilityFunctions.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -1389,6 +1397,7 @@
 				8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */,
 				8D16399817C57FAE000DD491 /* S-Explorer.iconset in Resources */,
 				8DCBE48F17C9B4CD00A872A7 /* scheme-indexer.scm in Resources */,
+				8DEB1AA217CF7BEC0088C7C1 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1441,6 +1450,7 @@
 				8D16399617C3B7A6000DD491 /* SEEditorTextView.m in Sources */,
 				8D16399C17C6BC1D000DD491 /* SEApplicationDelegate.m in Sources */,
 				8DCBE48D17C76EBB00A872A7 /* NSColor+OPExtensions.m in Sources */,
+				8DF3C39617CFA3D200C75197 /* OPUtilityFunctions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

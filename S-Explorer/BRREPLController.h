@@ -11,7 +11,7 @@
 // #import "CSVM.h"
 
 
-@interface BRREPLController : NSObject <NSCoding>
+@interface BRREPLController : NSObject
 
 //@property (strong, nonatomic) IBOutlet NSResponder* keyResponder;
 

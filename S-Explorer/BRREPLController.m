@@ -35,15 +35,15 @@ static NSData* lineFeedData = nil;
     return self;
 }
 
-- (id) initWithCoder:(NSCoder *)aDecoder {
-    
-    
-    return self;
-}
-
-- (void) encodeWithCoder:(NSCoder *)aCoder {
-    
-}
+//- (id) initWithCoder:(NSCoder *)aDecoder {
+//    
+//    
+//    return self;
+//}
+//
+//- (void) encodeWithCoder:(NSCoder *)aCoder {
+//    
+//}
 
 - (void) awakeFromNib {
 }
@@ -109,6 +109,14 @@ static NSData* lineFeedData = nil;
     self.replView.selectedRange = NSMakeRange(commandRange.location+currentCommand.length, 0);
 }
 
+- (void) saveHistory {
+    
+    NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
+    
+    [ud setObject: self.previousCommands
+           forKey: [NSString stringWithFormat: @"REPL-History-%@", @"1"]];
+}
+
 - (BOOL) sendCurrentCommand {
     
     NSRange commandRange = self.replView.commandRange;
@@ -126,6 +134,8 @@ static NSData* lineFeedData = nil;
         [self sendCommand: command];
         
         currentOutputStart = self.replView.string.length;
+        
+        [self saveHistory];
         
         return YES;
         
