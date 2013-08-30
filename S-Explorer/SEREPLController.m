@@ -68,7 +68,7 @@ static NSData* lineFeedData = nil;
     NSString* outputString = self.replView.string;
     NSRange outputRange = NSMakeRange(currentOutputStart, outputString.length-currentOutputStart);
     
-    NSLog(@"Colorizing '%@' ", [outputString substringWithRange: outputRange]);
+    //NSLog(@"Colorizing '%@' ", [outputString substringWithRange: outputRange]);
     
     SESchemeParser* parser = [[SESchemeParser alloc] initWithString: outputString
                                                               range: outputRange
@@ -171,7 +171,7 @@ static NSData* lineFeedData = nil;
 - (IBAction) moveDown: (id) sender {
     
     if (self.replView.isCommandMode) {
-        NSLog(@"History next action.");
+        //NSLog(@"History next action.");
         if (previousCommandHistoryIndex+2 >= self.commandHistory.count) {
             NSString* lastHistoryEntry = [self.commandHistory lastObject];
             if ([self.currentCommand isEqualToString: lastHistoryEntry]) {
@@ -186,7 +186,7 @@ static NSData* lineFeedData = nil;
         previousCommandHistoryIndex += 1;
         self.currentCommand = self.commandHistory[previousCommandHistoryIndex+1];
         
-        NSLog(@"History: %@, prev index %ld", self.commandHistory, previousCommandHistoryIndex);
+        //NSLog(@"History: %@, prev index %ld", self.commandHistory, previousCommandHistoryIndex);
         
         return;
     }
@@ -199,7 +199,7 @@ static NSData* lineFeedData = nil;
 - (IBAction) moveUp: (id) sender {
     
     if (self.replView.isCommandMode) {
-        NSLog(@"History prev action.");
+        //NSLog(@"History prev action.");
         
         if (previousCommandHistoryIndex < 0) {
             NSBeep();
@@ -220,7 +220,7 @@ static NSData* lineFeedData = nil;
         self.currentCommand = self.commandHistory[previousCommandHistoryIndex];
         previousCommandHistoryIndex -= 1;
         
-        NSLog(@"History: %@, prev index %ld", self.commandHistory, previousCommandHistoryIndex);
+        //NSLog(@"History: %@, prev index %ld", self.commandHistory, previousCommandHistoryIndex);
         
         return;
     }
@@ -231,7 +231,7 @@ static NSData* lineFeedData = nil;
 
 - (void) textDidChange: (NSNotification*) notification {
     
-    NSLog(@"REPL changed text.");
+    //NSLog(@"REPL changed text.");
     
     // Move history pointer to most recent entry:
     previousCommandHistoryIndex = self.commandHistory.count-1;

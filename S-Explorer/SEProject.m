@@ -26,6 +26,8 @@
 
 - (id) init {
     
+    self.currentLanguage = @"Chibi-Scheme";
+    
     NSURL* sourceURL = [[NSBundle mainBundle] URLForResource: @"S-Explorer-support" withExtension: @"scm"];
     
     return [self initWithContentsOfURL: sourceURL ofType:@"scm" error: NULL];
@@ -261,7 +263,7 @@
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
     
     
-    // Check, wether the oser wants to create a project (from a folder):
+    // Check, wether the user wants to create a project (from a folder):
     
     
     

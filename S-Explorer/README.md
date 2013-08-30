@@ -11,13 +11,14 @@ Please install chibi-scheme for the build-in scheme support.
 Implemented Features
 
 * scm File Editing Featuring...
-  * Syntax-Highlighting (initial version done)
-  * Parenthesis Highlighting (almost done)
+  * Syntax-Highlighting (initial version done, no runtime support yet)
+  * Parenthesis Highlighting 
   * Expression Selection by double-clicking Parenthesis (done)
+
 
 * Generic REPL with ...
   * Syntax-Highlighting
-  * History
+  * Persistent REPL History
 
 
 Planned Features
@@ -34,5 +35,5 @@ Planned Features
 
 Immediate Todo:
 
-* Persistent REPL History
+* Implement NSDocument architecture
 

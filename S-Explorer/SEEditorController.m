@@ -339,7 +339,7 @@ static BOOL isPar(unichar aChar) {
     if (match) {
         [textStorage markCharsAtRange: parRange];
         parMarkerSet = YES;
-        NSLog(@"found par match at %@", NSStringFromRange(parRange));
+        //NSLog(@"found par match at %@", NSStringFromRange(parRange));
     } else {
         NSLog(@"Should find par matching '%c'", par);
     }
