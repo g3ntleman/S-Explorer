@@ -15,8 +15,8 @@
 @implementation SEREPLController {
 
     PseudoTTY* tty;
-    NSMutableArray* previousCommands;
-    NSMutableArray* nextCommands;
+    NSMutableArray* commandHistory;
+    NSInteger previousCommandHistoryIndex;
     
     NSUInteger currentOutputStart;
 }
@@ -46,7 +46,14 @@ static NSData* lineFeedData = nil;
 - (void) awakeFromNib {
 }
 
+- (NSArray*) commandHistory {
+    
+    if (! commandHistory) {
+        commandHistory = [[NSMutableArray alloc] init];
+    }
 
+    return commandHistory;
+}
 
 - (void) taskOutputReceived: (NSNotification*) n {
     
@@ -80,21 +87,6 @@ static NSData* lineFeedData = nil;
     [tty.masterFileHandle writeData: lineFeedData];
 }
 
-- (NSMutableArray*) nextCommands {
-    if (! nextCommands) {
-        nextCommands = [[NSMutableArray alloc] init];
-    }
-    return  nextCommands;
-}
-
-- (NSMutableArray*) previousCommands {
-    
-    if (! previousCommands) {
-        previousCommands = [[NSMutableArray alloc] init];
-    }
-    return  previousCommands;
-}
-
 
 - (NSString*) currentCommand {
     return [self.replView.string substringWithRange: self.replView.commandRange];
@@ -121,34 +113,37 @@ static NSData* lineFeedData = nil;
 }
 
 - (void) saveHistory {
-    
-    [self.previousCommands writeToURL: self.historyFileURL atomically: YES];
+    [self.commandHistory writeToURL: self.historyFileURL atomically: YES];
+}
+
+- (void) commitCurrentCommandToHistory {
+    NSString* currentCommand = self.currentCommand;
+    if (currentCommand.length) {
+        previousCommandHistoryIndex = self.commandHistory.count;
+        [commandHistory addObject: currentCommand];
+        [self saveHistory];
+    }
 }
 
 - (BOOL) sendCurrentCommand {
     
     NSRange commandRange = self.replView.commandRange;
     if (commandRange.length) {
-        NSString* command = [self.replView.string substringWithRange: commandRange];
-        NSLog(@"Sending command '%@'", command);
+        NSLog(@"Sending command '%@'", self.currentCommand);
         
+        [self commitCurrentCommandToHistory];
         
-        while (self.nextCommands.count) {
-            [self moveDown: self];
-        }
-        [self.previousCommands insertObject: command atIndex: 0];
-        if (self.previousCommands.count > 50) {
-            [self.previousCommands removeLastObject];
+        // Prune History:
+        if (self.commandHistory.count > 50) {
+            [commandHistory removeLastObject];
+            previousCommandHistoryIndex -= 1;
         }
         
-        
+        [self sendCommand: self.currentCommand];
         self.currentCommand = @"";
-        [self sendCommand: command];
-        
+
         currentOutputStart = self.replView.string.length;
-        
-        [self saveHistory];
-        
+                
         return YES;
         
     } else if (self.replView.isCommandMode) {
@@ -177,13 +172,21 @@ static NSData* lineFeedData = nil;
     
     if (self.replView.isCommandMode) {
         NSLog(@"History next action.");
-        if (! self.nextCommands.count) {
+        if (previousCommandHistoryIndex+2 >= self.commandHistory.count) {
+            NSString* lastHistoryEntry = [self.commandHistory lastObject];
+            if ([self.currentCommand isEqualToString: lastHistoryEntry]) {
+                previousCommandHistoryIndex = self.commandHistory.count-1;
+                self.currentCommand = @"";
+                return;
+            }
             NSBeep();
             return;
         }
-        [self.previousCommands insertObject: self.currentCommand atIndex: 0];
-        self.currentCommand = [self.nextCommands lastObject];
-        [self.nextCommands removeLastObject];
+        
+        previousCommandHistoryIndex += 1;
+        self.currentCommand = self.commandHistory[previousCommandHistoryIndex+1];
+        
+        NSLog(@"History: %@, prev index %ld", self.commandHistory, previousCommandHistoryIndex);
         
         return;
     }
@@ -198,13 +201,26 @@ static NSData* lineFeedData = nil;
     if (self.replView.isCommandMode) {
         NSLog(@"History prev action.");
         
-        if (! self.previousCommands.count) {
+        if (previousCommandHistoryIndex < 0) {
             NSBeep();
             return;
         }
-        [self.nextCommands addObject: self.currentCommand];
-        self.currentCommand = self.previousCommands[0];
-        [self.previousCommands removeObjectAtIndex: 0];
+        
+        // Save current non-committed command in history:
+        if (previousCommandHistoryIndex+1 == self.commandHistory.count) {
+            NSString* command = self.currentCommand;
+            
+            if (command.length && ! [self.commandHistory[previousCommandHistoryIndex] isEqualToString: command]) {
+                [self commitCurrentCommandToHistory];
+                previousCommandHistoryIndex -= 1;
+            }
+        }
+
+        
+        self.currentCommand = self.commandHistory[previousCommandHistoryIndex];
+        previousCommandHistoryIndex -= 1;
+        
+        NSLog(@"History: %@, prev index %ld", self.commandHistory, previousCommandHistoryIndex);
         
         return;
     }
@@ -213,6 +229,13 @@ static NSData* lineFeedData = nil;
 
 
 
+- (void) textDidChange: (NSNotification*) notification {
+    
+    NSLog(@"REPL changed text.");
+    
+    // Move history pointer to most recent entry:
+    previousCommandHistoryIndex = self.commandHistory.count-1;
+}
 
 
 
@@ -290,7 +313,8 @@ static NSData* lineFeedData = nil;
     _commandArguments = arguments;
     _greeting = greeting;
     
-    previousCommands = [NSArray arrayWithContentsOfURL: self.historyFileURL];
+    commandHistory = [NSMutableArray arrayWithContentsOfURL: self.historyFileURL];
+    previousCommandHistoryIndex = self.commandHistory.count - 1;
     
     if (! [[NSFileManager defaultManager] isExecutableFileAtPath: command]) {
         if (errorPtr) {

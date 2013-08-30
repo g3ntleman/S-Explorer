@@ -22,8 +22,7 @@
 @property (strong, readonly) NSString* greeting;
 @property (strong, readonly) NSString* workingDirectory;
 
-@property (readonly) NSMutableArray* previousCommands;
-@property (readonly) NSMutableArray* nextCommands;
+@property (strong, readonly) NSArray* commandHistory;
 
 - (void) setCommand: (NSString*) command
       withArguments: (NSArray*) arguments
