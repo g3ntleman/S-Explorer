@@ -75,8 +75,7 @@ static BOOL isPar(unichar aChar) {
 
 
 @implementation SEEditorController {
-    NSTimer* flashParTimer;
-    
+    BOOL parMarkerSet;
 }
 
 
@@ -304,9 +303,15 @@ static BOOL isPar(unichar aChar) {
 
 
 
+- (void) unmarkPar {
+    // Remove old par mark, if necessary:
+    if (parMarkerSet) {
+        [self.textEditorView.textStorage unmarkChars];
+        parMarkerSet = NO;
+    }
+}
 
-
-- (void) flashParCorrespondingToParAtIndex: (NSUInteger) index {
+- (void) markParCorrespondingToParAtIndex: (NSUInteger) index {
         
     NSTextStorage* textStorage = self.textEditorView.textStorage;
     
@@ -316,34 +321,25 @@ static BOOL isPar(unichar aChar) {
     
     NSColor* colorAtIndex = [textStorage attribute: NSForegroundColorAttributeName atIndex:index effectiveRange:NULL];
     
-    // Do not flash within comments or strings:
+    // Do not mark pars within comments or strings:
     if (colorAtIndex == [SEEditorTextView stringColor] || colorAtIndex == [SEEditorTextView commentColor]) {
         return;
     }
 
-    
-    // Remove old flashing, if necessary:
-    if (flashParTimer) {
-        [flashParTimer fire];
-        flashParTimer = nil;
-    }
+    [self unmarkPar];
+
     
     unichar par = [textStorage.string characterAtIndex: index];
     
     if (! isPar(par)) return;
     
-    NSRange flashingParRange = NSMakeRange(index, 1);
-    BOOL match = [self expandRange: &flashingParRange toParMatchingPar: par];
+    NSRange parRange = NSMakeRange(index, 1);
+    BOOL match = [self expandRange: &parRange toParMatchingPar: par];
     
     if (match) {
-        
-        [textStorage markCharsAtRange: flashingParRange];
-        flashParTimer = [NSTimer timerWithTimeInterval: 1.0 repeats: NO block: ^(NSTimer *timer) {
-            [textStorage unmarkChars];
-        }];
-        [[NSRunLoop currentRunLoop] addTimer: flashParTimer forMode: NSDefaultRunLoopMode];
-        
-        NSLog(@"found par match at %@", NSStringFromRange(flashingParRange));
+        [textStorage markCharsAtRange: parRange];
+        parMarkerSet = YES;
+        NSLog(@"found par match at %@", NSStringFromRange(parRange));
     } else {
         NSLog(@"Should find par matching '%c'", par);
     }
@@ -381,18 +377,17 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 }
 
 
-- (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString {
+- (BOOL) textView:(NSTextView*) textView shouldChangeTextInRange: (NSRange) affectedCharRange replacementString: (NSString*) replacementString {
     
-    if (flashParTimer) {
-        [flashParTimer fire];
-        flashParTimer = nil;
-    }
+    [self unmarkPar];
+    
     return YES;
 }
 
 
 - (NSRange) textView: (NSTextView*) textView willChangeSelectionFromCharacterRange: (NSRange) oldRange toCharacterRange: (NSRange) newRange {
     
+    [self unmarkPar];
     if (newRange.length == 1) {
         // Check, if user selected one par:
         NSTextStorage* textStorage = self.textEditorView.textStorage;
@@ -409,9 +404,7 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     } else if (newRange.length+oldRange.length == 0 && (newRange.location+1 == oldRange.location || newRange.location == oldRange.location+1)) {
         //NSLog(@"Cursor moved one char.");
         
-        //OPRunBlockAfterDelay(0.0, ^{
-        [self flashParCorrespondingToParAtIndex: MIN(oldRange.location, newRange.location)];
-        //});
+        [self markParCorrespondingToParAtIndex: MIN(oldRange.location, newRange.location)];
     }
 
     return newRange;
