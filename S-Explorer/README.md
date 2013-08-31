@@ -10,11 +10,12 @@ Please install chibi-scheme for the build-in scheme support.
 
 Implemented Features
 
-* scm File Editing Featuring...
+* Editor for scm-File Editing, featuring...
   * Syntax-Highlighting (initial version done, no runtime support yet)
   * Parenthesis Highlighting 
   * Expression Selection by double-clicking Parenthesis (done)
   * Auto-Indentation (press TAB)
+  * Evaluate (send to REPL)
 
 
 * Generic REPL with ...
