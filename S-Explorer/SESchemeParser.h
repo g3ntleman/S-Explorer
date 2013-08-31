@@ -24,25 +24,34 @@ typedef enum {
 
 typedef struct  {
     scheme_token token;
-    NSRange occurrence;
-    unsigned short depth;
-} TokenOccurrence;
+    NSRange range;
+} SETokenOccurrence;
+
+typedef struct  {
+    SETokenOccurrence occurrence;
+    short depth;
+    NSUInteger elementCount;
+} SEParserResult;
+
 
 
 @class SESchemeParser;
 
-@protocol SESchemeParserDelegate <NSObject>
+typedef void (^SESchemeParserBlock)(SESchemeParser *parser, SEParserResult result, BOOL* stopRef);
 
-- (void) parser: (SESchemeParser*) parser
-     foundToken: (TokenOccurrence) tokenInstance
-        atDepth: (NSInteger) depth
-   elementCount: (NSUInteger) elementCount;
 
-@end
+//@protocol SESchemeParserDelegate <NSObject>
+//
+//- (void) parser: (SESchemeParser*) parser
+//     foundToken: (TokenOccurrence) tokenInstance
+//        atDepth: (NSInteger) depth
+//   elementCount: (NSUInteger) elementCount;
+//
+//@end
 
 @interface SESchemeParser : NSObject
 
-@property (strong, nonatomic) id <SESchemeParserDelegate> delegate;
+@property (strong, nonatomic) SESchemeParserBlock delegateBlock;
 @property (strong, nonatomic) NSSet* keywords;
 @property (strong, readonly) NSString* string;
 
@@ -50,7 +59,7 @@ typedef struct  {
 
 - (id) initWithString: (NSString*) schemeSource
                 range: (NSRange) range
-             delegate: (id) delegate;
+                block: (SESchemeParserBlock) aDelegateBlock;
 
 - (void) parseAll;
 

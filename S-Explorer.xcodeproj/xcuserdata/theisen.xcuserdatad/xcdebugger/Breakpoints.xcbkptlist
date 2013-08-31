@@ -264,16 +264,16 @@
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
-         shouldBeEnabled = "Yes"
+         shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "S-Explorer/SEProject.m"
-         timestampString = "399596148.042346"
+         filePath = "S-Explorer/SESchemeParser.m"
+         timestampString = "399667912.686453"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "29"
-         endingLineNumber = "29"
-         landmarkName = "-init"
+         startingLineNumber = "146"
+         endingLineNumber = "146"
+         landmarkName = "-parseAll"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

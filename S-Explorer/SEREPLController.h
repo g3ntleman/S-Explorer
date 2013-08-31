@@ -32,6 +32,9 @@
 
 - (IBAction) run: (id) sender;
 
+- (BOOL) isRunning;
+- (void) evaluateString: (NSString*) expression;
+
 - (NSURL*) historyFileURL;
 
 

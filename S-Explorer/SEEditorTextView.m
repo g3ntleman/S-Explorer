@@ -8,6 +8,7 @@
 
 #import "SEEditorTextView.h"
 #import "NoodleLineNumberView.h"
+#import "SEEditorController.h"
 
 @implementation SEEditorTextView {
     NSMutableArray* selectionStack;
@@ -67,15 +68,30 @@ static NSCharacterSet* SEWordCharacters() {
 - (BOOL) validateMenuItem: (NSMenuItem*) item {
     
     
-    // NSLog(@"Validating Item '%@'", NSStringFromSelector(item.action));
+    NSLog(@"Validating Item '%@'", NSStringFromSelector(item.action));
     if ([item action] == @selector(contractSelection:)) {
         return self.selectionStack.count > 0;
     }
-    if ([self.delegate respondsToSelector: item.action]) {
-        return YES;
-    }
 
     return [super validateMenuItem: item];
+}
+
+- (NSString*) selectedString {
+    NSRange selectedRange = self.selectedRange;
+    if (selectedRange.length > 0) {
+        return [self.string substringWithRange: selectedRange];
+    }
+    return nil;
+}
+
+
+- (IBAction) indentSelectedLines: (id)sender {
+    NSLog(@"Should indent currently selected lines.");
+    [(SEEditorController*)self.delegate indentInRange: self.selectedRange];
+}
+
+- (IBAction) insertTab: (id) sender {
+    [self indentSelectedLines: sender];
 }
 
 - (void) didChangeText {
@@ -112,11 +128,87 @@ static NSCharacterSet* SEWordCharacters() {
     }
 }
 
+- (void) colorizeRange: (NSRange) aRange {
+    
+    NSTextStorage* textStorage = self.textStorage;
+
+    [textStorage removeAttribute: NSForegroundColorAttributeName range: aRange];
+
+    
+    SESchemeParser* parser =
+    [[SESchemeParser alloc] initWithString: textStorage.string
+                                     range: aRange
+                                     block: ^(SESchemeParser *parser, SEParserResult pResult, BOOL *stopRef) {
+                                         NSTextStorage* textStorage = self.textStorage;
+                                         
+                                         switch (pResult.occurrence.token) {
+                                             case COMMENT: {
+                                                 NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: [SEEditorTextView commentColor]};
+                                                 [textStorage addAttributes: commentAttributes range: pResult.occurrence.range];
+                                                 break;
+                                             }
+                                             case STRING: {
+                                                 NSDictionary* stringAttributes = @{NSForegroundColorAttributeName: [SEEditorTextView stringColor]};
+                                                 [textStorage addAttributes: stringAttributes range: pResult.occurrence.range];
+                                                 break;
+                                             }
+                                             case NUMBER: {
+                                                 NSDictionary* constantAttributes = @{NSForegroundColorAttributeName: [SEEditorTextView numberColor]};
+                                                 [textStorage addAttributes: constantAttributes range: pResult.occurrence.range];
+                                                 break;
+                                             }
+                                             case ATOM: {
+                                                 
+                                                 if (pResult.depth>=1) {
+                                                     //NSString* tokenString = [textStorage.string substringWithRange: tokenInstance.occurrence];
+                                                     //NSLog(@"Colorizer found word '%@'", tokenString);
+                                                     
+                                                     if (pResult.elementCount == 0) {
+                                                         // Found first list element
+                                                         NSColor* color = nil;
+                                                         NSString* word = [textStorage.string substringWithRange: pResult.occurrence.range];
+                                                         
+                                                         //NSLog(@"Colorizer found word '%@'", word);
+                                                         if ([[SESchemeParser keywords] containsObject: word]) {
+                                                             color = [NSColor purpleColor];
+                                                         } else if ([parser.keywords containsObject: word]) {
+                                                             color = [NSColor blueColor];
+                                                         }
+                                                         
+                                                         if (color) {
+                                                             NSDictionary* keywordAttributes = @{NSForegroundColorAttributeName: color};
+                                                             [textStorage addAttributes: keywordAttributes range: pResult.occurrence.range];
+                                                         }
+                                                     }
+                                                 }
+                                                 break;
+                                             }
+                                             default:
+                                                 break;
+                                         }
+                                     }];
+    
+    
+    NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
+    [parser parseAll];
+    NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
+    NSLog(@"Parsing & Highlighting %ld chars took %ld milliseconds.", aRange.length, lround((endTime-startTime)*1000.0));
+
+}
+
+
+
+- (IBAction) colorize: (id) sender {
+    
+    NSRange fullRange = NSMakeRange(0, self.string.length);
+    [self colorizeRange: fullRange];
+}
+
 
 /**
   * selects the given line number. Must be >=1. Does nothing but beep, if given line number is too high.
   */
- 
+
 - (NSRange) selectLineNumber: (NSUInteger) line {
     
     NoodleLineNumberView* lineNumberView = (NoodleLineNumberView*)self.enclosingScrollView.verticalRulerView;
@@ -188,59 +280,6 @@ static NSCharacterSet* SEWordCharacters() {
 }
 
 
-- (void) parser: (SESchemeParser*) parser
-     foundToken: (TokenOccurrence) tokenInstance
-        atDepth: (NSInteger) depth
-   elementCount: (NSUInteger) elementCount {
-    
-    NSTextStorage* textStorage = self.textStorage;
-    
-    switch (tokenInstance.token) {
-        case COMMENT: {
-            NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: [SEEditorTextView commentColor]};
-            [textStorage addAttributes: commentAttributes range: tokenInstance.occurrence];
-            break;
-        }
-        case STRING: {
-            NSDictionary* stringAttributes = @{NSForegroundColorAttributeName: [SEEditorTextView stringColor]};
-            [textStorage addAttributes: stringAttributes range: tokenInstance.occurrence];
-            break;
-        }
-        case NUMBER: {
-            NSDictionary* constantAttributes = @{NSForegroundColorAttributeName: [SEEditorTextView numberColor]};
-            [textStorage addAttributes: constantAttributes range: tokenInstance.occurrence];
-            break;
-        }
-        case ATOM: {
-            
-            if (depth>=1) {
-                //NSString* tokenString = [textStorage.string substringWithRange: tokenInstance.occurrence];
-                //NSLog(@"Colorizer found word '%@'", tokenString);
-                
-                if (elementCount == 0) {
-                    // Found first list element
-                    NSColor* color = nil;
-                    NSString* word = [textStorage.string substringWithRange: tokenInstance.occurrence];
-                    
-                    //NSLog(@"Colorizer found word '%@'", word);
-                    if ([[SESchemeParser keywords] containsObject: word]) {
-                        color = [NSColor purpleColor];
-                    } else if ([parser.keywords containsObject: word]) {
-                        color = [NSColor blueColor];
-                    }
-                    
-                    if (color) {
-                        NSDictionary* keywordAttributes = @{NSForegroundColorAttributeName: color};
-                        [textStorage addAttributes: keywordAttributes range: tokenInstance.occurrence];
-                    }
-                }
-            }
-            break;
-        }
-        default:
-            break;
-    }
-}
 
 
 @end

@@ -116,7 +116,7 @@
     
     // Colorize scheme files:
     if ([sourceItem.relativePath.pathExtension isEqualToString: @"scm"]) {
-        [self.editorController colorize: self];
+        [self.editorController.textEditorView colorize: self];
     }
 }
 
@@ -443,6 +443,23 @@
     result.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType: [item relativePath].pathExtension];
     
     return result;
+}
+
+- (IBAction) evaluateSelection: (id) sender {
+    
+    NSRange evalRange = self.editorController.textEditorView.selectedRange;
+    if (! evalRange.length) {
+        evalRange = [self.editorController topLevelExpressionContainingLocation: evalRange.location];
+        if (! evalRange.length) {
+            NSBeep();
+            return;
+        }
+    }
+    
+    NSString* evalString = [self.editorController.textEditorView.string substringWithRange:evalRange];
+    SEREPLController* replController = self.replController;
+    NSLog(@"Evaluating selection: '%@'", evalString);
+    [replController evaluateString: evalString];
 }
 
 //- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {

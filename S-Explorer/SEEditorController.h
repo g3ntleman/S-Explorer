@@ -18,10 +18,8 @@
 @property (strong, readonly) NoodleLineNumberView* lineNumberView;
 
 
-- (IBAction) colorize: (id) sender;
-
-- (IBAction) expandSelection: (id) sender;
-
 - (void) indentInRange: (NSRange) range;
+
+- (NSRange) topLevelExpressionContainingLocation: (NSUInteger) location;
 
 @end

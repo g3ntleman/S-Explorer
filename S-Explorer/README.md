@@ -14,6 +14,7 @@ Implemented Features
   * Syntax-Highlighting (initial version done, no runtime support yet)
   * Parenthesis Highlighting 
   * Expression Selection by double-clicking Parenthesis (done)
+  * Auto-Indentation (press TAB)
 
 
 * Generic REPL with ...
@@ -35,5 +36,6 @@ Planned Features
 
 Immediate Todo:
 
+* Implement "Evaluate" Menu Item to evaluate current selection or top-level expression at cursor.
 * Implement NSDocument architecture
 

@@ -1,3 +1,4 @@
+
 //
 //  SEEditorController.m
 //  S-Explorer
@@ -89,23 +90,6 @@ static BOOL isPar(unichar aChar) {
         [scrollView setHasVerticalRuler: YES];
         [scrollView setRulersVisible: YES];
     }
-}
-
-- (IBAction) colorize: (id) sender {
-    
-    NSTextStorage* textStorage = self.textEditorView.textStorage;
-    
-    NSRange fullRange = NSMakeRange(0, textStorage.string.length);
-    [textStorage removeAttribute: NSForegroundColorAttributeName range: fullRange];
-    //[textStorage removeAttribute: NSBackgroundColorAttributeName range: fullRange];
-    
-    SESchemeParser* parser = [[SESchemeParser alloc] initWithString: textStorage.string
-                                                              range: fullRange
-                                                           delegate: self.textEditorView];
-    NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
-    [parser parseAll];
-    NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
-    NSLog(@"Parsing & Highlighting took %ld milliseconds.", lround((endTime-startTime)*1000.0));
 }
 
 
@@ -296,10 +280,6 @@ static BOOL isPar(unichar aChar) {
     [self indentInRange: self.textEditorView.selectedRange];
 }
 
-- (IBAction) insertTab: (id) sender {
-    NSLog(@"Should indent current selected lines.");
-    [self indentInRange: self.textEditorView.selectedRange];
-}
 
 
 
@@ -347,7 +327,7 @@ static BOOL isPar(unichar aChar) {
 
 + (void) recolorTextNotification: (NSNotification*) notification {
     NSLog(@"recolorTextNotification.");
-    [notification.object colorize: nil];
+    [[notification.object textEditorView] colorize: nil];
 }
 
 - (void) textDidChange: (NSNotification*) notification {
@@ -419,6 +399,38 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 //    NSLog(@"Selection changed from %@ to %@", NSStringFromRange(oldRange), NSStringFromRange(newRange));
 //}
 
+- (BOOL) validateMenuItem: (NSMenuItem*) item {
+    
+    
+    NSLog(@"Validating Item '%@'", NSStringFromSelector(item.action));
+    return YES;
+}
+
+- (NSRange) topLevelExpressionContainingLocation: (NSUInteger) location {
+    
+    __block NSRange result = NSMakeRange(location, 0);
+    [[[SESchemeParser alloc] initWithString: self.textEditorView.string
+                                      range: NSMakeRange(0, self.textEditorView.string.length)
+                                      block: ^(SESchemeParser *parser, SEParserResult pResult, BOOL *stopRef) {
+                                          if (pResult.depth == 1) {
+                                              switch (pResult.occurrence.token) {
+                                                  case LEFT_PAR: {
+                                                      result.location = pResult.occurrence.range.location;
+                                                  }
+                                                  case RIGHT_PAR: {
+                                                      if (NSMaxRange(pResult.occurrence.range) > location) {
+                                                          result.length = NSMaxRange(pResult.occurrence.range)-result.location;
+                                                          *stopRef = YES; // stop parsing
+                                                      }
+                                                  }
+                                                  default:;
+                                              }
+                                          }
+                                          
+                                      }] parseAll];
+    return result;
+}
+
 - (IBAction) expandSelection: (id) sender {
     
     NSRange oldRange = self.textEditorView.selectedRange;
@@ -426,7 +438,7 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 
     NSString* text = self.textEditorView.textStorage.string;
     
-    // Check, if expanstion is possible at all:
+    // Check, if expansion is possible at all:
     if (oldRange.location < 1 || NSMaxRange(oldRange) >= text.length) {
         NSBeep();
         return;

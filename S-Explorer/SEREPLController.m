@@ -70,18 +70,17 @@ static NSData* lineFeedData = nil;
     
     //NSLog(@"Colorizing '%@' ", [outputString substringWithRange: outputRange]);
     
-    SESchemeParser* parser = [[SESchemeParser alloc] initWithString: outputString
-                                                              range: outputRange
-                                                           delegate: self.replView];
-    [parser parseAll];
+    [self.replView colorizeRange: outputRange];
+    
     [self.replView moveToEndOfDocument: self];
 
     
     [filehandle readInBackgroundAndNotify];
 }
 
-- (void) sendCommand: (NSString*) commandString {
+- (void) evaluateString: (NSString*) commandString {
     
+    NSParameterAssert(self.isRunning);
     NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
     [tty.masterFileHandle writeData: stringData];
     [tty.masterFileHandle writeData: lineFeedData];
@@ -139,7 +138,7 @@ static NSData* lineFeedData = nil;
             previousCommandHistoryIndex -= 1;
         }
         
-        [self sendCommand: self.currentCommand];
+        [self evaluateString: self.currentCommand];
         self.currentCommand = @"";
 
         currentOutputStart = self.replView.string.length;
@@ -301,6 +300,11 @@ static NSData* lineFeedData = nil;
     
     [_task launch];
 }
+
+- (BOOL) isRunning {
+    return self.task.isRunning;
+}
+
 
 - (void) setCommand: (NSString*) command
       withArguments: (NSArray*) arguments

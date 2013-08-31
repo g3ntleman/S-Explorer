@@ -16,7 +16,7 @@
     NSRange stringRange;
 }
 
-@synthesize delegate;
+@synthesize delegateBlock;
 
 + (NSSet*) keywords {
     
@@ -29,14 +29,14 @@
 
 - (id) initWithString: (NSString*) schemeSource
                 range: (NSRange) range
-             delegate: (id) parserDelegate {
+                block: (SESchemeParserBlock) aDelegateBlock {
     
     if (! schemeSource.length) return nil;
     
     NSParameterAssert(NSMaxRange(range) <= schemeSource.length);
     
     if (self = [self init]) {
-        delegate = parserDelegate;
+        delegateBlock = aDelegateBlock;
         _string = schemeSource;
         length = range.length;
         stringRange = range;
@@ -64,48 +64,48 @@
 
 
 /* This is the lisp tokenizer; it returns a symbol, or one of `(', `)', `.', or EOF */
-- (TokenOccurrence) nextToken {
+- (SETokenOccurrence) nextToken {
     unichar c;
 
-    TokenOccurrence result;
+    SETokenOccurrence result;
     
     do {
         c = [self getc];
         if (c == ';') {
             // parse line comment:
             result.token = COMMENT;
-            result.occurrence.location = position-1;
+            result.range.location = position-1;
             do c = [self getc]; while (c != '\n' && c != EOF);
-            result.occurrence.length = position - result.occurrence.location-1;
+            result.range.length = position - result.range.location-1;
             return result;
         }
     } while (c && isspace(c));
     
-    result.occurrence.location = position-1;
+    result.range.location = position-1;
 
     switch (c) {
         case 0:
             result.token = END_OF_INPUT;
-            result.occurrence.length = 0;
+            result.range.length = 0;
             return result;
         case '(':
             result.token = LEFT_PAR;
-            result.occurrence.length = 1;
+            result.range.length = 1;
             return result;
         case ')':
             result.token = RIGHT_PAR;
-            result.occurrence.length = 1;
+            result.range.length = 1;
             return result;
         case '.':
             result.token = DOT;
-            result.occurrence.length = 1;
+            result.range.length = 1;
             return result;
         case '"':
             result.token = STRING;
             do {
                 c = [self getc];
             } while (c != 0 && c != '"');
-            result.occurrence.length = position-result.occurrence.location;
+            result.range.length = position-result.range.location;
             
             return result;
 
@@ -116,8 +116,8 @@
             } while (c != 0 && !isspace(c) && c != '(' && c != ')' && c != ';');
                 
             if (c) position -= 1;
-            result.occurrence.length = position-result.occurrence.location;
-            unichar firstChar = characters[result.occurrence.location];
+            result.range.length = position-result.range.location;
+            unichar firstChar = characters[result.range.location];
             if (firstChar == '#' || isdigit(firstChar)) {
                 result.token = NUMBER;
             } else {
@@ -130,33 +130,36 @@
 - (void) parseAll {
     
     position = 0;
-    NSInteger depth = 0;
-    NSUInteger elementCount = 0;
-    TokenOccurrence tokenInstance;
-    while ((tokenInstance = [self nextToken]).token != END_OF_INPUT) {
+    SEParserResult pResult;
+    pResult.depth = 0;
+    pResult.elementCount = 0;
+    BOOL stop = NO;
+    
+    while (! stop && (pResult.occurrence = [self nextToken]).token != END_OF_INPUT) {
         //NSLog(@"Found Token '%@'(%d) at %@", [schemeString substringWithRange:tokenInstance.occurrence], tokenInstance.token, NSStringFromRange(tokenInstance.occurrence));
         
-        tokenInstance.occurrence.location += stringRange.location;
+        // Adjust offset from -init:
+        pResult.occurrence.range.location += stringRange.location;
         
-        switch (tokenInstance.token) {
+        switch (pResult.occurrence.token) {
             case LEFT_PAR:
-                depth += 1;
-                elementCount = 0;
-                [delegate parser: self foundToken: tokenInstance atDepth: depth elementCount: elementCount];
+                pResult.depth += 1;
+                pResult.elementCount = 0;
+                delegateBlock(self, pResult, &stop);
                 break;
             case RIGHT_PAR:
-                elementCount = 0;
-                [delegate parser: self foundToken: tokenInstance atDepth: depth elementCount: elementCount];
-                depth -= 1;
+                pResult.elementCount = 0;
+                delegateBlock(self, pResult, &stop);
+                pResult.depth -= 1;
                 break;
             case ATOM:
             case NUMBER:
             case STRING:
-                [delegate parser: self foundToken: tokenInstance atDepth: depth elementCount: elementCount];
-                elementCount += 1;
+                delegateBlock(self, pResult, &stop);
+                pResult.elementCount += 1;
                 break;
             default:
-                [delegate parser: self foundToken: tokenInstance atDepth: depth elementCount: elementCount];
+                delegateBlock(self, pResult, &stop);
                 break;
         }
     }
