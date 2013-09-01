@@ -15,7 +15,7 @@ Implemented Features
   * Parenthesis Highlighting 
   * Expression Selection by double-clicking Parenthesis (done)
   * Auto-Indentation (press TAB)
-  * Evaluate (send to REPL)
+  * "Evaluate" Menu Item to evaluate current selection or top-level expression at cursor
 
 
 * Generic REPL with ...
@@ -37,6 +37,9 @@ Planned Features
 
 Immediate Todo:
 
-* Implement "Evaluate" Menu Item to evaluate current selection or top-level expression at cursor.
 * Implement NSDocument architecture
+* Someone needs to re-do the icon
+* Implement Multiple Source displays
+* Implement make all operations undoable (e.g. switching REPLs)
+* Find skinnable NSTabbar Replacement. 
 

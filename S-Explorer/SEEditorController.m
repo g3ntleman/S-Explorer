@@ -172,7 +172,6 @@ static BOOL isPar(unichar aChar) {
     return location-lineStart-1;
 }
 
-// These: Der Code läuft versehentlich über die Zeilengrenze hinaus und rückt dabei die nächste Zeile (mit?) ein.
 - (void) indentInRange: (NSRange) range {
     
     NSUInteger indentation;

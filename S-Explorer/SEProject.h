@@ -21,7 +21,7 @@
 @property (strong, nonatomic) IBOutlet NSImageView* sourceCellIconView;
 @property (strong, nonatomic) IBOutlet NSTextField* sourceCellTextField;
 
-@property (readonly) SESourceItem* projectSourceItem;
+@property (readonly) SESourceItem* projectFolderItem;
 @property (strong, nonatomic) NSDictionary* tabbedSourceItems;
 @property (strong, nonatomic) IBOutlet NSSegmentedControl* sourceTab;
 @property (strong, nonatomic) IBOutlet NSOutlineView* sourceList;

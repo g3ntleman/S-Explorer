@@ -23,6 +23,7 @@
 @synthesize sourceList;
 @synthesize projectSettings;
 @synthesize currentLanguage;
+@synthesize projectFolderItem;
 
 - (id) init {
     
@@ -40,15 +41,20 @@
         
         self.tabbedSourceItems = @{};
         BOOL isDir = NO;
-        if ([[NSFileManager defaultManager] fileExistsAtPath:url.path isDirectory:&isDir]) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:url.path isDirectory: &isDir]) {
             if (isDir) {
-                projectSourceItem = [[SESourceItem alloc] initWithFileURL: url];
+                self = [self initWithContentsOfURL: [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"sproj"]] ofType: @"org.cocoanuts.s-explorer-project" error: outError];
             } else {
-                projectSourceItem = [[SESourceItem alloc] initWithFileURL: [url URLByDeletingLastPathComponent]];
-
-                SESourceItem* singleSourceItem = [projectSourceItem childWithName: [url lastPathComponent]];
+                NSLog(@"Opening type %@", typeName);
                 
-                [self setSourceItem: singleSourceItem forIndex: 0];
+                projectFolderItem = [[SESourceItem alloc] initWithFileURL: [url URLByDeletingLastPathComponent]];
+
+                if ([typeName isEqualToString: @"org.cocoanuts.s-explorer-project"]) {
+                } else {
+                    SESourceItem* singleSourceItem = [projectFolderItem childWithName: [url lastPathComponent]];
+                    
+                    [self setSourceItem: singleSourceItem forIndex: 0];
+                }
             }
             return self;
         }
@@ -62,18 +68,28 @@
  */
 - (void) setSourceItem: (SESourceItem*) item forIndex: (NSUInteger) index {
     
+    NSParameterAssert(index<4);
+    NSNumber* indexNumber = @(index);
     if (item) {
         NSParameterAssert([item isKindOfClass: [SESourceItem class]]);
-        self.tabbedSourceItems = [self.tabbedSourceItems dictionaryBySettingObject: item forKey: @(index)];
+//        if (item == self.tabbedSourceItems[indexNumber]) {
+//            return;
+//        }
+        self.tabbedSourceItems = [self.tabbedSourceItems dictionaryBySettingObject: item forKey: indexNumber];
     } else {
-        self.tabbedSourceItems = [self.tabbedSourceItems dictionaryByRemovingObjectForKey: @(index)];
+//        if (nil == self.tabbedSourceItems[indexNumber]) {
+//            return;
+//        }
+        self.tabbedSourceItems = [self.tabbedSourceItems dictionaryByRemovingObjectForKey: indexNumber];
     }
     
     [sourceTab setEnabled: item!=nil forSegment: index];
     [sourceTab setLabel: item.relativePath forSegment: index];
     
     if (index == sourceTab.selectedSegment) {
-        [sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: [sourceList rowForItem: item]] byExtendingSelection: NO];
+        NSUInteger row = [sourceList rowForItem: item];
+        [sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: row]
+                byExtendingSelection: NO];
     }
     
 }
@@ -106,11 +122,13 @@
 
 - (void) setCurrentSourceItem: (SESourceItem*) sourceItem {
     
+    [self setSourceItem: sourceItem forIndex: sourceTab.selectedSegment];
+    
     NSTextStorage* textStorage = self.editorController.textEditorView.textStorage;
     NSString* fileContent = sourceItem.content;
     if (! fileContent)
         fileContent = @"";
-    NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [NSFont fontWithName:@"Menlo-Bold" size: 13.0], NSFontAttributeName, nil, nil];
+    NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [NSFont fontWithName: @"Menlo-Bold" size: 13.0], NSFontAttributeName, nil, nil];
     NSAttributedString* attributedContent = [[NSAttributedString alloc] initWithString: fileContent attributes: attributes];
     textStorage.attributedString = attributedContent;
     
@@ -128,8 +146,8 @@
 - (NSMutableDictionary*) projectSettings {
     
     if (! projectSettings) {
-        NSString* projectFolderPath = self.projectSourceItem.absolutePath;
-        NSString* projectFilePath = [projectFolderPath stringByAppendingPathComponent: [self.projectSourceItem.relativePath stringByAppendingPathExtension:@"sproj"]];
+        NSString* projectFolderPath = self.projectFolderItem.absolutePath;
+        NSString* projectFilePath = [projectFolderPath stringByAppendingPathComponent: [self.projectFolderItem.relativePath stringByAppendingPathExtension:@"sproj"]];
         NSError* error = nil;
         NSData* projectData = [NSData dataWithContentsOfFile: projectFilePath];
         if (projectData) {
@@ -142,7 +160,7 @@
 }
 
 - (NSString*) uiSettingsPath {
-    NSString* uiFolderPath = self.projectSourceItem.absolutePath;
+    NSString* uiFolderPath = self.projectFolderItem.absolutePath;
     NSString* uiFilePath = [uiFolderPath stringByAppendingPathComponent: @".UISettings.plist"];
     return uiFilePath;
 }
@@ -274,7 +292,7 @@
     NSError* error = nil;
     [self.replController setCommand: @"/usr/local/bin/chibi-scheme"
                       withArguments: @[]
-                   workingDirectory: self.self.projectSourceItem.absolutePath
+                   workingDirectory: self.projectFolderItem.absolutePath
                            greeting: self.languageDictionary[@"WelcomeMessage"]
                               error: &error];
     
@@ -295,7 +313,7 @@
     [self selectSourceTabWithIndex: 0];
     
     for (NSString* path in self.uiSettings[@"expandedFolders"]) {
-        SESourceItem* item = [self.projectSourceItem childWithPath: path];
+        SESourceItem* item = [self.projectFolderItem childWithPath: path];
         [self.sourceList expandItem: item];
     }
     
@@ -322,13 +340,11 @@
     return YES;
 }
 
-@synthesize projectSourceItem;
-
-- (SESourceItem*) projectSourceItem {
-    if (! projectSourceItem) {
-        projectSourceItem = [[SESourceItem alloc] initWithFileURL: [self fileURL]];
+- (SESourceItem*) projectFolderItem {
+    if (! projectFolderItem) {
+        projectFolderItem = [[SESourceItem alloc] initWithFileURL: [self fileURL]];
     }
-    return projectSourceItem;
+    return projectFolderItem;
 }
 
 @end
@@ -338,7 +354,7 @@
 
 - (NSInteger) outlineView:(NSOutlineView*) outlineView numberOfChildrenOfItem: (id) item {
     if (item == nil) {
-        item = self.projectSourceItem;
+        item = self.projectFolderItem;
     }
     NSInteger noc = [[item children] count];
     return noc;
@@ -347,7 +363,7 @@
 
 - (BOOL) outlineView: (NSOutlineView*) outlineView isItemExpandable: (id) item {
     if (item == nil) {
-        item = self.projectSourceItem;
+        item = self.projectFolderItem;
     }
     return  [item children] != nil;
 }
@@ -356,7 +372,7 @@
 - (id) outlineView: (NSOutlineView*) outlineView child:(NSInteger)index ofItem:(id)item {
     
     if (item == nil) {
-        item = self.projectSourceItem;
+        item = self.projectFolderItem;
     }
         
     return [item children][index];
@@ -367,7 +383,7 @@
     
     //NSLog(@"Finding objectValue for %@", item);
     if (item == nil) {
-        item = self.projectSourceItem;
+        item = self.projectFolderItem;
     }
     
     return [item relativePath];
@@ -517,6 +533,12 @@
 //    
 //    return draggedFilenames;
 //}
+
+
+- (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError {
+    NSLog(@"Should writeToURL %@ (%@)", absoluteURL, typeName);
+    return YES;
+}
 
 
 @end

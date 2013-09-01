@@ -254,19 +254,6 @@
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "S-Explorer/SEProject.m"
-         timestampString = "399596150.732067"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "67"
-         endingLineNumber = "67"
-         landmarkName = "-setSourceItem:forIndex:"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "No"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
          filePath = "S-Explorer/SESchemeParser.m"
          timestampString = "399667912.686453"
          startingColumnNumber = "9223372036854775807"
@@ -274,6 +261,19 @@
          startingLineNumber = "146"
          endingLineNumber = "146"
          landmarkName = "-parseAll"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "S-Explorer/SEEditorTextView.m"
+         timestampString = "399681857.185113"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "43"
+         endingLineNumber = "43"
+         landmarkName = "-selectionRangeForProposedRange:granularity:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>
