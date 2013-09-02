@@ -41,23 +41,22 @@
         
         self.tabbedSourceItems = @{};
         BOOL isDir = NO;
-        if ([[NSFileManager defaultManager] fileExistsAtPath:url.path isDirectory: &isDir]) {
-            if (isDir) {
-                self = [self initWithContentsOfURL: [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"sproj"]] ofType: @"org.cocoanuts.s-explorer-project" error: outError];
+        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath: url.path isDirectory: &isDir];
+        if (isDir) {
+            self = [self initWithContentsOfURL: [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"sproj"]] ofType: @"org.cocoanuts.s-explorer-project" error: outError];
+        } else {
+            NSLog(@"Opening type %@", typeName);
+            
+            projectFolderItem = [[SESourceItem alloc] initWithFileURL: [url URLByDeletingLastPathComponent]];
+            
+            if ([typeName isEqualToString: @"org.cocoanuts.s-explorer-project"]) {
             } else {
-                NSLog(@"Opening type %@", typeName);
+                SESourceItem* singleSourceItem = [projectFolderItem childWithName: [url lastPathComponent]];
                 
-                projectFolderItem = [[SESourceItem alloc] initWithFileURL: [url URLByDeletingLastPathComponent]];
-
-                if ([typeName isEqualToString: @"org.cocoanuts.s-explorer-project"]) {
-                } else {
-                    SESourceItem* singleSourceItem = [projectFolderItem childWithName: [url lastPathComponent]];
-                    
-                    [self setSourceItem: singleSourceItem forIndex: 0];
-                }
+                [self setSourceItem: singleSourceItem forIndex: 0];
             }
-            return self;
         }
+        return self;
     }
     
     return nil;
@@ -72,14 +71,9 @@
     NSNumber* indexNumber = @(index);
     if (item) {
         NSParameterAssert([item isKindOfClass: [SESourceItem class]]);
-//        if (item == self.tabbedSourceItems[indexNumber]) {
-//            return;
-//        }
+
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryBySettingObject: item forKey: indexNumber];
     } else {
-//        if (nil == self.tabbedSourceItems[indexNumber]) {
-//            return;
-//        }
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryByRemovingObjectForKey: indexNumber];
     }
     
@@ -535,10 +529,15 @@
 //}
 
 
-- (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError {
+- (BOOL) writeToURL: (NSURL*) absoluteURL ofType: (NSString*) typeName error: (NSError**) outError {
     NSLog(@"Should writeToURL %@ (%@)", absoluteURL, typeName);
     return YES;
 }
+
+- (IBAction) newDocumentFromTemplate: (id) sender {
+    
+}
+
 
 
 @end

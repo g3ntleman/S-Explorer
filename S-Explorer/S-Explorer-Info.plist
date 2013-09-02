@@ -92,15 +92,15 @@
 			<string>SEProject</string>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
+			<key>LSItemContentTypes</key>
 			<array>
-				<string>*</string>
+				<string>public.folder</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>All documents</string>
+			<string>All folders</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
-				<string>****</string>
+				<string>fold</string>
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>

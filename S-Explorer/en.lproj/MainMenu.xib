@@ -720,6 +720,9 @@
 			<object class="NSUserDefaultsController" id="354428179">
 				<bool key="NSSharedInstance">YES</bool>
 			</object>
+			<object class="NSCustomObject" id="848186010">
+				<string key="NSClassName">SEDocumentController</string>
+			</object>
 		</array>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
 			<array class="NSMutableArray" key="connectionRecords">
@@ -1600,6 +1603,11 @@
 						<reference key="object" ref="467239904"/>
 						<reference key="parent" ref="466310130"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">656</int>
+						<reference key="object" ref="848186010"/>
+						<reference key="parent" ref="0"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -1675,6 +1683,7 @@
 				<string key="641.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="651.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="653.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="656.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="72.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -1690,7 +1699,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">655</int>
+			<int key="maxID">656</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1721,19 +1730,30 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">SEEditorController</string>
-					<string key="superclassName">NSController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">colorize:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">colorize:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">colorize:</string>
+					<string key="className">SEDocumentController</string>
+					<string key="superclassName">NSDocumentController</string>
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="newDocument:">id</string>
+						<string key="openDocument:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="newDocument:">
+							<string key="name">newDocument:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="openDocument:">
+							<string key="name">openDocument:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</dictionary>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/SEDocumentController.h</string>
 					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">SEEditorController</string>
+					<string key="superclassName">NSController</string>
 					<object class="NSMutableDictionary" key="outlets">
 						<string key="NS.key.0">textEditorView</string>
 						<string key="NS.object.0">SEEditorTextView</string>
@@ -1754,11 +1774,16 @@
 					<string key="className">SEEditorTextView</string>
 					<string key="superclassName">NSTextView</string>
 					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="colorize:">id</string>
 						<string key="contractSelection:">id</string>
 						<string key="expandSelection:">id</string>
 						<string key="selectSpecificLine:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="colorize:">
+							<string key="name">colorize:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="contractSelection:">
 							<string key="name">contractSelection:</string>
 							<string key="candidateClassName">id</string>
@@ -1792,8 +1817,6 @@
 					<string key="className">SEProject</string>
 					<string key="superclassName">NSDocument</string>
 					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="evaluateSelection:">id</string>
-						<string key="revealInFinder:">id</string>
 						<string key="revertCurrentSourceItemToSaved:">id</string>
 						<string key="runProject:">id</string>
 						<string key="saveCurrentSourceItem:">id</string>
@@ -1801,14 +1824,6 @@
 						<string key="sourceTableAction:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="evaluateSelection:">
-							<string key="name">evaluateSelection:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="revealInFinder:">
-							<string key="name">revealInFinder:</string>
-							<string key="candidateClassName">id</string>
-						</object>
 						<object class="IBActionInfo" key="revertCurrentSourceItemToSaved:">
 							<string key="name">revertCurrentSourceItemToSaved:</string>
 							<string key="candidateClassName">id</string>

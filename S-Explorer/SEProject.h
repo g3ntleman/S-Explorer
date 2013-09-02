@@ -47,7 +47,6 @@
 
 
 
-
 - (void) setSourceItem: (SESourceItem*) item forIndex: (NSUInteger) index;
 
 @end
