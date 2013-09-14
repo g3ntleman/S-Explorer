@@ -14,9 +14,11 @@
 
 @class SESourceItem;
 
-@interface SEProject : NSDocument <NSOutlineViewDataSource, NSUserInterfaceValidations>
+@interface SEProject : NSDocument <NSOutlineViewDataSource, NSUserInterfaceValidations, NSTabViewDelegate>
 
-@property (strong, nonatomic) IBOutlet SEREPLController* replController;
+@property (readonly, nonatomic) SEREPLController* topREPLController;
+@property (readonly, nonatomic) NSDictionary* allREPLControllers;
+@property (strong, nonatomic) IBOutlet NSTabView* replTabView;
 @property (strong, nonatomic) IBOutlet NSView* sourceCellView;
 @property (strong, nonatomic) IBOutlet NSImageView* sourceCellIconView;
 @property (strong, nonatomic) IBOutlet NSTextField* sourceCellTextField;

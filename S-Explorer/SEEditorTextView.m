@@ -47,7 +47,7 @@ static NSCharacterSet* SEWordCharacters() {
                 resultRange.length += 1;
             }
             // Search forward:
-            while (([wordCharSet characterIsMember: [text characterAtIndex: NSMaxRange(resultRange)]])) {
+            while (NSMaxRange(resultRange)<text.length && ([wordCharSet characterIsMember: [text characterAtIndex: NSMaxRange(resultRange)]])) {
                 resultRange.length += 1;
             }
             
@@ -229,7 +229,7 @@ static NSCharacterSet* SEWordCharacters() {
  */
 - (void) doCommandBySelector: (SEL) aSelector {
     if ([self.delegate respondsToSelector: aSelector]) {
-        [self.delegate performSelector: aSelector withObject: self];
+        [[NSApplication sharedApplication] sendAction: aSelector to:self.delegate from:self];
         return;
     }
     return [super doCommandBySelector: aSelector];

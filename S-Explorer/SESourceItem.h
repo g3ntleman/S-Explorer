@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SESourceItem : NSObject <NSPasteboardWriting>
+@interface SESourceItem : NSObject 
 
 @property (readonly) BOOL isTextItem;
 @property (weak, readonly) SESourceItem* parent;
@@ -27,5 +27,9 @@
 - (BOOL) saveContentWithError: (NSError**) errorPtr;
 - (void) contentDidChange;
 - (BOOL) revertContent;
+
+@end
+
+@interface SESourceItem (PB) <NSPasteboardWriting>
 
 @end

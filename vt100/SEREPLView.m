@@ -170,6 +170,7 @@
     self.typingAttributes = self.commandAttributes;
     
     
+    
     [self.enclosingScrollView flashScrollers];
 }
 

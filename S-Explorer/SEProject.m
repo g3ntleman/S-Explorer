@@ -19,6 +19,7 @@
 }
 
 @synthesize tabbedSourceItems;
+@synthesize allREPLControllers;
 @synthesize sourceTab;
 @synthesize sourceList;
 @synthesize projectSettings;
@@ -39,7 +40,8 @@
     
     if (self = [super init]) {
         
-        self.tabbedSourceItems = @{};
+        tabbedSourceItems = @{};
+        allREPLControllers = @{};
         BOOL isDir = NO;
         BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath: url.path isDirectory: &isDir];
         if (isDir) {
@@ -50,6 +52,7 @@
             projectFolderItem = [[SESourceItem alloc] initWithFileURL: [url URLByDeletingLastPathComponent]];
             
             if ([typeName isEqualToString: @"org.cocoanuts.s-explorer-project"]) {
+                self.fileURL = url;
             } else {
                 SESourceItem* singleSourceItem = [projectFolderItem childWithName: [url lastPathComponent]];
                 
@@ -130,6 +133,8 @@
     if ([sourceItem.relativePath.pathExtension isEqualToString: @"scm"]) {
         [self.editorController.textEditorView colorize: self];
     }
+    
+    self.uiSettings[@"TabbedSources"][@(sourceTab.selectedSegment)] = sourceItem.longRelativePath;
 }
 
 - (void) selectSourceTabWithIndex: (NSUInteger) tabIndex {
@@ -212,6 +217,8 @@
     NSLog(@"selected tab #%lu", sourceTab.selectedSegment);
     SESourceItem* sourceItem = self.tabbedSourceItems[@(sourceTab.selectedSegment)];
     
+    self.uiSettings[@"SelectedSourceTab"] = @(sourceTab.selectedSegment);
+
     [self setCurrentSourceItem: sourceItem];
 }
 
@@ -266,8 +273,28 @@
 }
 
 - (IBAction) runProject: (id) sender {
-    [self.replController run: sender];
+    [self.topREPLController run: sender];
 }
+
+- (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem {
+    if (! self.topREPLController.isRunning) {
+        NSError* error = nil;
+        [self.topREPLController setCommand: @"/usr/local/bin/chibi-scheme"
+                             withArguments: @[]
+                          workingDirectory: self.projectFolderItem.absolutePath
+                                  greeting: self.languageDictionary[@"WelcomeMessage"]
+                                     error: &error];
+        
+        [self.topREPLController run: self];
+        
+        if (error) {
+            [[NSAlert alertWithError: error] runWithCompletion:^(NSInteger buttonIndex) {
+                [self performSelector: @selector(close) withObject: nil afterDelay: 0.1];
+            }];
+        }
+    }
+}
+
 
 - (void) windowControllerDidLoadNib: (NSWindowController*) aController {
     
@@ -277,35 +304,22 @@
     
     // Check, wether the user wants to create a project (from a folder):
     
-    
-    
+    self.replTabView.delegate = self;
+    [self tabView:self.replTabView didSelectTabViewItem: self.replTabView.selectedTabViewItem];
     
     [self.sourceList setDraggingSourceOperationMask: NSDragOperationLink forLocal: NO];
 
     
-    NSError* error = nil;
-    [self.replController setCommand: @"/usr/local/bin/chibi-scheme"
-                      withArguments: @[]
-                   workingDirectory: self.projectFolderItem.absolutePath
-                           greeting: self.languageDictionary[@"WelcomeMessage"]
-                              error: &error];
-    
-    [self.replController run: self];
-    
-    if (error) {
-        [[NSAlert alertWithError: error] runWithCompletion:^(NSInteger buttonIndex) {
-            [self performSelector: @selector(close) withObject: nil afterDelay: 0.1];
-        }];
-    }
     
 //    vm = [[CSVM alloc] init];
     
 //    NSString*sage"//    [vm locationOfProcedureNamed: @"map"];
 //    self.replController.virtualMachine = vm;
 
-    [self setSourceItem: tabbedSourceItems[@(sourceTab.selectedSegment)] forIndex: sourceTab.selectedSegment];
+    //[self setSourceItem: tabbedSourceItems[@(sourceTab.selectedSegment)] forIndex: sourceTab.selectedSegment];
+    sourceTab.selectedSegment = 0;
     [self selectSourceTabWithIndex: 0];
-    
+
     for (NSString* path in self.uiSettings[@"expandedFolders"]) {
         SESourceItem* item = [self.projectFolderItem childWithPath: path];
         [self.sourceList expandItem: item];
@@ -467,7 +481,7 @@
     }
     
     NSString* evalString = [self.editorController.textEditorView.string substringWithRange:evalRange];
-    SEREPLController* replController = self.replController;
+    SEREPLController* replController = self.topREPLController;
     NSLog(@"Evaluating selection: '%@'", evalString);
     [replController evaluateString: evalString];
 }
@@ -538,6 +552,22 @@
     
 }
 
+- (SEREPLController*) replControllerForIdentifier: (NSString*) identifier {
+    SEREPLController* result = self.allREPLControllers[identifier];
+    if (! result) {
+        result = [[SEREPLController alloc] init];
+        NSView* contentView = [self.replTabView tabViewItemAtIndex: [self.replTabView indexOfTabViewItemWithIdentifier: identifier]].view;
+        SEREPLView *replView = [contentView.subviews.lastObject documentView];
+        result.replView = replView;
+        allREPLControllers = [allREPLControllers dictionaryBySettingObject: result forKey: identifier];
+    }
+    return result;
+}
+
+
+- (SEREPLController*) topREPLController {
+    return [self replControllerForIdentifier: self.replTabView.selectedTabViewItem.identifier];
+}
 
 
 @end

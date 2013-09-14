@@ -21,6 +21,8 @@
     NSUInteger currentOutputStart;
 }
 
+@synthesize replView;
+
 static NSData* lineFeedData = nil;
 
 + (void) load {
@@ -43,8 +45,11 @@ static NSData* lineFeedData = nil;
 //    
 //}
 
-- (void) awakeFromNib {
+- (void) setReplView:(SEREPLView *) aReplView {
+    replView = aReplView;
+    replView.delegate = self;
 }
+
 
 - (NSArray*) commandHistory {
     
@@ -303,6 +308,10 @@ static NSData* lineFeedData = nil;
 
 - (BOOL) isRunning {
     return self.task.isRunning;
+}
+
+- (IBAction)selectREPL:(id)sender {
+    NSLog(@"REPL selected.");
 }
 
 

@@ -9,11 +9,9 @@
 #import <AppKit/AppKit.h>
 #import "SEREPLView.h"
 
-@interface SEREPLController : NSObject
+@interface SEREPLController : NSObject <NSTextViewDelegate>
 
-//@property (strong, nonatomic) IBOutlet NSResponder* keyResponder;
-
-@property (strong, nonatomic) IBOutlet SEREPLView* replView;
+@property (strong, nonatomic) SEREPLView* replView;
 
 @property (readonly) NSString* currentCommand;
 @property (strong) NSTask* task;
@@ -31,6 +29,7 @@
               error: (NSError**) errorPtr;
 
 - (IBAction) run: (id) sender;
+- (IBAction)selectREPL:(id)sender;
 
 - (BOOL) isRunning;
 - (void) evaluateString: (NSString*) expression;
