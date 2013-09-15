@@ -37,6 +37,8 @@
 
 @property (strong, readonly) SESourceItem* currentSourceItem;
 
+- (NSMutableDictionary*) replSettingsForIdentifier: (NSString*) identifier;
+
 
 // IBActions:
 

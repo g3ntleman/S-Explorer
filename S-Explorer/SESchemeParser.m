@@ -41,6 +41,7 @@
         length = range.length;
         stringRange = range;
         characters = malloc(sizeof(unichar) * length + 1);
+        characters[length] = EOF;
         [schemeSource getCharacters: characters range: stringRange];
     }
     return self;
@@ -75,7 +76,7 @@
             // parse line comment:
             result.token = COMMENT;
             result.range.location = position-1;
-            do c = [self getc]; while (c != '\n' && c != EOF);
+            do c = [self getc]; while (c != '\n' && c != (unichar)EOF);
             result.range.length = position - result.range.location-1;
             return result;
         }

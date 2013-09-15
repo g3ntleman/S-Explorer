@@ -414,11 +414,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEProject.m"
-            timestampString = "400893963.415852"
+            timestampString = "400977553.785988"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "573"
-            endingLineNumber = "573"
+            startingLineNumber = "606"
+            endingLineNumber = "606"
             landmarkName = "@implementation SEProject(SourceOutlineViewDataSource)"
             landmarkType = "3">
          </BreakpointContent>

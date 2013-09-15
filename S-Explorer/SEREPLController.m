@@ -11,6 +11,8 @@
 #import "SEREPLView.h"
 #import "PseudoTTY.h"
 #import "SESchemeParser.h"
+#import "SEProject.h"
+
 
 @implementation SEREPLController {
 
@@ -22,6 +24,8 @@
 }
 
 @synthesize replView;
+@synthesize project;
+@synthesize identifier;
 
 static NSData* lineFeedData = nil;
 
@@ -29,25 +33,22 @@ static NSData* lineFeedData = nil;
     lineFeedData = [NSData dataWithBytes: "\n" length: 1];
 }
 
-- (id) init {
-    if (self = [super init]) {
+- (id) initWithProject: (SEProject*) aProject identifier: (NSString*) anIdentifier {
+    if (self = [self init]) {
+        project = aProject;
+        identifier = anIdentifier;
     }
     return self;
 }
 
-//- (id) initWithCoder:(NSCoder *)aDecoder {
-//    
-//    
-//    return self;
-//}
-//
-//- (void) encodeWithCoder:(NSCoder *)aCoder {
-//    
-//}
 
 - (void) setReplView:(SEREPLView *) aReplView {
     replView = aReplView;
     replView.delegate = self;
+}
+
+- (NSMutableDictionary*) settings {
+    return [self.project replSettingsForIdentifier: self.identifier];
 }
 
 

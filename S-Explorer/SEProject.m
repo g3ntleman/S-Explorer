@@ -142,13 +142,18 @@
     [self setCurrentSourceItem: sourceItem];
 }
 
+- (NSString*) projectFilePath {
+    NSString* projectFolderPath = self.projectFolderItem.absolutePath;
+    NSString* projectFileName = [self.projectFolderItem.relativePath stringByAppendingPathExtension:@"sproj"];
+    NSString* projectFilePath = [projectFolderPath stringByAppendingPathComponent: projectFileName];
+    return projectFilePath;
+}
+
 - (NSMutableDictionary*) projectSettings {
     
     if (! projectSettings) {
-        NSString* projectFolderPath = self.projectFolderItem.absolutePath;
-        NSString* projectFilePath = [projectFolderPath stringByAppendingPathComponent: [self.projectFolderItem.relativePath stringByAppendingPathExtension:@"sproj"]];
         NSError* error = nil;
-        NSData* projectData = [NSData dataWithContentsOfFile: projectFilePath];
+        NSData* projectData = [NSData dataWithContentsOfFile: self.projectFilePath];
         if (projectData) {
             projectSettings = [NSPropertyListSerialization propertyListWithData: projectData options: NSPropertyListMutableContainers format: NULL error: &error];
         } else {
@@ -156,6 +161,34 @@
         }
     }
     return projectSettings;
+}
+
+- (void) saveProjectSettings {
+    [self.projectSettings writeToFile: self.projectFilePath atomically: YES];
+}
+
+- (NSMutableDictionary*) replSettingsForIdentifier: (NSString*) identifier {
+
+    NSMutableDictionary* replSettings = self.projectSettings[@"REPLs"];
+    // Create settings dictionary as necessary:
+    if (! replSettings) {
+        replSettings = [[NSMutableDictionary alloc] init];
+        self.projectSettings[@"REPLs"] = replSettings;
+    }
+    NSMutableDictionary* result = replSettings[identifier];
+    if (! result) {
+        replSettings[identifier] = result;
+    }
+    return result;
+
+}
+
+/**
+ * Returns the settings for the topmost REPL.
+ */
+- (NSMutableDictionary*) topREPLSettings {
+    NSString* replID = self.replTabView.selectedTabViewItem.identifier;
+    return [self replSettingsForIdentifier: replID];
 }
 
 - (NSString*) uiSettingsPath {
@@ -555,7 +588,7 @@
 - (SEREPLController*) replControllerForIdentifier: (NSString*) identifier {
     SEREPLController* result = self.allREPLControllers[identifier];
     if (! result) {
-        result = [[SEREPLController alloc] init];
+        result = [[SEREPLController alloc] initWithProject:self identifier:identifier];
         NSView* contentView = [self.replTabView tabViewItemAtIndex: [self.replTabView indexOfTabViewItemWithIdentifier: identifier]].view;
         SEREPLView *replView = [contentView.subviews.lastObject documentView];
         result.replView = replView;
