@@ -34,11 +34,14 @@
 @property (strong, readonly) NSArray* availableLanguages; // NSArray of strings
 @property (strong, nonatomic) NSString* currentLanguage;
 @property (strong, readonly) NSDictionary* languageDictionary;
-
+@property (nonatomic, readonly) NSURL* projectFileURL;
 @property (strong, readonly) SESourceItem* currentSourceItem;
 
 - (NSMutableDictionary*) replSettingsForIdentifier: (NSString*) identifier;
 
+
+
+- (void) saveProjectSettings;
 
 // IBActions:
 

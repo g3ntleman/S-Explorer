@@ -13,6 +13,12 @@
 #import "SESchemeParser.h"
 #import "SEProject.h"
 
+static const NSString* SEMainFunctionKey = @"MainFunction";
+
+@interface SEREPLController ()
+@property (nonatomic, readonly) NSMutableDictionary* settings;
+@end
+
 
 @implementation SEREPLController {
 
@@ -26,6 +32,7 @@
 @synthesize replView;
 @synthesize project;
 @synthesize identifier;
+
 
 static NSData* lineFeedData = nil;
 
@@ -86,10 +93,12 @@ static NSData* lineFeedData = nil;
 
 - (void) evaluateString: (NSString*) commandString {
     
-    NSParameterAssert(self.isRunning);
-    NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
-    [tty.masterFileHandle writeData: stringData];
-    [tty.masterFileHandle writeData: lineFeedData];
+    if (commandString) {
+        NSParameterAssert(self.isRunning);
+        NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
+        [tty.masterFileHandle writeData: stringData];
+        [tty.masterFileHandle writeData: lineFeedData];
+    }
 }
 
 
@@ -296,6 +305,8 @@ static NSData* lineFeedData = nil;
     
     
     [tty.masterFileHandle readInBackgroundAndNotify];
+    
+    [self evaluateString: self.settings[SEMainFunctionKey]];
     //[_task.standardError readInBackgroundAndNotify];
     
     //    _task.terminationHandler =  ^void (NSTask* task) {

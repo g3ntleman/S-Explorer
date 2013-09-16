@@ -142,18 +142,18 @@
     [self setCurrentSourceItem: sourceItem];
 }
 
-- (NSString*) projectFilePath {
-    NSString* projectFolderPath = self.projectFolderItem.absolutePath;
-    NSString* projectFileName = [self.projectFolderItem.relativePath stringByAppendingPathExtension:@"sproj"];
-    NSString* projectFilePath = [projectFolderPath stringByAppendingPathComponent: projectFileName];
-    return projectFilePath;
+- (NSURL*) projectFileURL {
+    NSURL* projectFolderPath = [NSURL fileURLWithPath: self.projectFolderItem.absolutePath];
+    NSString* projectFileName = [[projectFolderPath lastPathComponent] stringByAppendingPathExtension:@"sproj"];
+    NSURL* projectFileURL = [projectFolderPath URLByAppendingPathComponent: projectFileName];
+    return projectFileURL;
 }
 
 - (NSMutableDictionary*) projectSettings {
     
     if (! projectSettings) {
         NSError* error = nil;
-        NSData* projectData = [NSData dataWithContentsOfFile: self.projectFilePath];
+        NSData* projectData = [NSData dataWithContentsOfURL: self.projectFileURL];
         if (projectData) {
             projectSettings = [NSPropertyListSerialization propertyListWithData: projectData options: NSPropertyListMutableContainers format: NULL error: &error];
         } else {
@@ -164,7 +164,9 @@
 }
 
 - (void) saveProjectSettings {
-    [self.projectSettings writeToFile: self.projectFilePath atomically: YES];
+    @synchronized(self) {
+        [self.projectSettings writeToURL: self.projectFileURL atomically: YES];
+    }
 }
 
 - (NSMutableDictionary*) replSettingsForIdentifier: (NSString*) identifier {
@@ -177,6 +179,7 @@
     }
     NSMutableDictionary* result = replSettings[identifier];
     if (! result) {
+        result = [[NSMutableDictionary alloc] init];
         replSettings[identifier] = result;
     }
     return result;
