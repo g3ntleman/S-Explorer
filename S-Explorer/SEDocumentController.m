@@ -7,8 +7,21 @@
 //
 
 #import "SEDocumentController.h"
+#import "SEProject.h"
 
 @implementation SEDocumentController
+
+- (NSString*) defaultType {
+    return SEProjectDocumentType;
+}
+
+- (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)outError {
+    return nil;
+}
+
+- (id)openUntitledDocumentAndDisplay:(BOOL)displayDocument error:(NSError **)outError {
+    return nil;
+}
 
 
 - (void) openDocument: (id) sender {
@@ -43,7 +56,33 @@
 }
 
 - (IBAction) newDocument: (id) sender {
+    
     // Extend open panel with template type:
+    NSLog(@"Should show the assistant here.");
+    
+    
+    // Set the default name for the file and show the panel.
+    NSSavePanel*    panel = [NSSavePanel savePanel];
+    
+    panel.accessoryView = nil; // todo
+    
+    //[panel setNameFieldStringValue:newName];
+    [panel beginSheetModalForWindow: nil completionHandler: ^(NSInteger result){
+        if (result == NSFileHandlingPanelOKButton) {
+            NSURL*  theFolder = [panel URL];
+            NSError* error = nil;
+            
+            NSLog(@"User choose %@", theFolder);
+            
+            NSFileManager *fm = [NSFileManager defaultManager];
+            [fm createDirectoryAtURL: theFolder withIntermediateDirectories: YES attributes: nil error: &error];
+            [self openDocumentWithContentsOfURL: theFolder display: YES completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
+                NSLog(@"New Document opened.");
+            }];
+            
+            // Write the contents in the new format.
+        }
+    }];
 }
 
 

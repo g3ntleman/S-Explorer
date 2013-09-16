@@ -13,6 +13,7 @@
 #import "NoodleLineNumberView.h"
 #import "OPUtilityFunctions.h"
 
+NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer-project";
 
 @implementation SEProject {
     NSMutableDictionary* uiSettings;
@@ -26,13 +27,14 @@
 @synthesize currentLanguage;
 @synthesize projectFolderItem;
 
+
 - (id) init {
     
-    self.currentLanguage = @"Chibi-Scheme";
+    return nil;
     
-    NSURL* sourceURL = [[NSBundle mainBundle] URLForResource: @"S-Explorer-support" withExtension: @"scm"];
+    //NSURL* sourceURL = [[NSBundle mainBundle] URLForResource: @"S-Explorer-support" withExtension: @"scm"];
     
-    return [self initWithContentsOfURL: sourceURL ofType:@"scm" error: NULL];
+    //return [self initWithContentsOfURL: sourceURL ofType:@"scm" error: NULL];
     
 }
 
@@ -54,15 +56,28 @@
             if ([typeName isEqualToString: @"org.cocoanuts.s-explorer-project"]) {
                 self.fileURL = url;
             } else {
+                
+                NSURL* projectFolderPath = [NSURL fileURLWithPath: projectFolderItem.absolutePath];
+                NSString* projectFileName = [[projectFolderPath lastPathComponent] stringByAppendingPathExtension:@"sproj"];
+                self.fileURL = [projectFolderPath URLByAppendingPathComponent: projectFileName];
+                
                 SESourceItem* singleSourceItem = [projectFolderItem childWithName: [url lastPathComponent]];
                 
+                // Open singleSourceItem in the first Tab:
                 [self setSourceItem: singleSourceItem forIndex: 0];
             }
         }
+        
+        self.currentLanguage = @"Chibi-Scheme";
+
         return self;
     }
     
     return nil;
+}
+
+- (NSString*) defaultDraftName {
+    return self.fileURL.lastPathComponent;
 }
 
 /**
@@ -142,18 +157,18 @@
     [self setCurrentSourceItem: sourceItem];
 }
 
-- (NSURL*) projectFileURL {
-    NSURL* projectFolderPath = [NSURL fileURLWithPath: self.projectFolderItem.absolutePath];
-    NSString* projectFileName = [[projectFolderPath lastPathComponent] stringByAppendingPathExtension:@"sproj"];
-    NSURL* projectFileURL = [projectFolderPath URLByAppendingPathComponent: projectFileName];
-    return projectFileURL;
-}
+//- (NSURL*) projectFileURL {
+//    NSURL* projectFolderPath = [NSURL fileURLWithPath: self.projectFolderItem.absolutePath];
+//    NSString* projectFileName = [[projectFolderPath lastPathComponent] stringByAppendingPathExtension:@"sproj"];
+//    NSURL* projectFileURL = [projectFolderPath URLByAppendingPathComponent: projectFileName];
+//    return projectFileURL;
+//}
 
 - (NSMutableDictionary*) projectSettings {
     
     if (! projectSettings) {
         NSError* error = nil;
-        NSData* projectData = [NSData dataWithContentsOfURL: self.projectFileURL];
+        NSData* projectData = [NSData dataWithContentsOfURL: self.fileURL];
         if (projectData) {
             projectSettings = [NSPropertyListSerialization propertyListWithData: projectData options: NSPropertyListMutableContainers format: NULL error: &error];
         } else {
@@ -165,7 +180,7 @@
 
 - (void) saveProjectSettings {
     @synchronized(self) {
-        [self.projectSettings writeToURL: self.projectFileURL atomically: YES];
+        [self.projectSettings writeToURL: self.fileURL atomically: YES];
     }
 }
 

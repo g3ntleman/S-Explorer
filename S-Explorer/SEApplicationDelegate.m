@@ -10,4 +10,10 @@
 
 @implementation SEApplicationDelegate
 
+- (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)sender {
+    return NO;
+}
+
+
+
 @end

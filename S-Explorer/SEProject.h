@@ -12,6 +12,8 @@
 #import "SESourceItem.h"
 #import "SEEditorController.h"
 
+extern NSString* SEProjectDocumentType;
+
 @class SESourceItem;
 
 @interface SEProject : NSDocument <NSOutlineViewDataSource, NSUserInterfaceValidations, NSTabViewDelegate>
@@ -34,7 +36,6 @@
 @property (strong, readonly) NSArray* availableLanguages; // NSArray of strings
 @property (strong, nonatomic) NSString* currentLanguage;
 @property (strong, readonly) NSDictionary* languageDictionary;
-@property (nonatomic, readonly) NSURL* projectFileURL;
 @property (strong, readonly) SESourceItem* currentSourceItem;
 
 - (NSMutableDictionary*) replSettingsForIdentifier: (NSString*) identifier;
