@@ -64,7 +64,12 @@
     // Set the default name for the file and show the panel.
     NSSavePanel*    panel = [NSSavePanel savePanel];
     
+    panel.canCreateDirectories = YES;
     panel.accessoryView = nil; // todo
+    panel.prompt = @"Create New Project";
+    panel.title = @"New Project";
+    panel.message = @"Please name a folder where your project will be created in.\nA project file with the same name (and 'sproj' extension) will be ceated in there.";
+    panel.nameFieldLabel = @"Name:";
     
     //[panel setNameFieldStringValue:newName];
     [panel beginSheetModalForWindow: nil completionHandler: ^(NSInteger result){

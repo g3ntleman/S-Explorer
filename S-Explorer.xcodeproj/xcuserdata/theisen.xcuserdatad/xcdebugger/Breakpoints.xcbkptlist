@@ -286,8 +286,8 @@
          endingColumnNumber = "9223372036854775807"
          startingLineNumber = "533"
          endingLineNumber = "533"
-         landmarkName = "@implementation SEProject(SourceOutlineViewDataSource)"
-         landmarkType = "3">
+         landmarkName = "-evaluateSelection:"
+         landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "Yes"
