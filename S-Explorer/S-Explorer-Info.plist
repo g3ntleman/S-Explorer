@@ -2,31 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UTExportedTypeDeclarations</key>
-	<array>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string></string>
-			</array>
-			<key>UTTypeIdentifier</key>
-			<string>org.cocoanuts.s-explorer-project</string>
-			<key>UTTypeTagSpecification</key>
-			<dict/>
-		</dict>
-	</array>
-	<key>LanguageSupport</key>
-	<dict>
-		<key>Chibi-Scheme</key>
-		<dict>
-			<key>LibraryDirectory</key>
-			<string></string>
-			<key>WelcomeMessage</key>
-			<string>Welcome to Chibi Scheme!</string>
-			<key>REPLCommandline</key>
-			<string>chibi-scheme</string>
-		</dict>
-	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDocumentTypes</key>
@@ -88,14 +63,12 @@
 				<string>public.source-code</string>
 				<string>public.script</string>
 			</array>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
 			<key>NSDocumentClass</key>
 			<string>SEProject</string>
 		</dict>
 		<dict>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>public.folder</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>All folders</string>
 			<key>CFBundleTypeOSTypes</key>
@@ -104,6 +77,10 @@
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.folder</string>
+			</array>
 			<key>LSTypeIsPackage</key>
 			<false/>
 			<key>NSDocumentClass</key>
@@ -115,7 +92,7 @@
 	<key>CFBundleIconFile</key>
 	<string>S-Explorer</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.coconuts.${PRODUCT_NAME:rfc1034identifier}</string>
+	<string>org.cocoanuts.${PRODUCT_NAME:rfc1034identifier}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -132,11 +109,56 @@
 	<string>public.app-category.developer-tools</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
+	<key>LanguageSupport</key>
+	<dict>
+		<key>Chibi-Scheme</key>
+		<dict>
+			<key>LibraryDirectory</key>
+			<string></string>
+			<key>REPLCommandline</key>
+			<string>chibi-scheme</string>
+			<key>WelcomeMessage</key>
+			<string>Welcome to Chibi Scheme!</string>
+		</dict>
+	</dict>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2013 Dirk Theisen. All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string></string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Scheme Explorer Project File</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.cocoanuts.s-explorer-project</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>seproj</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeDescription</key>
+			<string>Scheme Explorers's Project Template</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.cocoanuts.s-explorer-project-template</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>setemplate</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>
