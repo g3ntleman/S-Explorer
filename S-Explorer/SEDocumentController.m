@@ -55,11 +55,8 @@
 //                  }];
 }
 
+
 - (IBAction) newDocument: (id) sender {
-    
-    // Extend open panel with template type:
-    NSLog(@"Should show the assistant here.");
-    
     
     // Set the default name for the file and show the panel.
     NSSavePanel*    panel = [NSSavePanel savePanel];
@@ -71,13 +68,24 @@
     panel.message = @"Please name a folder where your project will be created in.\nA project file with the same name (and 'sproj' extension) will be ceated in there.";
     panel.nameFieldLabel = @"Name:";
     
+    // Extend save panel with template type:
+    NSArray* objects;
+    [[NSBundle mainBundle] loadNibNamed: @"SEDocumentController" owner: self topLevelObjects:&objects];
+    NSView* accessory = objects.lastObject;
+    panel.accessoryView = accessory; // any object
+    NSPopUpButton* button = [accessory viewWithTag: 13];
+    
+    NSArray* templatePaths = [[NSBundle mainBundle] pathsForResourcesOfType: @".setemplate" inDirectory:nil];
+//    NSArray* templateNames = [templateNames map]
+    
     //[panel setNameFieldStringValue:newName];
     [panel beginSheetModalForWindow: nil completionHandler: ^(NSInteger result){
         if (result == NSFileHandlingPanelOKButton) {
             NSURL*  theFolder = [panel URL];
             NSError* error = nil;
             
-            NSLog(@"User choose %@", theFolder);
+            NSLog(@"User choose folder %@", theFolder);
+            NSLog(@"User choose template %@", [button selectedItem]);
             
             NSFileManager *fm = [NSFileManager defaultManager];
             [fm createDirectoryAtURL: theFolder withIntermediateDirectories: YES attributes: nil error: &error];
