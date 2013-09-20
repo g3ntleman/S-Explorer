@@ -80,7 +80,7 @@
     NSView* accessory = panel.accessoryView;
     NSPopUpButton* button = [accessory viewWithTag: 13];
     
-    NSArray* templatePaths = [[NSBundle mainBundle] pathsForResourcesOfType: @".setemplate" inDirectory:nil];
+    NSArray* templatePaths = [[NSBundle mainBundle] pathsForResourcesOfType: @".setemplate" inDirectory:@"Templates"];
     
     [button removeAllItems];
     for (NSString* path in templatePaths) {

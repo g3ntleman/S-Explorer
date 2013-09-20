@@ -86,18 +86,6 @@
 			<key>NSDocumentClass</key>
 			<string>SEProject</string>
 		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>setemplate</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>S-Explorer Project Template</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSTypeIsPackage</key>
-			<integer>1</integer>
-		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
