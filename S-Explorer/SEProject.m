@@ -406,6 +406,57 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer-project";
     return projectFolderItem;
 }
 
+
+- (BOOL) writeToURL: (NSURL*) absoluteURL ofType: (NSString*) typeName error: (NSError**) outError {
+    NSLog(@"Should writeToURL %@ (%@)", absoluteURL, typeName);
+    return YES;
+}
+
+- (IBAction) newDocumentFromTemplate: (id) sender {
+    
+}
+
+- (SEREPLController*) replControllerForIdentifier: (NSString*) identifier {
+    SEREPLController* result = self.allREPLControllers[identifier];
+    if (! result) {
+        result = [[SEREPLController alloc] initWithProject:self identifier:identifier];
+        NSView* contentView = [self.replTabView tabViewItemAtIndex: [self.replTabView indexOfTabViewItemWithIdentifier: identifier]].view;
+        SEREPLView *replView = [contentView.subviews.lastObject documentView];
+        result.replView = replView;
+        allREPLControllers = [allREPLControllers dictionaryBySettingObject: result forKey: identifier];
+    }
+    return result;
+}
+
+
+- (SEREPLController*) topREPLController {
+    return [self replControllerForIdentifier: self.replTabView.selectedTabViewItem.identifier];
+}
+
+- (IBAction) revealInFinder: (id) sender {
+    SESourceItem* selectedItem  = [sourceList itemAtRow: sourceList.selectedRowIndexes.firstIndex];
+    NSString* selectedItemPath = selectedItem.absolutePath;
+    [[NSWorkspace sharedWorkspace] selectFile: selectedItemPath inFileViewerRootedAtPath: nil];
+}
+
+- (IBAction) evaluateSelection: (id) sender {
+    
+    NSRange evalRange = self.editorController.textEditorView.selectedRange;
+    if (! evalRange.length) {
+        evalRange = [self.editorController topLevelExpressionContainingLocation: evalRange.location];
+        if (! evalRange.length) {
+            NSBeep();
+            return;
+        }
+    }
+    
+    NSString* evalString = [self.editorController.textEditorView.string substringWithRange:evalRange];
+    SEREPLController* replController = self.topREPLController;
+    NSLog(@"Evaluating selection: '%@'", evalString);
+    [replController evaluateString: evalString];
+}
+
+
 @end
 
 @implementation SEProject (SourceOutlineViewDataSource)
@@ -464,13 +515,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer-project";
     return YES;
 }
 
-- (IBAction) revealInFinder: (id) sender {
-    SESourceItem* selectedItem  = [sourceList itemAtRow: sourceList.selectedRowIndexes.firstIndex];
-    NSString* selectedItemPath = selectedItem.absolutePath;
-    [[NSWorkspace sharedWorkspace] selectFile: selectedItemPath inFileViewerRootedAtPath: nil];
-}
-
-
 
 - (BOOL) outlineView: (NSOutlineView*) outlineView writeItems: (NSArray*) items toPasteboard:(NSPasteboard *)pboard {
     // Set the pasteboard for File promises only
@@ -520,22 +564,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer-project";
     return result;
 }
 
-- (IBAction) evaluateSelection: (id) sender {
-    
-    NSRange evalRange = self.editorController.textEditorView.selectedRange;
-    if (! evalRange.length) {
-        evalRange = [self.editorController topLevelExpressionContainingLocation: evalRange.location];
-        if (! evalRange.length) {
-            NSBeep();
-            return;
-        }
-    }
-    
-    NSString* evalString = [self.editorController.textEditorView.string substringWithRange:evalRange];
-    SEREPLController* replController = self.topREPLController;
-    NSLog(@"Evaluating selection: '%@'", evalString);
-    [replController evaluateString: evalString];
-}
 
 //- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
 //    if ([item isKindOfClass:[ATDesktopFolderEntity class]]) {
@@ -593,32 +621,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer-project";
 //    return draggedFilenames;
 //}
 
-
-- (BOOL) writeToURL: (NSURL*) absoluteURL ofType: (NSString*) typeName error: (NSError**) outError {
-    NSLog(@"Should writeToURL %@ (%@)", absoluteURL, typeName);
-    return YES;
-}
-
-- (IBAction) newDocumentFromTemplate: (id) sender {
-    
-}
-
-- (SEREPLController*) replControllerForIdentifier: (NSString*) identifier {
-    SEREPLController* result = self.allREPLControllers[identifier];
-    if (! result) {
-        result = [[SEREPLController alloc] initWithProject:self identifier:identifier];
-        NSView* contentView = [self.replTabView tabViewItemAtIndex: [self.replTabView indexOfTabViewItemWithIdentifier: identifier]].view;
-        SEREPLView *replView = [contentView.subviews.lastObject documentView];
-        result.replView = replView;
-        allREPLControllers = [allREPLControllers dictionaryBySettingObject: result forKey: identifier];
-    }
-    return result;
-}
-
-
-- (SEREPLController*) topREPLController {
-    return [self replControllerForIdentifier: self.replTabView.selectedTabViewItem.identifier];
-}
 
 
 @end

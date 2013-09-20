@@ -9,6 +9,12 @@
 #import "SEDocumentController.h"
 #import "SEProject.h"
 
+@interface NSSavePanel (SEDocumentController)
+
+@property (nonatomic, strong) IBOutlet NSView* accessoryView;
+
+@end
+
 @implementation SEDocumentController
 
 - (NSString*) defaultType {
@@ -70,12 +76,19 @@
     
     // Extend save panel with template type:
     NSArray* objects;
-    [[NSBundle mainBundle] loadNibNamed: @"SEDocumentController" owner: self topLevelObjects:&objects];
-    NSView* accessory = objects.lastObject;
-    panel.accessoryView = accessory; // any object
+    [[NSBundle mainBundle] loadNibNamed: @"SESavePanel" owner: panel topLevelObjects:&objects];
+    NSView* accessory = panel.accessoryView;
     NSPopUpButton* button = [accessory viewWithTag: 13];
     
     NSArray* templatePaths = [[NSBundle mainBundle] pathsForResourcesOfType: @".setemplate" inDirectory:nil];
+    
+    [button removeAllItems];
+    for (NSString* path in templatePaths) {
+        NSString* templateTitle = [path.lastPathComponent stringByDeletingPathExtension];
+        [button addItemWithTitle:templateTitle];
+        [button.itemArray.lastObject setRepresentedObject:path];
+    }
+
 //    NSArray* templateNames = [templateNames map]
     
     //[panel setNameFieldStringValue:newName];
