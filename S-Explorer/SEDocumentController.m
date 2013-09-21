@@ -78,15 +78,15 @@
     NSArray* objects;
     [[NSBundle mainBundle] loadNibNamed: @"SESavePanel" owner: panel topLevelObjects:&objects];
     NSView* accessory = panel.accessoryView;
-    NSPopUpButton* button = [accessory viewWithTag: 13];
+    NSPopUpButton* templateButton = [accessory viewWithTag: 13];
     
     NSArray* templatePaths = [[NSBundle mainBundle] pathsForResourcesOfType: @".setemplate" inDirectory:@"Templates"];
     
-    [button removeAllItems];
+    [templateButton removeAllItems];
     for (NSString* path in templatePaths) {
         NSString* templateTitle = [path.lastPathComponent stringByDeletingPathExtension];
-        [button addItemWithTitle:templateTitle];
-        [button.itemArray.lastObject setRepresentedObject:path];
+        [templateButton addItemWithTitle: templateTitle];
+        [templateButton.itemArray.lastObject setRepresentedObject: path];
     }
 
 //    NSArray* templateNames = [templateNames map]
@@ -94,15 +94,28 @@
     //[panel setNameFieldStringValue:newName];
     [panel beginSheetModalForWindow: nil completionHandler: ^(NSInteger result){
         if (result == NSFileHandlingPanelOKButton) {
-            NSURL*  theFolder = [panel URL];
+            NSURL* projectURL = [panel URL];
             NSError* error = nil;
             
-            NSLog(@"User choose folder %@", theFolder);
-            NSLog(@"User choose template %@", [button selectedItem]);
+            NSLog(@"User choose folder %@", projectURL);
+            NSLog(@"User choose template %@", [templateButton selectedItem]);
             
             NSFileManager *fm = [NSFileManager defaultManager];
-            [fm createDirectoryAtURL: theFolder withIntermediateDirectories: YES attributes: nil error: &error];
-            [self openDocumentWithContentsOfURL: theFolder display: YES completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
+            if (! [fm fileExistsAtPath: [projectURL path] isDirectory: NULL]) {
+                [fm createDirectoryAtURL: projectURL withIntermediateDirectories: YES attributes: nil error: &error];
+            }
+            NSString* templatePath = [[templateButton selectedItem] representedObject];
+            // Copy content of templatePath to projectFolder:
+            for (NSString* sourceFile in [fm contentsOfDirectoryAtPath: templatePath error:&error]) {
+                NSURL* sourceURL = [NSURL fileURLWithPathComponents:@[templatePath, sourceFile] ];
+                NSURL* targetURL = [projectURL URLByAppendingPathComponent: sourceFile];
+                [fm copyItemAtURL: sourceURL toURL: targetURL error: &error];
+                if (error) {
+                    NSLog(@"Error copying %@ to %@: %@", sourceFile, projectURL, error);
+                }
+            }
+            // Open the new Project:
+            [self openDocumentWithContentsOfURL: projectURL display: YES completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
                 NSLog(@"New Document opened.");
             }];
             

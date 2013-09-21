@@ -4,6 +4,8 @@ S-Explorer
 An Editor targeted at developing in Lisp-Like languages, initially Scheme.
 Written in Obj-C/Cocoa for Mac OS X 10.8 and up.
 
+Note: This is not in a usable state yet!
+
 Please install chibi-scheme for the build-in scheme support.
 
 > brew install chibi-scheme
