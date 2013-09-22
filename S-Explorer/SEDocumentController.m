@@ -21,14 +21,13 @@
     return SEProjectDocumentType;
 }
 
-- (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError **)outError {
+- (id) makeUntitledDocumentOfType:(NSString*) typeName error: (NSError**) outError {
     return nil;
 }
 
-- (id)openUntitledDocumentAndDisplay:(BOOL)displayDocument error:(NSError **)outError {
+- (id) openUntitledDocumentAndDisplay: (BOOL) displayDocument error: (NSError**) outError {
     return nil;
 }
-
 
 - (void) openDocument: (id) sender {
     
@@ -36,9 +35,9 @@
     panel.canChooseFiles = YES;
     panel.canChooseDirectories = YES;
     panel.allowsMultipleSelection = NO;
-    panel.allowedFileTypes = @[@"org.cocoanuts.s-explorer.project"];
+    panel.allowedFileTypes = @[SEProjectDocumentType];
     
-    [self beginOpenPanel: panel forTypes: @[@"org.cocoanuts.s-explorer.project", @"public.folder"] completionHandler:^(NSInteger result) {
+    [self beginOpenPanel: panel forTypes: @[SEProjectDocumentType, @"public.folder"] completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton) {
             NSURL* selectedURL = [[panel URLs] objectAtIndex:0];
             NSLog(@"selected URL: %@", selectedURL);

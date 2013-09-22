@@ -29,31 +29,25 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 
 - (id) init {
-    
     return nil;
-    
-    //NSURL* sourceURL = [[NSBundle mainBundle] URLForResource: @"S-Explorer-support" withExtension: @"scm"];
-    
-    //return [self initWithContentsOfURL: sourceURL ofType:@"scm" error: NULL];
-    
 }
 
-- (id) initWithContentsOfURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError **)outError {
+- (id)initForURL:(NSURL *)absoluteDocumentURL withContentsOfURL:(NSURL *)absoluteDocumentContentsURL ofType:(NSString *)typeName error:(NSError **)outError {
     
     if (self = [super init]) {
-        
+        NSURL* url = absoluteDocumentContentsURL;
         tabbedSourceItems = @{};
         allREPLControllers = @{};
         BOOL isDir = NO;
         BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath: url.path isDirectory: &isDir];
         if (isDir) {
-            self = [self initWithContentsOfURL: [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"seproj"]] ofType: @"org.cocoanuts.s-explorer.project" error: outError];
+            self = [self initWithContentsOfURL: [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"seproj"]] ofType: SEProjectDocumentType error: outError];
         } else {
             NSLog(@"Opening type %@", typeName);
             
             projectFolderItem = [[SESourceItem alloc] initWithFileURL: [url URLByDeletingLastPathComponent]];
             
-            if ([typeName isEqualToString: @"org.cocoanuts.s-explorer.project"]) {
+            if ([typeName isEqualToString: SEProjectDocumentType]) {
                 self.fileURL = url;
             } else {
                 
@@ -69,7 +63,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         }
         
         self.currentLanguage = @"Chibi-Scheme";
-
+        
         return self;
     }
     
