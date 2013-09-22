@@ -343,7 +343,7 @@ static NSData* lineFeedData = nil;
     
     if (! [[NSFileManager defaultManager] isExecutableFileAtPath: command]) {
         if (errorPtr) {
-            *errorPtr = [NSError errorWithDomain: @"org.cocoanuts.bracket" code: 404
+            *errorPtr = [NSError errorWithDomain: @"org.cocoanuts.s-explorer" code: 404
                                         userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No Executable file at '%@'", command]}];
         }
         return;

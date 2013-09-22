@@ -36,9 +36,9 @@
     panel.canChooseFiles = YES;
     panel.canChooseDirectories = YES;
     panel.allowsMultipleSelection = NO;
-    panel.allowedFileTypes = @[@"org.cocoanuts.s-explorer-project"];
+    panel.allowedFileTypes = @[@"org.cocoanuts.s-explorer.project"];
     
-    [self beginOpenPanel: panel forTypes: @[@"org.cocoanuts.s-explorer-project", @"public.folder"] completionHandler:^(NSInteger result) {
+    [self beginOpenPanel: panel forTypes: @[@"org.cocoanuts.s-explorer.project", @"public.folder"] completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton) {
             NSURL* selectedURL = [[panel URLs] objectAtIndex:0];
             NSLog(@"selected URL: %@", selectedURL);
@@ -71,7 +71,7 @@
     panel.accessoryView = nil; // todo
     panel.prompt = @"Create New Project";
     panel.title = @"New Project";
-    panel.message = @"Please name a folder where your project will be created in.\nA project file with the same name (and 'sproj' extension) will be ceated in there.";
+    panel.message = @"Please name a folder where your project will be created in.\nA project file with the same name (and 'seproj' extension) will be ceated in there.";
     panel.nameFieldLabel = @"Name:";
     
     // Extend save panel with template type:
@@ -117,9 +117,9 @@
             // Open the new Project:
             [self openDocumentWithContentsOfURL: projectURL display: YES completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
                 NSLog(@"New Document opened.");
+                SEProject* project = (SEProject*)document;
+                [project saveProjectSettings];
             }];
-            
-            // Write the contents in the new format.
         }
     }];
 }

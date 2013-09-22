@@ -2,6 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>org.cocoanuts.s-explorer.project</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeReferenceURL</key>
+			<string>http://developer.apple.com/tools/xcode/</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>seproj</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDocumentTypes</key>
@@ -9,16 +29,22 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>sproj</string>
+				<string>seproj</string>
 			</array>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
+			<key>LSTypeIsPackage</key>
+			<false/>
 			<key>CFBundleTypeName</key>
 			<string>S-Explorer Project</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<key>CFBundleTypeIconFile</key>
+			<string></string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>org.cocoanuts.s-explorer-project</string>
+				<string>org.cocoanuts.s-explorer.project</string>
 			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>NSDocumentClass</key>
 			<string>SEProject</string>
 		</dict>
@@ -43,25 +69,8 @@
 			<array>
 				<string>org.cocoanuts.scheme-source</string>
 				<string>public.plain-text</string>
-				<string>public.html</string>
-				<string>public.xml</string>
-				<string>public.c-source</string>
-				<string>public.objective-c-source</string>
-				<string>public.c-plus-plus-source</string>
-				<string>public.objective-c-plus-plus-source</string>
-				<string>public.c-header</string>
-				<string>public.c-plus-plus-header</string>
-				<string>com.netscape.javascript-source</string>
-				<string>com.apple.traditional-mac-plain-text</string>
-				<string>public.shell-script</string>
-				<string>public.csh-script</string>
-				<string>public.perl-script</string>
-				<string>public.php-script</string>
-				<string>public.utf8-plain-text</string>
-				<string>public.utf16-external-plain-​text</string>
-				<string>public.utf16-plain-text</string>
 				<string>public.source-code</string>
-				<string>public.script</string>
+				<string>public.item</string>
 			</array>
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
@@ -127,38 +136,5 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>UTExportedTypeDeclarations</key>
-	<array>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string></string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>Scheme Explorer Project File</string>
-			<key>UTTypeIdentifier</key>
-			<string>org.cocoanuts.s-explorer-project</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>seproj</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeDescription</key>
-			<string>Scheme Explorers's Project Template</string>
-			<key>UTTypeIdentifier</key>
-			<string>org.cocoanuts.s-explorer-project-template</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>setemplate</string>
-				</array>
-			</dict>
-		</dict>
-	</array>
 </dict>
 </plist>

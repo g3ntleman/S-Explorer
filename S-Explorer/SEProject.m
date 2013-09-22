@@ -13,7 +13,7 @@
 #import "NoodleLineNumberView.h"
 #import "OPUtilityFunctions.h"
 
-NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer-project";
+NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 @implementation SEProject {
     NSMutableDictionary* uiSettings;
@@ -47,18 +47,18 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer-project";
         BOOL isDir = NO;
         BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath: url.path isDirectory: &isDir];
         if (isDir) {
-            self = [self initWithContentsOfURL: [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"sproj"]] ofType: @"org.cocoanuts.s-explorer-project" error: outError];
+            self = [self initWithContentsOfURL: [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"seproj"]] ofType: @"org.cocoanuts.s-explorer.project" error: outError];
         } else {
             NSLog(@"Opening type %@", typeName);
             
             projectFolderItem = [[SESourceItem alloc] initWithFileURL: [url URLByDeletingLastPathComponent]];
             
-            if ([typeName isEqualToString: @"org.cocoanuts.s-explorer-project"]) {
+            if ([typeName isEqualToString: @"org.cocoanuts.s-explorer.project"]) {
                 self.fileURL = url;
             } else {
                 
                 NSURL* projectFolderPath = [NSURL fileURLWithPath: projectFolderItem.absolutePath];
-                NSString* projectFileName = [[projectFolderPath lastPathComponent] stringByAppendingPathExtension:@"sproj"];
+                NSString* projectFileName = [[projectFolderPath lastPathComponent] stringByAppendingPathExtension:@"seproj"];
                 self.fileURL = [projectFolderPath URLByAppendingPathComponent: projectFileName];
                 
                 SESourceItem* singleSourceItem = [projectFolderItem childWithName: [url lastPathComponent]];
@@ -182,6 +182,10 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer-project";
     @synchronized(self) {
         [self.projectSettings writeToURL: self.fileURL atomically: YES];
     }
+}
+
+- (void)saveDocument:(id)sender {
+    [self saveProjectSettings];
 }
 
 - (NSMutableDictionary*) replSettingsForIdentifier: (NSString*) identifier {
@@ -410,10 +414,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer-project";
 - (BOOL) writeToURL: (NSURL*) absoluteURL ofType: (NSString*) typeName error: (NSError**) outError {
     NSLog(@"Should writeToURL %@ (%@)", absoluteURL, typeName);
     return YES;
-}
-
-- (IBAction) newDocumentFromTemplate: (id) sender {
-    
 }
 
 - (SEREPLController*) replControllerForIdentifier: (NSString*) identifier {
