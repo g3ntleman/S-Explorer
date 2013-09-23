@@ -97,7 +97,7 @@
             NSError* error = nil;
             
             NSLog(@"User choose folder %@", projectURL);
-            NSLog(@"User choose template %@", [templateButton selectedItem]);
+            NSLog(@"User choose template %@", [[templateButton selectedItem] title]);
             
             NSFileManager *fm = [NSFileManager defaultManager];
             if (! [fm fileExistsAtPath: [projectURL path] isDirectory: NULL]) {
@@ -115,9 +115,13 @@
             }
             // Open the new Project:
             [self openDocumentWithContentsOfURL: projectURL display: YES completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
-                NSLog(@"New Document opened.");
+                NSLog(@"New Document opened: %@", document);
                 SEProject* project = (SEProject*)document;
-                [project saveProjectSettings];
+                if (error) {
+                    [[NSAlert alertWithError:error] runModal];
+                } else {
+                    [project saveProjectSettings];
+                }
             }];
         }
     }];

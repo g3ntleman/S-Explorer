@@ -32,10 +32,14 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return nil;
 }
 
-- (id)initForURL:(NSURL *)absoluteDocumentURL withContentsOfURL:(NSURL *)absoluteDocumentContentsURL ofType:(NSString *)typeName error:(NSError **)outError {
+- (id) initForURL: (NSURL*) absoluteDocumentURL withContentsOfURL: (NSURL*) absoluteDocumentContentsURL ofType: (NSString*) typeName error: (NSError**) outError {
+    return [self initWithContentsOfURL: absoluteDocumentURL ofType: typeName error: outError];
+}
+
     
+- (id) initWithContentsOfURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing *)outError {
+
     if (self = [super init]) {
-        NSURL* url = absoluteDocumentContentsURL;
         tabbedSourceItems = @{};
         allREPLControllers = @{};
         BOOL isDir = NO;
@@ -69,6 +73,13 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     return nil;
 }
+
+
+- (id) initWithType:(NSString *)typeName error:(NSError *__autoreleasing *)outError {
+    NSLog(@"Mööp!");
+    return nil;
+}
+
 
 - (NSString*) defaultDraftName {
     return self.fileURL.lastPathComponent;
