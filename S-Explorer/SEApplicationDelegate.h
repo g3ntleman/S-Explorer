@@ -12,4 +12,6 @@
 
 @interface SEApplicationDelegate : NSObject
 
+- (IBAction) openSchemeTutorial: (id) sender;
+
 @end

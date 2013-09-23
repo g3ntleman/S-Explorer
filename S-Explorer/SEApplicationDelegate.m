@@ -14,6 +14,9 @@
     return NO;
 }
 
+- (IBAction) openSchemeTutorial: (id) sender {
+    [[NSWorkspace sharedWorkspace] openURL: [NSURL URLWithString: @"http://www.scheme.com/tspl3/"]];
+}
 
 
 @end
