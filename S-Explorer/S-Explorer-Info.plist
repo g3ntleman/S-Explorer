@@ -125,7 +125,7 @@
 			<key>LibraryDirectory</key>
 			<string></string>
 			<key>REPLCommandline</key>
-			<string>chibi-scheme</string>
+			<string>chibi-scheme -xscheme.base</string>
 			<key>WelcomeMessage</key>
 			<string>Welcome to Chibi Scheme!</string>
 		</dict>
