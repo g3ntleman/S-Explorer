@@ -15,6 +15,10 @@
 
 NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
+@interface SEProject ()
+@property (readonly) NSString* uiSettingsPath;
+@end
+
 @implementation SEProject {
     NSMutableDictionary* uiSettings;
 }
@@ -43,23 +47,22 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         tabbedSourceItems = @{};
         allREPLControllers = @{};
         BOOL isDir = NO;
-        BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath: url.path isDirectory: &isDir];
+        [[NSFileManager defaultManager] fileExistsAtPath: url.path isDirectory: &isDir];
         if (isDir) {
             self = [self initWithContentsOfURL: [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"seproj"]] ofType: SEProjectDocumentType error: outError];
         } else {
             NSLog(@"Opening type %@", typeName);
             
-            projectFolderItem = [[SESourceItem alloc] initWithFileURL: [url URLByDeletingLastPathComponent]];
-            
+            // Set the fileURL:
             if ([typeName isEqualToString: SEProjectDocumentType]) {
                 self.fileURL = url;
             } else {
+                // Propably some source file, use the parent folder as project name:
+                NSURL* folderURL = [url URLByDeletingLastPathComponent];
+                NSString* projectFileName = [folderURL.lastPathComponent stringByAppendingPathExtension: @"seproj"];
+                self.fileURL = [folderURL URLByAppendingPathComponent: projectFileName];
                 
-                NSURL* projectFolderPath = [NSURL fileURLWithPath: projectFolderItem.absolutePath];
-                NSString* projectFileName = [[projectFolderPath lastPathComponent] stringByAppendingPathExtension:@"seproj"];
-                self.fileURL = [projectFolderPath URLByAppendingPathComponent: projectFileName];
-                
-                SESourceItem* singleSourceItem = [projectFolderItem childWithName: [url lastPathComponent]];
+                SESourceItem* singleSourceItem = [self.projectFolderItem childWithName: [url lastPathComponent]];
                 
                 // Open singleSourceItem in the first Tab:
                 [self setSourceItem: singleSourceItem forIndex: 0];
@@ -74,16 +77,32 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return nil;
 }
 
+- (void) setFileURL:(NSURL *)url {
+    if (! [url isEqual: self.fileURL]) {
+        [super setFileURL:url];
+        projectFolderItem = nil;
+    }
+}
 
-- (id) initWithType:(NSString *)typeName error:(NSError *__autoreleasing *)outError {
-    NSLog(@"Mööp!");
-    return nil;
+/**
+ * The source item describing the folder containing the project file.
+ */
+- (SESourceItem*) projectFolderItem {
+    if (! projectFolderItem && self.fileURL) {
+        projectFolderItem = [[SESourceItem alloc] initWithFileURL: [self.fileURL URLByDeletingLastPathComponent]];
+    }
+    return projectFolderItem;
 }
 
 
 - (NSString*) defaultDraftName {
     return self.fileURL.lastPathComponent;
 }
+
+//- (void)saveToURL:(NSURL *)url ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation completionHandler:(void (^)(NSError *errorOrNil))completionHandler NS_AVAILABLE_MAC(10_7) {
+//    return [super saveToURL:url ofType:typeName forSaveOperation:saveOperation completionHandler:completionHandler];
+//}
+
 
 /**
  * index should be 0..3 while item may be nil to indicate a removal.
@@ -96,9 +115,12 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         NSParameterAssert([item isKindOfClass: [SESourceItem class]]);
 
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryBySettingObject: item forKey: indexNumber];
+        self.uiSettings[@"tabbedSources"][indexNumber.stringValue] = item.longRelativePath;
     } else {
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryByRemovingObjectForKey: indexNumber];
+        [self.uiSettings[@"tabbedSources"] removeObjectForKey: indexNumber];
     }
+    [self uiSettingsNeedSave];
     
     [sourceTab setEnabled: item!=nil forSegment: index];
     [sourceTab setLabel: item.relativePath forSegment: index];
@@ -108,7 +130,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         [sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: row]
                 byExtendingSelection: NO];
     }
-    
 }
 
 //- (BOOL) validateMenuItem:(NSMenuItem *)menuItem {
@@ -153,13 +174,14 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     if ([sourceItem.relativePath.pathExtension isEqualToString: @"scm"]) {
         [self.editorController.textEditorView colorize: self];
     }
-    
-    self.uiSettings[@"TabbedSources"][@(sourceTab.selectedSegment)] = sourceItem.longRelativePath;
 }
 
-- (void) selectSourceTabWithIndex: (NSUInteger) tabIndex {
+- (void) selectSourceTabWithIndex: (NSInteger) tabIndex {
+    sourceTab.selectedSegment = tabIndex;
     SESourceItem* sourceItem = self.tabbedSourceItems[@(tabIndex)];
     [self setCurrentSourceItem: sourceItem];
+    self.uiSettings[@"selectedSourceTab"] = @(tabIndex);
+    [self uiSettingsNeedSave];
 }
 
 //- (NSURL*) projectFileURL {
@@ -245,15 +267,21 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         if (! uiSettings[@"expandedFolders"]) {
             uiSettings[@"expandedFolders"] = [[NSMutableDictionary alloc] init];
         }
+        if (! uiSettings[@"tabbedSources"]) {
+            uiSettings[@"tabbedSources"] = [[NSMutableDictionary alloc] init];
+        }
     }
     return uiSettings;
 }
 
 - (void) uiSettingsNeedSave {
     // TODO: save later (on idle?)
-    BOOL done = [self.uiSettings writeToFile: [self uiSettingsPath] atomically: YES];
+    NSError* error = nil;
+    NSString* errorString = nil;
+    NSData* data = [NSPropertyListSerialization dataFromPropertyList: self.uiSettings format: NSPropertyListBinaryFormat_v1_0 errorDescription: &errorString];
+    BOOL done = [data writeToFile: self.uiSettingsPath options: NSDataWritingAtomic error:&error];
     if (! done) {
-        NSLog(@"Warning: Unable to write uiSettings to '%@'.", [self uiSettingsPath]);
+        NSLog(@"Warning: Unable to write uiSettings to '%@': %@", self.uiSettingsPath, error);
     }
 }
 
@@ -276,8 +304,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     NSLog(@"selected tab #%lu", sourceTab.selectedSegment);
     SESourceItem* sourceItem = self.tabbedSourceItems[@(sourceTab.selectedSegment)];
-    
-    self.uiSettings[@"SelectedSourceTab"] = @(sourceTab.selectedSegment);
+    self.uiSettings[@"selectedSourceTab"] = @(sourceTab.selectedSegment);
 
     [self setCurrentSourceItem: sourceItem];
 }
@@ -356,6 +383,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 
+
 - (void) windowControllerDidLoadNib: (NSWindowController*) aController {
     
     [super windowControllerDidLoadNib: aController];
@@ -377,8 +405,16 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 //    self.replController.virtualMachine = vm;
 
     //[self setSourceItem: tabbedSourceItems[@(sourceTab.selectedSegment)] forIndex: sourceTab.selectedSegment];
-    sourceTab.selectedSegment = 0;
-    [self selectSourceTabWithIndex: 0];
+
+    // Restore tabs:
+    NSDictionary* pathsByTabIndex = self.uiSettings[@"tabbedSources"];
+    for (NSString* indexString in pathsByTabIndex) {
+        NSString* path = pathsByTabIndex[indexString];
+        SESourceItem* itemAtPath = [self.projectFolderItem childWithPath: path];
+        [self setSourceItem: itemAtPath forIndex: [indexString integerValue]];
+    }
+    
+    [self selectSourceTabWithIndex: [self.uiSettings[@"selectedSourceTab"] integerValue]];
 
     for (NSString* path in self.uiSettings[@"expandedFolders"]) {
         SESourceItem* item = [self.projectFolderItem childWithPath: path];
@@ -406,13 +442,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     NSException *exception = [NSException exceptionWithName:@"UnimplementedMethod" reason:[NSString stringWithFormat:@"%@ is unimplemented", NSStringFromSelector(_cmd)] userInfo:nil];
     @throw exception;
     return YES;
-}
-
-- (SESourceItem*) projectFolderItem {
-    if (! projectFolderItem) {
-        projectFolderItem = [[SESourceItem alloc] initWithFileURL: [self fileURL]];
-    }
-    return projectFolderItem;
 }
 
 
