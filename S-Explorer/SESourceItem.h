@@ -18,6 +18,8 @@
 @property (readonly) NSString* relativePath;
 @property (readonly) NSString* longRelativePath;
 
+@property (readonly) NSError* lastError;
+
 - (id) initWithFileURL: (NSURL*) aURL;
 
 - (SESourceItem*) childItemWithName: (NSString*) name;

@@ -38,13 +38,13 @@ static NSMutableArray *leafNode = nil;
     return [self initWithPath: aURL.path parent: nil];
 }
 
+
 - (NSTextStorage*) content {
     if (! content) {
-        NSError* error = nil;
-        NSString* contentString = [NSString stringWithContentsOfFile: self.absolutePath encoding: NSUTF8StringEncoding error: &error];
-        content = [[NSTextStorage alloc] initWithString: contentString];
+        NSError* readError = nil;
+        [self readFromURL: [NSURL fileURLWithPath: self.absolutePath] ofType: nil error:&readError];
+        _lastError = readError;
     }
-    
     return content;
 }
 
@@ -63,19 +63,21 @@ static NSMutableArray *leafNode = nil;
     return result;
 }
 
+- (BOOL) readFromURL: (NSURL*) absoluteURL
+              ofType: (NSString*) typeName
+               error: (NSError**) outError {
+    
+    NSString* contentString = [NSString stringWithContentsOfURL:absoluteURL encoding:NSUTF8StringEncoding error: outError];
+    if (contentString) {
+        content = [[NSTextStorage alloc] initWithString: contentString];
+    }
+    return contentString != nil;
+}
 
-//- (BOOL) saveContentWithError: (NSError**) errorPtr  {
-//    if (self.contentHasChanged) {
-//        BOOL result = [self.content.string writeToFile: self.absolutePath atomically: YES encoding: NSUTF8StringEncoding error: errorPtr];
-//        
-//        savedContentHash = self.content.string.hash;
-//        return result;
-//    }
-//    NSLog(@"Warning - igornig save to unchanged file %@", self.relativePath);
-//    return YES; // nothing to do.
-//}
-
-
+- (BOOL)writeToURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing *)outError {
+    BOOL result = [self.content.string writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error: outError];
+    return result;
+}
 
 - (SESourceItem*) childItemWithName: (NSString*) name {
     for (SESourceItem* child in self.children) {
@@ -154,6 +156,15 @@ static NSMutableArray *leafNode = nil;
     
     // recurse up the hierarchy, prepending each parent’s path
     return [parent.absolutePath stringByAppendingPathComponent:path];
+}
+
+- (NSURL*) fileURL {
+    return [NSURL fileURLWithPath: self.absolutePath];
+}
+
+- (void) setFileURL:(NSURL *)url {
+    // File URLs cannot be changed. Create a new instance instead!
+    NSParameterAssert([url isEqual: self.fileURL]);
 }
 
 - (NSString*) description {
