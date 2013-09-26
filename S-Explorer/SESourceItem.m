@@ -13,9 +13,6 @@
     NSMutableArray* children;
 }
 
-static NSMutableArray *leafNode = nil;
-
-
 @synthesize parent;
 @synthesize content;
 
@@ -38,14 +35,30 @@ static NSMutableArray *leafNode = nil;
     return [self initWithPath: aURL.path parent: nil];
 }
 
+- (IBAction) saveDocument: (id) sender {
+    if (self.isDocumentEdited) {
+        [super saveDocument: sender];
+    }
+}
+
 
 - (NSTextStorage*) content {
     if (! content) {
         NSError* readError = nil;
-        [self readFromURL: [NSURL fileURLWithPath: self.absolutePath] ofType: nil error:&readError];
+        [self readFromURL: [NSURL fileURLWithPath: self.absolutePath] ofType: @"public.text" error:&readError];
         _lastError = readError;
     }
     return content;
+}
+
+- (void) performBlock: (void (^)(SESourceItem* item)) block recursively: (BOOL) recurse {
+    
+    block(self);
+    if (recurse) {
+        for (SESourceItem* child in self.children) {
+            [child performBlock: block recursively: recurse];
+        }
+    }
 }
 
 - (BOOL) isTextItem {
@@ -71,6 +84,7 @@ static NSMutableArray *leafNode = nil;
     if (contentString) {
         content = [[NSTextStorage alloc] initWithString: contentString];
     }
+    self.fileType = typeName;
     return contentString != nil;
 }
 
@@ -121,10 +135,8 @@ static NSMutableArray *leafNode = nil;
                     [children addObject: newChild];
                 }
             }
-        } else {
-            children = leafNode;
         }
-        children = [children copy];
+        children = [children copy]; // make immutable
     }
     return children;
 }

@@ -77,6 +77,17 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return nil;
 }
 
+- (NSUInteger) numberOfEditedSourceItems {
+    return 0;
+}
+
+- (void) saveAllSourceItems {
+    
+    [self.projectFolderItem performBlock:^(SESourceItem* item) {
+        [item saveDocument: self];
+    } recursively: YES];
+}
+
 - (void) setFileURL:(NSURL *)url {
     if (! [url isEqual: self.fileURL]) {
         [super setFileURL:url];
@@ -175,12 +186,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [self uiSettingsNeedSave];
 }
 
-//- (NSURL*) projectFileURL {
-//    NSURL* projectFolderPath = [NSURL fileURLWithPath: self.projectFolderItem.absolutePath];
-//    NSString* projectFileName = [[projectFolderPath lastPathComponent] stringByAppendingPathExtension:@"sproj"];
-//    NSURL* projectFileURL = [projectFolderPath URLByAppendingPathComponent: projectFileName];
-//    return projectFileURL;
-//}
 
 - (NSMutableDictionary*) projectSettings {
     
@@ -465,6 +470,25 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 - (IBAction) saveCurrentSourceItem: (id) sender {
     [self.currentSourceItem saveDocument: sender];
+}
+
+- (BOOL) isDocumentEdited {
+    __block BOOL edited = [super isDocumentEdited];
+    
+    if (! edited) {
+        [self.projectFolderItem performBlock:^(SESourceItem *item) {
+            edited |= [item isDocumentEdited];
+        } recursively: YES];
+    }
+    
+    return edited;
+}
+
+- (void) canCloseDocumentWithDelegate: (id) delegate shouldCloseSelector: (SEL)shouldCloseSelector contextInfo: (void*) contextInfo {
+    NSLog(@"closing sourceItems...");
+    [self saveAllSourceItems];
+    
+    [super canCloseDocumentWithDelegate:delegate shouldCloseSelector:shouldCloseSelector contextInfo:contextInfo];
 }
 
 @end
