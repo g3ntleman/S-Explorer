@@ -19,6 +19,7 @@
 		8D27BFF51766C59D00F1F8FA /* SESchemeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFF31766C59C00F1F8FA /* SESchemeParser.m */; };
 		8D2AAB6C177A8E50008F07C4 /* NoodleLineNumberView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AAB68177A8E50008F07C4 /* NoodleLineNumberView.m */; };
 		8D2AAB71177A94A8008F07C4 /* NoodleLineNumberMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AAB66177A8E50008F07C4 /* NoodleLineNumberMarker.m */; };
+		8D4DF7E717F4587F00BC0773 /* OPCharFilterFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */; };
 		8D604254173BE60800149409 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D604252173BE60800149409 /* InfoPlist.strings */; };
 		8D604256173BE60800149409 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604255173BE60800149409 /* main.m */; };
 		8D60425A173BE60800149409 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 8D604258173BE60800149409 /* Credits.rtf */; };
@@ -84,6 +85,9 @@
 		8D2AAB68177A8E50008F07C4 /* NoodleLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoodleLineNumberView.m; sourceTree = "<group>"; };
 		8D2AAB6D177A93EB008F07C4 /* MarkerLineNumberView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = MarkerLineNumberView.h; sourceTree = "<group>"; };
 		8D2AAB6E177A93EB008F07C4 /* MarkerLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerLineNumberView.m; sourceTree = "<group>"; };
+		8D4DF7E417F4587F00BC0773 /* OPCharFilterFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = OPCharFilterFormatter.h; sourceTree = "<group>"; };
+		8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPCharFilterFormatter.m; sourceTree = "<group>"; };
+		8D59F73317F130F6001CEAE4 /* repl-server.scm */ = {isa = PBXFileReference; lastKnownFileType = text; path = "repl-server.scm"; sourceTree = "<group>"; };
 		8D604246173BE60800149409 /* S-Explorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "S-Explorer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D60424C173BE60800149409 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		8D60424E173BE60800149409 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -224,6 +228,7 @@
 				8D16399D17C6BC51000DD491 /* NoodleLineNumberView */,
 				8D604261173BE60800149409 /* MainMenu.xib */,
 				8D8298D31758088000336E2F /* S-Explorer-support.scm */,
+				8D59F73317F130F6001CEAE4 /* repl-server.scm */,
 				8D60425B173BE60800149409 /* SEProject.h */,
 				8D60425C173BE60800149409 /* SEProject.m */,
 				8D60425E173BE60800149409 /* SEProject.xib */,
@@ -290,6 +295,8 @@
 				8DF3C39517CFA3D200C75197 /* OPUtilityFunctions.m */,
 				8D8F9AF617EBEBDA00299D24 /* OPTabView.h */,
 				8D8F9AF717EBEBDA00299D24 /* OPTabView.m */,
+				8D4DF7E417F4587F00BC0773 /* OPCharFilterFormatter.h */,
+				8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -425,6 +432,7 @@
 				8D16399617C3B7A6000DD491 /* SEEditorTextView.m in Sources */,
 				8D16399C17C6BC1D000DD491 /* SEApplicationDelegate.m in Sources */,
 				8DCBE48D17C76EBB00A872A7 /* NSColor+OPExtensions.m in Sources */,
+				8D4DF7E717F4587F00BC0773 /* OPCharFilterFormatter.m in Sources */,
 				8DF3C39617CFA3D200C75197 /* OPUtilityFunctions.m in Sources */,
 				8DEE2AC717D434EE005BEDD0 /* SEDocumentController.m in Sources */,
 			);

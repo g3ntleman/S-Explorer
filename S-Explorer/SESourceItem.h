@@ -8,11 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SESourceItem : NSObject 
+@interface SESourceItem : NSDocument
 
 @property (readonly) BOOL isTextItem;
-@property (weak, readonly) SESourceItem* parent;
-@property (weak, nonatomic) NSMutableString* content;
+@property (weak, readonly, nonatomic) SESourceItem* parent;
+@property (strong, nonatomic) NSTextStorage* content;
 
 @property (readonly) NSString* absolutePath;
 @property (readonly) NSString* relativePath;
@@ -20,13 +20,11 @@
 
 - (id) initWithFileURL: (NSURL*) aURL;
 
-- (SESourceItem*) childWithName: (NSString*) name;
+- (SESourceItem*) childItemWithName: (NSString*) name;
 - (SESourceItem*) childWithPath: (NSString*) path;
 
-- (BOOL) contentHasChanged;
-- (BOOL) saveContentWithError: (NSError**) errorPtr;
-- (void) contentDidChange;
-- (BOOL) revertContent;
+
+
 
 @end
 

@@ -11,7 +11,6 @@
 @implementation SESourceItem {
     NSString* path;
     NSMutableArray* children;
-    NSMutableString* changedContent;
 }
 
 static NSMutableArray *leafNode = nil;
@@ -19,6 +18,7 @@ static NSMutableArray *leafNode = nil;
 
 @synthesize parent;
 @synthesize content;
+
 
 - (id) initWithPath: (NSString*) aPath parent: (SESourceItem*) parentItem {
 
@@ -38,10 +38,11 @@ static NSMutableArray *leafNode = nil;
     return [self initWithPath: aURL.path parent: nil];
 }
 
-- (NSMutableString*) content {
+- (NSTextStorage*) content {
     if (! content) {
         NSError* error = nil;
-        content = [NSMutableString stringWithContentsOfFile: self.absolutePath encoding: NSUTF8StringEncoding error: &error];
+        NSString* contentString = [NSString stringWithContentsOfFile: self.absolutePath encoding: NSUTF8StringEncoding error: &error];
+        content = [[NSTextStorage alloc] initWithString: contentString];
     }
     
     return content;
@@ -62,38 +63,21 @@ static NSMutableArray *leafNode = nil;
     return result;
 }
 
-- (void) contentDidChange {
-    changedContent = self.content;
-}
 
-- (BOOL) contentHasChanged {
-    return changedContent != nil;
-}
-
-- (BOOL) saveContentWithError: (NSError**) errorPtr  {
-    if (changedContent) {
-        BOOL result = [changedContent writeToFile: self.absolutePath atomically: YES encoding: NSUTF8StringEncoding error: errorPtr];
-        if (result) {
-            content = changedContent;
-            changedContent = nil;
-        }
-        return result;
-    }
-    NSLog(@"Warning - igornig save to unchanged file %@", self.relativePath);
-    return YES; // nothing to do.
-}
-
-- (BOOL) revertContent {
-    if (content) {
-        content = nil;
-        changedContent = nil;
-        return YES;
-    }
-    return NO;
-}
+//- (BOOL) saveContentWithError: (NSError**) errorPtr  {
+//    if (self.contentHasChanged) {
+//        BOOL result = [self.content.string writeToFile: self.absolutePath atomically: YES encoding: NSUTF8StringEncoding error: errorPtr];
+//        
+//        savedContentHash = self.content.string.hash;
+//        return result;
+//    }
+//    NSLog(@"Warning - igornig save to unchanged file %@", self.relativePath);
+//    return YES; // nothing to do.
+//}
 
 
-- (SESourceItem*) childWithName: (NSString*) name {
+
+- (SESourceItem*) childItemWithName: (NSString*) name {
     for (SESourceItem* child in self.children) {
         if ([child.relativePath isEqualToString: name]) {
             return child;
@@ -106,7 +90,7 @@ static NSMutableArray *leafNode = nil;
     NSArray* pathComponents = [aPath pathComponents];
     SESourceItem* current = self;
     for (NSString* name in pathComponents) {
-        current = [current childWithName: name];
+        current = [current childItemWithName: name];
         if (! current) return nil;
     }
     return current;

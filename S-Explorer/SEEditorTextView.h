@@ -8,12 +8,14 @@
 
 #import <AppKit/AppKit.h>
 #import "SESchemeParser.h"
+#import "NoodleLineNumberView.h"
 
-@interface SEEditorTextView : NSTextView 
+@interface SEEditorTextView : NSTextView
 
 @property (strong, nonatomic) IBOutlet NSPanel* gotoPanel;
 
 @property (readonly) NSString* selectedString;
+@property (nonatomic, strong) NoodleLineNumberView* lineNumberView;
 
 - (IBAction) expandSelection: (id) sender;
 - (IBAction) contractSelection: (id) sender;

@@ -1,0 +1,20 @@
+(define repl-server
+  (thread (lambda ()
+          (let ((listener (tcp-listen 8082 5 #t)))
+            (do () (#f)
+              (let-values (((in out) (tcp-accept listener)))
+                (thread (lambda ()
+                          (let ((port-string (get-port-string in)))
+                             (Try "debug-repl" #f
+                               (begin
+                                 (file-stream-buffer-mode out 'line)
+                                 (display-and-log "Password: " out)
+                                 (flush-output out)
+                                 (when (string=? (read-line in) "whatever")
+                                   (log "Connect to REPL: " port-string))
+                                   (current-input-port in)
+                                   (current-output-port out)
+                                   (current-error-port out)
+                                   (read-eval-print-loop))
+                                 (close-input-port in)
+                                 (close-output-port out)))))))))))

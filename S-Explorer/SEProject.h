@@ -48,8 +48,8 @@ extern NSString* SEProjectDocumentType;
 
 - (IBAction) selectSourceTab: (id) sender;
 - (IBAction) sourceTableAction: (id) sender;
-- (IBAction) saveCurrentSourceItem: (id) sender;
 - (IBAction) revertCurrentSourceItemToSaved: (id) sender;
+- (IBAction) saveCurrentSourceItem: (id) sender;
 - (IBAction) runProject: (id) sender;
 
 

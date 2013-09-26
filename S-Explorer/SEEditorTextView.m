@@ -7,8 +7,37 @@
 //
 
 #import "SEEditorTextView.h"
-#import "NoodleLineNumberView.h"
 #import "SEEditorController.h"
+#import "OPCharFilterFormatter.h"
+
+//@interface NSAlert (TextValidation) <NSTextFieldDelegate>
+//
+//@end
+//
+//@implementation NSAlert (TextValidation)
+//
+//- (void)control:(NSControl *)control didFailToValidatePartialString:(NSString *)string errorDescription:(NSString *)error {
+//    NSLog(@"Wrong line number: %@", error);
+//    NSButton* okButton = [self.buttons objectAtIndex: 0];
+//    okButton.enabled = NO;
+//}
+//
+//- (BOOL)control:(NSControl *)control didFailToFormatString:(NSString *)string errorDescription:(NSString *)error {
+//    NSButton* okButton = [self.buttons objectAtIndex: 0];
+//    okButton.enabled = NO;
+//    return NO;
+//}
+//
+//- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+//    
+//    if (string.length && ! [string rangeOfCharacterFromSet: [NSCharacterSet decimalDigitCharacterSet] options: 0]) {
+//        return NO;
+//    }
+//
+//    return YES;
+//}
+//
+//@end
 
 @implementation SEEditorTextView {
     NSMutableArray* selectionStack;
@@ -132,6 +161,8 @@ static NSCharacterSet* SEWordCharacters() {
     
     NSTextStorage* textStorage = self.textStorage;
 
+    [textStorage beginEditing];
+    
     [textStorage removeAttribute: NSForegroundColorAttributeName range: aRange];
 
     
@@ -193,7 +224,7 @@ static NSCharacterSet* SEWordCharacters() {
     [parser parseAll];
     NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
     NSLog(@"Parsing & Highlighting %ld chars took %ld milliseconds.", aRange.length, lround((endTime-startTime)*1000.0));
-
+    [textStorage endEditing];
 }
 
 
@@ -211,12 +242,8 @@ static NSCharacterSet* SEWordCharacters() {
 
 - (NSRange) selectLineNumber: (NSUInteger) line {
     
-    NoodleLineNumberView* lineNumberView = (NoodleLineNumberView*)self.enclosingScrollView.verticalRulerView;
-    
-    if (line > lineNumberView.numberOfLines) {
-        NSBeep();
-        return NSMakeRange(0,0);
-    }
+    NoodleLineNumberView* lineNumberView = [self lineNumberView];
+    line = MIN(lineNumberView.numberOfLines, MAX(1, line));
     
     NSRange lineRange = [lineNumberView rangeOfLine: line];
     self.selectedRange = lineRange;
@@ -235,6 +262,23 @@ static NSCharacterSet* SEWordCharacters() {
     return [super doCommandBySelector: aSelector];
 }
 
+- (NoodleLineNumberView*) lineNumberView {
+    NoodleLineNumberView* lineNumberView = (NoodleLineNumberView*)self.enclosingScrollView.verticalRulerView;
+    if (! [lineNumberView isKindOfClass:[NoodleLineNumberView class]]) {
+        return nil;
+    }
+    return lineNumberView;
+}
+
+- (void) setLineNumberView: (NoodleLineNumberView*) lineNumberView {
+    NSScrollView* scrollView = self.enclosingScrollView;
+    scrollView.verticalRulerView = lineNumberView;
+    [scrollView setHasHorizontalRuler: NO];
+    [scrollView setHasVerticalRuler: lineNumberView != nil];
+    [scrollView setRulersVisible: lineNumberView != nil];
+}
+
+
 
 - (IBAction) selectSpecificLine: (id) sender {
     
@@ -249,19 +293,22 @@ static NSCharacterSet* SEWordCharacters() {
     NSTextField *lineNumberField = [[NSTextField alloc] initWithFrame: NSMakeRect(0, 0, 50, 22)];
     [lineNumberField setAlignment: NSCenterTextAlignment];
     [lineNumberField setIntegerValue: [ud integerForKey: @"GotoPanelLineNumber"]];
+    
+    NSNumberFormatter* formatter = [[NSNumberFormatter alloc] init];
+    formatter.usesGroupingSeparator = NO;
+    formatter.minimum = @(1);
+    formatter.allowsFloats = NO;
+    
+    lineNumberField.formatter = [[OPDigitFormatter alloc] init];
+    //lineNumberField.delegate = alert;
+    
     [alert setAccessoryView: lineNumberField];
     NSInteger button = [alert runModal];
     if (button == NSAlertDefaultReturn) {
         [lineNumberField validateEditing];
         NSUInteger line = [lineNumberField integerValue];
-        
-        NoodleLineNumberView* lineNumberView = (NoodleLineNumberView*)self.enclosingScrollView.verticalRulerView;
-        if ([lineNumberView isKindOfClass: [NoodleLineNumberView class]]) {
-            
-            NSRange lineRange = [self selectLineNumber: line];
-            [self scrollRangeToVisible: lineRange];
-        }
-        
+        NSRange lineRange = [self selectLineNumber: line];
+        [self scrollRangeToVisible: lineRange];
         [ud setInteger: line forKey: @"GotoPanelLineNumber"];
     } 
 }
@@ -280,6 +327,6 @@ static NSCharacterSet* SEWordCharacters() {
 }
 
 
-
-
 @end
+
+

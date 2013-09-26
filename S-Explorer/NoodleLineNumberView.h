@@ -67,4 +67,8 @@
 - (NSUInteger) numberOfLines;
 - (NSRange) rangeOfLine:(NSUInteger)line;
 
+- (void)invalidateLineIndices;
+
+- (void)updateObservedTextStorage;
+
 @end

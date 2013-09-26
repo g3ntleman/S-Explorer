@@ -94,23 +94,22 @@
     return [NSColor whiteColor];
 }
 
+- (void)updateObservedTextStorage {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSTextStorageDidProcessEditingNotification object:nil];
+    
+    if ([self.clientView isKindOfClass:[NSTextView class]]) {
+        NSTextStorage *storage = [(NSTextView *)self.clientView textStorage];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textStorageDidProcessEditing:) name:NSTextStorageDidProcessEditingNotification object: storage];
+    }
+    
+    [self invalidateLineIndicesFromCharacterIndex:0];
+}
+
 - (void)setClientView:(NSView *)aView
 {
-	id		oldClientView;
-	
-	oldClientView = [self clientView];
-	
-    if ((oldClientView != aView) && [oldClientView isKindOfClass:[NSTextView class]])
-    {
-		[[NSNotificationCenter defaultCenter] removeObserver:self name:NSTextStorageDidProcessEditingNotification object:[(NSTextView *)oldClientView textStorage]];
-    }
     [super setClientView:aView];
-    if ((aView != nil) && [aView isKindOfClass:[NSTextView class]])
-    {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textStorageDidProcessEditing:) name:NSTextStorageDidProcessEditingNotification object:[(NSTextView *)aView textStorage]];
-
-		[self invalidateLineIndicesFromCharacterIndex:0];
-    }
+    [self updateObservedTextStorage];
 }
 
 - (NSMutableArray *)lineIndices
@@ -126,6 +125,10 @@
 - (void)invalidateLineIndicesFromCharacterIndex:(NSUInteger)charIndex
 {
     _invalidCharacterIndex = MIN(charIndex, _invalidCharacterIndex);
+}
+
+- (void)invalidateLineIndices {
+    [self invalidateLineIndicesFromCharacterIndex:0];
 }
 
 - (void)textStorageDidProcessEditing:(NSNotification *)notification

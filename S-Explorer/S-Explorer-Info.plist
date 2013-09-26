@@ -2,26 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UTExportedTypeDeclarations</key>
-	<array>
-		<dict>
-			<key>UTTypeIdentifier</key>
-			<string>org.cocoanuts.s-explorer.project</string>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.data</string>
-			</array>
-			<key>UTTypeReferenceURL</key>
-			<string>http://developer.apple.com/tools/xcode/</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>seproj</string>
-				</array>
-			</dict>
-		</dict>
-	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDocumentTypes</key>
@@ -31,20 +11,20 @@
 			<array>
 				<string>seproj</string>
 			</array>
-			<key>LSIsAppleDefaultForType</key>
-			<true/>
-			<key>LSTypeIsPackage</key>
-			<false/>
-			<key>CFBundleTypeName</key>
-			<string>S-Explorer Project</string>
 			<key>CFBundleTypeIconFile</key>
 			<string></string>
+			<key>CFBundleTypeName</key>
+			<string>S-Explorer Project</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>org.cocoanuts.s-explorer.project</string>
 			</array>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
 			<key>NSDocumentClass</key>
 			<string>SEProject</string>
 		</dict>
@@ -136,5 +116,25 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.text</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>org.cocoanuts.s-explorer.project</string>
+			<key>UTTypeReferenceURL</key>
+			<string>http://developer.apple.com/tools/xcode/</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>seproj</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>

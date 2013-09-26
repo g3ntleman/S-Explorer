@@ -51,7 +51,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         if (isDir) {
             self = [self initWithContentsOfURL: [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"seproj"]] ofType: SEProjectDocumentType error: outError];
         } else {
-            NSLog(@"Opening type %@", typeName);
+            NSLog(@"Opening document of type %@", typeName);
             
             // Set the fileURL:
             if ([typeName isEqualToString: SEProjectDocumentType]) {
@@ -62,7 +62,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                 NSString* projectFileName = [folderURL.lastPathComponent stringByAppendingPathExtension: @"seproj"];
                 self.fileURL = [folderURL URLByAppendingPathComponent: projectFileName];
                 
-                SESourceItem* singleSourceItem = [self.projectFolderItem childWithName: [url lastPathComponent]];
+                SESourceItem* singleSourceItem = [self.projectFolderItem childItemWithName: [url lastPathComponent]];
                 
                 // Open singleSourceItem in the first Tab:
                 [self setSourceItem: singleSourceItem forIndex: 0];
@@ -162,18 +162,9 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     [self setSourceItem: sourceItem forIndex: sourceTab.selectedSegment];
     
-    NSTextStorage* textStorage = self.editorController.textEditorView.textStorage;
-    NSString* fileContent = sourceItem.content;
-    if (! fileContent)
-        fileContent = @"";
-    NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [NSFont fontWithName: @"Menlo-Bold" size: 13.0], NSFontAttributeName, nil, nil];
-    NSAttributedString* attributedContent = [[NSAttributedString alloc] initWithString: fileContent attributes: attributes];
-    textStorage.attributedString = attributedContent;
     
-    // Colorize scheme files:
-    if ([sourceItem.relativePath.pathExtension isEqualToString: @"scm"]) {
-        [self.editorController.textEditorView colorize: self];
-    }
+    self.editorController.sourceItem = sourceItem;
+    
 }
 
 - (void) selectSourceTabWithIndex: (NSInteger) tabIndex {
@@ -309,28 +300,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [self setCurrentSourceItem: sourceItem];
 }
 
-- (IBAction) saveCurrentSourceItem: (id) sender {
-    
-    SESourceItem* currentSource = self.currentSourceItem;
-    
-    if (currentSource.contentHasChanged) {
-        NSError* error = nil;
-        [currentSource saveContentWithError: &error];
-        if (error) {
-            NSBeep();
-            NSLog(@"Error saving %@: %@", currentSource, error);
-        }
-    }
-}
-
-- (IBAction) revertCurrentSourceItemToSaved: (id) sender {
-    
-    SESourceItem* currentSource = self.currentSourceItem;
-    if (currentSource.contentHasChanged) {
-        [currentSource revertContent];
-        [self setCurrentSourceItem: currentSource];
-    }
-}
 
 - (void) checkLibraryAlias {
     
@@ -490,6 +459,13 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [replController evaluateString: evalString];
 }
 
+- (IBAction) revertCurrentSourceItemToSaved: (id) sender {
+    [self.currentSourceItem revertDocumentToSaved: sender];
+}
+
+- (IBAction) saveCurrentSourceItem: (id) sender {
+    [self.currentSourceItem saveDocument: sender];
+}
 
 @end
 
@@ -654,6 +630,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 //    
 //    return draggedFilenames;
 //}
+
 
 
 

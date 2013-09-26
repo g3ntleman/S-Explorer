@@ -80,15 +80,38 @@ static BOOL isPar(unichar aChar) {
 }
 
 
+- (void) setSourceItem: (SESourceItem*) sourceItem {
+    if (_sourceItem != sourceItem) {
+        _sourceItem = sourceItem;
+        [self.textEditorView.layoutManager replaceTextStorage: sourceItem.content];
+        [self.textEditorView.lineNumberView updateObservedTextStorage]; // found no better place to put it. :-/
+        
+        NSTextStorage* textStorage = sourceItem.content;
+        
+        NSString* fileContent = textStorage.string;
+        if (! fileContent)
+            fileContent = @"";
+        NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [NSFont fontWithName: @"Menlo-Bold" size: 13.0], NSFontAttributeName, nil, nil];
+        [textStorage setAttributes: attributes range: NSMakeRange(0, fileContent.length)];
+        
+        // Colorize scheme files:
+        if ([sourceItem.relativePath.pathExtension isEqualToString: @"scm"]) {
+            [self.textEditorView colorize: self];
+        }
+
+        
+    }
+}
+
+- (NSUndoManager *)undoManagerForTextView:(NSTextView *)view {
+    return self.sourceItem.undoManager;
+}
+
+
 - (void) awakeFromNib {
     
-    NSScrollView* scrollView = self.textEditorView.enclosingScrollView;
-    if (! scrollView.verticalRulerView) {
-        _lineNumberView = [[NoodleLineNumberView alloc] initWithScrollView: scrollView];
-        scrollView.verticalRulerView = self.lineNumberView;
-        [scrollView setHasHorizontalRuler: NO];
-        [scrollView setHasVerticalRuler: YES];
-        [scrollView setRulersVisible: YES];
+    if (! self.textEditorView.lineNumberView) {
+        self.textEditorView.lineNumberView = [[NoodleLineNumberView alloc] initWithScrollView: self.textEditorView.enclosingScrollView];
     }
 }
 
@@ -162,14 +185,21 @@ static BOOL isPar(unichar aChar) {
 
 - (NSUInteger) indentationAtLocation: (NSUInteger) lineStart {
     NSString* text = self.textEditorView.textStorage.string;
-    NSUInteger location = lineStart;
     NSUInteger length = text.length;
+    NSUInteger location = lineStart;
+    NSUInteger indentation = 0;
+    
     unichar locationChar;
-    do {
+    while (location < length) {
         locationChar = [text characterAtIndex: location];
-    } while (location++<length && locationChar != '\n' && (locationChar == ' ' || locationChar == '\t'));
-
-    return location-lineStart-1;
+        //NSLog(@"Testing '%c'", locationChar);
+        if (locationChar == '\n' || (locationChar != ' ' && locationChar != '\t')) {
+            break;
+        }
+        location += 1;
+        indentation += 1;
+    };
+    return indentation;
 }
 
 - (void) indentInRange: (NSRange) range {
@@ -229,6 +259,7 @@ static BOOL isPar(unichar aChar) {
             }
         }
         
+        // Range contains one or more complete lines:
         NSUInteger previousIndentation = [self indentationAtLocation: range.location];
         if (indentation != previousIndentation) {
             // Create an NSString with indentation number of spaces:

@@ -286,7 +286,7 @@
          endingColumnNumber = "9223372036854775807"
          startingLineNumber = "533"
          endingLineNumber = "533"
-         landmarkName = "-evaluateSelection:"
+         landmarkName = "-outlineView:objectValueForTableColumn:byItem:"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
