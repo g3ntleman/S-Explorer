@@ -11,6 +11,7 @@
 @implementation SESourceItem {
     NSString* path;
     NSMutableArray* children;
+    BOOL isDir;
 }
 
 @synthesize parent;
@@ -26,6 +27,7 @@
         } else {
             path = aPath;
         }
+        isDir = YES; // will be checked in -children
     }
     return self;
 }
@@ -118,14 +120,20 @@
 }
 
 
-// Creates, caches, and returns the array of children
-// Loads children incrementally
+/** 
+  * Creates, caches, and returns the array of children SESourceItem objects.
+  * Loads children incrementally. Returns nil for file items that cannot have children.
+  **/
 - (NSArray *)children {
+    
+    if (! isDir) {
+        return nil;
+    }
     
     if (children == nil) {
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSString* fullPath = self.absolutePath;
-        BOOL isDir, valid;
+        BOOL valid;
         
         valid = [fileManager fileExistsAtPath: fullPath isDirectory: &isDir];
         
@@ -140,8 +148,8 @@
                     [children addObject: newChild];
                 }
             }
+            children = [children copy]; // make immutable
         }
-        children = [children copy]; // make immutable
     }
     return children;
 }
@@ -188,7 +196,9 @@
     return [NSString stringWithFormat: @"%@ @ '%@'", [super description], self.absolutePath];
 }
 
-
+- (NSArray*) sortedItemsWithFileExtension: (NSString*) fileExtension {
+    
+}
 
 @end
 
