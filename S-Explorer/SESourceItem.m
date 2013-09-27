@@ -51,14 +51,19 @@
     return content;
 }
 
-- (void) performBlock: (void (^)(SESourceItem* item)) block recursively: (BOOL) recurse {
-    
-    block(self);
-    if (recurse) {
-        for (SESourceItem* child in self.children) {
-            [child performBlock: block recursively: recurse];
+- (void) enumerateAllUsingBlock: (void (^)(SESourceItem* item, BOOL *stop)) block stop: (BOOL*) stopPtr {
+    block(self, stopPtr);
+    for (SESourceItem* child in self.children) {
+        if (*stopPtr) {
+            break;
         }
+        [child enumerateAllUsingBlock: block stop: stopPtr];
     }
+}
+
+- (void) enumerateAllUsingBlock: (void (^)(SESourceItem* item, BOOL *stop)) block {
+    BOOL stop = NO;
+    [self enumerateAllUsingBlock:block stop: &stop];
 }
 
 - (BOOL) isTextItem {

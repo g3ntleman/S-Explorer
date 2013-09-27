@@ -82,10 +82,9 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 - (void) saveAllSourceItems {
-    
-    [self.projectFolderItem performBlock:^(SESourceItem* item) {
+    [self.projectFolderItem enumerateAllUsingBlock:^(SESourceItem* item, BOOL* stop) {
         [item saveDocument: self];
-    } recursively: YES];
+    }];
 }
 
 - (void) setFileURL:(NSURL *)url {
@@ -476,11 +475,14 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     __block BOOL edited = [super isDocumentEdited];
     
     if (! edited) {
-        [self.projectFolderItem performBlock:^(SESourceItem *item) {
-            edited |= [item isDocumentEdited];
-        } recursively: YES];
+        [self.projectFolderItem enumerateAllUsingBlock:^(SESourceItem *item, BOOL* stop) {
+            NSLog(@"Testing %@", item);
+            if ([item isDocumentEdited]) {
+                edited = YES;
+                *stop = YES;
+            }
+        }];
     }
-    
     return edited;
 }
 

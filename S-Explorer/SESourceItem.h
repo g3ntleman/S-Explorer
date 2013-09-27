@@ -25,7 +25,7 @@
 - (SESourceItem*) childItemWithName: (NSString*) name;
 - (SESourceItem*) childWithPath: (NSString*) path;
 
-- (void) performBlock: (void (^)(SESourceItem* item)) block recursively: (BOOL) recurse;
+- (void) enumerateAllUsingBlock: (void (^)(SESourceItem* item, BOOL *stop)) block;
 
 @end
 
