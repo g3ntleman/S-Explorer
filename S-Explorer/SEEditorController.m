@@ -99,7 +99,7 @@ static BOOL isPar(unichar aChar) {
             [self.textEditorView colorize: self];
         }
 
-        
+        [self.textEditorView.enclosingScrollView flashScrollers];    
     }
 }
 
@@ -110,9 +110,9 @@ static BOOL isPar(unichar aChar) {
 
 - (void) awakeFromNib {
     
-    if (! self.textEditorView.lineNumberView) {
-        self.textEditorView.lineNumberView = [[NoodleLineNumberView alloc] initWithScrollView: self.textEditorView.enclosingScrollView];
-    }
+//    if (! self.textEditorView.lineNumberView) {
+//        self.textEditorView.lineNumberView = [[NoodleLineNumberView alloc] initWithScrollView: self.textEditorView.enclosingScrollView];
+//    }
 }
 
 

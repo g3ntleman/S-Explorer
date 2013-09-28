@@ -55,6 +55,7 @@
 
 - (void) enumerateAllUsingBlock: (void (^)(SESourceItem* item, BOOL *stop)) block stop: (BOOL*) stopPtr {
     block(self, stopPtr);
+    
     for (SESourceItem* child in self.children) {
         if (*stopPtr) {
             break;
@@ -80,7 +81,7 @@
         result = UTTypeConformsTo(itemUTI, CFSTR("public.text"));
         CFRelease(itemUTI);
      }
-    return result;
+    return result; // should we cache the result?
 }
 
 - (BOOL) readFromURL: (NSURL*) absoluteURL
@@ -196,8 +197,18 @@
     return [NSString stringWithFormat: @"%@ @ '%@'", [super description], self.absolutePath];
 }
 
-- (NSArray*) sortedItemsWithFileExtension: (NSString*) fileExtension {
+- (NSArray*) sortedItemsWithPathExtension: (NSString*) pathExtension {
+    NSMutableArray* result = [[NSMutableArray alloc] init];
+    [self enumerateAllUsingBlock:^(SESourceItem *item, BOOL *stop) {
+        if ([item.relativePath.pathExtension compare: pathExtension options: NSCaseInsensitiveSearch] == NSOrderedSame) {
+            [result addObject: item];
+        }
+    }];
+    [result sortWithOptions:NSSortConcurrent usingComparator:^NSComparisonResult(id obj1, id obj2) {
+        return [[obj1 relativePath] compare: [obj2 relativePath] options: NSCaseInsensitiveSearch];
+    }];
     
+    return result;
 }
 
 @end
