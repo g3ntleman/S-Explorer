@@ -106,6 +106,10 @@
 //}
 
 
+- (NSFont*) font {
+    return [NSFont fontWithName: @"Menlo" size: 13.0];
+}
+
 - (NSDictionary*) interpreterAttributes {
     
     NSMutableDictionary* interpreterAttributes = [[NSMutableDictionary alloc] init];

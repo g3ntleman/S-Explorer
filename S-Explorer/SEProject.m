@@ -427,8 +427,14 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     SEREPLController* result = self.allREPLControllers[identifier];
     if (! result) {
         result = [[SEREPLController alloc] initWithProject:self identifier:identifier];
-        NSView* contentView = [self.replTabView tabViewItemAtIndex: [self.replTabView indexOfTabViewItemWithIdentifier: identifier]].view;
-        SEREPLView *replView = [contentView.subviews.lastObject documentView];
+        NSTabViewItem* item = [self.replTabView tabViewItemAtIndex: [self.replTabView indexOfTabViewItemWithIdentifier: identifier]];
+        NSView* itemView = item.view;
+        if (! itemView.subviews.count) {
+            // Add a copy from the first item:
+            itemView = [[self.replTabView tabViewItemAtIndex: 0].view mutableCopy];
+            item.view = itemView;
+        }
+        SEREPLView *replView = [itemView.subviews.lastObject documentView];
         result.replView = replView;
         allREPLControllers = [allREPLControllers dictionaryBySettingObject: result forKey: identifier];
     }

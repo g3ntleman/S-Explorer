@@ -91,7 +91,7 @@ static BOOL isPar(unichar aChar) {
         NSString* fileContent = textStorage.string;
         if (! fileContent)
             fileContent = @"";
-        NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [NSFont fontWithName: @"Menlo-Bold" size: 13.0], NSFontAttributeName, nil, nil];
+        NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [NSFont fontWithName: @"Menlo" size: 13.0], NSFontAttributeName, nil, nil];
         [textStorage setAttributes: attributes range: NSMakeRange(0, fileContent.length)];
         
         // Colorize scheme files:
