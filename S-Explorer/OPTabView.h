@@ -12,5 +12,12 @@
 
 @property (strong, nonatomic) NSColor* backgroundColor;
 @property (readonly) NSSegmentedControl* tabButtons;
+@property BOOL drawsBorder; // if set to NO, draws only a line
+
+@end
+
+@interface NSTabView (OPTabView)
+
+- (NSUInteger) indexOfSelectedTabViewItem;
 
 @end

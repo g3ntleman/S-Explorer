@@ -27,7 +27,7 @@ extern NSString* SEProjectDocumentType;
 
 @property (readonly) SESourceItem* projectFolderItem;
 @property (strong, nonatomic) NSDictionary* tabbedSourceItems;
-@property (strong, nonatomic) IBOutlet NSSegmentedControl* sourceTab;
+@property (strong, nonatomic) IBOutlet NSTabView* sourceTabView;
 @property (strong, nonatomic) IBOutlet NSOutlineView* sourceList;
 @property (strong, readonly) NSMutableDictionary* projectSettings;
 @property (strong, readonly) NSMutableDictionary* uiSettings;
@@ -46,7 +46,7 @@ extern NSString* SEProjectDocumentType;
 
 // IBActions:
 
-- (IBAction) selectSourceTab: (id) sender;
+//- (IBAction) selectSourceTab: (id) sender;
 - (IBAction) sourceTableAction: (id) sender;
 - (IBAction) revertCurrentSourceItemToSaved: (id) sender;
 - (IBAction) saveCurrentSourceItem: (id) sender;
