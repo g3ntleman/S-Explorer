@@ -71,6 +71,10 @@
 
 - (BOOL) isTextItem {
     
+    if (isDir) {
+        return NO;
+    }
+    
     BOOL result = YES;
     NSString* extension = path.pathExtension;
     if (extension.length) {

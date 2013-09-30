@@ -53,6 +53,6 @@ extern NSString* SEProjectDocumentType;
 - (IBAction) runProject: (id) sender;
 
 
-- (void) setSourceItem: (SESourceItem*) item forIndex: (NSUInteger) index;
+- (void) setSourceItem: (SESourceItem*) item forTabIndex: (NSUInteger) index;
 
 @end

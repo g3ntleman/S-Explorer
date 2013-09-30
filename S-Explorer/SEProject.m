@@ -66,7 +66,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                 SESourceItem* singleSourceItem = [self.projectFolderItem childItemWithName: [url lastPathComponent]];
                 
                 // Open singleSourceItem in the first Tab:
-                [self setSourceItem: singleSourceItem forIndex: 0];
+                [self setSourceItem: singleSourceItem forTabIndex: 0];
             }
         }
         
@@ -112,16 +112,18 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 
 /**
- * index should be 0..3 while item may be nil to indicate a removal.
+ *  item may be nil to indicate a removal.
  */
-- (void) setSourceItem: (SESourceItem*) item forIndex: (NSUInteger) index {
+- (void) setSourceItem: (SESourceItem*) item forTabIndex: (NSUInteger) index {
     
+    NSParameterAssert([item isTextItem]);
     NSParameterAssert(index<self.sourceTabView.numberOfTabViewItems);
     NSNumber* indexNumber = @(index);
     if (item) {
         NSParameterAssert([item isKindOfClass: [SESourceItem class]]);
 
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryBySettingObject: item forKey: indexNumber];
+        
         self.uiSettings[@"tabbedSources"][indexNumber.stringValue] = item.longRelativePath;
     } else {
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryByRemovingObjectForKey: indexNumber];
@@ -130,6 +132,9 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [self uiSettingsNeedSave];
     
     [self.sourceTabView tabViewItemAtIndex: index].label = item.relativePath;
+    
+    self.editorController.sourceItem = item;
+
     
 //    if (index == sourceTabView.selectedSegment) {
 //        NSUInteger row = [sourceList rowForItem: item];
@@ -166,8 +171,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 - (void) setCurrentSourceItem: (SESourceItem*) sourceItem {
     
-    [self setSourceItem: sourceItem forIndex: [sourceTabView indexOfSelectedTabViewItem]];
-    self.editorController.sourceItem = sourceItem;
+    [self setSourceItem: sourceItem forTabIndex: [sourceTabView indexOfSelectedTabViewItem]];
     
 }
 
@@ -370,16 +374,23 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         if (tabIndex < self.sourceTabView.numberOfTabViewItems) {
             NSString* path = pathsByTabIndex[indexString];
             SESourceItem* itemAtPath = [self.projectFolderItem childWithPath: path];
-        [self setSourceItem: itemAtPath forIndex: [indexString integerValue]];
+            if ([itemAtPath isTextItem]) {
+                [self setSourceItem: itemAtPath forTabIndex: [indexString integerValue]];
+            }
         }
     }
     
     // Restore Source Tab Selection:
     NSString* sourceTabIdentifier = self.uiSettings[@"selectedSourceTab"];
     if (sourceTabIdentifier.length) {
-        NSUInteger index = [self.sourceTabView indexOfTabViewItemWithIdentifier: sourceTabIdentifier];
-        if (index != NSNotFound) {
-            [self.sourceTabView selectTabViewItemAtIndex: index];
+        NSInteger tabNo = [self.sourceTabView indexOfTabViewItemWithIdentifier: sourceTabIdentifier];
+        if (tabNo != NSNotFound) {
+            [self.sourceTabView selectTabViewItemAtIndex: tabNo];
+            NSUInteger itemRow = [self.sourceList rowForItem: self.tabbedSourceItems[@(tabNo)]];
+            if (itemRow != -1) {
+                [self.sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: itemRow]
+                             byExtendingSelection: NO];
+            }
         }
     }
 

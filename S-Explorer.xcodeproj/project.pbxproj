@@ -61,8 +61,6 @@
 /* Begin PBXFileReference section */
 		8D00FA911740D31B00E1AF90 /* NSAlert+OPBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAlert+OPBlocks.h"; sourceTree = "<group>"; };
 		8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAlert+OPBlocks.m"; sourceTree = "<group>"; };
-		8D0904BD1769447100176BCF /* OPTabbedSeqmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OPTabbedSeqmentedControl.h; sourceTree = "<group>"; };
-		8D0904BE1769447100176BCF /* OPTabbedSeqmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPTabbedSeqmentedControl.m; sourceTree = "<group>"; };
 		8D0904C0176A7C4800176BCF /* SESourceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SESourceItem.h; sourceTree = "<group>"; };
 		8D0904C1176A7C4800176BCF /* SESourceItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SESourceItem.m; sourceTree = "<group>"; };
 		8D120D68176D2A3C0019577E /* PSMMetalTabStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = PSMMetalTabStyle.h; sourceTree = "<group>"; };
@@ -249,8 +247,6 @@
 				8D27BFF31766C59C00F1F8FA /* SESchemeParser.m */,
 				8D0904C0176A7C4800176BCF /* SESourceItem.h */,
 				8D0904C1176A7C4800176BCF /* SESourceItem.m */,
-				8D0904BD1769447100176BCF /* OPTabbedSeqmentedControl.h */,
-				8D0904BE1769447100176BCF /* OPTabbedSeqmentedControl.m */,
 				8D120D68176D2A3C0019577E /* PSMMetalTabStyle.h */,
 				8D120D69176D2A3C0019577E /* PSMMetalTabStyle.m */,
 				8D16399A17C6BC1D000DD491 /* SEApplicationDelegate.h */,

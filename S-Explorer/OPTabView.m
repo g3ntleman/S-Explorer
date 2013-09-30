@@ -95,6 +95,9 @@
     }
 }
 
+/**
+ * The segemented control sends this and we are adapting it:
+ */
 - (IBAction) didSelectSegment: (id) sender {
     [self selectTabViewItemAtIndex: [sender selectedSegment]];
 }
@@ -117,7 +120,7 @@
 
 - (void) setTabViewType: (NSTabViewType) aTabViewType {
     [super setTabViewType: NSNoTabsNoBorder];
-    tabViewType = aTabViewType;
+    tabViewType = aTabViewType; // todo: use tabViewType to support bottom tabs.
 }
 
 - (NSTabViewType) tabViewType {
