@@ -100,17 +100,18 @@
 }
 
 - (void) addTabViewItem:(NSTabViewItem *)tabViewItem {
-    [super addTabViewItem: tabViewItem];
-    [self syncTabButtons];
+    [self insertTabViewItem:tabViewItem atIndex: self.numberOfTabViewItems];
 }
 
 - (void) removeTabViewItem:(NSTabViewItem *)tabViewItem {
     [super removeTabViewItem: tabViewItem];
+    [tabViewItem removeObserver:self forKeyPath:@"label"];
     [self syncTabButtons];
 }
 
 - (void) insertTabViewItem:(NSTabViewItem *)tabViewItem atIndex:(NSInteger)index {
     [super insertTabViewItem: tabViewItem atIndex: index];
+    [tabViewItem addObserver: self forKeyPath: @"label" options:0 context:nil];
     [self syncTabButtons];
 }
 
