@@ -381,7 +381,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     }
     
     // Restore Source Tab Selection:
-    NSString* sourceTabIdentifier = self.uiSettings[@"selectedSourceTab"];
+    NSString* sourceTabIdentifier = [self.uiSettings[@"selectedSourceTab"] description];
     if (sourceTabIdentifier.length) {
         NSInteger tabNo = [self.sourceTabView indexOfTabViewItemWithIdentifier: sourceTabIdentifier];
         if (tabNo != NSNotFound) {

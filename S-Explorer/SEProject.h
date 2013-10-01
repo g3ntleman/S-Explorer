@@ -26,7 +26,7 @@ extern NSString* SEProjectDocumentType;
 @property (strong, nonatomic) IBOutlet NSTextField* sourceCellTextField;
 
 @property (readonly) SESourceItem* projectFolderItem;
-@property (strong, nonatomic) NSDictionary* tabbedSourceItems;
+@property (strong, nonatomic) NSDictionary* tabbedSourceItems; // keys are NSNumbers, starting with @(0), values are SESourceItem objects.
 @property (strong, nonatomic) IBOutlet NSTabView* sourceTabView;
 @property (strong, nonatomic) IBOutlet NSOutlineView* sourceList;
 @property (strong, readonly) NSMutableDictionary* projectSettings;

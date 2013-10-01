@@ -84,7 +84,7 @@
 
 - (void) dealloc {
     for (NSTabViewItem* item in self.tabViewItems) {
-        [item removeObserver:self forKeyPath:nil];
+        [item removeObserver:self forKeyPath:@"label"];
     }
 }
 

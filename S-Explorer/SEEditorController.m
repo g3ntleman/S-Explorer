@@ -110,9 +110,10 @@ static BOOL isPar(unichar aChar) {
 
 - (void) awakeFromNib {
     
-//    if (! self.textEditorView.lineNumberView) {
-//        self.textEditorView.lineNumberView = [[NoodleLineNumberView alloc] initWithScrollView: self.textEditorView.enclosingScrollView];
-//    }
+    if (! self.textEditorView.lineNumberView) {
+        self.textEditorView.lineNumberView = [[NoodleLineNumberView alloc] initWithScrollView: self.textEditorView.enclosingScrollView];
+        self.textEditorView.lineNumberView.backgroundColor = self.textEditorView.backgroundColor;
+    }
 }
 
 
