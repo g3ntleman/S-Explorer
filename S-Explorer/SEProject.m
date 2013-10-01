@@ -127,7 +127,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         self.uiSettings[@"tabbedSources"][indexNumber.stringValue] = item.longRelativePath;
     } else {
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryByRemovingObjectForKey: indexNumber];
-        [self.uiSettings[@"tabbedSources"] removeObjectForKey: indexNumber];
+        [self.uiSettings[@"tabbedSources"] removeObjectForKey: indexNumber.stringValue];
     }
     [self uiSettingsNeedSave];
     
@@ -136,11 +136,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     self.editorController.sourceItem = item;
 
     
-//    if (index == sourceTabView.selectedSegment) {
-//        NSUInteger row = [sourceList rowForItem: item];
-//        [sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: row]
-//                byExtendingSelection: NO];
-//    }
+
 }
 
 //- (BOOL) validateMenuItem:(NSMenuItem *)menuItem {
@@ -165,14 +161,15 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 - (SESourceItem*) currentSourceItem {
-    SESourceItem* sourceItem = self.tabbedSourceItems[sourceTabView.selectedTabViewItem.identifier];
+    SESourceItem* sourceItem = self.tabbedSourceItems[@([sourceTabView.tabViewItems indexOfObject: sourceTabView.selectedTabViewItem])];
     return sourceItem;
 }
 
 - (void) setCurrentSourceItem: (SESourceItem*) sourceItem {
     
     [self setSourceItem: sourceItem forTabIndex: [sourceTabView indexOfSelectedTabViewItem]];
-    
+    self.uiSettings[@"selectedSourceTab"] = sourceItem.longRelativePath;
+    [self uiSettingsNeedSave];
 }
 
 - (NSMutableDictionary*) projectSettings {
@@ -283,15 +280,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     }
 }
 
-//- (IBAction) selectSourceTab: (id) sender {
-//    
-//    NSLog(@"selected tab #%lu", sourceTab.selectedSegment);
-//    SESourceItem* sourceItem = self.tabbedSourceItems[@(sourceTab.selectedSegment)];
-//    self.uiSettings[@"selectedSourceTab"] = @(sourceTab.selectedSegment);
-//
-//    [self setCurrentSourceItem: sourceItem];
-//}
-
 
 - (void) checkLibraryAlias {
     
@@ -346,12 +334,19 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     } else if (tabView == self.sourceTabView) {
         NSLog(@"selected tab %@", sourceTabView.selectedTabViewItem);
         SESourceItem* sourceItem = self.tabbedSourceItems[sourceTabView.selectedTabViewItem.identifier];
-        self.uiSettings[@"selectedSourceTab"] = sourceTabView.selectedTabViewItem.identifier;
-        
         [self setCurrentSourceItem: sourceItem];
     }
 }
 
+- (IBAction) revealInSourceList: (id) sender {
+    SESourceItem* currentSourceItem = self.currentSourceItem;
+    // Select itemAtPath in source list:
+    NSUInteger itemRow = [self.sourceList rowForItem: currentSourceItem];
+    if (itemRow != -1) {
+        [self.sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: itemRow]
+                     byExtendingSelection: NO];
+    }
+}
 
 
 - (void) windowControllerDidLoadNib: (NSWindowController*) aController {
@@ -367,7 +362,9 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     [self.sourceList setDraggingSourceOperationMask: NSDragOperationLink forLocal: NO];
 
-    // Restore tabs:
+    // Restore Source Tabs and Selection:
+    NSString* sourceTabIdentifier = [self.uiSettings[@"selectedSourceTab"] description];
+
     NSDictionary* pathsByTabIndex = self.uiSettings[@"tabbedSources"];
     for (NSString* indexString in [pathsByTabIndex allKeys]) {
         NSUInteger tabIndex = [indexString integerValue];
@@ -376,29 +373,27 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             SESourceItem* itemAtPath = [self.projectFolderItem childWithPath: path];
             if ([itemAtPath isTextItem]) {
                 [self setSourceItem: itemAtPath forTabIndex: [indexString integerValue]];
+                
+                if ([sourceTabIdentifier isEqualToString: itemAtPath.longRelativePath]) {
+                    // Select tab #tabIndex:
+                    [self.sourceTabView selectTabViewItemAtIndex: tabIndex];
+                    
+                    [self revealInSourceList: self];
+                }
             }
         }
     }
     
-    // Restore Source Tab Selection:
-    NSString* sourceTabIdentifier = [self.uiSettings[@"selectedSourceTab"] description];
-    if (sourceTabIdentifier.length) {
-        NSInteger tabNo = [self.sourceTabView indexOfTabViewItemWithIdentifier: sourceTabIdentifier];
-        if (tabNo != NSNotFound) {
-            [self.sourceTabView selectTabViewItemAtIndex: tabNo];
-            NSUInteger itemRow = [self.sourceList rowForItem: self.tabbedSourceItems[@(tabNo)]];
-            if (itemRow != -1) {
-                [self.sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: itemRow]
-                             byExtendingSelection: NO];
-            }
-        }
-    }
-
+//    // Make sure the displayed source is selected in source list:
+//    NSUInteger row = [sourceList rowForItem: self.currentSourceItem];
+//    [sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: row]
+//            byExtendingSelection: NO];
+    
+    
     for (NSString* path in self.uiSettings[@"expandedFolders"]) {
         SESourceItem* item = [self.projectFolderItem childWithPath: path];
         [self.sourceList expandItem: item];
     }
-    
 }
 
 + (BOOL) autosavesInPlace {

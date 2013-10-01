@@ -105,7 +105,7 @@ static BOOL isPar(unichar aChar) {
         [textStorage setAttributes: attributes range: NSMakeRange(0, fileContent.length)];
         
         // Colorize scheme files:
-        _colorizeSourceItem = [sourceItem.relativePath.pathExtension isEqualToString: @"scm"];
+        _colorizeSourceItem = [sourceItem.relativePath.pathExtension caseInsensitiveCompare: @"scm"] == NSOrderedSame;
         if (_colorizeSourceItem) {
             // Do the initial colorization:
             [self.textEditorView colorize: self];
