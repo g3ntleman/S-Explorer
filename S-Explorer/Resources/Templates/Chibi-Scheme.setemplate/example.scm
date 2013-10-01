@@ -2,9 +2,9 @@
 
 (import (scheme write) (scheme read))
 
-(define prompt-read (lambda (Prompt)
-   (display Prompt)
-   (read)))
+;(define prompt-read (lambda (Prompt)
+;   (display Prompt)
+;   (read)))
 
 (define checkbook (lambda ()
 
@@ -20,11 +20,9 @@
             (AT "Enter transaction (- for withdrawal): ")
             (FB "Your final balance is: ")
 
-            ; This function displays a prompt then returns
-            ; a value read.
-
+            ; Define a function that displays a prompt then returns
+            ; the value read:
             (prompt-read (lambda (Prompt)
-
                   (display Prompt)
                   (read)))
 
@@ -32,19 +30,23 @@
             ; balance given an initial balance init and
             ; a new value t.  Termination occurs when the
             ; new value is 0.
-
-            (newbal (lambda (Init t)
+            (newbal (lambda (init t)
                   (if (= t 0)
-                      (list FB Init)
-                      (transaction (+ Init t)))))
+                      (begin
+                        (display FB)
+                        (display init)
+                        (newline))
+                      (transaction (+ init t)))))
 
             ; This function prompts for and reads the next
             ; transaction and passes the information to newbal
 
-            (transaction (lambda (Init)
-                      (newbal Init (prompt-read AT)))))
+            (transaction (lambda (init)
+                      (newbal init (prompt-read AT)))))
 
 ; This is the body of checkbook;  it prompts for the
 ; starting balance
 
-  (transaction (prompt-read IB)))))
+(transaction (prompt-read IB)))))
+
+(checkbook)
