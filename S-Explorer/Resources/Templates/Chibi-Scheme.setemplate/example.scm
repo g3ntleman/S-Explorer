@@ -2,6 +2,10 @@
 
 (import (scheme write) (scheme read))
 
+; This is a fixed version of a scheme example 
+; by A. Aaby <aabyan@wwc.edu> available at
+; http://www.cefns.nau.edu/~edo/Classes/CS396_WWW/Misc_docs/Scheme%20Tutorial.html
+
 ;(define prompt-read (lambda (Prompt)
 ;   (display Prompt)
 ;   (read)))
@@ -39,14 +43,13 @@
                       (transaction (+ init t)))))
 
             ; This function prompts for and reads the next
-            ; transaction and passes the information to newbal
-
+            ; transaction and passes the information to newbal:
             (transaction (lambda (init)
                       (newbal init (prompt-read AT)))))
 
 ; This is the body of checkbook;  it prompts for the
-; starting balance
-
+; starting balance:
 (transaction (prompt-read IB)))))
 
+; Run the program:
 (checkbook)
