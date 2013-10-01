@@ -7,10 +7,10 @@
 
 @interface PseudoTTY : NSObject
 
+@property (readonly) NSFileHandle* masterFileHandle;
+@property (readonly) NSFileHandle* slaveFileHandle;
+@property (readonly) NSString* name;
 
--(id)init;
--(NSString *)name;
--(NSFileHandle *)masterFileHandle;
--(NSFileHandle *)slaveFileHandle;
+-(id)init; // designated initializer
 
 @end

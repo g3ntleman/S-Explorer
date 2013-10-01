@@ -7,23 +7,24 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-@implementation PseudoTTY {
-    NSString * name;
-    NSFileHandle * masterFH;
-    NSFileHandle * slaveFH;
-}
+@implementation PseudoTTY
 
--(id) init {
+@synthesize name;
+@synthesize slaveFileHandle;
+@synthesize masterFileHandle;
+
+-(id)init {
     if (self = [super init]) {
         int masterfd, slavefd;
-        char devname[64];
+        char devname[1024];
         if (openpty(&masterfd, &slavefd, devname, NULL, NULL) == -1) {
             [NSException raise:@"OpenPtyErrorException"
                         format:@"%s", strerror(errno)];
         }
+        devname[1023] = 0; // last resort terminate
         name = [[NSString alloc] initWithCString:devname encoding: NSASCIIStringEncoding];
-        slaveFH = [[NSFileHandle alloc] initWithFileDescriptor:slavefd];
-        masterFH = [[NSFileHandle alloc] initWithFileDescriptor:masterfd
+        slaveFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:slavefd];
+        masterFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:masterfd
                                                   closeOnDealloc:YES];
 
 	if (setsid() < 0)
@@ -35,25 +36,13 @@
     return self;
 }
 
--(NSString *)name {
-    return name;
-}
-
--(NSFileHandle *)masterFileHandle {
-    return masterFH;
-}
-
--(NSFileHandle *)slaveFileHandle {
-   return slaveFH;
-}
-
-- (NSString*) description {
+- (NSString*)debugDescription {
     return [NSString stringWithFormat: @"%@ %@", [super description], self.name];
 }
 
-- (void) dealloc {
-    masterFH = nil;
-    slaveFH = nil;
+- (void)dealloc {
+    masterFileHandle = nil;
+    slaveFileHandle = nil;
 }
 
 @end
