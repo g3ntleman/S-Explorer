@@ -72,7 +72,11 @@ static BOOL isPar(unichar aChar) {
 
 @end
 
+@interface SEEditorController ()
 
+@property(readonly) BOOL colorizeSourceItem;
+
+@end
 
 
 @implementation SEEditorController {
@@ -84,11 +88,13 @@ static BOOL isPar(unichar aChar) {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
 }
 
+
+
 - (void) setSourceItem: (SESourceItem*) sourceItem {
     if (_sourceItem != sourceItem) {
         _sourceItem = sourceItem;
         [self.textEditorView.layoutManager replaceTextStorage: sourceItem.content];
-        [self.textEditorView.lineNumberView updateObservedTextStorage]; // found no better place to put it. :-/
+        [self.textEditorView.lineNumberView updateObservedTextStorage]; // found no better place to put this. :-/
         
         NSTextStorage* textStorage = sourceItem.content;
         
@@ -99,7 +105,9 @@ static BOOL isPar(unichar aChar) {
         [textStorage setAttributes: attributes range: NSMakeRange(0, fileContent.length)];
         
         // Colorize scheme files:
-        if ([sourceItem.relativePath.pathExtension isEqualToString: @"scm"]) {
+        _colorizeSourceItem = [sourceItem.relativePath.pathExtension isEqualToString: @"scm"];
+        if (_colorizeSourceItem) {
+            // Do the initial colorization:
             [self.textEditorView colorize: self];
         }
 
@@ -362,7 +370,10 @@ static BOOL isPar(unichar aChar) {
 
 + (void) recolorTextNotification: (NSNotification*) notification {
     NSLog(@"recolorTextNotification.");
-    [[notification.object textEditorView] colorize: nil];
+    SEEditorController* editorController = notification.object;
+    if (editorController.colorizeSourceItem) {
+        [[notification.object textEditorView] colorize: nil];
+    }
 }
 
 - (void) textDidChange: (NSNotification*) notification {
