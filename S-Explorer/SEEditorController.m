@@ -80,6 +80,10 @@ static BOOL isPar(unichar aChar) {
 }
 
 
+- (void) dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
+}
+
 - (void) setSourceItem: (SESourceItem*) sourceItem {
     if (_sourceItem != sourceItem) {
         _sourceItem = sourceItem;
