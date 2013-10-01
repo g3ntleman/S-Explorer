@@ -94,10 +94,11 @@
     [panel beginSheetModalForWindow: nil completionHandler: ^(NSInteger result){
         if (result == NSFileHandlingPanelOKButton) {
             NSURL* projectURL = [panel URL];
+            NSString* templateName = [[templateButton selectedItem] title];
             NSError* error = nil;
             
             NSLog(@"User choose folder %@", projectURL);
-            NSLog(@"User choose template %@", [[templateButton selectedItem] title]);
+            NSLog(@"User choose template %@", templateName);
             
             NSFileManager *fm = [NSFileManager defaultManager];
             if (! [fm fileExistsAtPath: [projectURL path] isDirectory: NULL]) {
@@ -106,8 +107,15 @@
             NSString* templatePath = [[templateButton selectedItem] representedObject];
             // Copy content of templatePath to projectFolder:
             for (NSString* sourceFile in [fm contentsOfDirectoryAtPath: templatePath error:&error]) {
-                NSURL* sourceURL = [NSURL fileURLWithPathComponents:@[templatePath, sourceFile] ];
+                NSURL* sourceURL = [NSURL fileURLWithPathComponents:@[templatePath, sourceFile]];
+                // Most files are just copied over:
+                NSString* targetFile = sourceFile;
+                // Any project file is changed to pathname
+                if ([sourceFile.pathExtension isEqualToString: @"seproj"]) {
+                    targetFile = [[projectURL lastPathComponent] stringByAppendingPathExtension:@"seproj"];
+                }
                 NSURL* targetURL = [projectURL URLByAppendingPathComponent: sourceFile];
+                
                 [fm copyItemAtURL: sourceURL toURL: targetURL error: &error];
                 if (error) {
                     NSLog(@"Error copying %@ to %@: %@", sourceFile, projectURL, error);

@@ -18,5 +18,12 @@
     [[NSWorkspace sharedWorkspace] openURL: [NSURL URLWithString: @"http://www.scheme.com/tspl3/"]];
 }
 
+- (IBAction) openSchemeOverview: (id) sender {
+    [[NSWorkspace sharedWorkspace] openURL: [[NSBundle mainBundle] URLForResource: @"r7rs-overview" withExtension:@"pdf"]];
+}
+
+- (IBAction) openSchemeStandard: (id) sender {
+    [[NSWorkspace sharedWorkspace] openURL: [[NSBundle mainBundle] URLForResource: @"r7rs-standard" withExtension:@"pdf"]];
+}
 
 @end

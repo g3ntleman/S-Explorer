@@ -44,7 +44,7 @@
 		8DCBE48F17C9B4CD00A872A7 /* scheme-indexer.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8DCBE48E17C9B4CD00A872A7 /* scheme-indexer.scm */; };
 		8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */; };
 		8DE762FD17FB669800CD0A42 /* r7rs-overview.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8DE762FC17FB669800CD0A42 /* r7rs-overview.pdf */; };
-		8DE762FF17FB66A900CD0A42 /* r7rs-draft-9.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8DE762FE17FB66A900CD0A42 /* r7rs-draft-9.pdf */; };
+		8DE762FF17FB66A900CD0A42 /* r7rs-standard.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8DE762FE17FB66A900CD0A42 /* r7rs-standard.pdf */; };
 		8DEB1AA217CF7BEC0088C7C1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8DEB1AA117CF7BEC0088C7C1 /* README.md */; };
 		8DEE2AC717D434EE005BEDD0 /* SEDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE2AC517D434EE005BEDD0 /* SEDocumentController.m */; };
 		8DF3C39617CFA3D200C75197 /* OPUtilityFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DF3C39517CFA3D200C75197 /* OPUtilityFunctions.m */; };
@@ -88,7 +88,7 @@
 		8D2AAB6E177A93EB008F07C4 /* MarkerLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerLineNumberView.m; sourceTree = "<group>"; };
 		8D4DF7E417F4587F00BC0773 /* OPCharFilterFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = OPCharFilterFormatter.h; sourceTree = "<group>"; };
 		8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPCharFilterFormatter.m; sourceTree = "<group>"; };
-		8D4DF83217F5AAF600BC0773 /* chibi-repl-server.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "chibi-repl-server.scm"; sourceTree = "<group>"; };
+		8D4DF83217F5AAF600BC0773 /* chibi-repl-server.scm */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; fileEncoding = 4; path = "chibi-repl-server.scm"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.javascript; };
 		8D59F73317F130F6001CEAE4 /* repl-server.scm */ = {isa = PBXFileReference; lastKnownFileType = text; path = "repl-server.scm"; sourceTree = "<group>"; };
 		8D5DD11717F6D13800E352FE /* NSView+OPCopying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView+OPCopying.h"; sourceTree = "<group>"; };
 		8D5DD11817F6D13800E352FE /* NSView+OPCopying.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSView+OPCopying.m"; sourceTree = "<group>"; };
@@ -128,7 +128,7 @@
 		8DCBE8AB176F7918004B6AA2 /* NSDictionary+OPImmutablility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = "NSDictionary+OPImmutablility.h"; sourceTree = "<group>"; };
 		8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+OPImmutablility.m"; sourceTree = "<group>"; };
 		8DE762FC17FB669800CD0A42 /* r7rs-overview.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "r7rs-overview.pdf"; sourceTree = "<group>"; };
-		8DE762FE17FB66A900CD0A42 /* r7rs-draft-9.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "r7rs-draft-9.pdf"; sourceTree = "<group>"; };
+		8DE762FE17FB66A900CD0A42 /* r7rs-standard.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "r7rs-standard.pdf"; sourceTree = "<group>"; };
 		8DEB1AA117CF7BEC0088C7C1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = "S-Explorer/README.md"; sourceTree = "<group>"; };
 		8DEE2AC417D434EE005BEDD0 /* SEDocumentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = SEDocumentController.h; sourceTree = "<group>"; };
 		8DEE2AC517D434EE005BEDD0 /* SEDocumentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEDocumentController.m; sourceTree = "<group>"; };
@@ -232,6 +232,8 @@
 				8D8F9AFA17EBEF8300299D24 /* Resources */,
 				8DCBE48A17C76DDF00A872A7 /* Helpers */,
 				8D16399D17C6BC51000DD491 /* NoodleLineNumberView */,
+				8D16399A17C6BC1D000DD491 /* SEApplicationDelegate.h */,
+				8D16399B17C6BC1D000DD491 /* SEApplicationDelegate.m */,
 				8D604261173BE60800149409 /* MainMenu.xib */,
 				8D8298D31758088000336E2F /* S-Explorer-support.scm */,
 				8D4DF83217F5AAF600BC0773 /* chibi-repl-server.scm */,
@@ -253,8 +255,6 @@
 				8D0904C1176A7C4800176BCF /* SESourceItem.m */,
 				8D120D68176D2A3C0019577E /* PSMMetalTabStyle.h */,
 				8D120D69176D2A3C0019577E /* PSMMetalTabStyle.m */,
-				8D16399A17C6BC1D000DD491 /* SEApplicationDelegate.h */,
-				8D16399B17C6BC1D000DD491 /* SEApplicationDelegate.m */,
 				8DCBE48E17C9B4CD00A872A7 /* scheme-indexer.scm */,
 				8DEE2AC417D434EE005BEDD0 /* SEDocumentController.h */,
 				8DEE2AC517D434EE005BEDD0 /* SEDocumentController.m */,
@@ -281,7 +281,7 @@
 			isa = PBXGroup;
 			children = (
 				8DE762FC17FB669800CD0A42 /* r7rs-overview.pdf */,
-				8DE762FE17FB66A900CD0A42 /* r7rs-draft-9.pdf */,
+				8DE762FE17FB66A900CD0A42 /* r7rs-standard.pdf */,
 				8D60FFE417EC58B600F14B50 /* Templates */,
 			);
 			name = Resources;
@@ -404,7 +404,7 @@
 				8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */,
 				8D16399817C57FAE000DD491 /* S-Explorer.iconset in Resources */,
 				8DCBE48F17C9B4CD00A872A7 /* scheme-indexer.scm in Resources */,
-				8DE762FF17FB66A900CD0A42 /* r7rs-draft-9.pdf in Resources */,
+				8DE762FF17FB66A900CD0A42 /* r7rs-standard.pdf in Resources */,
 				8D4DF83317F5AAF600BC0773 /* chibi-repl-server.scm in Resources */,
 				8DEB1AA217CF7BEC0088C7C1 /* README.md in Resources */,
 			);

@@ -319,7 +319,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [self.topREPLController run: sender];
 }
 
-- (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem {
+- (void) tabView: (NSTabView*) tabView didSelectTabViewItem: (NSTabViewItem*) tabViewItem {
     
     if (tabView == self.replTabView) {
         if (! self.topREPLController.isRunning) {

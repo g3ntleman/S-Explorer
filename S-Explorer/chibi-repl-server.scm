@@ -1,16 +1,18 @@
+#! /usr/bin/env chibi-scheme -xscheme.base
+
 
 ;; Simple R7RS repl server, using (srfi 18) threads and the
 ;; run-net-server utility from (chibi net server).
 
 (import (scheme base)
     (scheme write) 
-    (srfi 18) 
-    (srfi 38) 
+    (srfi 38)
+    (scheme process-context)
     (scheme repl)
     (chibi net server) 
     (scheme eval))
 
-;; evaluate all input from line-port and write the result to output port out.
+;; evaluate the input from line-port and write the result to output port out.
 (define (repl-handler in out sock addr)
   (let ((line (read-line in)))
     (cond
@@ -23,5 +25,8 @@
         (newline out)
         (flush-output-port out))))))
 
+
+(display (command-line))
+(newline)
 ;; Start the server on localhost:5556 dispatching clients to repl-handler.
 (run-net-server 5556 repl-handler)
