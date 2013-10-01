@@ -290,6 +290,7 @@ static NSData* lineFeedData = nil;
     [_task setStandardError: tty.slaveFileHandle];
     _task.arguments = self.commandArguments;
     _task.launchPath = self.commandString;
+    _task.currentDirectoryPath = self.workingDirectory;
     
     NSDictionary *defaultEnvironment = [[NSProcessInfo processInfo] environment];
     NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary:defaultEnvironment];
