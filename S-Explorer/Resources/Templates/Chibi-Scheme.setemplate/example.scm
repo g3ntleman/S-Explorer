@@ -1,5 +1,11 @@
 #! /usr/bin/env chibi-scheme
 
+(import (scheme write) (scheme read))
+
+(define prompt-read (lambda (Prompt)
+   (display Prompt)
+   (read)))
+
 (define checkbook (lambda ()
 
 ; This check book balancing program was written to illustrate

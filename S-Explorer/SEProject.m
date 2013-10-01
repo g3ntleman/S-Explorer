@@ -268,6 +268,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 
 - (void) awakeFromNib {
+    self.sourceList.doubleAction = @selector(sourceTableDoubleAction:);
 }
 
 
@@ -278,6 +279,12 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     if (selectedSourceItem.isTextItem) {
         [self setCurrentSourceItem: selectedSourceItem];
     }
+}
+
+- (IBAction)sourceTableDoubleAction: (id) sender {
+    NSLog(@"sourceTableDoubleAction.");
+    [self sourceTableAction: sender];
+    [self.sourceList.window makeFirstResponder: self.editorController.textEditorView];
 }
 
 
