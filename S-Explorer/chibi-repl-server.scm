@@ -1,4 +1,4 @@
-#! /usr/bin/env chibi-scheme -xscheme.base
+#! /usr/bin/env chibi-scheme
 
 
 ;; Simple R7RS repl server, using (srfi 18) threads and the
