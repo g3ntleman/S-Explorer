@@ -104,8 +104,12 @@
 		<dict>
 			<key>LibraryDirectory</key>
 			<string></string>
-			<key>REPLCommandline</key>
-			<string>chibi-scheme -xscheme.base</string>
+			<key>RuntimeTool</key>
+			<string>/usr/local/bin/chibi-scheme</string>
+			<key>RuntimeArguments</key>
+			<array>
+				<string>-xscheme.base</string>
+			</array>
 			<key>WelcomeMessage</key>
 			<string>Welcome to Chibi Scheme!</string>
 		</dict>

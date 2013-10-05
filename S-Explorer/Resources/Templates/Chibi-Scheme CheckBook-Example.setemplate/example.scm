@@ -53,4 +53,3 @@
 (transaction (prompt-read IB)))))
 
 ; Run the program:
-(checkbook)

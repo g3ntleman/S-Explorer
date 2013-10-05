@@ -324,8 +324,31 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     if (tabView == self.replTabView) {
         if (! self.topREPLController.isRunning) {
             NSError* error = nil;
-            [self.topREPLController setCommand: @"/usr/local/bin/chibi-scheme"
-                                 withArguments: @[]
+            NSMutableArray* arguments = [self.languageDictionary[@"RuntimeArguments"] mutableCopy];
+            if (! arguments) {
+                arguments = [[NSMutableArray alloc] init];
+            }
+            
+            NSString* sourceFile = self.topREPLSettings[@"StartupSource"];
+            if (sourceFile.length) {
+                [arguments addObject: [NSString stringWithFormat: @"-l%@", sourceFile]];
+            }
+            
+            NSString* expression = self.topREPLSettings[@"StartupExpression"];
+            if (expression.length) {
+                [arguments addObject: [NSString stringWithFormat: @"-e%@", expression]];
+            }
+            
+            NSString* tool = self.languageDictionary[@"RuntimeTool"];
+//            if (tool.length) {
+//                if (! [tool hasPrefix: @"/"]) {
+//                    [arguments insertObject: tool atIndex: 0];
+//                    tool = @"/usr/bin/env";
+//                }
+//            }
+
+            [self.topREPLController setCommand: tool
+                                 withArguments: arguments
                               workingDirectory: self.projectFolderItem.absolutePath
                                       greeting: self.languageDictionary[@"WelcomeMessage"]
                                          error: &error];

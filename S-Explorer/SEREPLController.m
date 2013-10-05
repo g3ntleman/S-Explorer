@@ -73,22 +73,27 @@ static NSData* lineFeedData = nil;
     NSFileHandle* filehandle = n.object;
     //NSData* data = filehandle.availableData;
     NSData* data = n.userInfo[NSFileHandleNotificationDataItem];
-    NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
     
-    
-    [self.replView appendInterpreterString: string];
-    
-    NSString* outputString = self.replView.string;
-    NSRange outputRange = NSMakeRange(currentOutputStart, outputString.length-currentOutputStart);
-    
-    //NSLog(@"Colorizing '%@' ", [outputString substringWithRange: outputRange]);
-    
-    [self.replView colorizeRange: outputRange];
-    
-    [self.replView moveToEndOfDocument: self];
-
-    
-    [filehandle readInBackgroundAndNotify];
+    if (data.length) {
+        NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
+        
+        [self.replView appendInterpreterString: string];
+        
+        NSString* outputString = self.replView.string;
+        NSRange outputRange = NSMakeRange(currentOutputStart, outputString.length-currentOutputStart);
+        
+        //NSLog(@"Colorizing '%@' ", [outputString substringWithRange: outputRange]);
+        
+        [self.replView colorizeRange: outputRange];
+        
+        [self.replView moveToEndOfDocument: self];
+        
+        
+        [filehandle readInBackgroundAndNotify];
+    } else {
+        NSString* string = [NSString stringWithFormat: @"\n--> Process exited with exit code %d\n", self.task.terminationStatus];
+        [self.replView appendInterpreterString: string];
+    }
 }
 
 - (void) evaluateString: (NSString*) commandString {
@@ -140,6 +145,11 @@ static NSData* lineFeedData = nil;
 }
 
 - (BOOL) sendCurrentCommand {
+    
+    if (! self.task.isRunning) {
+        NSBeep();
+        return NO;
+    }
     
     NSRange commandRange = self.replView.commandRange;
     if (commandRange.length) {
@@ -251,6 +261,10 @@ static NSData* lineFeedData = nil;
     previousCommandHistoryIndex = self.commandHistory.count-1;
 }
 
+- (BOOL)textView:(NSTextView *)textView shouldChangeTextInRanges:(NSArray *)affectedRanges replacementStrings:(NSArray *)replacementStrings {
+    return self.task.isRunning;
+}
+
 
 
 - (IBAction) stop: (id) sender {
@@ -317,6 +331,7 @@ static NSData* lineFeedData = nil;
     //    };
     
     [_task launch];
+    [tty.slaveFileHandle closeFile];
 }
 
 - (BOOL) isRunning {

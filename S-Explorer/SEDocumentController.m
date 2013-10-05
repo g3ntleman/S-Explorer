@@ -114,7 +114,7 @@
                 if ([sourceFile.pathExtension isEqualToString: @"seproj"]) {
                     targetFile = [[projectURL lastPathComponent] stringByAppendingPathExtension:@"seproj"];
                 }
-                NSURL* targetURL = [projectURL URLByAppendingPathComponent: sourceFile];
+                NSURL* targetURL = [projectURL URLByAppendingPathComponent: targetFile];
                 
                 [fm copyItemAtURL: sourceURL toURL: targetURL error: &error];
                 if (error) {
