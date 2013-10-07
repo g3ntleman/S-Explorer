@@ -76,7 +76,7 @@
             // parse line comment:
             result.token = COMMENT;
             result.range.location = position-1;
-            do c = [self getc]; while (c != '\n' && c != (unichar)EOF);
+            do c = [self getc]; while (c != '\n' && c);
             result.range.length = position - result.range.location-1;
             return result;
         }
@@ -114,7 +114,7 @@
             
             do {
                 c = [self getc];
-            } while (c != 0 && !isspace(c) && c != '(' && c != ')' && c != ';');
+            } while (c && !isspace(c) && c != '(' && c != ')' && c != ';');
                 
             if (c) position -= 1;
             result.range.length = position-result.range.location;
