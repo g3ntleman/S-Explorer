@@ -248,6 +248,8 @@ static NSData* lineFeedData = nil;
         
         //NSLog(@"History: %@, prev index %ld", self.commandHistory, previousCommandHistoryIndex);
         
+        [self.replView moveToEndOfDocument: self];
+        
         return;
     }
     [self.replView moveUp: sender];
