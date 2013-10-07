@@ -24,6 +24,7 @@
 
 - (void) colorizeRange: (NSRange) aRange;
 
+- (IBAction) toggleComments: (id) sender; // implemented by the delegate
 
 - (NSRange) selectLineNumber: (NSUInteger) line;
 

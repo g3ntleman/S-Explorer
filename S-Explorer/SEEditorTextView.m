@@ -278,7 +278,11 @@ static NSCharacterSet* SEWordCharacters() {
     [scrollView setRulersVisible: lineNumberView != nil];
 }
 
-
+- (IBAction) toggleComments: (id) sender {
+    if ([self.delegate respondsToSelector:_cmd]) {
+        [[NSApplication sharedApplication] sendAction:_cmd to:self.delegate from:sender];
+    }
+}
 
 - (IBAction) selectSpecificLine: (id) sender {
     

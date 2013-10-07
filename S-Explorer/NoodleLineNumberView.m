@@ -164,7 +164,7 @@
         count = [_lineIndices count];
 
         charIndex = 0;
-        lineIndex = [self lineNumberForCharacterIndex:_invalidCharacterIndex inText:text];
+        lineIndex = [self lineNumberForCharacterIndex:_invalidCharacterIndex];
         if (count > 0)
         {
             charIndex = [[_lineIndices objectAtIndex:lineIndex] unsignedIntegerValue];
@@ -218,7 +218,10 @@
 	}
 }
 
-- (NSUInteger)lineNumberForCharacterIndex:(NSUInteger)charIndex inText:(NSString *)text
+/**
+  * The Result is Zero-based!
+ **/
+- (NSUInteger)lineNumberForCharacterIndex:(NSUInteger)charIndex 
 {
     NSUInteger			left, right, mid, lineStart;
 	NSMutableArray		*lines;
@@ -383,7 +386,7 @@
         
         count = [lines count];
         
-        for (line = [self lineNumberForCharacterIndex:range.location inText:text]; line < count; line++)
+        for (line = [self lineNumberForCharacterIndex:range.location]; line < count; line++)
         {
             index = [[lines objectAtIndex:line] unsignedIntegerValue];
             

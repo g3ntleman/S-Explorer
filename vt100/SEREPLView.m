@@ -228,7 +228,6 @@
     
     self.string = @"";
     commandLocation = 0;
-    
 }
 
 @end

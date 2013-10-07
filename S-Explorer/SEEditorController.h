@@ -23,4 +23,6 @@
 
 - (NSRange) topLevelExpressionContainingLocation: (NSUInteger) location;
 
+- (IBAction) toggleComments: (id) sender;
+
 @end

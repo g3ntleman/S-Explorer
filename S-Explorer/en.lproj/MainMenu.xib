@@ -397,6 +397,15 @@
 									<reference key="NSOnImage" ref="1033313550"/>
 									<reference key="NSMixedImage" ref="310636482"/>
 								</object>
+								<object class="NSMenuItem" id="795963937">
+									<reference key="NSMenu" ref="789758025"/>
+									<string key="NSTitle">Toggle Comments</string>
+									<string key="NSKeyEquiv">/</string>
+									<int key="NSKeyEquivModMask">1048576</int>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="1033313550"/>
+									<reference key="NSMixedImage" ref="310636482"/>
+								</object>
 								<object class="NSMenuItem" id="259596473">
 									<reference key="NSMenu" ref="789758025"/>
 									<bool key="NSIsDisabled">YES</bool>
@@ -1090,6 +1099,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleComments:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="795963937"/>
+					</object>
+					<string key="id">Ndr-ke-a0y</string>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">openSchemeTutorial:</string>
 						<reference key="source" ref="471048480"/>
 						<reference key="destination" ref="253952766"/>
@@ -1268,6 +1285,7 @@
 							<reference ref="791666390"/>
 							<reference ref="259596473"/>
 							<reference ref="911869144"/>
+							<reference ref="795963937"/>
 						</array>
 						<reference key="parent" ref="952259628"/>
 					</object>
@@ -1654,6 +1672,11 @@
 						<reference key="object" ref="802338734"/>
 						<reference key="parent" ref="388842427"/>
 					</object>
+					<object class="IBObjectRecord">
+						<string key="id">NOg-B2-ltq</string>
+						<reference key="object" ref="795963937"/>
+						<reference key="parent" ref="789758025"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -1742,6 +1765,7 @@
 				<string key="83.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="L8K-BV-PeY.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="NOg-B2-ltq.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
@@ -1920,6 +1944,7 @@
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="expandSelection:">id</string>
 						<string key="insertNewline:">id</string>
+						<string key="toggleComments:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="expandSelection:">
@@ -1928,6 +1953,10 @@
 						</object>
 						<object class="IBActionInfo" key="insertNewline:">
 							<string key="name">insertNewline:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleComments:">
+							<string key="name">toggleComments:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>
@@ -1957,6 +1986,7 @@
 						<string key="indentSelectedLines:">id</string>
 						<string key="insertTab:">id</string>
 						<string key="selectSpecificLine:">id</string>
+						<string key="toggleComments:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="colorize:">
@@ -1981,6 +2011,10 @@
 						</object>
 						<object class="IBActionInfo" key="selectSpecificLine:">
 							<string key="name">selectSpecificLine:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleComments:">
+							<string key="name">toggleComments:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>

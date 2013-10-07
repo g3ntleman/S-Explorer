@@ -325,7 +325,7 @@ static NSData* lineFeedData = nil;
     
     NSDictionary *defaultEnvironment = [[NSProcessInfo processInfo] environment];
     NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary:defaultEnvironment];
-    [environment setObject: @"YES" forKey: @"NSUnbufferedIO"];
+    //[environment setObject: @"YES" forKey: @"NSUnbufferedIO"];
     [environment setObject: @"en_US-iso8859-1" forKey: @"LANG"];
     
     [_task setEnvironment: environment];

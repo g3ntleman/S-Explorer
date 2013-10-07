@@ -512,5 +512,20 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     self.textEditorView.selectedRange = newRange;
 }
 
+
+- (IBAction) toggleComments: (id) sender {
+    
+    NoodleLineNumberView* lineNumberView = self.textEditorView.lineNumberView;
+    //NSString* text = self.textEditorView.textStorage.string;
+    NSRange selectedRange = self.textEditorView.selectedRange;
+    NSUInteger firstLine = [lineNumberView lineNumberForCharacterIndex: selectedRange.location];
+    NSUInteger lastLine = [lineNumberView lineNumberForCharacterIndex: NSMaxRange(selectedRange)];
+    for (NSUInteger currentLine = firstLine; currentLine<=lastLine; currentLine++) {
+        NSRange lineRange = [lineNumberView rangeOfLine: currentLine];
+    }
+
+    NSLog(@"Commenting lines %lu-%lu.", (unsigned long)firstLine, (unsigned long)lastLine);
+}
+
 @end
 
