@@ -263,9 +263,14 @@ static NSData* lineFeedData = nil;
     previousCommandHistoryIndex = self.commandHistory.count-1;
 }
 
-- (BOOL)textView:(NSTextView *)textView shouldChangeTextInRanges:(NSArray *)affectedRanges replacementStrings:(NSArray *)replacementStrings {
-    return self.task.isRunning;
-}
+//- (BOOL) textView: (NSTextView*) textView shouldChangeTextInRanges: (NSArray*) affectedRanges replacementStrings: (NSArray*) replacementStrings {
+//    
+//    if (self.task.isRunning) {
+//        return YES;
+//    }
+//    NSBeep();
+//    return NO;
+//}
 
 
 
@@ -295,6 +300,8 @@ static NSData* lineFeedData = nil;
         [self.replView appendInterpreterString: @"\n\n"];
     }
     [self.replView moveToEndOfDocument: self];
+    
+    [self.replView setEditable: YES];
     
     _task = [[NSTask alloc] init];
     tty = [[PseudoTTY alloc] init];
@@ -326,17 +333,14 @@ static NSData* lineFeedData = nil;
                                                  name:  NSFileHandleReadCompletionNotification
                                                object: tty.masterFileHandle];
     
-    
     [tty.masterFileHandle readInBackgroundAndNotify];
     
-    [self evaluateString: self.settings[SEMainFunctionKey]];
-    //[_task.standardError readInBackgroundAndNotify];
+    //[self evaluateString: self.settings[SEMainFunctionKey]];
     
-    //    _task.terminationHandler =  ^void (NSTask* task) {
-    //        if (task == _task) {
-    //            _task = nil;
-    //        }
-    //    };
+    NSTextView* theReplView = self.replView;
+    _task.terminationHandler =  ^void (NSTask* task) {
+        [theReplView setEditable: NO];
+    };
     
     NSLog(@"Launching '%@' with %@", _task.launchPath, _task.arguments);
     
