@@ -316,27 +316,25 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 - (IBAction) runProject: (id) sender {
-    [self.topREPLController run: sender];
+    [self.topREPLController startREPLAndLaunchTarget: sender];
 }
 
 - (void) tabView: (NSTabView*) tabView didSelectTabViewItem: (NSTabViewItem*) tabViewItem {
     
     if (tabView == self.replTabView) {
-        if (! self.topREPLController.isRunning) {
+        if (! self.topREPLController.task.isRunning) {
             NSError* error = nil;
-            NSMutableArray* arguments = [self.languageDictionary[@"RuntimeArguments"] mutableCopy];
-            if (! arguments) {
-                arguments = [[NSMutableArray alloc] init];
-            }
+            NSArray* arguments = self.languageDictionary[@"RuntimeArguments"];
+            NSMutableArray* launchArguments = [[NSMutableArray alloc] init];
             
             NSString* sourceFile = self.topREPLSettings[@"StartupSource"];
             if (sourceFile.length) {
-                [arguments addObject: [NSString stringWithFormat: @"-l%@", sourceFile]];
+                [launchArguments addObject: [NSString stringWithFormat: @"-l%@", sourceFile]];
             }
             
             NSString* expression = self.topREPLSettings[@"StartupExpression"];
             if (expression.length) {
-                [arguments addObject: [NSString stringWithFormat: @"-e%@", expression]];
+                [launchArguments addObject: [NSString stringWithFormat: @"-e%@", expression]];
             }
             
             NSString* tool = self.languageDictionary[@"RuntimeTool"];
@@ -349,11 +347,12 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
             [self.topREPLController setCommand: tool
                                  withArguments: arguments
+                               launchArguments: launchArguments
                               workingDirectory: self.projectFolderItem.absolutePath
                                       greeting: self.languageDictionary[@"WelcomeMessage"]
                                          error: &error];
             
-            [self.topREPLController run: self];
+            [self.topREPLController startREPL: self];
             
             if (error) {
                 [[NSAlert alertWithError: error] runWithCompletion:^(NSInteger buttonIndex) {

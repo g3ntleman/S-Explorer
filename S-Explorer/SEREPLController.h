@@ -19,6 +19,7 @@
 @property (nonatomic, strong) NSTask* task;
 @property (nonatomic, strong, readonly) NSString* commandString;
 @property (nonatomic, strong, readonly) NSArray* commandArguments;
+@property (nonatomic, strong, readonly) NSArray* launchArguments;
 @property (nonatomic, strong, readonly) NSString* greeting;
 @property (nonatomic, strong, readonly) NSString* workingDirectory;
 
@@ -31,14 +32,16 @@
 
 - (void) setCommand: (NSString*) command
       withArguments: (NSArray*) arguments
+    launchArguments: (NSArray*) launchArguments
    workingDirectory: (NSString*) workingDirectory
            greeting: (NSString*) greeting
               error: (NSError**) errorPtr;
 
-- (IBAction) run: (id) sender;
-- (IBAction)selectREPL:(id)sender;
+- (IBAction) startREPLAndLaunchTarget: (id) sender;
+- (IBAction) startREPL: (id) sender;
 
-- (BOOL) isRunning;
+- (IBAction)selectREPL: (id) sender;
+
 - (void) evaluateString: (NSString*) expression;
 
 - (NSURL*) historyFileURL;

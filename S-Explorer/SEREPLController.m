@@ -91,15 +91,17 @@ static NSData* lineFeedData = nil;
         
         [filehandle readInBackgroundAndNotify];
     } else {
-        NSString* string = [NSString stringWithFormat: @"\n--> Process exited with exit code %d\n", self.task.terminationStatus];
-        [self.replView appendInterpreterString: string];
+        //if (! self.task.isRunning) {
+            NSString* string = [NSString stringWithFormat: @"\n--> Process exited with exit code %d.\n", self.task.terminationStatus];
+            [self.replView appendInterpreterString: string];
+        //}
     }
 }
 
 - (void) evaluateString: (NSString*) commandString {
     
     if (commandString) {
-        NSParameterAssert(self.isRunning);
+        NSParameterAssert(self.task.isRunning);
         NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
         [tty.masterFileHandle writeData: stringData];
         [tty.masterFileHandle writeData: lineFeedData];
@@ -279,13 +281,13 @@ static NSData* lineFeedData = nil;
     }
 }
 
-- (IBAction) run: (id) sender {
-    
 
-    [self stop: sender];
+- (void) startAndLaunchTarget: (BOOL) launch {
+
+    [self stop: self];
     //NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
 
-    [self.replView clear: sender];
+    [self.replView clear: self];
     
     if (self.greeting) {
         [self.replView appendInterpreterString: self.greeting];
@@ -295,14 +297,20 @@ static NSData* lineFeedData = nil;
     
     _task = [[NSTask alloc] init];
         
-    if (! tty) {
-        tty = [[PseudoTTY alloc] init];
-    }
+    tty = [[PseudoTTY alloc] init];
     
     [_task setStandardInput: tty.slaveFileHandle];
     [_task setStandardOutput: tty.slaveFileHandle];
     [_task setStandardError: tty.slaveFileHandle];
-    _task.arguments = self.commandArguments;
+    if (self.commandArguments.count + self.launchArguments.count) {
+        _task.arguments = self.commandArguments;
+        if (launch) {
+            if (! _task.arguments) {
+                _task.arguments = @[];
+            }
+            _task.arguments = [_task.arguments arrayByAddingObjectsFromArray: self.launchArguments];
+        }
+    }
     _task.launchPath = self.commandString;
     _task.currentDirectoryPath = self.workingDirectory;
     
@@ -330,29 +338,38 @@ static NSData* lineFeedData = nil;
     //        }
     //    };
     
+    NSLog(@"Launching '%@' with %@", _task.launchPath, _task.arguments);
+    
     [_task launch];
     [tty.slaveFileHandle closeFile];
 }
 
-- (BOOL) isRunning {
-    return self.task.isRunning;
+- (IBAction) startREPLAndLaunchTarget: (id) sender {
+    [self startAndLaunchTarget: YES];
 }
 
-- (IBAction)selectREPL:(id)sender {
+- (IBAction) startREPL: (id) sender {
+    [self startAndLaunchTarget: NO];
+}
+
+
+- (IBAction) selectREPL: (id) sender {
     NSLog(@"REPL selected.");
 }
 
 
 - (void) setCommand: (NSString*) command
-      withArguments: (NSArray*) arguments
+      withArguments: (NSArray*) generalArguments
+    launchArguments: (NSArray*) launchArguments
    workingDirectory: (NSString*) workingDirectory
            greeting: (NSString*) greeting
               error: (NSError**) errorPtr {
 
-    _workingDirectory = workingDirectory;
-    _commandString = [command stringByResolvingSymlinksInPath];
-    _commandArguments = arguments;
-    _greeting = greeting;
+    _workingDirectory = [workingDirectory copy];
+    _commandString = [[command stringByResolvingSymlinksInPath] copy];
+    _commandArguments = [generalArguments copy];
+    _launchArguments = [launchArguments copy];
+    _greeting = [greeting copy];
     
     commandHistory = [NSMutableArray arrayWithContentsOfURL: self.historyFileURL];
     previousCommandHistoryIndex = self.commandHistory.count - 1;
