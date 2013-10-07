@@ -185,7 +185,7 @@
         NSBeep();
         return NO;
     }
-    return YES;
+    return [super shouldChangeTextInRange: affectedCharRange replacementString: replacementString];
 }
 
 /**

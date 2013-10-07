@@ -100,7 +100,7 @@ static NSData* lineFeedData = nil;
 
 - (void) evaluateString: (NSString*) commandString {
     
-    if (commandString) {
+    if (commandString.length) {
         NSParameterAssert(self.task.isRunning);
         NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
         [tty.masterFileHandle writeData: stringData];
@@ -288,6 +288,7 @@ static NSData* lineFeedData = nil;
     //NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
 
     [self.replView clear: self];
+    currentOutputStart = 0;
     
     if (self.greeting) {
         [self.replView appendInterpreterString: self.greeting];
@@ -296,7 +297,6 @@ static NSData* lineFeedData = nil;
     [self.replView moveToEndOfDocument: self];
     
     _task = [[NSTask alloc] init];
-        
     tty = [[PseudoTTY alloc] init];
     
     [_task setStandardInput: tty.slaveFileHandle];
