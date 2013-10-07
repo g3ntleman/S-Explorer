@@ -84,11 +84,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEProject.m"
-            timestampString = "402688870.4024"
+            timestampString = "402776071.716002"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "367"
-            endingLineNumber = "367"
+            startingLineNumber = "366"
+            endingLineNumber = "366"
             landmarkName = "-tabView:didSelectTabViewItem:"
             landmarkType = "5">
          </BreakpointContent>
@@ -122,22 +122,6 @@
             startingLineNumber = "114"
             endingLineNumber = "114"
             landmarkName = "-newDocument:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "S-Explorer/SEREPLController.m"
-            timestampString = "402685653.137221"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "265"
-            endingLineNumber = "265"
-            landmarkName = "-textView:shouldChangeTextInRanges:replacementStrings:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
