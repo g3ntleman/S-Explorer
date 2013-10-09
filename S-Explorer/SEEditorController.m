@@ -542,13 +542,14 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
             if (! [whitespaces characterIsMember: prefixChar]) {
                 if (prefixChar != ';') {
                     addComments = YES;
+                }
+                if (prefixChar != '\n') {
                     commonWhiteSpaceCount = MIN(commonWhiteSpaceCount, pos-currentLineRange.location);
                 }
                 break;
             }
         }
         if (addComments) break;
-        
         
         currentLineStart = currentLineRange.location + currentLineRange.length;
     } while (currentLineStart < replacement.length);
@@ -560,7 +561,7 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     if (addComments) {
         NSLog(@"Inserting comments at position %lu", commonWhiteSpaceCount);
     }
-    
+
     currentLineStart = 0;
     do {
         NSRange currentLineRange = [replacement lineRangeForRange: NSMakeRange(currentLineStart, 0)];
@@ -569,6 +570,7 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
         //NSLog(@"Changing line at %@: '%@'", NSStringFromRange(currentLineRange), currentLine);
         
         if (addComments) {
+            // Add Comments:
             // Make sure, the line is long enough to insert a comment char at commonCommentPosition:
             while (currentLineRange.length <= commonCommentPosition) {
                 [replacement replaceCharactersInRange:NSMakeRange(currentLineRange.location, 0) withString: @" "];
@@ -578,12 +580,20 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
             currentLineRange.length += 1;
 
         } else {
+            // Remove Comments:
             for (NSUInteger pos=currentLineRange.location; pos<NSMaxRange(currentLineRange); pos++) {
                 unichar prefixChar = [replacement characterAtIndex: pos];
                 //NSLog(@"Checking char '%c'", prefixChar);
                 if (prefixChar == ';') {
-                    [replacement replaceCharactersInRange:NSMakeRange(pos, 1) withString: @""];
-                    currentLineRange.length -= 1;
+                    if (pos+2<NSMaxRange(currentLineRange)) {
+                        [replacement replaceCharactersInRange:NSMakeRange(pos, 1) withString: @""];
+                        currentLineRange.length -= 1;
+                    } else {
+                        // Also delete leading spaces:
+                        [replacement replaceCharactersInRange:NSMakeRange(pos-commonWhiteSpaceCount, commonWhiteSpaceCount+1) withString: @""];
+                        currentLineRange.length -= commonWhiteSpaceCount+1;
+
+                    }
                     break;
                 }
             }
