@@ -515,8 +515,6 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 
 - (IBAction) toggleComments: (id) sender {
     
-    [self.textEditorView.textStorage beginEditing];
-    
     NSCharacterSet* whitespaces = [NSCharacterSet whitespaceCharacterSet];
     BOOL addComments = NO;
     
@@ -534,7 +532,7 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     do {
         NSRange currentLineRange = [replacement lineRangeForRange: NSMakeRange(currentLineStart, 0)];
         
-        NSString* line = [replacement substringWithRange:currentLineRange];
+        //NSString* line = [replacement substringWithRange:currentLineRange];
         //NSLog(@"Checking line '%@'", line);
         
         for (NSUInteger pos=currentLineRange.location; pos<NSMaxRange(currentLineRange); pos++) {
@@ -561,11 +559,12 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
         NSRange currentLineRange = [replacement lineRangeForRange: NSMakeRange(currentLineStart, 0)];
         
         NSString* currentLine = [replacement substringWithRange:currentLineRange];
-        //NSLog(@"Checking line at %@: '%@'", NSStringFromRange(currentLineRange), currentLine);
+        //NSLog(@"Changing line at %@: '%@'", NSStringFromRange(currentLineRange), currentLine);
         
         if (addComments) {
             [replacement replaceCharactersInRange:NSMakeRange(currentLineRange.location, 0) withString: @";"];
             currentLineRange.length += 1;
+
         } else {
             for (NSUInteger pos=currentLineRange.location; pos<NSMaxRange(currentLineRange); pos++) {
                 unichar prefixChar = [replacement characterAtIndex: pos];
@@ -582,8 +581,6 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     } while (currentLineStart < replacement.length);
 
     [self.textEditorView insertText: replacement];
-    
-    [self.textEditorView.textStorage endEditing];
     
     if (selectedRange.length) {
         selectedRange = NSMakeRange(lineRange.location, replacement.length);
