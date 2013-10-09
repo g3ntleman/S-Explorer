@@ -62,12 +62,13 @@
 - (id)initWithScrollView:(NSScrollView *)aScrollView;
 
 - (NSUInteger)lineNumberForLocation:(CGFloat)location;
-- (NSUInteger)lineNumberForCharacterIndex:(NSUInteger)charIndex;
+
+- (NSUInteger)lineNumberForCharacterIndex:(NSUInteger)charIndex; // 0-based line#
+- (NSRange) characterRangeForLineNumber: (NSUInteger) line; // 0-based line#
 
 - (NoodleLineNumberMarker *)markerAtLine:(NSUInteger)line;
 
 - (NSUInteger) numberOfLines;
-- (NSRange) rangeOfLine:(NSUInteger)line;
 
 - (void)invalidateLineIndices;
 

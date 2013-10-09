@@ -515,16 +515,83 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 
 - (IBAction) toggleComments: (id) sender {
     
-    NoodleLineNumberView* lineNumberView = self.textEditorView.lineNumberView;
-    //NSString* text = self.textEditorView.textStorage.string;
+    [self.textEditorView.textStorage beginEditing];
+    
+    NSCharacterSet* whitespaces = [NSCharacterSet whitespaceCharacterSet];
+    BOOL addComments = NO;
+    
+    NSString* text = self.textEditorView.textStorage.string;
     NSRange selectedRange = self.textEditorView.selectedRange;
-    NSUInteger firstLine = [lineNumberView lineNumberForCharacterIndex: selectedRange.location];
-    NSUInteger lastLine = [lineNumberView lineNumberForCharacterIndex: NSMaxRange(selectedRange)];
-    for (NSUInteger currentLine = firstLine; currentLine<=lastLine; currentLine++) {
-        NSRange lineRange = [lineNumberView rangeOfLine: currentLine];
-    }
+    
+    
+    NSRange lineRange = [text lineRangeForRange: selectedRange];
+    [self.textEditorView setSelectedRange:lineRange];
+    
+    NSMutableString* replacement = [[text substringWithRange: lineRange] mutableCopy];
+    
+    // First, check, if all lines have line comments:
+    NSUInteger currentLineStart = 0;
+    do {
+        NSRange currentLineRange = [replacement lineRangeForRange: NSMakeRange(currentLineStart, 0)];
+        
+        NSString* line = [replacement substringWithRange:currentLineRange];
+        //NSLog(@"Checking line '%@'", line);
+        
+        for (NSUInteger pos=currentLineRange.location; pos<NSMaxRange(currentLineRange); pos++) {
+            unichar prefixChar = [replacement characterAtIndex: pos];
+            //NSLog(@"Checking char '%c'", prefixChar);
+            
+            if (! [whitespaces characterIsMember: prefixChar]) {
+                if (prefixChar != ';') {
+                    addComments = YES;
+                }
+                break;
+            }
+        }
+        if (addComments) break;
+        
+        currentLineStart = currentLineRange.location + currentLineRange.length;
+    } while (currentLineStart < replacement.length);
+    
+    //NSLog(@"%@ comments...", addComments ? @"Adding" : @"Removing");
+    
+    
+    currentLineStart = 0;
+    do {
+        NSRange currentLineRange = [replacement lineRangeForRange: NSMakeRange(currentLineStart, 0)];
+        
+        NSString* currentLine = [replacement substringWithRange:currentLineRange];
+        //NSLog(@"Checking line at %@: '%@'", NSStringFromRange(currentLineRange), currentLine);
+        
+        if (addComments) {
+            [replacement replaceCharactersInRange:NSMakeRange(currentLineRange.location, 0) withString: @";"];
+            currentLineRange.length += 1;
+        } else {
+            for (NSUInteger pos=currentLineRange.location; pos<NSMaxRange(currentLineRange); pos++) {
+                unichar prefixChar = [replacement characterAtIndex: pos];
+                //NSLog(@"Checking char '%c'", prefixChar);
+                if (prefixChar == ';') {
+                    [replacement replaceCharactersInRange:NSMakeRange(pos, 1) withString: @""];
+                    currentLineRange.length -= 1;
+                }
+                break;
+            }
+        }
+        
+        currentLineStart = currentLineRange.location + currentLineRange.length;
+    } while (currentLineStart < replacement.length);
 
-    NSLog(@"Commenting lines %lu-%lu.", (unsigned long)firstLine, (unsigned long)lastLine);
+    [self.textEditorView insertText: replacement];
+    
+    [self.textEditorView.textStorage endEditing];
+    
+    if (selectedRange.length) {
+        selectedRange = NSMakeRange(lineRange.location, replacement.length);
+    } else {
+        selectedRange.location += addComments ? 1 : -1;
+    }
+    [self.textEditorView setSelectedRange: selectedRange];
+
 }
 
 @end

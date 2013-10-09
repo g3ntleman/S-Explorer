@@ -511,7 +511,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     if (! edited) {
         [self.projectFolderItem enumerateAllUsingBlock:^(SESourceItem *item, BOOL* stop) {
-            NSLog(@"Testing %@", item);
+            //NSLog(@"Testing %@", item);
             if ([item isDocumentEdited]) {
                 edited = YES;
                 *stop = YES;

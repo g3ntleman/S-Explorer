@@ -245,7 +245,7 @@ static NSCharacterSet* SEWordCharacters() {
     NoodleLineNumberView* lineNumberView = [self lineNumberView];
     line = MIN(lineNumberView.numberOfLines, MAX(1, line));
     
-    NSRange lineRange = [lineNumberView rangeOfLine: line];
+    NSRange lineRange = [lineNumberView characterRangeForLineNumber: line];
     self.selectedRange = lineRange;
     return lineRange;
 }

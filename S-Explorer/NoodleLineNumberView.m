@@ -452,6 +452,10 @@
     return self.lineIndices.count;
 }
 
+- (NSRange) characterRangeForLineNumber: (NSUInteger) line {
+    return [self rangeOfLine: line+1];
+}
+
 - (NSRange) rangeOfLine:(NSUInteger)line {
     
     NSParameterAssert(line<=self.lineIndices.count);
