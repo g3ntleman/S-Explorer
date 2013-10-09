@@ -527,6 +527,7 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     
     NSMutableString* replacement = [[text substringWithRange: lineRange] mutableCopy];
     
+    NSUInteger commonWhiteSpaceCount = NSUIntegerMax;
     // First, check, if all lines have line comments:
     NSUInteger currentLineStart = 0;
     do {
@@ -534,25 +535,31 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
         
         //NSString* line = [replacement substringWithRange:currentLineRange];
         //NSLog(@"Checking line '%@'", line);
-        
         for (NSUInteger pos=currentLineRange.location; pos<NSMaxRange(currentLineRange); pos++) {
             unichar prefixChar = [replacement characterAtIndex: pos];
-            //NSLog(@"Checking char '%c'", prefixChar);
+            NSLog(@"Checking char '%c'", prefixChar);
             
             if (! [whitespaces characterIsMember: prefixChar]) {
                 if (prefixChar != ';') {
                     addComments = YES;
+                    commonWhiteSpaceCount = MIN(commonWhiteSpaceCount, pos-currentLineRange.location);
                 }
                 break;
             }
         }
         if (addComments) break;
         
+        
         currentLineStart = currentLineRange.location + currentLineRange.length;
     } while (currentLineStart < replacement.length);
     
-    //NSLog(@"%@ comments...", addComments ? @"Adding" : @"Removing");
+    NSLog(@"%@ comments...", addComments ? @"Adding" : @"Removing");
     
+    NSUInteger commonCommentPosition = (commonWhiteSpaceCount>0) ? commonWhiteSpaceCount-1 : 0;
+    
+    if (addComments) {
+        NSLog(@"Inserting comments at position %lu", commonWhiteSpaceCount);
+    }
     
     currentLineStart = 0;
     do {
@@ -562,7 +569,12 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
         //NSLog(@"Changing line at %@: '%@'", NSStringFromRange(currentLineRange), currentLine);
         
         if (addComments) {
-            [replacement replaceCharactersInRange:NSMakeRange(currentLineRange.location, 0) withString: @";"];
+            // Make sure, the line is long enough to insert a comment char at commonCommentPosition:
+            while (currentLineRange.length <= commonCommentPosition) {
+                [replacement replaceCharactersInRange:NSMakeRange(currentLineRange.location, 0) withString: @" "];
+                currentLineRange.length += 1;
+            }
+            [replacement replaceCharactersInRange:NSMakeRange(currentLineRange.location+commonCommentPosition, 0) withString: @";"];
             currentLineRange.length += 1;
 
         } else {
@@ -572,8 +584,8 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
                 if (prefixChar == ';') {
                     [replacement replaceCharactersInRange:NSMakeRange(pos, 1) withString: @""];
                     currentLineRange.length -= 1;
+                    break;
                 }
-                break;
             }
         }
         
