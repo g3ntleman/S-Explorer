@@ -188,7 +188,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 - (void) saveProjectSettings {
     @synchronized(self) {
-        [self.projectSettings writeToURL: self.fileURL atomically: YES];
+        [self.projectSettings writeToURL: self.fileURL atomically: NO];
     }
 }
 
@@ -419,7 +419,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 //            byExtendingSelection: NO];
     
     
-    for (NSString* path in self.uiSettings[@"expandedFolders"]) {
+    for (NSString* path in [self.uiSettings[@"expandedFolders"] allKeys]) {
         SESourceItem* item = [self.projectFolderItem childWithPath: path];
         [self.sourceList expandItem: item];
     }

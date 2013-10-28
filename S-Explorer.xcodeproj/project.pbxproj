@@ -18,6 +18,7 @@
 		8D27BFF51766C59D00F1F8FA /* SESchemeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFF31766C59C00F1F8FA /* SESchemeParser.m */; };
 		8D2AAB6C177A8E50008F07C4 /* NoodleLineNumberView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AAB68177A8E50008F07C4 /* NoodleLineNumberView.m */; };
 		8D2AAB71177A94A8008F07C4 /* NoodleLineNumberMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AAB66177A8E50008F07C4 /* NoodleLineNumberMarker.m */; };
+		8D470B9C18196DCA00C0C654 /* OPBEncoding_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D470B9B18196DCA00C0C654 /* OPBEncoding_Tests.m */; };
 		8D4DF7E717F4587F00BC0773 /* OPCharFilterFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */; };
 		8D4DF83317F5AAF600BC0773 /* chibi-repl-server.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8D4DF83217F5AAF600BC0773 /* chibi-repl-server.scm */; };
 		8D5DD11917F6D13800E352FE /* NSView+OPCopying.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D5DD11817F6D13800E352FE /* NSView+OPCopying.m */; };
@@ -32,6 +33,8 @@
 		8D604297173C22D600149409 /* SEREPLController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* SEREPLController.m */; };
 		8D60429B173C388900149409 /* SEREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604299173C388900149409 /* SEREPLView.m */; };
 		8D60FFE517EC58B600F14B50 /* Templates in Resources */ = {isa = PBXBuildFile; fileRef = 8D60FFE417EC58B600F14B50 /* Templates */; };
+		8D7B0BEC181184910046403D /* OPBEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7B0BEB181184910046403D /* OPBEncoder.m */; };
+		8D7B0BED181184910046403D /* OPBEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7B0BEB181184910046403D /* OPBEncoder.m */; };
 		8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8D8298D31758088000336E2F /* S-Explorer-support.scm */; };
 		8D8F9AF917EBEBDA00299D24 /* OPTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F9AF717EBEBDA00299D24 /* OPTabView.m */; };
 		8D94C2471783AA8B00D8595B /* PseudoTTY.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D94C2461783AA8B00D8595B /* PseudoTTY.m */; };
@@ -86,6 +89,7 @@
 		8D2AAB68177A8E50008F07C4 /* NoodleLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoodleLineNumberView.m; sourceTree = "<group>"; };
 		8D2AAB6D177A93EB008F07C4 /* MarkerLineNumberView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = MarkerLineNumberView.h; sourceTree = "<group>"; };
 		8D2AAB6E177A93EB008F07C4 /* MarkerLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerLineNumberView.m; sourceTree = "<group>"; };
+		8D470B9B18196DCA00C0C654 /* OPBEncoding_Tests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPBEncoding_Tests.m; sourceTree = "<group>"; };
 		8D4DF7E417F4587F00BC0773 /* OPCharFilterFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = OPCharFilterFormatter.h; sourceTree = "<group>"; };
 		8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPCharFilterFormatter.m; sourceTree = "<group>"; };
 		8D4DF83217F5AAF600BC0773 /* chibi-repl-server.scm */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; fileEncoding = 4; path = "chibi-repl-server.scm"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.javascript; };
@@ -109,6 +113,8 @@
 		8D604298173C388900149409 /* SEREPLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SEREPLView.h; path = ../vt100/SEREPLView.h; sourceTree = "<group>"; };
 		8D604299173C388900149409 /* SEREPLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SEREPLView.m; path = ../vt100/SEREPLView.m; sourceTree = "<group>"; };
 		8D60FFE417EC58B600F14B50 /* Templates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Templates; path = Resources/Templates; sourceTree = "<group>"; };
+		8D7B0BEA181184910046403D /* OPBEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OPBEncoder.h; sourceTree = "<group>"; };
+		8D7B0BEB181184910046403D /* OPBEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPBEncoder.m; sourceTree = "<group>"; };
 		8D8298D31758088000336E2F /* S-Explorer-support.scm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "S-Explorer-support.scm"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.python; };
 		8D8F9AF617EBEBDA00299D24 /* OPTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = OPTabView.h; sourceTree = "<group>"; };
 		8D8F9AF717EBEBDA00299D24 /* OPTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPTabView.m; sourceTree = "<group>"; };
@@ -180,6 +186,7 @@
 			children = (
 				8D17FE2F17EA72A000883285 /* S_Explorer_Tests.m */,
 				8D17FE2A17EA72A000883285 /* Supporting Files */,
+				8D470B9B18196DCA00C0C654 /* OPBEncoding_Tests.m */,
 			);
 			path = "S-Explorer Tests";
 			sourceTree = "<group>";
@@ -306,6 +313,8 @@
 				8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */,
 				8D5DD11717F6D13800E352FE /* NSView+OPCopying.h */,
 				8D5DD11817F6D13800E352FE /* NSView+OPCopying.m */,
+				8D7B0BEA181184910046403D /* OPBEncoder.h */,
+				8D7B0BEB181184910046403D /* OPBEncoder.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -418,6 +427,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D17FE3017EA72A000883285 /* S_Explorer_Tests.m in Sources */,
+				8D470B9C18196DCA00C0C654 /* OPBEncoding_Tests.m in Sources */,
+				8D7B0BED181184910046403D /* OPBEncoder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -446,6 +457,7 @@
 				8DCBE48D17C76EBB00A872A7 /* NSColor+OPExtensions.m in Sources */,
 				8D4DF7E717F4587F00BC0773 /* OPCharFilterFormatter.m in Sources */,
 				8DF3C39617CFA3D200C75197 /* OPUtilityFunctions.m in Sources */,
+				8D7B0BEC181184910046403D /* OPBEncoder.m in Sources */,
 				8DEE2AC717D434EE005BEDD0 /* SEDocumentController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
