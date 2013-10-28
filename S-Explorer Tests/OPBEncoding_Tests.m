@@ -65,7 +65,7 @@
 }
 
 - (void) testFloatNumberEncoding {
-    XCTAssertEqualObjects([encoder encodeRootObject: @(47.11)], [@"i47.11e" dataUsingEncoding: NSUTF8StringEncoding], @"Float Number encoding failed.");
+    XCTAssertEqualObjects([encoder encodeRootObject: @(-47.11)], [@"i-47.11e" dataUsingEncoding: NSUTF8StringEncoding], @"Float Number encoding failed.");
 }
 
 - (void) testArrayEncoding {
