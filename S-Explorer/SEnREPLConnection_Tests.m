@@ -8,8 +8,11 @@
 
 #import <XCTest/XCTest.h>
 #import "SEnREPLConnection.h"
+#import "SEREPL.h"
 
 @interface SEnREPLConnection_Tests : XCTestCase
+
+@property SEREPL* repl;
 
 @end
 
@@ -18,6 +21,19 @@
 - (void) setUp {
     [super setUp];
     // Put setup code here. This method is called before the invocation of each test method in the class.
+    
+    NSDictionary* settings = @{@"RuntimeTool": @"/usr/local/bin/lein",
+                               @"RuntimeArguments": @[@"repl", @":headless", @":port", @"50555"],
+                               @"WorkingDirectory": [[NSBundle bundleForClass: [self class]] bundlePath]};
+    
+    _repl = [[SEREPL alloc] initWithSettings: settings];
+    
+    [_repl start];
+    
+    while (! self.repl.task.isRunning) {
+        [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
+    }
+    
 }
 
 - (void) tearDown {
@@ -25,12 +41,14 @@
     [super tearDown];
 }
 
-- (void) testSimpleCommand {
+
+- (void) testSimpleExpressionEvaluation {
     
-    NSDictionary* command = @{@"op": @"eval", @"code": @"(map inc (list 1 2 3))"};
+    NSString* testExpression = @"(map inc (list 1 2 3))";
     NSError* error = nil;
-    SEnREPLConnection* connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: 53209];
-    __block NSDictionary* response = nil;
+    SEnREPLConnection* connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.repl.port];
+    __block NSString* evaluationResult = nil;
+    
     if (! [connection openWithError: &error]) {
         NSLog(@"Unable to open connection %@", error);
     }
@@ -38,13 +56,14 @@
     // Wait until connection is established:
     [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
     
-    [connection sendCommandDictionary: command completionBlock:^(NSDictionary* result) {
-        response = result;
+    [connection evaluateExpression: testExpression completionBlock: ^(NSDictionary* result) {
+        XCTAssert(result.count > 0, @"Error: nil response evaluating '%@'.", testExpression);
+        evaluationResult = result[@"value"];
     }];
     // Wait for result:
     [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
-    XCTAssert(response.count > 0, @"Error: nil response from command %@", command);
-    XCTAssertEqualObjects(@"(2 3 4)", response[@"value"], @"Unexpected evaluation result.");
+    XCTAssertEqualObjects(@"(2 3 4)", evaluationResult, @"Unexpected evaluation result.");
 }
+
 
 @end

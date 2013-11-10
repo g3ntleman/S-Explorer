@@ -35,7 +35,8 @@
 }
 
 - (BOOL) openWithError: (NSError**) errorPtr {
-    NSAssert([self.socket isDisconnected], @"Socket not set and diconnected.");
+    NSAssert(self.socket, @"Socket not set.");
+    NSAssert(self.socket.isDisconnected, @"Socket still open. Close it first.");
     return [self.socket connectToHost: self.hostname onPort: self.port error: errorPtr];
 }
 
@@ -79,8 +80,7 @@
 //    }
 //}
 
-- (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port
-{
+- (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port {
     NSLog(@"Connected to %@.", host);
 }
 
@@ -127,5 +127,10 @@
     return _tagCounter-1;
 }
 
+- (void) evaluateExpression: (NSString*) expression completionBlock: (void (^)(NSDictionary* result)) block {
+    
+    NSDictionary* command = @{@"op": @"eval", @"code": expression};
+    [self sendCommandDictionary: command completionBlock: block];
+}
 
 @end

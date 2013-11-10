@@ -37,13 +37,13 @@
 		8D7B0BEC181184910046403D /* OPBEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7B0BEB181184910046403D /* OPBEncoder.m */; };
 		8D7E69571829E44300F320A9 /* SEnREPLConnection_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7E69561829E44300F320A9 /* SEnREPLConnection_Tests.m */; };
 		8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8D8298D31758088000336E2F /* S-Explorer-support.scm */; };
-		8D85E474182C8B190096C76E /* GCDAsyncSocket.h in Sources */ = {isa = PBXBuildFile; fileRef = 8D85E472182C8B190096C76E /* GCDAsyncSocket.h */; };
-		8D85E475182C8B190096C76E /* GCDAsyncSocket.h in Sources */ = {isa = PBXBuildFile; fileRef = 8D85E472182C8B190096C76E /* GCDAsyncSocket.h */; };
 		8D85E476182C8B190096C76E /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D85E473182C8B190096C76E /* GCDAsyncSocket.m */; };
 		8D85E479182C8C330096C76E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D85E478182C8C330096C76E /* Security.framework */; };
 		8D85E47C182C99FB0096C76E /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D85E47B182C99FB0096C76E /* CFNetwork.framework */; };
 		8D85E47E182C9B140096C76E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D85E478182C8C330096C76E /* Security.framework */; };
 		8D85E47F182C9B1A0096C76E /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D85E47B182C99FB0096C76E /* CFNetwork.framework */; };
+		8D88F641182FBC1F00AB1D35 /* SEREPL.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D88F63E182FBC1F00AB1D35 /* SEREPL.m */; };
+		8D88F642182FBC1F00AB1D35 /* SEREPL.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D88F63E182FBC1F00AB1D35 /* SEREPL.m */; };
 		8D8F9AF917EBEBDA00299D24 /* OPTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F9AF717EBEBDA00299D24 /* OPTabView.m */; };
 		8D94C2471783AA8B00D8595B /* PseudoTTY.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D94C2461783AA8B00D8595B /* PseudoTTY.m */; };
 		8D99612717BDB9740058FD0B /* SEEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D99612617BDB9730058FD0B /* SEEditorController.m */; };
@@ -131,6 +131,8 @@
 		8D85E473182C8B190096C76E /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
 		8D85E478182C8C330096C76E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		8D85E47B182C99FB0096C76E /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		8D88F63D182FBC1F00AB1D35 /* SEREPL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = SEREPL.h; sourceTree = "<group>"; };
+		8D88F63E182FBC1F00AB1D35 /* SEREPL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEREPL.m; sourceTree = "<group>"; };
 		8D8F9AF617EBEBDA00299D24 /* OPTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = OPTabView.h; sourceTree = "<group>"; };
 		8D8F9AF717EBEBDA00299D24 /* OPTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPTabView.m; sourceTree = "<group>"; };
 		8D94C2451783AA8B00D8595B /* PseudoTTY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PseudoTTY.h; sourceTree = "<group>"; };
@@ -275,10 +277,6 @@
 				8D16399517C3B7A6000DD491 /* SEEditorTextView.m */,
 				8D99612517BDB9730058FD0B /* SEEditorController.h */,
 				8D99612617BDB9730058FD0B /* SEEditorController.m */,
-				8D604298173C388900149409 /* SEREPLView.h */,
-				8D604299173C388900149409 /* SEREPLView.m */,
-				8D604294173C22D600149409 /* SEREPLViewController.h */,
-				8D604295173C22D600149409 /* SEREPLViewController.m */,
 				8D27BFF21766C59C00F1F8FA /* SESchemeParser.h */,
 				8D27BFF31766C59C00F1F8FA /* SESchemeParser.m */,
 				8D0904C0176A7C4800176BCF /* SESourceItem.h */,
@@ -289,6 +287,12 @@
 				8DEE2AC417D434EE005BEDD0 /* SEDocumentController.h */,
 				8DEE2AC517D434EE005BEDD0 /* SEDocumentController.m */,
 				8DB9855A17EA73E600DC72F8 /* SESavePanel.xib */,
+				8D604298173C388900149409 /* SEREPLView.h */,
+				8D604299173C388900149409 /* SEREPLView.m */,
+				8D604294173C22D600149409 /* SEREPLViewController.h */,
+				8D604295173C22D600149409 /* SEREPLViewController.m */,
+				8D88F63D182FBC1F00AB1D35 /* SEREPL.h */,
+				8D88F63E182FBC1F00AB1D35 /* SEREPL.m */,
 				8D72C53318287B6400776B14 /* SEnREPLConnection.h */,
 				8D72C53418287B6400776B14 /* SEnREPLConnection.m */,
 			);
@@ -460,8 +464,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D88F642182FBC1F00AB1D35 /* SEREPL.m in Sources */,
 				8D17FE3017EA72A000883285 /* S_Explorer_Tests.m in Sources */,
-				8D85E475182C8B190096C76E /* GCDAsyncSocket.h in Sources */,
 				8D470B9C18196DCA00C0C654 /* OPBEncoding_Tests.m in Sources */,
 				8D7E69571829E44300F320A9 /* SEnREPLConnection_Tests.m in Sources */,
 			);
@@ -493,10 +497,10 @@
 				8D16399C17C6BC1D000DD491 /* SEApplicationDelegate.m in Sources */,
 				8DCBE48D17C76EBB00A872A7 /* NSColor+OPExtensions.m in Sources */,
 				8D4DF7E717F4587F00BC0773 /* OPCharFilterFormatter.m in Sources */,
-				8D85E474182C8B190096C76E /* GCDAsyncSocket.h in Sources */,
 				8DF3C39617CFA3D200C75197 /* OPUtilityFunctions.m in Sources */,
 				8D7B0BEC181184910046403D /* OPBEncoder.m in Sources */,
 				8DEE2AC717D434EE005BEDD0 /* SEDocumentController.m in Sources */,
+				8D88F641182FBC1F00AB1D35 /* SEREPL.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
