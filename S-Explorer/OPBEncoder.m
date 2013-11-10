@@ -421,52 +421,20 @@
     id result = nil;
     if ([decoder decodeChar:'i']) {
         uint64 integer = [decoder decodeInt];
-        if (! [decoder decodeChar:'e']) {
+        if ([decoder decodeChar:'e']) {
+            result = [self initWithLongLong: integer];
+        } else {
             [decoder decodeChar:'.'];
             NSUInteger prevOffset = decoder.offset;
             uint64 fraction = [decoder decodeInt];
             double doubleResult = integer + (fraction / pow(10, decoder.offset-prevOffset));
-            result = [self initWithDouble: doubleResult];
-        } else {
-            result = [self initWithLongLong: integer];
+            if ([decoder decodeChar:'e']) {
+                result = [self initWithDouble: doubleResult];
+            }
         }
     }
     return result;
 }
-//
-//    uint64 integer = [decoder decodeInt];
-//    if (decoder.de)
-//    
-//    char buffer[BUFFERLEN]; // Small buffer to hold length strings. Needs to hold a 64bit number.
-//    char* bufferChar = buffer;
-//    memset(buffer, 0, sizeof(buffer)); // Ensure the buffer is zeroed - necessary?
-//    const void* bytes = decoder.decodingData.bytes;
-//    const char* chars = bytes + decoder.offset;
-//    const char* lastchar = bytes+decoder.decodingData.length;
-//    const char* dot = NULL;
-//    
-//    NSAssert(*chars == 'i', @"Number Decoding Error.");
-//    chars++;
-//
-//    while (chars < lastchar && (isdigit(*chars) || *chars == '.' || *chars == '-')) {
-//        
-//        if (*chars == '.') {
-//            dot = chars;
-//        }
-//        *bufferChar = *chars;
-//        chars++;
-//        bufferChar++;
-//    }
-//    NSAssert(*chars == 'e', @"Number Decoding Error.");
-//    [decoder advanceOffsetBy: chars-(const char*)bytes];
-//    if (dot) {
-//        double result = atof(buffer);
-//        return [self initWithDouble: result];
-//    } else {
-//        uint64 result = atoi(buffer);
-//        return [self initWithLongLong: result];
-//    }
-//}
 
 - (void) encodeWithBencoder: (OPBEncoder*) encoder {
     
@@ -497,10 +465,12 @@
     
     if ([decoder decodeChar:'l']) {
         
-        result = [[NSMutableArray alloc] init];
         while (! [decoder decodeChar: 'e']) {
             id <OPBencoding> element = [decoder decodeObject];
-            if (! element) break;
+            if (! element) return nil;
+            if (! result) {
+                result = [NSMutableArray array];
+            }
             [result addObject: element];
         }
     }
@@ -526,12 +496,14 @@
     NSMutableDictionary* result = nil;
     
     if ([decoder decodeChar:'d']) {
-        result = [[NSMutableDictionary alloc] init];
         while (! [decoder decodeChar: 'e']) {
             NSString* key = [decoder decodeObject];
-            if (! key) break;
+            if (! key) return nil;
             id <OPBencoding> value = [decoder decodeObject];
-            if (! value) break;
+            if (! value) return nil;
+            if (! result) {
+                result = [NSMutableDictionary dictionary];
+            }
             [result setObject: value forKey: key];
         }
     }
