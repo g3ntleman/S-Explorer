@@ -124,6 +124,7 @@
     [_blockOperationsByTag setObject: [block copy] forKey: @(_tagCounter)];
     [self.socket readDataWithTimeout:15.0 tag:0];
     _tagCounter += 1;
+    return _tagCounter-1;
 }
 
 

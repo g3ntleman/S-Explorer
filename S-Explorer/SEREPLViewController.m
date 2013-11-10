@@ -7,7 +7,7 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import "SEREPLController.h"
+#import "SEREPLViewController.h"
 #import "SEREPLView.h"
 #import "PseudoTTY.h"
 #import "SESchemeParser.h"
@@ -15,12 +15,12 @@
 
 static const NSString* SEMainFunctionKey = @"MainFunction";
 
-@interface SEREPLController ()
+@interface SEREPLViewController ()
 @property (nonatomic, readonly) NSMutableDictionary* settings;
 @end
 
 
-@implementation SEREPLController {
+@implementation SEREPLViewController {
 
     PseudoTTY* tty;
     NSMutableArray* commandHistory;

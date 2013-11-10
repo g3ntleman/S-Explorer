@@ -11,7 +11,7 @@
 
 @class SEProject;
 
-@interface SEREPLController : NSObject <NSTextViewDelegate>
+@interface SEREPLViewController : NSObject <NSTextViewDelegate>
 
 @property (strong, nonatomic) SEREPLView* replView;
 

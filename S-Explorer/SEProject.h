@@ -7,7 +7,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import "SEREPLController.h"
+#import "SEREPLViewController.h"
 #import "SESchemeParser.h"
 #import "SESourceItem.h"
 #import "SEEditorController.h"
@@ -18,7 +18,7 @@ extern NSString* SEProjectDocumentType;
 
 @interface SEProject : NSDocument <NSOutlineViewDataSource, NSUserInterfaceValidations, NSTabViewDelegate>
 
-@property (readonly, nonatomic) SEREPLController* topREPLController;
+@property (readonly, nonatomic) SEREPLViewController* topREPLController;
 @property (readonly, nonatomic) NSDictionary* allREPLControllers;
 @property (strong, nonatomic) IBOutlet NSTabView* replTabView;
 @property (strong, nonatomic) IBOutlet NSView* sourceCellView;

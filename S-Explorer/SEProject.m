@@ -452,10 +452,10 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return YES;
 }
 
-- (SEREPLController*) replControllerForIdentifier: (NSString*) identifier {
-    SEREPLController* result = self.allREPLControllers[identifier];
+- (SEREPLViewController*) replControllerForIdentifier: (NSString*) identifier {
+    SEREPLViewController* result = self.allREPLControllers[identifier];
     if (! result) {
-        result = [[SEREPLController alloc] initWithProject:self identifier:identifier];
+        result = [[SEREPLViewController alloc] initWithProject:self identifier:identifier];
         NSTabViewItem* item = [self.replTabView tabViewItemAtIndex: [self.replTabView indexOfTabViewItemWithIdentifier: identifier]];
         NSView* itemView = item.view;
         if (! itemView.subviews.count) {
@@ -471,7 +471,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 
-- (SEREPLController*) topREPLController {
+- (SEREPLViewController*) topREPLController {
     return [self replControllerForIdentifier: self.replTabView.selectedTabViewItem.identifier];
 }
 
@@ -493,7 +493,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     }
     
     NSString* evalString = [self.editorController.textEditorView.string substringWithRange:evalRange];
-    SEREPLController* replController = self.topREPLController;
+    SEREPLViewController* replController = self.topREPLController;
     NSLog(@"Evaluating selection: '%@'", evalString);
     [replController evaluateString: evalString];
 }

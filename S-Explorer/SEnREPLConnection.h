@@ -23,7 +23,7 @@ typedef void (^SEnREplResultBlock)(NSDictionary* result);
 
 - (id) initWithHostname: (NSString*) hostname port: (NSInteger) port;
 
-- (void) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREplResultBlock) block;
+- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREplResultBlock) block;
 
 - (BOOL) openWithError: (NSError**) errorPtr;
 - (void) close;

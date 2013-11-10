@@ -30,7 +30,7 @@
 		8D604263173BE60800149409 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D604261173BE60800149409 /* MainMenu.xib */; };
 		8D604292173C142A00149409 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424C173BE60800149409 /* AppKit.framework */; };
 		8D604293173C143300149409 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424E173BE60800149409 /* Foundation.framework */; };
-		8D604297173C22D600149409 /* SEREPLController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* SEREPLController.m */; };
+		8D604297173C22D600149409 /* SEREPLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* SEREPLViewController.m */; };
 		8D60429B173C388900149409 /* SEREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604299173C388900149409 /* SEREPLView.m */; };
 		8D60FFE517EC58B600F14B50 /* Templates in Resources */ = {isa = PBXBuildFile; fileRef = 8D60FFE417EC58B600F14B50 /* Templates */; };
 		8D72C53618287B6400776B14 /* SEnREPLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D72C53418287B6400776B14 /* SEnREPLConnection.m */; };
@@ -116,8 +116,8 @@
 		8D60425C173BE60800149409 /* SEProject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SEProject.m; sourceTree = "<group>"; };
 		8D60425F173BE60800149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/SEProject.xib; sourceTree = "<group>"; };
 		8D604262173BE60800149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		8D604294173C22D600149409 /* SEREPLController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEREPLController.h; sourceTree = "<group>"; };
-		8D604295173C22D600149409 /* SEREPLController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEREPLController.m; sourceTree = "<group>"; };
+		8D604294173C22D600149409 /* SEREPLViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = SEREPLViewController.h; sourceTree = "<group>"; };
+		8D604295173C22D600149409 /* SEREPLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEREPLViewController.m; sourceTree = "<group>"; };
 		8D604298173C388900149409 /* SEREPLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SEREPLView.h; path = ../vt100/SEREPLView.h; sourceTree = "<group>"; };
 		8D604299173C388900149409 /* SEREPLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SEREPLView.m; path = ../vt100/SEREPLView.m; sourceTree = "<group>"; };
 		8D60FFE417EC58B600F14B50 /* Templates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Templates; path = Resources/Templates; sourceTree = "<group>"; };
@@ -277,8 +277,8 @@
 				8D99612617BDB9730058FD0B /* SEEditorController.m */,
 				8D604298173C388900149409 /* SEREPLView.h */,
 				8D604299173C388900149409 /* SEREPLView.m */,
-				8D604294173C22D600149409 /* SEREPLController.h */,
-				8D604295173C22D600149409 /* SEREPLController.m */,
+				8D604294173C22D600149409 /* SEREPLViewController.h */,
+				8D604295173C22D600149409 /* SEREPLViewController.m */,
 				8D27BFF21766C59C00F1F8FA /* SESchemeParser.h */,
 				8D27BFF31766C59C00F1F8FA /* SESchemeParser.m */,
 				8D0904C0176A7C4800176BCF /* SESourceItem.h */,
@@ -473,7 +473,7 @@
 			files = (
 				8D604256173BE60800149409 /* main.m in Sources */,
 				8D60425D173BE60800149409 /* SEProject.m in Sources */,
-				8D604297173C22D600149409 /* SEREPLController.m in Sources */,
+				8D604297173C22D600149409 /* SEREPLViewController.m in Sources */,
 				8D60429B173C388900149409 /* SEREPLView.m in Sources */,
 				8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */,
 				8D27BFF51766C59D00F1F8FA /* SESchemeParser.m in Sources */,
