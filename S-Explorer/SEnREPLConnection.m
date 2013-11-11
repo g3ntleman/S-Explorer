@@ -103,11 +103,19 @@
 //    
 //}
 
+- (void) socketDidDisconnect: (GCDAsyncSocket*) sock withError: (NSError*) error {
+    
+    if (error.code == 61) {
+        // Connection Refused, retry:
+        sleep(0.05);
+        [self openWithError: NULL];
+    } else {
+        NSLog(@"%@ disconnected (error %@).", self, error);
+    }
+}
+
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
     
-    NSString* dataString = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
-    
-    NSLog(@"Socket read: %@", dataString);
     
     NSMutableData* buffer = _buffersByTag[@(tag)];
     
@@ -115,17 +123,20 @@
     
     [buffer appendData: data];
     
-    if ([dataString hasSuffix: @"eee"]) {
-        
-    }
+    
+    NSString* dataString = [[NSString alloc] initWithData: buffer encoding: NSUTF8StringEncoding];
+    NSLog(@"Socket read data. Buffer now: %@", dataString);
+
     
     NSDictionary* result = (id)[OPBEncoder objectFromEncodedData: buffer];
     if (result) {
+        
         SEnREplResultBlock block = [_blocksByTag objectForKey: @(tag)];
         block(result);
         [buffer setLength: 0];
         if ([result[@"status"] containsObject: @"done"]) {
             [_blocksByTag removeObjectForKey: @(tag)];
+            NSLog(@"Finished expression result for tag %d", tag);
             return;
         }
     }
@@ -135,12 +146,6 @@
 
 - (void) socket: (GCDAsyncSocket*) sock didWriteDataWithTag: (long) tag {
     NSLog(@"Socket wrote data for tag %ld.", (long)tag);
-}
-
-
-- (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)error {
-    NSLog(@"Socket (%@) error: %@.", sock, error);
-
 }
 
 /**
@@ -169,10 +174,10 @@
     return _tagCounter-1;
 }
 
-- (void) evaluateExpression: (NSString*) expression completionBlock: (void (^)(NSDictionary* result)) block {
+- (long) evaluateExpression: (NSString*) expression completionBlock: (void (^)(NSDictionary* result)) block {
     
     NSDictionary* command = @{@"op": @"eval", @"code": expression};
-    [self sendCommandDictionary: command completionBlock: block timeout: 6.0];
+    return [self sendCommandDictionary: command completionBlock: block timeout: 6.0];
 }
 
 @end

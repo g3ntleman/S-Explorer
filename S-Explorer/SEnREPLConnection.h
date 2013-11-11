@@ -25,7 +25,7 @@ typedef void (^SEnREplResultBlock)(NSDictionary* result);
 
 - (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (void (^)(NSDictionary* result)) block timeout: (NSTimeInterval) timeout;
 
-- (void) evaluateExpression: (NSString*) expression completionBlock: (void (^)(NSDictionary* result)) block;
+- (long) evaluateExpression: (NSString*) expression completionBlock: (void (^)(NSDictionary* result)) block;
 
 - (BOOL) openWithError: (NSError**) errorPtr;
 - (void) close;

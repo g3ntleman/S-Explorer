@@ -47,6 +47,8 @@
     
     //NSError* error = nil;
     NSArray* commandArguments = _settings[@"RuntimeArguments"];
+    commandArguments = [commandArguments arrayByAddingObject: [@(self.port) description]];
+    
     NSMutableArray* launchArguments = [[NSMutableArray alloc] init];
     
     NSString* workingDirectory = _settings[@"WorkingDirectory"];
@@ -83,9 +85,12 @@
     [_task setEnvironment: environment];
     
     
-//    _task.terminationHandler =  ^void (NSTask* task) {
-//        [theReplView setEditable: NO];
-//    };
+    _task.terminationHandler =  ^void (NSTask* task) {
+        NSLog(@"REPL Task Terminated with return code %d", task.terminationStatus);
+        if (task.terminationStatus == 1) {
+            [task launch];
+        }
+    };
     
     NSLog(@"Launching '%@' with %@", _task.launchPath, _task.arguments);
     
