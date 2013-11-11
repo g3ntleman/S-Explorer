@@ -17,8 +17,13 @@
     return self;
 }
 
+- (void) dealloc {
+    [self stop];
+}
+
 - (void) stop {
     if (self.task.isRunning) {
+        NSLog(@"Terminating REPL Server Task.");
         [self.task terminate];
         if (_port) {
             _port += 1; // use different port each time?
