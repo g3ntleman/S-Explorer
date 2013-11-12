@@ -78,12 +78,12 @@
     NSDictionary* testDictionary = @{@"cow": @"moo", @"spam": @"eggs"};
     XCTAssertEqualObjects([encoder encodeRootObject: testDictionary], [@"d3:cow3:moo4:spam4:eggse" dataUsingEncoding: NSUTF8StringEncoding], @"Array encoding failed.");
     
-    NSDictionary* nREPLQueryDictionary = @{@"op": @"eval", @"code": @"(map inc (list 1 2 3))"};
-    NSLog(@"nREPLDict = '%@'", [[NSString alloc] initWithData: [encoder encodeRootObject: nREPLQueryDictionary] encoding: NSUTF8StringEncoding]);
+    //NSDictionary* nREPLQueryDictionary = @{@"op": @"eval", @"code": @"(map inc (list 1 2 3))"};
+    //NSLog(@"nREPLDict = '%@'", [[NSString alloc] initWithData: [encoder encodeRootObject: nREPLQueryDictionary] encoding: NSUTF8StringEncoding]);
 
-    NSDictionary* nREPLResultDictionary = (id)[OPBEncoder objectFromEncodedData: [@"d2:ns4:user7:session36:8de1f329-4ab4-4b4c-9033-79d1c70abf035:value7:(2 3 4)ed7:session36:8de1f329-4ab4-4b4c-9033-79d1c70abf036:statusl4:doneee" dataUsingEncoding:NSUTF8StringEncoding]];
+    //NSDictionary* nREPLResultDictionary = (id)[OPBEncoder objectFromEncodedData: [@"d2:ns4:user7:session36:8de1f329-4ab4-4b4c-9033-79d1c70abf035:value7:(2 3 4)ed7:session36:8de1f329-4ab4-4b4c-9033-79d1c70abf036:statusl4:doneee" dataUsingEncoding:NSUTF8StringEncoding]];
     
-    NSLog(@"nREPL Result = '%@'", nREPLResultDictionary);
+    //NSLog(@"nREPL Result = '%@'", nREPLResultDictionary);
 }
 
 @end
