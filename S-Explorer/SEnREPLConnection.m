@@ -11,8 +11,8 @@
 
 @interface SEnREPLConnection () <NSStreamDelegate>
 
-@property (strong, nonatomic) NSMutableDictionary* blocksByTag;
-@property (strong, nonatomic) NSMutableDictionary* buffersByTag;
+@property (strong, nonatomic) NSMutableDictionary* evaluationStatesByTag;
+@property (readonly, nonatomic) NSInteger connectRetries;
 
 @end
 
@@ -22,8 +22,7 @@
     if (self = [self init]) {
         _hostname = [hostname copy];
         _port = port;
-        _blocksByTag = [[NSMutableDictionary alloc] initWithCapacity: 4];
-        _buffersByTag = [[NSMutableDictionary alloc] initWithCapacity: 4];
+        _evaluationStatesByTag = [[NSMutableDictionary alloc] initWithCapacity: 4];
         
         _socket = [[GCDAsyncSocket alloc] initWithDelegate: self delegateQueue: dispatch_get_main_queue()];
         _socket.delegate = self;
@@ -45,44 +44,11 @@
     if ([_socket isConnected]) {
         NSLog(@"Trying to disconnect %@", _socket);
         [_socket disconnect];
-        [_blocksByTag removeAllObjects];
-        [_buffersByTag removeAllObjects];
     }
+    [_evaluationStatesByTag removeAllObjects];
+    
 }
 
-//- (void) stream: (NSStream *) stream handleEvent: (NSStreamEvent) eventCode {
-//    // An NSStream delegate callback that's called when events happen on our
-//    // network stream.
-//    
-//    NSLog(@"Got Stream Event %lu for %@", eventCode, stream);
-//    
-//    if (stream == _inputStream) {
-//        switch (eventCode) {
-//            case NSStreamEventOpenCompleted: {
-//                NSLog(@"Opened connection.");
-//            } break;
-//            case NSStreamEventHasBytesAvailable: {
-//                uint8_t buffer[2000];
-//                NSInteger bufferUsed = [_inputStream read: buffer maxLength: sizeof(buffer)];
-//                if (bufferUsed >= 0) {
-//                    NSLog(@"inputStream read %ld bytes. Appending...", bufferUsed);
-//                    [_readBuffer appendBytes: buffer length: bufferUsed];
-//                    id result = [OPBEncoder objectFromEncodedData: _readBuffer];
-//                    if (result) {
-//                        NSLog(@"Command-result %@", result);
-//                    }
-//                } else {
-//                    NSLog(@"Error Reading from %@: %@", self, _inputStream.streamError);
-//                }
-//            }
-//            default: {
-//                NSLog(@"Unhandled inputstream event. error %@", _inputStream.streamError);
-//            }
-//        }
-//    } else {
-//        NSLog(@"Unhandled outputStream event. error %@", _outputStream.streamError);
-//    }
-//}
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port {
     NSLog(@"Connected to %@:%u.", host, port);
@@ -90,8 +56,8 @@
 
 //- (void)socket:(GCDAsyncSocket *)sock didReadPartialDataOfLength:(NSUInteger)partialLength tag:(long)tag {
 //    NSLog(@"Socket read %lu bytes.", (unsigned long)partialLength);
-//    
-//    
+//
+//
 //    NSDictionary* result = (id)[OPBEncoder objectFromEncodedData: data];
 //    if (result) {
 //        SEnREplResultBlock block = [_blockOperationsByTag objectForKey: @(tag)];
@@ -100,45 +66,46 @@
 //        // Expect more Data:
 //    }
 //
-//    
+//
 //}
 
 - (void) socketDidDisconnect: (GCDAsyncSocket*) sock withError: (NSError*) error {
     
-    if (error.code == 61) {
-        // Connection Refused, retry:
-        sleep(0.05);
-        [self openWithError: NULL];
+    if (error.code == 61 && _connectRetries < 50) {
+        // Connection Refused, retry for 50 times:
+        _connectRetries += 1;
+        [self performSelector: @selector(openWithError:) withObject: NULL afterDelay: 0.2];
     } else {
-        NSLog(@"%@ disconnected (error %@).", self, error);
+        NSLog(@"%@ disconnected (%@). Cleaning up...", self, error);
+        [self close];
     }
 }
 
-- (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
-    
-    
-    NSMutableData* buffer = _buffersByTag[@(tag)];
-    
-    NSAssert(buffer != nil, @"No buffer detected ");
-    
-    [buffer appendData: data];
-    
-    
-    NSString* dataString = [[NSString alloc] initWithData: buffer encoding: NSUTF8StringEncoding];
-    NSLog(@"Socket read data. Buffer now: %@", dataString);
 
+- (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag: (long) tag {
     
-    NSDictionary* result = (id)[OPBEncoder objectFromEncodedData: buffer];
+    SEnREPLEvaluationState* evalState = _evaluationStatesByTag[@(tag)]; // expect this to exist
+    
+    NSAssert(evalState != nil, @"No evaluation state set up.");
+    
+    [evalState.buffer appendData: data];
+    
+    
+    NSString* dataString = [[NSString alloc] initWithData: evalState.buffer encoding: NSUTF8StringEncoding];
+    NSLog(@"Socket read data. Buffer now: %@", dataString);
+    
+    
+    NSDictionary* result = (id)[OPBEncoder objectFromEncodedData: evalState.buffer];
     if (result) {
-        
-        SEnREplResultBlock block = [_blocksByTag objectForKey: @(tag)];
-        block(result);
-        [buffer setLength: 0];
-        if ([result[@"status"] containsObject: @"done"]) {
-            [_blocksByTag removeObjectForKey: @(tag)];
-            NSLog(@"Finished expression result for tag %d", tag);
+        evalState.buffer.length = 0; // Not entirely correct. Need to trim only parsed part.
+        [evalState update: result];
+        if (evalState.isEvaluationDone) {
+            NSLog(@"Finished expression result for tag %ld", tag);
+            evalState.resultBlock(evalState);
             return;
         }
+    } else {
+        
     }
     // Unable to parse the result, wait for more data:
     [self.socket readDataWithTimeout: 2.0 tag: tag];
@@ -149,35 +116,96 @@
 }
 
 /**
- * Sends the encoded commandDictionary to the nREPL server process. 
+ * Sends the encoded commandDictionary to the nREPL server process.
  * Calls the given block after decoding the result.
  * The timeout given is used for both, sending and receiving messages.
  * Returns the tag of the command.
  **/
-- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (void (^)(NSDictionary* result)) block timeout: (NSTimeInterval) timeout {
+- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREplResultBlock) block timeout: (NSTimeInterval) timeout {
     
     //NSAssert([self.socket isConnected], @"Cannot send Command without open connection. -open first.");
- 
+    
     NSData* benData = [[[OPBEncoder alloc] initForEncoding] encodeRootObject: commandDictionary];
     NSString* benString = [[NSString alloc] initWithData: benData encoding:NSUTF8StringEncoding];
-    NSMutableData* buffer = [[NSMutableData alloc] init];
     NSLog(@"Sending '%@'", benString);
     [self.socket writeData: benData withTimeout: timeout tag: _tagCounter];
-    [self.socket writeData: [GCDAsyncSocket LFData] withTimeout: timeout tag:_tagCounter];
-    [_blocksByTag setObject: [block copy] forKey: @(_tagCounter)];
-    [_buffersByTag setObject: buffer forKey:@(_tagCounter)];
+    //[self.socket writeData: [GCDAsyncSocket LFData] withTimeout: timeout tag:_tagCounter];
+    
+    SEnREPLEvaluationState* evalState = [[SEnREPLEvaluationState alloc] initWithEvaluationID: [@(_tagCounter) description]
+                                                                                   sessionID: nil // assigned automatically
+                                                                                 resultBlock: block];
+    [_evaluationStatesByTag setObject: evalState forKey: @(_tagCounter)];
     
     [self.socket readDataWithTimeout: timeout tag: _tagCounter];
-    //[self.socket readDataToData: [GCDAsyncSocket CRLFData] withTimeout: timeout buffer: buffer bufferOffset: 0 tag: _tagCounter];
     
     _tagCounter += 1;
     return _tagCounter-1;
 }
 
-- (long) evaluateExpression: (NSString*) expression completionBlock: (void (^)(NSDictionary* result)) block {
+- (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREplResultBlock) block {
     
-    NSDictionary* command = @{@"op": @"eval", @"code": expression};
+    NSDictionary* command = @{@"op": @"eval", @"code": expression, @"id": @(_tagCounter)};
     return [self sendCommandDictionary: command completionBlock: block timeout: 6.0];
+}
+
+@end
+
+@interface SEnREPLEvaluationState () {
+    NSMutableArray* _results;
+    NSMutableData* _buffer;
+}
+
+@property (strong, nonatomic) NSString* status;
+@property (strong, nonatomic) NSString* sessionID;
+@property (strong, nonatomic) NSString* evaluationID;
+@property (strong, nonatomic) SEnREplResultBlock resultBlock;
+
+
+@end
+
+@implementation SEnREPLEvaluationState
+
+- (NSArray*) results {
+    return _results;
+}
+
+- (NSMutableData*) buffer {
+    if (!_buffer) {
+        _buffer = [[NSMutableData alloc] init];
+    }
+    return _buffer;
+}
+
+- (BOOL) isEvaluationDone {
+    return [self.status isEqualToString: @"done"];
+}
+
+- (id) initWithEvaluationID: (NSString*) anId
+                  sessionID: (NSString*) aSessionID
+                resultBlock: (SEnREplResultBlock) aResultBlock {
+    if (self = [self init]) {
+        self.evaluationID = anId;
+        self.sessionID = aSessionID;
+        self.resultBlock = aResultBlock;
+    }
+    return self;
+}
+
+- (void) update: (NSDictionary*) partialResultDictionary {
+    
+    NSArray* status = partialResultDictionary[@"status"];
+    if (status) self.status = status;
+    
+    NSString* sessionID = partialResultDictionary[@"session"];
+    if (sessionID) self.sessionID = sessionID;
+    
+    NSString* result = partialResultDictionary[@"value"];
+    if (result) {
+        if (! _results) {
+            _results = [[NSMutableArray alloc] init];
+        }
+        [_results addObject: result];
+    }
 }
 
 @end

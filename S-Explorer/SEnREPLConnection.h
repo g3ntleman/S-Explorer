@@ -9,10 +9,30 @@
 #import <Foundation/Foundation.h>
 #import "GCDAsyncSocket.h"
 
+@class SEnREPLEvaluationState;
 
 typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
 
-typedef void (^SEnREplResultBlock)(NSDictionary* result);
+typedef void (^SEnREplResultBlock)(SEnREPLEvaluationState* evalState);
+
+@interface SEnREPLEvaluationState : NSObject
+
+@property (readonly, nonatomic) NSMutableData* buffer;
+@property (readonly, nonatomic) NSString* status;
+@property (readonly, nonatomic) NSString* sessionID;
+@property (readonly, nonatomic) NSString* evaluationID;
+@property (readonly, nonatomic) NSArray* results;
+@property (readonly, nonatomic) SEnREplResultBlock resultBlock;
+@property (readonly) BOOL isEvaluationDone;
+
+
+- (id) initWithEvaluationID: (NSString*) anId
+                  sessionID: (NSString*) aSessionID
+                resultBlock: (SEnREplResultBlock) aResultBlock;
+
+- (void) update: (NSDictionary*) partialResultDictionary;
+
+@end
 
 @interface SEnREPLConnection : NSObject <GCDAsyncSocketDelegate>
 
@@ -23,9 +43,9 @@ typedef void (^SEnREplResultBlock)(NSDictionary* result);
 
 - (id) initWithHostname: (NSString*) hostname port: (NSInteger) port;
 
-- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (void (^)(NSDictionary* result)) block timeout: (NSTimeInterval) timeout;
+- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREplResultBlock) block timeout: (NSTimeInterval) timeout;
 
-- (long) evaluateExpression: (NSString*) expression completionBlock: (void (^)(NSDictionary* result)) block;
+- (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREplResultBlock) block;
 
 - (BOOL) openWithError: (NSError**) errorPtr;
 - (void) close;

@@ -25,9 +25,13 @@
     if (self.task.isRunning) {
         NSLog(@"Terminating REPL Server Task.");
         [self.task terminate];
-        if (_port) {
-            _port += 1; // use different port each time?
+        while (self.task.isRunning) {
+            sleep(0.1);
         }
+        _task = nil;
+    }
+    if (_port) {
+        _port += 1; // use different port each time?
     }
 }
 
@@ -84,11 +88,15 @@
     
     [_task setEnvironment: environment];
     
+    __weak SEREPL* this = self;
     
     _task.terminationHandler =  ^void (NSTask* task) {
         NSLog(@"REPL Task Terminated with return code %d", task.terminationStatus);
         if (task.terminationStatus == 1) {
-            [task launch];
+            
+            [this stop];
+            [this start];
+            return;
         }
     };
     

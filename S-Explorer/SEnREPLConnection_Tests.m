@@ -46,6 +46,7 @@
     // Wait until connection is established:
     
     while (! self.connection.socket.isConnected) {
+        NSLog(@"Waiting for client socket to connect...");
         [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
     }
     
@@ -57,45 +58,59 @@
     
     [self.connection close];
     [self.repl stop];
+    // Wait for the task to actually terminate, so we can restart it:
+    while (self.repl.task.isRunning) {
+        sleep(0.1);
+    }
+    _repl = nil;
 }
 
 
-- (void) testSimpleExpressionEvaluation {
+
+
+- (void) testMultipleExpressionEvaluations {
     
     NSString* testExpression = @"(map inc (list 1 2 3))";
-    __block NSMutableArray* evaluationResults = [NSMutableArray array];
+    __block NSString* evaluationResult = nil;
 
-    [self.connection evaluateExpression: testExpression completionBlock: ^(NSDictionary* result) {
-        XCTAssert(result.count > 0, @"Error: nil response evaluating '%@'.", testExpression);
-        NSString* evaluationResult = result[@"value"];
-        if (evaluationResult) {
-            [evaluationResults addObject: evaluationResult];
-        }
+    [self.connection evaluateExpression: testExpression completionBlock:^(SEnREPLEvaluationState *evalState) {
+        XCTAssert(evalState.results.count > 0, @"Error: nil response evaluating '%@'.", testExpression);
+        evaluationResult = [evalState.results firstObject];
+        XCTAssertEqualObjects(@"(2 3 4)", evaluationResult, @"Unexpected evaluation result.");
     }];
     // Wait for result:
     [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
-    XCTAssert(evaluationResults.count, @"-evaluateExpression:... returned no result.");
-    XCTAssertEqualObjects(@"(2 3 4)", evaluationResults.firstObject, @"Unexpected evaluation result.");
+    XCTAssert(evaluationResult.length > 0, @"-evaluateExpression:... returned no result in time.");
+    
+    // Second evaluation on same connection:
+    
+    NSString* testExpressionLF = @"(map inc (list 3 4 5))";
+    __block NSString* evaluationResultLF = nil;
+
+    [self.connection evaluateExpression: testExpressionLF completionBlock: ^(SEnREPLEvaluationState *evalState) {
+        XCTAssert(evalState.results.count > 0, @"Error: nil response evaluating '%@'.", testExpressionLF);
+        evaluationResultLF = [evalState.results firstObject];
+        XCTAssertEqualObjects(@"(4 5 6)", evaluationResultLF, @"Unexpected evaluation result.");
+    }];
+    // Wait for result:
+    [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
+    XCTAssert(evaluationResultLF.length > 0, @"-evaluateExpression:... returned no result.");
 }
 
 
 - (void) testLongResultExpressionEvaluation {
     
-    
-    NSString* testExpression = @"(range 3000)";
-    __block NSMutableArray* evaluationResults = [NSMutableArray array];
-    
-    [self.connection evaluateExpression: testExpression completionBlock: ^(NSDictionary* result) {
-        XCTAssert(result.count > 0, @"Error: nil response evaluating '%@'.", testExpression);
-        NSString* evaluationResult = result[@"value"];
-        if (evaluationResult) {
-            [evaluationResults addObject: evaluationResult];
-        }
+    NSString* testExpression = @"(range 30)";
+    __block NSString* evaluationResult = nil;
+    [self.connection evaluateExpression: testExpression completionBlock: ^(SEnREPLEvaluationState *evalState) {
+        XCTAssert(evalState.results.count > 0, @"Error: nil response evaluating '%@'.", testExpression);
+        evaluationResult = [evalState.results firstObject];
+        XCTAssert(evaluationResult.length >= 30, @"-evaluateExpression:... returned no result.");
     }];
     // Wait for result:
-    [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
-    XCTAssert(evaluationResults.count > 0, @"-evaluateExpression:... returned no result.");
-    NSLog(@"testLongResultExpressionEvaluation returned %@", evaluationResults);
+    [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 11.5]];
+    XCTAssert(evaluationResult.length > 0, @"-evaluateExpression:... returned no result.");
+    //NSLog(@"testLongResultExpressionEvaluation returned %@", evaluationResults);
 }
 
 
