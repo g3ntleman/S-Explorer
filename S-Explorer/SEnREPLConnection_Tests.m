@@ -70,11 +70,13 @@ static NSInteger globalPort = 50555;
     [self.connection close];
     [self.repl stop];
     // Wait for the task to actually terminate, so we can restart it:
-    NSLog(@"Waiting for ");
-    while (self.repl.task.isRunning) {
-        sleep(0.1);
+    if (self.repl.task.isRunning) {
+        NSLog(@"Waiting for JVM to terminate.");
+        while (self.repl.task.isRunning) {
+            sleep(0.1);
+        }
+        _repl = nil;
     }
-    _repl = nil;
 }
 
 

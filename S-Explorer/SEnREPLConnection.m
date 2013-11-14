@@ -107,7 +107,7 @@
         
     }
     // Unable to parse the result, wait for more data:
-    [self.socket readDataWithTimeout: 20.0 tag: tag];
+    [self.socket readDataWithTimeout: 20.0 tag: tag]; // Warning, how do we know the timout the user wanted?
 }
 
 - (void) socket: (GCDAsyncSocket*) sock didWriteDataWithTag: (long) tag {
