@@ -37,10 +37,16 @@
 - (BOOL) openWithError: (NSError**) errorPtr {
     NSAssert(self.socket, @"openWithError: Socket not set.");
     NSAssert(self.socket.isDisconnected, @"openWithError: Socket still open. Close it first.");
+    if (_connectRetries <= 0) {
+        _connectRetries = 50;
+    }
     return [self.socket connectToHost: self.hostname onPort: self.port error: errorPtr];
 }
 
 - (void) close {
+    
+    _connectRetries = 0;
+
     if ([_socket isConnected]) {
         NSLog(@"Trying to disconnect %@", _socket);
         [_socket disconnect];
@@ -52,6 +58,7 @@
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port {
     NSLog(@"Connected to %@:%u.", host, port);
+    _connectRetries = 0;
 }
 
 //- (void)socket:(GCDAsyncSocket *)sock didReadPartialDataOfLength:(NSUInteger)partialLength tag:(long)tag {
@@ -71,9 +78,10 @@
 
 - (void) socketDidDisconnect: (GCDAsyncSocket*) sock withError: (NSError*) error {
     
-    if (error.code == 61 && _connectRetries < 50) {
-        // Connection Refused, retry for 50 times:
-        _connectRetries += 1;
+    if (error.code == 61 && _connectRetries > 0) {
+        // Connection Refused, retry:
+        _connectRetries -= 1;
+        NSLog(@"Connection Refused. Retrying. %d tries left.", _connectRetries);
         [self performSelector: @selector(openWithError:) withObject: NULL afterDelay: 0.2];
     } else {
         NSLog(@"%@ disconnected (%@). Cleaning up...", self, error);
@@ -114,6 +122,10 @@
     NSLog(@"Socket wrote data for tag %ld.", (long)tag);
 }
 
+- (BOOL) isConnecting {
+    return ! self.socket.isConnected && _connectRetries > 0;
+}
+
 /**
  * Sends the encoded commandDictionary to the nREPL server process.
  * Calls the given block after decoding the result.
@@ -122,10 +134,8 @@
  **/
 - (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREplResultBlock) block timeout: (NSTimeInterval) timeout {
     
-    // Block, until a connection is established, or failed:
-    while (! (self.socket.isDisconnected || self.socket.isConnected)) {
-        sleep(0.1);
-    }
+    
+    NSAssert([self.socket isConnected], @"Cannot send Command without open connection. -open first.");
     
     NSData* benData = [[[OPBEncoder alloc] initForEncoding] encodeRootObject: commandDictionary];
     NSString* benString = [[NSString alloc] initWithData: benData encoding:NSUTF8StringEncoding];

@@ -17,7 +17,7 @@
 
 @end
 
-static NSInteger globalPort = 50555;
+static NSInteger globalPort = 50556;
 
 // problem: beim disconnect, connect zyklus, während die REPL noch startet, geht das darauffolgende Kommando verloren.
 
@@ -37,7 +37,7 @@ static NSInteger globalPort = 50555;
     _repl = [[SEREPL alloc] initWithSettings: settings];
     
     [_repl startOnPort: globalPort];
-        
+            
     NSError* error = nil;
     self.connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.repl.port];
     
@@ -51,15 +51,16 @@ static NSInteger globalPort = 50555;
     
     // Wait until connection is established:
     
-    while (! self.connection.socket.isConnected && ! self.connection.socket.isDisconnected) {
+    if (self.connection.isConnecting) {
         NSLog(@"Waiting for client socket to connect...");
-        [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
-//        if (self.repl.port != self.connection.port) {
-//            [self.connection close];
-//            [self.connection openWithError: &error];
-//        }
+        while (self.connection.isConnecting) {
+            [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
+        }
+        if (self.connection.socket.isConnected) {
+            NSLog(@"Connected.");
+        }
     }
-    
+    XCTAssert(self.connection.socket.isConnected, @"Unable to connect to REPL server on port %ld", (long)self.repl.port);
 }
 
 

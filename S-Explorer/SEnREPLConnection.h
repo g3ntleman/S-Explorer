@@ -40,6 +40,8 @@ typedef void (^SEnREplResultBlock)(SEnREPLEvaluationState* evalState);
 @property (readonly, nonatomic) NSString* hostname;
 @property (readonly, nonatomic) NSInteger port;
 @property (readonly, nonatomic) NSInteger tagCounter;
+@property (readonly, nonatomic) BOOL isConnecting;
+
 
 - (id) initWithHostname: (NSString*) hostname port: (NSInteger) port;
 
