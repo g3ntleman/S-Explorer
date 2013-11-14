@@ -19,6 +19,9 @@
 
 static NSInteger globalPort = 50555;
 
+// problem: beim disconnect, connect zyklus, während die REPL noch startet, geht das darauffolgende Kommando verloren.
+
+
 @implementation SEnREPLConnection_Tests
 
 - (void) setUp {
@@ -34,9 +37,7 @@ static NSInteger globalPort = 50555;
     _repl = [[SEREPL alloc] initWithSettings: settings];
     
     [_repl startOnPort: globalPort];
-    
-    sleep(4);
-    
+        
     NSError* error = nil;
     self.connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.repl.port];
     
@@ -60,6 +61,7 @@ static NSInteger globalPort = 50555;
     }
     
 }
+
 
 - (void) tearDown {
     // Put teardown code here. This method is called after the invocation of each test method in the class.

@@ -25,9 +25,9 @@
     if (self.task.isRunning) {
         NSLog(@"Terminating REPL Server Task.");
         [self.task terminate];
-        while (self.task.isRunning) {
-            sleep(0.1);
-        }
+//        while (self.task.isRunning) {
+//            sleep(0.1);
+//        }
         _task = nil;
     }
 }

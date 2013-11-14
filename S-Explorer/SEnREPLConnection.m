@@ -122,7 +122,10 @@
  **/
 - (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREplResultBlock) block timeout: (NSTimeInterval) timeout {
     
-    //NSAssert([self.socket isConnected], @"Cannot send Command without open connection. -open first.");
+    // Block, until a connection is established, or failed:
+    while (! (self.socket.isDisconnected || self.socket.isConnected)) {
+        sleep(0.1);
+    }
     
     NSData* benData = [[[OPBEncoder alloc] initForEncoding] encodeRootObject: commandDictionary];
     NSString* benString = [[NSString alloc] initWithData: benData encoding:NSUTF8StringEncoding];
