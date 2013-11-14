@@ -67,7 +67,7 @@
         // Connection Refused, retry:
         _connectRetries -= 1;
         NSTimeInterval retryInterval = 0.3;
-        NSLog(@"Connection Refused. Retrying in %f. %d tries left.", retryInterval, _connectRetries);
+        NSLog(@"Connection Refused. Retrying in %f. %ld tries left.", retryInterval, (long)_connectRetries);
         [self performSelector: @selector(openWithError:) withObject: NULL afterDelay: retryInterval];
     } else {
         NSLog(@"%@ disconnected (%@). Cleaning up...", self, error);
