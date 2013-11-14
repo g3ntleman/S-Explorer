@@ -61,28 +61,14 @@
     _connectRetries = 0;
 }
 
-//- (void)socket:(GCDAsyncSocket *)sock didReadPartialDataOfLength:(NSUInteger)partialLength tag:(long)tag {
-//    NSLog(@"Socket read %lu bytes.", (unsigned long)partialLength);
-//
-//
-//    NSDictionary* result = (id)[OPBEncoder objectFromEncodedData: data];
-//    if (result) {
-//        SEnREplResultBlock block = [_blockOperationsByTag objectForKey: @(tag)];
-//        block(result);
-//    } else {
-//        // Expect more Data:
-//    }
-//
-//
-//}
-
 - (void) socketDidDisconnect: (GCDAsyncSocket*) sock withError: (NSError*) error {
     
     if (error.code == 61 && _connectRetries > 0) {
         // Connection Refused, retry:
         _connectRetries -= 1;
-        NSLog(@"Connection Refused. Retrying. %d tries left.", _connectRetries);
-        [self performSelector: @selector(openWithError:) withObject: NULL afterDelay: 0.2];
+        NSTimeInterval retryInterval = 0.3;
+        NSLog(@"Connection Refused. Retrying in %f. %d tries left.", retryInterval, _connectRetries);
+        [self performSelector: @selector(openWithError:) withObject: NULL afterDelay: retryInterval];
     } else {
         NSLog(@"%@ disconnected (%@). Cleaning up...", self, error);
         [self close];

@@ -112,4 +112,8 @@
     _settings = settings;
 }
 
+- (NSString*) debugDescription {
+    return [NSString stringWithFormat: @"%@ %@, listening on port %ld", [super debugDescription], self.task, self.port];
+}
+
 @end

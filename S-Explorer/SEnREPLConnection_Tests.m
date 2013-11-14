@@ -50,7 +50,6 @@ static NSInteger globalPort = 50556;
     }
     
     // Wait until connection is established:
-    
     if (self.connection.isConnecting) {
         NSLog(@"Waiting for client socket to connect...");
         while (self.connection.isConnecting) {
@@ -70,14 +69,6 @@ static NSInteger globalPort = 50556;
     
     [self.connection close];
     [self.repl stop];
-    // Wait for the task to actually terminate, so we can restart it:
-    if (self.repl.task.isRunning) {
-        NSLog(@"Waiting for JVM to terminate.");
-        while (self.repl.task.isRunning) {
-            sleep(0.1);
-        }
-        _repl = nil;
-    }
 }
 
 
