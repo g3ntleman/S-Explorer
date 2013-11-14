@@ -1,2 +1,9 @@
-*.xcuserstate
-*.xcbkptlist
+# General
+.DS_Store
+
+# Xcode
+xcuserdata
+*.xccheckout
+DerivedData/
+Build/
+
