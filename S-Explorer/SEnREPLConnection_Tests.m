@@ -17,6 +17,8 @@
 
 @end
 
+static NSInteger globalPort = 50555;
+
 @implementation SEnREPLConnection_Tests
 
 - (void) setUp {
@@ -27,10 +29,13 @@
                                @"RuntimeArguments": @[@"repl", @":headless", @":port"],
                                @"WorkingDirectory": [[NSBundle bundleForClass: [self class]] bundlePath]};
     
+    globalPort += 1;
+    
     _repl = [[SEREPL alloc] initWithSettings: settings];
     
-    [_repl start];
+    [_repl startOnPort: globalPort];
     
+    sleep(4);
     
     NSError* error = nil;
     self.connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.repl.port];
@@ -45,9 +50,13 @@
     
     // Wait until connection is established:
     
-    while (! self.connection.socket.isConnected) {
+    while (! self.connection.socket.isConnected && ! self.connection.socket.isDisconnected) {
         NSLog(@"Waiting for client socket to connect...");
         [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
+//        if (self.repl.port != self.connection.port) {
+//            [self.connection close];
+//            [self.connection openWithError: &error];
+//        }
     }
     
 }
@@ -59,6 +68,7 @@
     [self.connection close];
     [self.repl stop];
     // Wait for the task to actually terminate, so we can restart it:
+    NSLog(@"Waiting for ");
     while (self.repl.task.isRunning) {
         sleep(0.1);
     }
@@ -100,16 +110,16 @@
 
 - (void) testLongResultExpressionEvaluation {
     
-    NSString* testExpression = @"(range 30)";
+    NSString* testExpression = @"(range 3000)";
     __block NSString* evaluationResult = nil;
     [self.connection evaluateExpression: testExpression completionBlock: ^(SEnREPLEvaluationState *evalState) {
         XCTAssert(evalState.results.count > 0, @"Error: nil response evaluating '%@'.", testExpression);
         evaluationResult = [evalState.results firstObject];
-        XCTAssert(evaluationResult.length >= 30, @"-evaluateExpression:... returned no result.");
+        XCTAssert(evaluationResult.length >= 0, @"-evaluateExpression:... returned no result.");
     }];
     // Wait for result:
-    [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 11.5]];
-    XCTAssert(evaluationResult.length > 0, @"-evaluateExpression:... returned no result.");
+    [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
+    XCTAssert([evaluationResult hasSuffix: @" 2999)"], @"-evaluateExpression:... returned wrong result.");
     //NSLog(@"testLongResultExpressionEvaluation returned %@", evaluationResults);
 }
 

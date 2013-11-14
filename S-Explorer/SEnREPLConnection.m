@@ -94,10 +94,9 @@
     NSString* dataString = [[NSString alloc] initWithData: evalState.buffer encoding: NSUTF8StringEncoding];
     NSLog(@"Socket read data. Buffer now: %@", dataString);
     
-    
     NSDictionary* result = (id)[OPBEncoder objectFromEncodedData: evalState.buffer];
     if (result) {
-        evalState.buffer.length = 0; // Not entirely correct. Need to trim only parsed part.
+        evalState.buffer.length = 0; // Not entirely correct. Need to trim only parsed part (yet unknown).
         [evalState update: result];
         if (evalState.isEvaluationDone) {
             NSLog(@"Finished expression result for tag %ld", tag);
@@ -108,7 +107,7 @@
         
     }
     // Unable to parse the result, wait for more data:
-    [self.socket readDataWithTimeout: 2.0 tag: tag];
+    [self.socket readDataWithTimeout: 20.0 tag: tag];
 }
 
 - (void) socket: (GCDAsyncSocket*) sock didWriteDataWithTag: (long) tag {
@@ -194,7 +193,7 @@
 - (void) update: (NSDictionary*) partialResultDictionary {
     
     NSArray* status = partialResultDictionary[@"status"];
-    if (status) self.status = status;
+    if (status) self.status = status.lastObject;
     
     NSString* sessionID = partialResultDictionary[@"session"];
     if (sessionID) self.sessionID = sessionID;

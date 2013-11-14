@@ -30,24 +30,22 @@
         }
         _task = nil;
     }
-    if (_port) {
-        _port += 1; // use different port each time?
-    }
 }
 
 /**
  * Starts the REPL task. A previous task is terminated.
  **/
-- (void) start {
+- (void) startOnPort: (NSInteger) port {
     // Stop a running task as neccessary:
     [self stop];
     
-    _task = [[NSTask alloc] init];
-
+    
+    _port = port;
     if (! _port) {
         _port = 50555;
     }
     
+    _task = [[NSTask alloc] init];
     
     //NSError* error = nil;
     NSArray* commandArguments = _settings[@"RuntimeArguments"];
@@ -95,7 +93,7 @@
         if (task.terminationStatus == 1) {
             
             [this stop];
-            [this start];
+            [this startOnPort: this.port];
             return;
         }
     };
