@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SEREPL : NSObject
+@interface SEnREPL : NSObject
 
 @property (nonatomic, readonly) NSTask* task;
 

@@ -6,9 +6,9 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import "SEREPL.h"
+#import "SEnREPL.h"
 
-@implementation SEREPL
+@implementation SEnREPL
 
 - (id) initWithSettings: (NSDictionary*) initialSettings {
     if (self = [self init]) {
@@ -86,7 +86,7 @@
     
     [_task setEnvironment: environment];
     
-    __weak SEREPL* this = self;
+    __weak SEnREPL* this = self;
     
     _task.terminationHandler =  ^void (NSTask* task) {
         NSLog(@"REPL Task Terminated with return code %d", task.terminationStatus);

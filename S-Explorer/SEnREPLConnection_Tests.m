@@ -8,11 +8,11 @@
 
 #import <XCTest/XCTest.h>
 #import "SEnREPLConnection.h"
-#import "SEREPL.h"
+#import "SEnREPL.h"
 
 @interface SEnREPLConnection_Tests : XCTestCase
 
-@property SEREPL* repl;
+@property SEnREPL* repl;
 @property SEnREPLConnection* connection;
 
 @end
@@ -34,12 +34,14 @@ static NSInteger globalPort = 50556;
     
     globalPort += 1;
     
-    _repl = [[SEREPL alloc] initWithSettings: settings];
+    _repl = [[SEnREPL alloc] initWithSettings: settings];
     
     [_repl startOnPort: globalPort];
             
     NSError* error = nil;
-    self.connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.repl.port];
+    self.connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost"
+                                                             port: self.repl.port
+                                                        sessionID: nil];
     
     if (! [self.connection openWithError: &error]) {
         NSLog(@"Unable to open connection %@", error);
@@ -102,7 +104,7 @@ static NSInteger globalPort = 50556;
     __block NSString* evaluationResultLF = nil;
 
     [self.connection evaluateExpression: testExpressionLF completionBlock: ^(SEnREPLEvaluationState *evalState) {
-        XCTAssert(evalState.results.count > 0, @"Error: nil response evaluating '%@'.", testExpressionLF);
+        XCTAssert(evalState.results.count > 0, @"Error: No results evaluating '%@': %@", testExpressionLF, evalState.error);
         evaluationResultLF = [evalState.results firstObject];
         XCTAssertEqualObjects(@"(4 5 6)", evaluationResultLF, @"Unexpected evaluation result.");
     }];

@@ -8,6 +8,7 @@
 
 #import "SEnREPLConnection.h"
 #import "OPBEncoder.h"
+#import "NSDictionary+OPImmutablility.h"
 
 @interface SEnREPLConnection () <NSStreamDelegate>
 
@@ -18,7 +19,10 @@
 
 @implementation SEnREPLConnection
 
-- (id) initWithHostname: (NSString*) hostname port: (NSInteger) port {
+/**
+ * aSessionID may be nil. Will be assigned by the server with first reply.
+ */
+- (id) initWithHostname: (NSString*) hostname port: (NSInteger) port sessionID: (NSString*) aSessionID {
     if (self = [self init]) {
         _hostname = [hostname copy];
         _port = port;
@@ -26,6 +30,7 @@
         
         _socket = [[GCDAsyncSocket alloc] initWithDelegate: self delegateQueue: dispatch_get_main_queue()];
         _socket.delegate = self;
+        _sessionID = [aSessionID copy];
     }
     return self;
 }
@@ -45,14 +50,23 @@
 
 - (void) close {
     
-    _connectRetries = 0;
-
-    if ([_socket isConnected]) {
-        NSLog(@"Trying to disconnect %@", _socket);
-        [_socket disconnect];
-    }
-    [_evaluationStatesByTag removeAllObjects];
+    void (^closeBlock)(SEnREPLEvaluationState*) = ^(SEnREPLEvaluationState* evalState) {
+        _connectRetries = 0;
+        if ([_socket isConnected]) {
+            NSLog(@"Trying to disconnect %@", _socket);
+            [_socket disconnect];
+        }
+        [_evaluationStatesByTag removeAllObjects];
+    };
     
+    if ([_socket isConnected]) {
+        if (self.sessionID.length) {
+            NSLog(@"Closing The receiver session.");
+            [self terminateSessionWithCompletionBlock: closeBlock];
+        } else {
+            closeBlock(nil);
+        }
+    }
 }
 
 
@@ -67,7 +81,7 @@
         // Connection Refused, retry:
         _connectRetries -= 1;
         NSTimeInterval retryInterval = 0.3;
-        NSLog(@"Connection Refused. Retrying in %f. %ld tries left.", retryInterval, (long)_connectRetries);
+        NSLog(@"Connection Refused. Retrying in %.01fs. %ld tries left.", retryInterval, (long)_connectRetries);
         [self performSelector: @selector(openWithError:) withObject: NULL afterDelay: retryInterval];
     } else {
         NSLog(@"%@ disconnected (%@). Cleaning up...", self, error);
@@ -86,16 +100,22 @@
     
     
     NSString* dataString = [[NSString alloc] initWithData: evalState.buffer encoding: NSUTF8StringEncoding];
-    NSLog(@"Socket read data. Buffer now: %@", dataString);
+    NSLog(@"Socket read data for tag %ld. Buffer now: %@", tag, dataString);
     
     NSDictionary* result = (id)[OPBEncoder objectFromEncodedData: evalState.buffer];
     if (result) {
         evalState.buffer.length = 0; // Not entirely correct. Need to trim only parsed part (yet unknown).
         [evalState update: result];
-        if (evalState.isEvaluationDone) {
+        if (evalState.isStatusDone) {
             NSLog(@"Finished expression result for tag %ld", tag);
+            if (evalState.sessionID.length) {
+                _sessionID = evalState.sessionID;
+            }
             evalState.resultBlock(evalState);
             return;
+        } else if (evalState.error) {
+            NSLog(@"%@ reports an error: %@", sock, evalState.error);
+            evalState.resultBlock(evalState);
         }
     } else {
         
@@ -120,12 +140,16 @@
  **/
 - (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREplResultBlock) block timeout: (NSTimeInterval) timeout {
     
-    
     NSAssert([self.socket isConnected], @"Cannot send Command without open connection. -open first.");
+
+// Does not work - getting unknown session error.
+//    if (_sessionID.length) {
+//        commandDictionary = [commandDictionary dictionaryBySettingObject: _sessionID forKey: @"session"];
+//    }
     
     NSData* benData = [[[OPBEncoder alloc] initForEncoding] encodeRootObject: commandDictionary];
-    NSString* benString = [[NSString alloc] initWithData: benData encoding:NSUTF8StringEncoding];
-    NSLog(@"Sending '%@'", benString);
+    //NSString* benString = [[NSString alloc] initWithData: benData encoding:NSUTF8StringEncoding];
+    NSLog(@"Sending '%@'", commandDictionary);
     [self.socket writeData: benData withTimeout: timeout tag: _tagCounter];
     //[self.socket writeData: [GCDAsyncSocket LFData] withTimeout: timeout tag:_tagCounter];
     
@@ -146,6 +170,26 @@
     return [self sendCommandDictionary: command completionBlock: block timeout: 6.0];
 }
 
+
+- (void) terminateSessionWithCompletionBlock: (SEnREplResultBlock) block {
+    
+    if (! _sessionID) {
+        block(nil);
+        return;
+    }
+    
+    // NSLog(@"Closing The receiver session.");
+    [self sendCommandDictionary: @{@"op": @"close", @"session": _sessionID}
+                completionBlock: ^(SEnREPLEvaluationState *evalState) {
+                    if ([evalState isEqual: @"done"]) {
+                    }
+                    block(evalState);
+                    _sessionID = nil;
+                }
+                        timeout: 2.0];
+}
+
+
 @end
 
 @interface SEnREPLEvaluationState () {
@@ -154,6 +198,7 @@
 }
 
 @property (strong, nonatomic) NSString* status;
+@property (strong, nonatomic) NSError* error;
 @property (strong, nonatomic) NSString* sessionID;
 @property (strong, nonatomic) NSString* evaluationID;
 @property (strong, nonatomic) SEnREplResultBlock resultBlock;
@@ -174,9 +219,17 @@
     return _buffer;
 }
 
-- (BOOL) isEvaluationDone {
+- (BOOL) isStatusDone {
     return [self.status isEqualToString: @"done"];
 }
+
+- (NSString*) errorString {
+    if ([self.status isEqualToString: @"error"]) {
+        return @"Error";
+    }
+    return nil;
+}
+
 
 - (id) initWithEvaluationID: (NSString*) anId
                   sessionID: (NSString*) aSessionID
@@ -192,7 +245,18 @@
 - (void) update: (NSDictionary*) partialResultDictionary {
     
     NSArray* status = partialResultDictionary[@"status"];
-    if (status) self.status = status.lastObject;
+    
+    if (status.count) {
+        self.status = status.lastObject;
+        
+        if ([self.status isEqualToString: @"error"]) {
+            _error = [[NSError alloc] initWithDomain: @"nREPL" code: -1 userInfo: @{NSLocalizedDescriptionKey: status.firstObject}];
+        } else {
+            _error = nil;
+        }
+    }
+    
+    //NSAssert(status.count <= 1, @"Mutliple status codes send.");
     
     NSString* sessionID = partialResultDictionary[@"session"];
     if (sessionID) self.sessionID = sessionID;
@@ -204,6 +268,9 @@
         }
         [_results addObject: result];
     }
+    
+    NSLog(@"Updated status with: %@ to %@", partialResultDictionary, self);
+
 }
 
 @end

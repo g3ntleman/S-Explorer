@@ -19,11 +19,12 @@ typedef void (^SEnREplResultBlock)(SEnREPLEvaluationState* evalState);
 
 @property (readonly, nonatomic) NSMutableData* buffer;
 @property (readonly, nonatomic) NSString* status;
+@property (readonly, nonatomic) NSError* error;
 @property (readonly, nonatomic) NSString* sessionID;
 @property (readonly, nonatomic) NSString* evaluationID;
 @property (readonly, nonatomic) NSArray* results;
 @property (readonly, nonatomic) SEnREplResultBlock resultBlock;
-@property (readonly) BOOL isEvaluationDone;
+@property (readonly) BOOL isStatusDone;
 
 
 - (id) initWithEvaluationID: (NSString*) anId
@@ -38,16 +39,19 @@ typedef void (^SEnREplResultBlock)(SEnREPLEvaluationState* evalState);
 
 @property (readonly, nonatomic) GCDAsyncSocket* socket;
 @property (readonly, nonatomic) NSString* hostname;
+@property (readonly, nonatomic) NSString* sessionID;
 @property (readonly, nonatomic) NSInteger port;
 @property (readonly, nonatomic) NSInteger tagCounter;
 @property (readonly, nonatomic) BOOL isConnecting;
 
 
-- (id) initWithHostname: (NSString*) hostname port: (NSInteger) port;
+- (id) initWithHostname: (NSString*) hostname port: (NSInteger) port sessionID: (NSString*) aSessionID;
 
 - (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREplResultBlock) block timeout: (NSTimeInterval) timeout;
 
 - (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREplResultBlock) block;
+
+- (void) terminateSessionWithCompletionBlock: (SEnREplResultBlock) block;
 
 - (BOOL) openWithError: (NSError**) errorPtr;
 - (void) close;
