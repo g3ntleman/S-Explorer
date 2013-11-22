@@ -48,9 +48,15 @@
     return [self.socket connectToHost: self.hostname onPort: self.port error: errorPtr];
 }
 
+- (void) sendConsoleInput: (NSString*) inputString {
+    NSParameterAssert(inputString.length);
+    NSParameterAssert(NO);
+}
+
+
 - (void) close {
     
-    void (^closeBlock)(SEnREPLEvaluationState*) = ^(SEnREPLEvaluationState* evalState) {
+    void (^closeBlock)(SEnREPLResultState*) = ^(SEnREPLResultState* evalState) {
         _connectRetries = 0;
         if ([_socket isConnected]) {
             NSLog(@"Trying to disconnect %@", _socket);
@@ -70,7 +76,7 @@
 }
 
 
-- (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port {
+- (void) socket: (GCDAsyncSocket*) sock didConnectToHost: (NSString*) host port: (UInt16) port {
     NSLog(@"Connected to %@:%u.", host, port);
     _connectRetries = 0;
 }
@@ -92,7 +98,7 @@
 
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag: (long) tag {
     
-    SEnREPLEvaluationState* evalState = _evaluationStatesByTag[@(tag)]; // expect this to exist
+    SEnREPLResultState* evalState = _evaluationStatesByTag[@(tag)]; // expect this to exist
     
     NSAssert(evalState != nil, @"No evaluation state set up.");
     
@@ -153,7 +159,7 @@
     [self.socket writeData: benData withTimeout: timeout tag: _tagCounter];
     //[self.socket writeData: [GCDAsyncSocket LFData] withTimeout: timeout tag:_tagCounter];
     
-    SEnREPLEvaluationState* evalState = [[SEnREPLEvaluationState alloc] initWithEvaluationID: [@(_tagCounter) description]
+    SEnREPLResultState* evalState = [[SEnREPLResultState alloc] initWithEvaluationID: [@(_tagCounter) description]
                                                                                    sessionID: nil // assigned automatically
                                                                                  resultBlock: block];
     [_evaluationStatesByTag setObject: evalState forKey: @(_tagCounter)];
@@ -180,7 +186,7 @@
     
     // NSLog(@"Closing The receiver session.");
     [self sendCommandDictionary: @{@"op": @"close", @"session": _sessionID}
-                completionBlock: ^(SEnREPLEvaluationState *evalState) {
+                completionBlock: ^(SEnREPLResultState *evalState) {
                     if ([evalState isEqual: @"done"]) {
                     }
                     block(evalState);
@@ -192,7 +198,7 @@
 
 @end
 
-@interface SEnREPLEvaluationState () {
+@interface SEnREPLResultState () {
     NSMutableArray* _results;
     NSMutableData* _buffer;
 }
@@ -206,7 +212,7 @@
 
 @end
 
-@implementation SEnREPLEvaluationState
+@implementation SEnREPLResultState
 
 - (NSArray*) results {
     return _results;

@@ -14,4 +14,6 @@
 
 - (id) dictionaryBySettingObject: (id) value forKey: (id<NSCopying>) key;
 
+- (id) dictionaryByAddingEntriesFromDictionary: (NSDictionary*) dictionary;
+
 @end

@@ -70,7 +70,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             }
         }
         
-        self.currentLanguage = @"Chibi-Scheme";
+        self.currentLanguage = @"Clojure";
         
         return self;
     }
@@ -269,6 +269,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 - (void) awakeFromNib {
     self.sourceList.doubleAction = @selector(sourceTableDoubleAction:);
+    
+    [self startREPLServerAsNeccessary];
 }
 
 
@@ -316,49 +318,46 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 - (IBAction) runProject: (id) sender {
-    [self.topREPLController startREPLAndLaunchTarget: sender];
+    [self.topREPLController run: sender];
+}
+
+- (void) replServerDidStart: (SEnREPL*) repl {
+    if (repl.task.isRunning) {
+        NSLog(@"replServerDidStart: %@", repl);
+    }
+}
+
+- (void) startREPLServerAsNeccessary {
+    
+    if (! self.nREPL.task.isRunning) {
+        if (! self.nREPL) {
+            NSMutableDictionary* settings = [self.languageDictionary mutableCopy];
+            [settings addEntriesFromDictionary: self.topREPLSettings];
+            [settings setObject: [self.fileURL.path stringByDeletingLastPathComponent] forKey: @"WorkingDirectory"];
+            //NSDictionary* settings = [self.languageDictionary dictionaryByAddingEntriesFromDictionary: self.topREPLSettings];
+            _nREPL = [[SEnREPL alloc] initWithSettings: settings];
+            [_nREPL startOnPort: 0 withError: NULL];
+            [self performSelector: @selector(replServerDidStart:) withObject: _nREPL afterDelay: 8.0];
+        }
+        
+        
+//        if (_nREPL.task. error) {
+//            [[NSAlert alertWithError: error] runWithCompletion:^(NSInteger buttonIndex) {
+//                [self performSelector: @selector(close) withObject: nil afterDelay: 0.1];
+//            }];
+//        }
+    }
 }
 
 - (void) tabView: (NSTabView*) tabView didSelectTabViewItem: (NSTabViewItem*) tabViewItem {
     
     if (tabView == self.replTabView) {
-        if (! self.topREPLController.task.isRunning) {
+        SEREPLViewController* replController = self.topREPLController;
+        if (! replController.connection.socket.isConnected) {
             NSError* error = nil;
-            NSArray* arguments = self.languageDictionary[@"RuntimeArguments"];
-            NSMutableArray* launchArguments = [[NSMutableArray alloc] init];
+            [replController.connection openWithError: &error];
             
-            NSString* sourceFile = self.topREPLSettings[@"StartupSource"];
-            if (sourceFile.length) {
-                [launchArguments addObject: [NSString stringWithFormat: @"-l%@", sourceFile]];
-            }
             
-            NSString* expression = self.topREPLSettings[@"StartupExpression"];
-            if (expression.length) {
-                [launchArguments addObject: [NSString stringWithFormat: @"-e%@", expression]];
-            }
-            
-            NSString* tool = self.languageDictionary[@"RuntimeTool"];
-//            if (tool.length) {
-//                if (! [tool hasPrefix: @"/"]) {
-//                    [arguments insertObject: tool atIndex: 0];
-//                    tool = @"/usr/bin/env";
-//                }
-//            }
-
-            [self.topREPLController setCommand: tool
-                                 withArguments: arguments
-                               launchArguments: launchArguments
-                              workingDirectory: self.projectFolderItem.absolutePath
-                                      greeting: self.languageDictionary[@"WelcomeMessage"]
-                                         error: &error];
-            
-            [self.topREPLController startREPL: self];
-            
-            if (error) {
-                [[NSAlert alertWithError: error] runWithCompletion:^(NSInteger buttonIndex) {
-                    [self performSelector: @selector(close) withObject: nil afterDelay: 0.1];
-                }];
-            }
         }
     } else if (tabView == self.sourceTabView) {
         NSLog(@"selected tab %@", sourceTabView.selectedTabViewItem);

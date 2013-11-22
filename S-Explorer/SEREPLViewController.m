@@ -68,43 +68,57 @@ static NSData* lineFeedData = nil;
     return commandHistory;
 }
 
-- (void) taskOutputReceived: (NSNotification*) n {
-    
-    NSFileHandle* filehandle = n.object;
-    //NSData* data = filehandle.availableData;
-    NSData* data = n.userInfo[NSFileHandleNotificationDataItem];
-    
-    if (data.length) {
-        NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
-        
-        [self.replView appendInterpreterString: string];
-        
-        NSString* outputString = self.replView.string;
-        NSRange outputRange = NSMakeRange(currentOutputStart, outputString.length-currentOutputStart);
-        
-        //NSLog(@"Colorizing '%@' ", [outputString substringWithRange: outputRange]);
-        
-        [self.replView colorizeRange: outputRange];
-        
-        [self.replView moveToEndOfDocument: self];
-        
-        
-        [filehandle readInBackgroundAndNotify];
-    } else {
-        //if (! self.task.isRunning) {
-            NSString* string = [NSString stringWithFormat: @"\n--> Process exited with exit code %d.\n", self.task.terminationStatus];
-            [self.replView appendInterpreterString: string];
-        //}
-    }
-}
+//- (void) taskOutputReceived: (NSNotification*) n {
+//    
+//    NSFileHandle* filehandle = n.object;
+//    //NSData* data = filehandle.availableData;
+//    NSData* data = n.userInfo[NSFileHandleNotificationDataItem];
+//    
+//    if (data.length) {
+//        NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
+//        
+//        [self.replView appendInterpreterString: string];
+//        
+//        NSString* outputString = self.replView.string;
+//        NSRange outputRange = NSMakeRange(currentOutputStart, outputString.length-currentOutputStart);
+//        
+//        //NSLog(@"Colorizing '%@' ", [outputString substringWithRange: outputRange]);
+//        
+//        [self.replView colorizeRange: outputRange];
+//        
+//        [self.replView moveToEndOfDocument: self];
+//        
+//        
+//        [filehandle readInBackgroundAndNotify];
+//    } else {
+//        //if (! self.task.isRunning) {
+//            NSString* string = [NSString stringWithFormat: @"\n--> Process exited with exit code %d.\n", self.task.terminationStatus];
+//            [self.replView appendInterpreterString: string];
+//        //}
+//    }
+//}
 
 - (void) evaluateString: (NSString*) commandString {
     
     if (commandString.length) {
-        NSParameterAssert(self.task.isRunning);
+        NSParameterAssert(self.connection.socket.isConnected);
         NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
         [tty.masterFileHandle writeData: stringData];
         [tty.masterFileHandle writeData: lineFeedData];
+        [self.connection evaluateExpression: commandString completionBlock:^(SEnREPLResultState *evalState) {
+            for (NSString* result in evalState.results) {
+                [self.replView appendInterpreterString: result];
+                [self.replView appendInterpreterString: @"\n"];
+            }
+            
+            NSString* outputString = self.replView.string;
+            NSRange outputRange = NSMakeRange(currentOutputStart, outputString.length-currentOutputStart);
+            
+            NSLog(@"Colorizing '%@' ", [outputString substringWithRange: outputRange]);
+            
+            [self.replView colorizeRange: outputRange];
+            [self.replView moveToEndOfDocument: self];
+        }];
     }
 }
 
@@ -148,7 +162,7 @@ static NSData* lineFeedData = nil;
 
 - (BOOL) sendCurrentCommand {
     
-    if (! self.task.isRunning) {
+    if (! self.connection.socket.isConnected) {
         NSBeep();
         return NO;
     }
@@ -278,19 +292,16 @@ static NSData* lineFeedData = nil;
 
 - (IBAction) stop: (id) sender {
     
-    if (self.task) {
-        
-         [_task terminate];
-        [[NSNotificationCenter defaultCenter] removeObserver: self
-                                                        name: NSFileHandleReadCompletionNotification
-                                                      object: tty.masterFileHandle];
-        _task = nil;
+    if (! self.connection.socket.isDisconnected) {
+        [self.connection close];
     }
 }
 
 
-- (void) startAndLaunchTarget: (BOOL) launch {
+- (void) connectAndLaunchTarget: (BOOL) launch {
 
+    NSError* error = nil;
+    
     [self stop: self];
     //NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
 
@@ -305,57 +316,17 @@ static NSData* lineFeedData = nil;
     
     [self.replView setEditable: YES];
     
-    _task = [[NSTask alloc] init];
-    tty = [[PseudoTTY alloc] init];
+    [self.connection openWithError: &error];
     
-    [_task setStandardInput: tty.slaveFileHandle];
-    [_task setStandardOutput: tty.slaveFileHandle];
-    [_task setStandardError: tty.slaveFileHandle];
-    if (self.commandArguments.count + self.launchArguments.count) {
-        _task.arguments = self.commandArguments;
-        if (launch) {
-            if (! _task.arguments) {
-                _task.arguments = @[];
-            }
-            _task.arguments = [_task.arguments arrayByAddingObjectsFromArray: self.launchArguments];
-        }
-    }
-    _task.launchPath = self.commandString;
-    _task.currentDirectoryPath = self.workingDirectory;
-    
-    NSDictionary *defaultEnvironment = [[NSProcessInfo processInfo] environment];
-    NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary:defaultEnvironment];
-    //[environment setObject: @"YES" forKey: @"NSUnbufferedIO"];
-    [environment setObject: @"en_US-iso8859-1" forKey: @"LANG"];
-    
-    [_task setEnvironment: environment];
-    
-    [[NSNotificationCenter defaultCenter] addObserver: self
-                                             selector: @selector(taskOutputReceived:)
-                                                 name:  NSFileHandleReadCompletionNotification
-                                               object: tty.masterFileHandle];
-    
-    [tty.masterFileHandle readInBackgroundAndNotify];
-    
-    //[self evaluateString: self.settings[SEMainFunctionKey]];
-    
-    NSTextView* theReplView = self.replView;
-    _task.terminationHandler =  ^void (NSTask* task) {
-        [theReplView setEditable: NO];
-    };
-    
-    NSLog(@"Launching '%@' with %@", _task.launchPath, _task.arguments);
-    
-    [_task launch];
-    [tty.slaveFileHandle closeFile];
+
 }
 
-- (IBAction) startREPLAndLaunchTarget: (id) sender {
-    [self startAndLaunchTarget: YES];
+- (IBAction) run: (id) sender {
+    [self connectAndLaunchTarget: YES];
 }
 
-- (IBAction) startREPL: (id) sender {
-    [self startAndLaunchTarget: NO];
+- (IBAction) connectREPL: (id) sender {
+    [self connectAndLaunchTarget: NO];
 }
 
 
@@ -364,30 +335,6 @@ static NSData* lineFeedData = nil;
 }
 
 
-- (void) setCommand: (NSString*) command
-      withArguments: (NSArray*) generalArguments
-    launchArguments: (NSArray*) launchArguments
-   workingDirectory: (NSString*) workingDirectory
-           greeting: (NSString*) greeting
-              error: (NSError**) errorPtr {
-
-    _workingDirectory = [workingDirectory copy];
-    _commandString = [[command stringByResolvingSymlinksInPath] copy];
-    _commandArguments = [generalArguments copy];
-    _launchArguments = [launchArguments copy];
-    _greeting = [greeting copy];
-    
-    commandHistory = [NSMutableArray arrayWithContentsOfURL: self.historyFileURL];
-    previousCommandHistoryIndex = self.commandHistory.count - 1;
-    
-    if (! [[NSFileManager defaultManager] isExecutableFileAtPath: command]) {
-        if (errorPtr) {
-            *errorPtr = [NSError errorWithDomain: @"org.cocoanuts.s-explorer" code: 404
-                                        userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No Executable file at '%@'", command]}];
-        }
-        return;
-    }
-}
 
 
 

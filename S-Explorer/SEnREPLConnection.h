@@ -9,13 +9,13 @@
 #import <Foundation/Foundation.h>
 #import "GCDAsyncSocket.h"
 
-@class SEnREPLEvaluationState;
+@class SEnREPLResultState;
 
 typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
 
-typedef void (^SEnREplResultBlock)(SEnREPLEvaluationState* evalState);
+typedef void (^SEnREplResultBlock)(SEnREPLResultState* evalState);
 
-@interface SEnREPLEvaluationState : NSObject
+@interface SEnREPLResultState : NSObject
 
 @property (readonly, nonatomic) NSMutableData* buffer;
 @property (readonly, nonatomic) NSString* status;
@@ -48,6 +48,8 @@ typedef void (^SEnREplResultBlock)(SEnREPLEvaluationState* evalState);
 - (id) initWithHostname: (NSString*) hostname port: (NSInteger) port sessionID: (NSString*) aSessionID;
 
 - (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREplResultBlock) block timeout: (NSTimeInterval) timeout;
+
+- (void) sendConsoleInput: (NSString*) inputString;
 
 - (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREplResultBlock) block;
 

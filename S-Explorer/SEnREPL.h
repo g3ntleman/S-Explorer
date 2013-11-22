@@ -18,7 +18,7 @@
 
 - (id) initWithSettings: (NSDictionary*) initialSettings;
 
-- (void) startOnPort: (NSInteger) port;
+- (void) startOnPort: (NSInteger) port withError: (NSError**) errorPtr;
 - (void) stop;
 
 @end

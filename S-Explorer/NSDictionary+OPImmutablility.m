@@ -22,4 +22,11 @@
     return [dictionary copy];
 }
 
+- (id) dictionaryByAddingEntriesFromDictionary: (NSDictionary*) dictionary {
+    NSMutableDictionary* result = [self mutableCopy];
+    [result addEntriesFromDictionary: dictionary];
+    return result;
+}
+
+
 @end

@@ -100,6 +100,22 @@
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
 	<key>LanguageSupport</key>
 	<dict>
+		<key>Clojure</key>
+		<dict>
+			<key>LibraryDirectory</key>
+			<string></string>
+			<key>RuntimeTool</key>
+			<string>/usr/local/bin/lein</string>
+			<key>RuntimePortArgumentFormat</key>
+			<string>:port %@</string>
+			<key>RuntimeArguments</key>
+			<array>
+				<string>repl</string>
+				<string>:headless</string>
+			</array>
+			<key>WelcomeMessage</key>
+			<string>Welcome to Clojure!</string>
+		</dict>
 		<key>Chibi-Scheme</key>
 		<dict>
 			<key>LibraryDirectory</key>

@@ -8,6 +8,8 @@
 
 #import <AppKit/AppKit.h>
 #import "SEREPLView.h"
+#import "SEnREPLConnection.h"
+#import "SEnREPL.h"
 
 @class SEProject;
 
@@ -16,10 +18,11 @@
 @property (strong, nonatomic) SEREPLView* replView;
 
 @property (nonatomic, readonly) NSString* currentCommand;
-@property (nonatomic, strong) NSTask* task;
-@property (nonatomic, strong, readonly) NSString* commandString;
-@property (nonatomic, strong, readonly) NSArray* commandArguments;
-@property (nonatomic, strong, readonly) NSArray* launchArguments;
+//@property (nonatomic, strong) NSTask* task;
+//@property (nonatomic, strong, readonly) NSString* commandString;
+//@property (nonatomic, strong, readonly) NSArray* commandArguments;
+//@property (nonatomic, strong, readonly) NSArray* launchArguments;
+@property (nonatomic, readonly) SEnREPLConnection* connection;
 @property (nonatomic, strong, readonly) NSString* greeting;
 @property (nonatomic, strong, readonly) NSString* workingDirectory;
 
@@ -30,21 +33,14 @@
 
 - (id) initWithProject: (SEProject*) aProject identifier: (NSString*) anIdentifier;
 
-- (void) setCommand: (NSString*) command
-      withArguments: (NSArray*) arguments
-    launchArguments: (NSArray*) launchArguments
-   workingDirectory: (NSString*) workingDirectory
-           greeting: (NSString*) greeting
-              error: (NSError**) errorPtr;
+- (IBAction) run: (id) sender;
 
-- (IBAction) startREPLAndLaunchTarget: (id) sender;
-- (IBAction) startREPL: (id) sender;
-
-- (IBAction)selectREPL: (id) sender;
+- (IBAction) selectREPL: (id) sender;
 
 - (void) evaluateString: (NSString*) expression;
 
 - (NSURL*) historyFileURL;
 
+- (IBAction) connectREPL: (id) sender;
 
 @end

@@ -11,6 +11,7 @@
 #import "SESchemeParser.h"
 #import "SESourceItem.h"
 #import "SEEditorController.h"
+#import "SEnREPL.h"
 
 extern NSString* SEProjectDocumentType;
 
@@ -18,6 +19,7 @@ extern NSString* SEProjectDocumentType;
 
 @interface SEProject : NSDocument <NSOutlineViewDataSource, NSUserInterfaceValidations, NSTabViewDelegate>
 
+@property (nonatomic, readonly) SEnREPL* nREPL;
 @property (readonly, nonatomic) SEREPLViewController* topREPLController;
 @property (readonly, nonatomic) NSDictionary* allREPLControllers;
 @property (strong, nonatomic) IBOutlet NSTabView* replTabView;
@@ -54,5 +56,7 @@ extern NSString* SEProjectDocumentType;
 
 
 - (void) setSourceItem: (SESourceItem*) item forTabIndex: (NSUInteger) index;
+
+- (void) startREPLServerAsNeccessary;
 
 @end
