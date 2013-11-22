@@ -42,26 +42,54 @@
     }
 }
 
+- (void) taskOutputReceived: (NSNotification*) n {
+    
+    NSFileHandle* filehandle = n.object;
+    //NSData* data = filehandle.availableData;
+    NSData* data = n.userInfo[NSFileHandleNotificationDataItem];
+    
+    if (data.length) {
+        NSError* error = nil;
+        
+        NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
+        
+        NSLog(@"-> %@", string);
+        
+        NSRegularExpression* portScanner = [[NSRegularExpression alloc] initWithPattern: @"nREPL server started on port (\\d+)"
+                                                                                options: NSRegularExpressionCaseInsensitive
+                                                                                  error: &error];
+        NSTextCheckingResult* portScannerResult = [portScanner firstMatchInString: string options: NSRegularExpressionCaseInsensitive range: NSMakeRange(0, string.length)];
+                                
+        
+        if (portScannerResult.numberOfRanges>1) {
+            _port = [[string substringWithRange: [portScannerResult rangeAtIndex: 1]] integerValue];
+        }
+        
+        [filehandle readInBackgroundAndNotify];
+    } else {
+        if (! self.port) {
+            NSLog(@"\n--> Process exited with exit code %d.\n", self.task.terminationStatus);
+        }
+    }
+}
+
 /**
  * Starts the REPL task. A previous task is terminated.
  **/
-- (void) startOnPort: (NSInteger) port withError: (NSError**) errorPtr {
+- (void) startWithError: (NSError**) errorPtr {
     
     // Stop a running task as neccessary:
     [self stop];
     
-    _port = port;
-    if (! _port) {
-        _port = 50555;
-    }
-    
     _task = [[NSTask alloc] init];
     _tty = [[PseudoTTY alloc] init];
     
-    [_task setStandardInput: _tty.slaveFileHandle];
+    //[_task setStandardInput: _tty.slaveFileHandle];
     [_task setStandardOutput: _tty.slaveFileHandle];
     [_task setStandardError: _tty.slaveFileHandle];
 
+
+    
     
     //NSError* error = nil;
     NSMutableArray* commandArguments = [_settings[@"RuntimeArguments"] mutableCopy];
@@ -78,10 +106,10 @@
         [commandArguments addObject: [NSString stringWithFormat: @"-e%@", expression]];
     }
     
-    NSString* portFormat = _settings[@"RuntimePortArgumentFormat"];
-    if (portFormat.length) {
-        [commandArguments addObjectsFromArray: [[NSString stringWithFormat: portFormat, @(_port)] componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
-    }
+//    NSString* portFormat = _settings[@"RuntimePortArgumentFormat"];
+//    if (portFormat.length) {
+//        [commandArguments addObjectsFromArray: [[NSString stringWithFormat: portFormat, @(_port)] componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+//    }
     
     NSString* tool = _settings[@"RuntimeTool"];
 
@@ -98,20 +126,29 @@
     
     NSDictionary *defaultEnvironment = [[NSProcessInfo processInfo] environment];
     NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary:defaultEnvironment];
-    //[environment setObject: @"YES" forKey: @"NSUnbufferedIO"];
-    //[environment setObject: @"en_US-iso8859-1" forKey: @"LANG"];
+    [environment setObject: @"YES" forKey: @"NSUnbufferedIO"];
+    [environment setObject: @"en_US-iso8859-1" forKey: @"LANG"];
     
     [_task setEnvironment: environment];
     [_task setArguments: commandArguments];
+
     
     __weak SEnREPL* this = self;
+    
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(taskOutputReceived:)
+                                                 name:  NSFileHandleReadCompletionNotification
+                                               object: _tty.masterFileHandle];
+    
+    [_tty.masterFileHandle readInBackgroundAndNotify];
+    
     
     _task.terminationHandler =  ^void (NSTask* task) {
         NSLog(@"REPL Task Terminated with return code %d", task.terminationStatus);
         if (task.terminationStatus == 1) {
             //NSLog(@"Port %ld seems in use. Restarting...", this.port);
             [this stop];
-            [this startOnPort: this.port+1 withError: errorPtr];
+            [this startWithError: errorPtr];
             return;
         }
     };

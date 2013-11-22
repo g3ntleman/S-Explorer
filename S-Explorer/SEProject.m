@@ -336,8 +336,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             [settings setObject: [self.fileURL.path stringByDeletingLastPathComponent] forKey: @"WorkingDirectory"];
             //NSDictionary* settings = [self.languageDictionary dictionaryByAddingEntriesFromDictionary: self.topREPLSettings];
             _nREPL = [[SEnREPL alloc] initWithSettings: settings];
-            [_nREPL startOnPort: 0 withError: NULL];
-            [self performSelector: @selector(replServerDidStart:) withObject: _nREPL afterDelay: 8.0];
+            [_nREPL startWithError: NULL];
         }
         
         

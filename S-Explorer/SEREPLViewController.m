@@ -66,35 +66,6 @@ static NSData* lineFeedData = nil;
     return commandHistory;
 }
 
-//- (void) taskOutputReceived: (NSNotification*) n {
-//    
-//    NSFileHandle* filehandle = n.object;
-//    //NSData* data = filehandle.availableData;
-//    NSData* data = n.userInfo[NSFileHandleNotificationDataItem];
-//    
-//    if (data.length) {
-//        NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
-//        
-//        [self.replView appendInterpreterString: string];
-//        
-//        NSString* outputString = self.replView.string;
-//        NSRange outputRange = NSMakeRange(currentOutputStart, outputString.length-currentOutputStart);
-//        
-//        //NSLog(@"Colorizing '%@' ", [outputString substringWithRange: outputRange]);
-//        
-//        [self.replView colorizeRange: outputRange];
-//        
-//        [self.replView moveToEndOfDocument: self];
-//        
-//        
-//        [filehandle readInBackgroundAndNotify];
-//    } else {
-//        //if (! self.task.isRunning) {
-//            NSString* string = [NSString stringWithFormat: @"\n--> Process exited with exit code %d.\n", self.task.terminationStatus];
-//            [self.replView appendInterpreterString: string];
-//        //}
-//    }
-//}
 
 - (void) evaluateString: (NSString*) commandString {
     
