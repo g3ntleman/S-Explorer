@@ -9,7 +9,6 @@
 
 #import "SEREPLViewController.h"
 #import "SEREPLView.h"
-#import "PseudoTTY.h"
 #import "SESchemeParser.h"
 #import "SEProject.h"
 
@@ -22,7 +21,6 @@ static const NSString* SEMainFunctionKey = @"MainFunction";
 
 @implementation SEREPLViewController {
 
-    PseudoTTY* tty;
     NSMutableArray* commandHistory;
     NSInteger previousCommandHistoryIndex;
     
@@ -102,9 +100,9 @@ static NSData* lineFeedData = nil;
     
     if (commandString.length) {
         NSParameterAssert(self.connection.socket.isConnected);
-        NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
-        [tty.masterFileHandle writeData: stringData];
-        [tty.masterFileHandle writeData: lineFeedData];
+        //        NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
+        //        [tty.masterFileHandle writeData: stringData];
+        //        [tty.masterFileHandle writeData: lineFeedData];
         [self.connection evaluateExpression: commandString completionBlock:^(SEnREPLResultState *evalState) {
             for (NSString* result in evalState.results) {
                 [self.replView appendInterpreterString: result];

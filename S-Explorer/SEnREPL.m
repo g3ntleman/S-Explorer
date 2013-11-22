@@ -7,8 +7,18 @@
 //
 
 #import "SEnREPL.h"
+#import "PseudoTTY.h"
+
+@interface SEnREPL ()
+
+@property (strong, nonatomic) PseudoTTY* tty;
+
+
+@end
 
 @implementation SEnREPL
+
+
 
 - (id) initWithSettings: (NSDictionary*) initialSettings {
     if (self = [self init]) {
@@ -46,6 +56,12 @@
     }
     
     _task = [[NSTask alloc] init];
+    _tty = [[PseudoTTY alloc] init];
+    
+    [_task setStandardInput: _tty.slaveFileHandle];
+    [_task setStandardOutput: _tty.slaveFileHandle];
+    [_task setStandardError: _tty.slaveFileHandle];
+
     
     //NSError* error = nil;
     NSMutableArray* commandArguments = [_settings[@"RuntimeArguments"] mutableCopy];
