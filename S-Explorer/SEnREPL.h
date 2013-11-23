@@ -8,6 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+@class SEnREPL;
+
+typedef void (^SEnREPLCompletionBlock)(SEnREPL* repl, NSError* error);
+
+
 @interface SEnREPL : NSObject
 
 @property (nonatomic, readonly) NSTask* task;
@@ -18,7 +23,7 @@
 
 - (id) initWithSettings: (NSDictionary*) initialSettings;
 
-- (void) startWithError: (NSError**) errorPtr;
+- (void) startWithCompletionBlock: (SEnREPLCompletionBlock) block;
 - (void) stop;
 
 @end

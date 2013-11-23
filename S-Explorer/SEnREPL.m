@@ -12,7 +12,7 @@
 @interface SEnREPL ()
 
 @property (strong, nonatomic) PseudoTTY* tty;
-
+@property (strong, nonatomic) SEnREPLCompletionBlock completionBlock;
 
 @end
 
@@ -34,11 +34,16 @@
 - (void) stop {
     if (self.task.isRunning) {
         NSLog(@"Terminating REPL Server Task.");
+        
+        // Stop Monitoring the tty:
+        [[NSNotificationCenter defaultCenter] removeObserver: self
+                                                        name: NSFileHandleReadCompletionNotification
+                                                      object: _tty.masterFileHandle];
+        
         [self.task terminate];
-//        while (self.task.isRunning) {
-//            sleep(0.1);
-//        }
+
         _task = nil;
+        _tty = nil;
     }
 }
 
@@ -55,14 +60,21 @@
         
         NSLog(@"-> %@", string);
         
-        NSRegularExpression* portScanner = [[NSRegularExpression alloc] initWithPattern: @"nREPL server started on port (\\d+)"
-                                                                                options: NSRegularExpressionCaseInsensitive
-                                                                                  error: &error];
-        NSTextCheckingResult* portScannerResult = [portScanner firstMatchInString: string options: NSRegularExpressionCaseInsensitive range: NSMakeRange(0, string.length)];
-                                
-        
-        if (portScannerResult.numberOfRanges>1) {
-            _port = [[string substringWithRange: [portScannerResult rangeAtIndex: 1]] integerValue];
+        if (! self.port) {
+            // Try to find out, which port the nREPL server is running on:
+            NSRegularExpression* portScanner = [[NSRegularExpression alloc] initWithPattern: @"nREPL server started on port (\\d+)"
+                                                                                    options: NSRegularExpressionCaseInsensitive
+                                                                                      error: &error];
+            NSTextCheckingResult* portScannerResult = [portScanner firstMatchInString: string options: 0 range: NSMakeRange(0, string.length)];
+            
+            
+            if (portScannerResult.numberOfRanges >= 2) {
+                NSString* portString = [string substringWithRange: [portScannerResult rangeAtIndex: 1]];
+                if (portString.length) {
+                    _port = [portString integerValue];
+                    _completionBlock(self, nil);
+                }
+            }
         }
         
         [filehandle readInBackgroundAndNotify];
@@ -76,11 +88,12 @@
 /**
  * Starts the REPL task. A previous task is terminated.
  **/
-- (void) startWithError: (NSError**) errorPtr {
+- (void) startWithCompletionBlock: (SEnREPLCompletionBlock) block {
     
     // Stop a running task as neccessary:
     [self stop];
     
+    _completionBlock = block;
     _task = [[NSTask alloc] init];
     _tty = [[PseudoTTY alloc] init];
     
@@ -89,8 +102,6 @@
     [_task setStandardError: _tty.slaveFileHandle];
 
 
-    
-    
     //NSError* error = nil;
     NSMutableArray* commandArguments = [_settings[@"RuntimeArguments"] mutableCopy];
     
@@ -112,12 +123,11 @@
 //    }
     
     NSString* tool = _settings[@"RuntimeTool"];
-
+    
     if (! [[NSFileManager defaultManager] isExecutableFileAtPath: tool]) {
-        if (errorPtr) {
-            *errorPtr = [NSError errorWithDomain: @"org.cocoanuts.s-explorer" code: 404
-                                        userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No Executable file at '%@'", tool]}];
-        }
+        _completionBlock(self, [NSError errorWithDomain: @"org.cocoanuts.s-explorer"
+                                                   code: 404
+                                               userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No Executable file at '%@'", tool]}]);
         return;
     }
     
@@ -148,7 +158,7 @@
         if (task.terminationStatus == 1) {
             //NSLog(@"Port %ld seems in use. Restarting...", this.port);
             [this stop];
-            [this startWithError: errorPtr];
+            [this startWithCompletionBlock: this.completionBlock];
             return;
         }
     };

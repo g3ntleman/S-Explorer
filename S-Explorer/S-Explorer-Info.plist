@@ -58,6 +58,35 @@
 			<string>SEProject</string>
 		</dict>
 		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>clj</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string></string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array/>
+			<key>CFBundleTypeName</key>
+			<string>Scheme Source</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>????</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.cocoanuts.clojure-source</string>
+				<string>public.plain-text</string>
+				<string>public.source-code</string>
+				<string>public.item</string>
+			</array>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
+			<key>NSDocumentClass</key>
+			<string>SEProject</string>
+		</dict>
+		<dict>
 			<key>CFBundleTypeName</key>
 			<string>All folders</string>
 			<key>CFBundleTypeOSTypes</key>

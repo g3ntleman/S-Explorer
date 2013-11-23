@@ -13,7 +13,7 @@
 
 typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
 
-typedef void (^SEnREplResultBlock)(SEnREPLResultState* evalState);
+typedef void (^SEnREPLResultBlock)(SEnREPLResultState* evalState);
 
 @interface SEnREPLResultState : NSObject
 
@@ -23,13 +23,13 @@ typedef void (^SEnREplResultBlock)(SEnREPLResultState* evalState);
 @property (readonly, nonatomic) NSString* sessionID;
 @property (readonly, nonatomic) NSString* evaluationID;
 @property (readonly, nonatomic) NSArray* results;
-@property (readonly, nonatomic) SEnREplResultBlock resultBlock;
+@property (readonly, nonatomic) SEnREPLResultBlock resultBlock;
 @property (readonly) BOOL isStatusDone;
 
 
 - (id) initWithEvaluationID: (NSString*) anId
                   sessionID: (NSString*) aSessionID
-                resultBlock: (SEnREplResultBlock) aResultBlock;
+                resultBlock: (SEnREPLResultBlock) aResultBlock;
 
 - (void) update: (NSDictionary*) partialResultDictionary;
 
@@ -47,13 +47,13 @@ typedef void (^SEnREplResultBlock)(SEnREPLResultState* evalState);
 
 - (id) initWithHostname: (NSString*) hostname port: (NSInteger) port sessionID: (NSString*) aSessionID;
 
-- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREplResultBlock) block timeout: (NSTimeInterval) timeout;
+- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREPLResultBlock) block timeout: (NSTimeInterval) timeout;
 
 - (void) sendConsoleInput: (NSString*) inputString;
 
-- (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREplResultBlock) block;
+- (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREPLResultBlock) block;
 
-- (void) terminateSessionWithCompletionBlock: (SEnREplResultBlock) block;
+- (void) terminateSessionWithCompletionBlock: (SEnREPLResultBlock) block;
 
 - (BOOL) openWithError: (NSError**) errorPtr;
 - (void) close;

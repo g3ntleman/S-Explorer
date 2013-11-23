@@ -336,7 +336,13 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             [settings setObject: [self.fileURL.path stringByDeletingLastPathComponent] forKey: @"WorkingDirectory"];
             //NSDictionary* settings = [self.languageDictionary dictionaryByAddingEntriesFromDictionary: self.topREPLSettings];
             _nREPL = [[SEnREPL alloc] initWithSettings: settings];
-            [_nREPL startWithError: NULL];
+            [_nREPL startWithCompletionBlock:^(SEnREPL *repl, NSError *error) {
+                NSLog(@"%@ startup completed (with error %@), listening on port #%ld", repl, error, repl.port);
+                if (! error) {
+                    // Connect clients:
+                }
+                
+            }];
         }
         
         
