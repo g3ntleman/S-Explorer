@@ -67,7 +67,7 @@
 			<key>CFBundleTypeMIMETypes</key>
 			<array/>
 			<key>CFBundleTypeName</key>
-			<string>Scheme Source</string>
+			<string>Clojure Source</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>????</string>

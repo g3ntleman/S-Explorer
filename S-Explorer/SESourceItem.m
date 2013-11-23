@@ -78,11 +78,12 @@
     BOOL result = YES;
     NSString* extension = path.pathExtension;
     if (extension.length) {
+        CFStringRef textUTI = CFSTR("public.text");
         // If the UTI is any kind of text (RTF, plain text, Unicode, and so forth), the function UTTypeConformsTo returns true.
-        CFStringRef itemUTI = UTTypeCreatePreferredIdentifierForTag (kUTTagClassFilenameExtension, (__bridge CFStringRef)(extension), NULL);
+        CFStringRef itemUTI = UTTypeCreatePreferredIdentifierForTag (kUTTagClassFilenameExtension, (__bridge CFStringRef)(extension), textUTI);
 
         
-        result = UTTypeConformsTo(itemUTI, CFSTR("public.text"));
+        result = UTTypeConformsTo(itemUTI, textUTI);
         CFRelease(itemUTI);
      }
     return result; // should we cache the result?

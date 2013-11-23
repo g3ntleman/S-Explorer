@@ -26,6 +26,7 @@ Implemented Features
 
 * Generic REPL with ...
   * Syntax-Highlighting
+    * Parenthesis Highlighting
   * Persistent REPL History
 
 
@@ -35,8 +36,13 @@ Planned Features
 * Infrastructure for multiple S-Expression-Based Languages with initial plans for
   * Chibi-Scheme, a lightweight Scheme implementation suitable for embedding / scripting
   * Clojure
+* REPL with ...
+  * Parenthesis Highlighting
+  * Expression Selection by double-clicking Parenthesis
 * Project templates for convenient project creation
 * Support for running Tests and multiple REPLs per project
+* Symbol indexing and completion
+* Documentation integration
 
 
 Immediate Todo:
