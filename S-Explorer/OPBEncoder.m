@@ -4,33 +4,7 @@
 
 
 @implementation OPBEncoder {
-    // Decoding:
-//	OPTypeBlock typeBlock;
-    
     NSMutableData* _encodingData;
-}
-
-//- (instancetype) initForDecodingWithTypeBlock: (OPBEncodedType (^)(NSArray* keyPath)) aTypeBlock {
-//    if (self = [self init]) {
-//        keyPath = [[NSMutableArray alloc] init];
-//        typeBlock = aTypeBlock;
-//    }
-//    return self;
-//}
-
-- (instancetype) initForDecoding {
-    if (self = [self init]) {
-//        keyPath = [[NSMutableArray alloc] init];
-    }
-    return self;
-}
-
-
-- (instancetype) initForEncoding {
-    if (self = [self init]) {
-        _encodingData = [[NSMutableData alloc] initWithCapacity: 200];
-    }
-    return self;
 }
 
 - (void) advanceOffsetBy: (NSUInteger) diff {
@@ -40,214 +14,14 @@
 
 - (void) setDecodingData: (NSData*) encodedData {
     _decodingData = [encodedData copy]; // make sure, this is immutable
-    //bytes = [_decodingData bytes];
-    //length = [_decodingData length];
     _offset = 0;
-    //[keyPath removeAllObjects];
 }
 
-//  +(NSData *)encodeDataFromObject:(id)object
-//
-//  This method to returns an NSData object that contains the bencoded
-//  representation of the object that you send. You can send complex structures
-//  such as an NSDictionary that contains NSArrays, NSNumbers and NSStrings, and
-//  the encoder will correctly serialise the data in the expected way.
-//
-//  Supports NSData, NSString, NSNumber, NSArray and NSDictionary objects.
-//
-//  NSStrings are encoded as NSData objects as there is no way to differentiate
-//  between the two when decoding.
-//
-//  NSNumbers are encoded and decoded with their longLongValue.
-//
-//  NSDictionary keys must be NSStrings.
+
 
 #define BUFFERLEN 37
 
-//+ (NSData*) encodedDataFromObject: (id) object {
-//    
-//	NSMutableData* data = [NSMutableData data];
-//	char buffer[BUFFERLEN]; // Small buffer to hold length strings. Needs to hold a 64bit number.
-//	
-//	memset(buffer, 0, sizeof(buffer)); // Ensure the buffer is zeroed
-//
-//	if ([object isKindOfClass:[NSData class]]) 
-//	{
-//		// Encode a chunk of bytes from an NSData:
-//		
-//		snprintf(buffer, BUFFERLEN, "%lu:", (unsigned long)[object length]);
-//
-//		[data appendBytes:buffer length:strlen(buffer)];
-//		[data appendData:object];
-//
-//		return data;
-//	} 
-//	if ([object isKindOfClass:[NSString class]]) 
-//	{
-//		// Encode an NSString:
-//		
-//		NSData *stringData = [object dataUsingEncoding:NSUTF8StringEncoding];
-//		snprintf(buffer, BUFFERLEN, "%lu:", (unsigned long)[stringData length]);
-//
-//		[data appendBytes:buffer length:strlen(buffer)];
-//		[data appendData:stringData];
-//
-//		return data;
-//	} 
-//	else if ([object isKindOfClass:[NSNumber class]]) 
-//	{
-//		// Encode an NSNumber:
-//		
-//		snprintf(buffer, BUFFERLEN, "i%llue", [object longLongValue]);
-//
-//		[data appendBytes:buffer length:strlen(buffer)];
-//
-//		return data;
-//	}
-//	else if ([object isKindOfClass:[NSArray class]]) 
-//	{
-//		// Encode an NSArray:
-//		
-//		[data appendBytes:"l" length:1];
-//		
-//		for (id item in object) {
-//			[data appendData:[OPBEncoder encodedDataFromObject:item]];
-//		}
-//		
-//		[data appendBytes:"e" length:1];
-//		
-//		return data;
-//	}
-//	else if ([object isKindOfClass:[NSDictionary class]]) 
-//	{
-//		// Encode an NSDictionary:
-//		
-//		[data appendBytes:"d" length:1];
-//		
-//		NSArray *sortedKeys = [[object allKeys] sortedArrayUsingComparator:(NSComparator)^(id obj1, id obj2) {
-//			return [obj1 compare:obj2 options:NSLiteralSearch];
-//		}];
-//		
-//		for (id key in sortedKeys) {	
-//			NSData *stringData = [key dataUsingEncoding:NSUTF8StringEncoding];
-//			snprintf(buffer, BUFFERLEN, "%lu:", (unsigned long)[stringData length]);
-//			
-//			[data appendBytes:buffer length:strlen(buffer)];
-//			[data appendData:stringData];
-//			[data appendData:[OPBEncoder encodedDataFromObject:[object objectForKey:key]]];
-//		}
-//		
-//		[data appendBytes:"e" length:1];
-//		return data;
-//	}
-//
-//	return nil;
-//}
 
-//+ (NSNumber*) numberFromEncodedData: (OPBEncoder*) data {
-//    
-//	NSMutableString *numberString = [NSMutableString string];
-//	long long int	number;
-//	
-//	assert(data->bytes[data->offset] == 'i');
-//	
-//	data->offset++; // We start on the i so we need to move by one.
-//	
-//	while (data->offset < data->length && data->bytes[data->offset] != 'e') {
-//		[numberString appendFormat:@"%c", data->bytes[data->offset++]];
-//	}
-//	
-//	if (![[NSScanner scannerWithString:numberString] scanLongLong:&number]) 
-//		return nil;
-//	
-//	data->offset++; // Always move the offset off the end of the encoded item.
-//	
-//	return [NSNumber numberWithLongLong:number];
-//}
-//
-//- (id) decodedObject {
-//	NSMutableString *dataLength = [NSMutableString string];
-//	NSMutableData *decodedValue = [NSMutableData data];
-//	
-//	if (data->bytes[data->offset] < '0' | data->bytes[data->offset] > '9')
-//		return nil; // Needed because we must fail to create a dictionary if it isn't a string.
-//	
-//	// strings are special; they start with a number so we don't move by one.
-//	
-//	while (data->offset < data->length && data->bytes[data->offset] != ':') {
-//		[dataLength appendFormat:@"%c", data->bytes[data->offset++]];
-//	}
-//	
-//	if (data->bytes[data->offset] != ':')
-//		return nil; // We must have overrun the end of the bencoded string.
-//	
-//	data->offset++;
-//	
-//	[decodedValue appendBytes:data->bytes + data->offset length:[dataLength integerValue]];
-//	[decodedValue increaseLengthBy:1];
-//	data->offset += [dataLength integerValue]; // Always move the offset off the end of the encoded item.
-//
-//	BOOL isUTF8String = typeBlock && typeBlock(data->keyPath) == OPBEncodedStringType);
-//	if (isUTF8String) return [NSString stringWithCString:[decodedValue bytes] encoding:NSUTF8StringEncoding];
-//	
-//	return decodedValue;
-//}
-//
-//- (NSString*) decodedString {
-//	/* A string is just bencoded data */
-//	
-//	id decodedData = [self decodedData];
-//	
-//	if (decodedData == nil) return nil;
-//	if ([decodedData isKindOfClass: [NSString class]]) return decodedData;
-//	
-//	return [[NSString alloc] initWithData: decodedData encoding: NSUTF8StringEncoding];
-//}
-//
-//+(NSArray *)arrayFromEncodedData:(OPBEncoder *)data
-//{
-//	NSMutableArray *array = [NSMutableArray array];
-//	
-//	assert(data->bytes[data->offset] == 'l');
-//
-//	data->offset++; // Move off the l so we point to the first encoded item.
-//	
-//	while (data->bytes[data->offset] != 'e') {
-//		[array addObject:[OPBEncoder objectFromData:data]];
-//	}
-//
-//	data->offset++; // Always move off the end of the encoded item.
-//	
-//	return array;
-//}
-//
-//- (NSDictionary *) decodeDictionary {
-//	NSDictionary *dictionary = [NSDictionary dictionary];
-//	NSString *key = nil;
-//	id value = nil;
-//	
-//	assert(data->bytes[data->offset] == 'd');
-//	
-//	data->offset++; // Move off the d so we point to the string key.
-//	
-//	while (data->bytes[data->offset] != 'e') {
-//		if (data->bytes[data->offset] >= '0' && data->bytes[data->offset] <= '9') {
-//			// Dictionaries are a bencoded string with a bencoded value.
-//			key = [OPBEncoder stringFromEncodedData:data];
-//			if (key) [data->keyPath addObject:key];
-//			
-//			value = [OPBEncoder objectFromData:data];
-//			if (key != nil && value != nil) [dictionary setValue:value forKey:key];
-//			
-//			if (key) [data->keyPath removeLastObject];
-//		}
-//	}
-//
-//	data->offset++; // Move off the e so we point to the next encoded item.
-//	
-//	return dictionary;
-//}
-//
 
 - (uint64) decodeInt {
     const void* bytes = _decodingData.bytes;
@@ -305,33 +79,20 @@
         }
         
         // If we reach here, it doesn't appear that this is bencoded data. So, we'll
-        // just return nil and advance to the next byte in the hopes we'll decode
-        // something useful. Not sure if this is a good strategy.
+        // just return nil and advance to the next byte and hopes we'll decode
+        // something useful. Ok strategy?
         _offset++;
     }
 	return nil;
 }
-//
-//+(id)objectFromEncodedData:(NSData *)sourceData
-//{
-//	return [OPBEncoder objectFromEncodedData:sourceData withTypeAdvisor:nil];
-//}
-//
-//
-//
-//
-//+ (id) objectFromEncodedData: (NSData*) sourceData
-//               withTypeBlock: (OPBEncodedType (^)(NSArray* keyPath)) block {
-//    OPBEncoder* bencoder = [[self alloc] initWithData: sourceData typeBlock: block];
-//	return [self objectFromData: bencoder];
-//}
-//
+
 - (void) encodeBytes:(const void*) byteaddr length: (NSUInteger) aLength {
     NSAssert(_encodingData, @"encodingData not set, wrong init?");
     [_encodingData appendBytes: byteaddr length: aLength];
 }
 
-
+//  NSNumbers are encoded and decoded with their longLongValue.
+//  NSDictionary keys must be NSStrings.
 - (NSData*) encodeRootObject: (id<OPBencoding>) object {
     if (_encodingData) {
         [_encodingData setLength: 0];
@@ -345,14 +106,14 @@
 
 + (NSData*) encodedDataFromObject: (id <OPBencoding>) object {
     
-    OPBEncoder* encoder = [[self alloc] initForEncoding];
+    OPBEncoder* encoder = [[self alloc] init];
     [encoder encodeRootObject: object];
     return encoder.encodingData;
 }
 
 + (id <OPBencoding>) objectFromEncodedData: (NSData*) sourceData {
     
-    OPBEncoder* decoder = [[self alloc] initForDecoding];
+    OPBEncoder* decoder = [[self alloc] init];
     decoder.decodingData = sourceData;
     return [decoder decodeObject];
 }

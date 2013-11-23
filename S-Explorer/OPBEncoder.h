@@ -21,19 +21,13 @@
 @interface NSDictionary (OPBEncodingSupport) <OPBencoding>
 @end
 
-//typedef enum {
-//	OPBEncodedStringType = -1,
-//	OPBEncodedDataType = 0
-//} OPBEncodedType;
-
-//typedef OPBEncodedType(^OPTypeBlock)(NSArray*);
 
 //  BEncoding
 //
 //  This class is not intended to be instantiated. Its a 'utility' class, and
 //  as such you simply call the class methods as required when you need them.
 //
-//  The BEncoding class can encode and decode data to and from bencoded byte
+//  The OPBEncoder class can encode and decode data to and from bencoded byte
 //  data as defined here: http://wiki.theory.org/BitTorrentSpecification
 
 @interface OPBEncoder : NSObject 
@@ -44,12 +38,6 @@
 // Encoding:
 @property (strong, readonly) NSData* encodingData;
 
-
-
-- (instancetype) initForDecoding;
-//- (instancetype) initForDecodingWithTypeBlock: (OPBEncodedType (^)(NSArray* keyPath)) aTypeBlock;
-
-- (instancetype) initForEncoding;
 
 //  This method to returns an NSData object that contains the bencoded
 //  representation of the object that you send. You can send complex structures
@@ -79,7 +67,6 @@
 
 - (NSData*) encodeRootObject:(id <OPBencoding>) object;
 
-- (void) encodeBytes: (const void *) byteaddr length: (NSUInteger) length;
 - (id) decodeObject;
 
 
