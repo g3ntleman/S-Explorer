@@ -9,7 +9,7 @@
 
 #import "SEREPLViewController.h"
 #import "SEREPLView.h"
-#import "SESchemeParser.h"
+#import "SESyntaxParser.h"
 #import "SEProject.h"
 
 static const NSString* SEMainFunctionKey = @"MainFunction";
@@ -285,8 +285,8 @@ static NSData* lineFeedData = nil;
     
     [self.replView setEditable: YES];
     
-    [self.connection openWithError: &error];
-    
+    _connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.nREPL.port sessionID: nil];
+    [_connection openWithError: &error];
 
 }
 

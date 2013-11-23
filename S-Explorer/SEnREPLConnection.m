@@ -153,7 +153,7 @@
 //        commandDictionary = [commandDictionary dictionaryBySettingObject: _sessionID forKey: @"session"];
 //    }
     
-    NSData* benData = [[[OPBEncoder alloc] initForEncoding] encodeRootObject: commandDictionary];
+    NSData* benData = [[[OPBEncoder alloc] init] encodeRootObject: commandDictionary];
     //NSString* benString = [[NSString alloc] initWithData: benData encoding:NSUTF8StringEncoding];
     NSLog(@"Sending '%@'", commandDictionary);
     [self.socket writeData: benData withTimeout: timeout tag: _tagCounter];

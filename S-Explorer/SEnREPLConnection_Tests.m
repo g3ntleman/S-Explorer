@@ -17,8 +17,6 @@
 
 @end
 
-static NSInteger globalPort = 50556;
-
 // problem: beim disconnect, connect zyklus, während die REPL noch startet, geht das darauffolgende Kommando verloren.
 
 
@@ -29,17 +27,22 @@ static NSInteger globalPort = 50556;
     // Put setup code here. This method is called before the invocation of each test method in the class.
     
     NSDictionary* settings = @{@"RuntimeTool": @"/usr/local/bin/lein",
-                               @"RuntimeArguments": @[@"repl", @":headless", @":port"],
+                               @"RuntimeArguments": @[@"repl", @":headless"],
                                @"WorkingDirectory": [[NSBundle bundleForClass: [self class]] bundlePath]};
     
-    globalPort += 1;
     
     _repl = [[SEnREPL alloc] initWithSettings: settings];
     
     NSError* error = nil;
+    __block BOOL started = NO;
     
-    [_repl startOnPort: globalPort withError: &error];
-            
+    [_repl startWithCompletionBlock:^(SEnREPL *repl, NSError *error) {
+        started = (error == nil);
+    }];
+    
+    while (! started) {
+        [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
+    }
     self.connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost"
                                                              port: self.repl.port
                                                         sessionID: nil];

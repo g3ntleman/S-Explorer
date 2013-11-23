@@ -457,9 +457,9 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 - (NSRange) topLevelExpressionContainingLocation: (NSUInteger) location {
     
     __block NSRange result = NSMakeRange(location, 0);
-    [[[SESchemeParser alloc] initWithString: self.textEditorView.string
+    [[[SESyntaxParser alloc] initWithString: self.textEditorView.string
                                       range: NSMakeRange(0, self.textEditorView.string.length)
-                                      block: ^(SESchemeParser *parser, SEParserResult pResult, BOOL *stopRef) {
+                                      block: ^(SESyntaxParser *parser, SEParserResult pResult, BOOL *stopRef) {
                                           if (pResult.depth == 1) {
                                               switch (pResult.occurrence.token) {
                                                   case LEFT_PAR: {

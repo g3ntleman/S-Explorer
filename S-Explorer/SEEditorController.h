@@ -7,7 +7,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import "SESchemeParser.h"
+#import "SESyntaxParser.h"
 #import "SEEditorTextView.h"
 #import "NoodleLineNumberView.h"
 #import "SESourceItem.h"

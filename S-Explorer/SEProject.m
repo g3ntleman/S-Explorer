@@ -340,6 +340,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                 NSLog(@"%@ startup completed (with error %@), listening on port #%ld", repl, error, repl.port);
                 if (! error) {
                     // Connect clients:
+                    [self.topREPLController connectREPL: self];
                 }
                 
             }];

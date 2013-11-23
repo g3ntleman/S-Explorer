@@ -166,10 +166,10 @@ static NSCharacterSet* SEWordCharacters() {
     [textStorage removeAttribute: NSForegroundColorAttributeName range: aRange];
 
     
-    SESchemeParser* parser =
-    [[SESchemeParser alloc] initWithString: textStorage.string
+    SESyntaxParser* parser =
+    [[SESyntaxParser alloc] initWithString: textStorage.string
                                      range: aRange
-                                     block: ^(SESchemeParser *parser, SEParserResult pResult, BOOL *stopRef) {
+                                     block: ^(SESyntaxParser *parser, SEParserResult pResult, BOOL *stopRef) {
                                          NSTextStorage* textStorage = self.textStorage;
                                          
                                          switch (pResult.occurrence.token) {
@@ -200,7 +200,7 @@ static NSCharacterSet* SEWordCharacters() {
                                                          NSString* word = [textStorage.string substringWithRange: pResult.occurrence.range];
                                                          
                                                          //NSLog(@"Colorizer found word '%@'", word);
-                                                         if ([[SESchemeParser keywords] containsObject: word]) {
+                                                         if ([[SESyntaxParser keywords] containsObject: word]) {
                                                              color = [NSColor purpleColor];
                                                          } else if ([parser.keywords containsObject: word]) {
                                                              color = [NSColor blueColor];

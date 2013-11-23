@@ -19,11 +19,11 @@ typedef enum {
     COMMENT,
     STRING,
     NUMBER
-} scheme_token;
+} s_token;
 
 
 typedef struct  {
-    scheme_token token;
+    s_token token;
     NSRange range;
 } SETokenOccurrence;
 
@@ -35,9 +35,9 @@ typedef struct  {
 
 
 
-@class SESchemeParser;
+@class SESyntaxParser;
 
-typedef void (^SESchemeParserBlock)(SESchemeParser *parser, SEParserResult result, BOOL* stopRef);
+typedef void (^SESyntaxParserBlock)(SESyntaxParser *parser, SEParserResult result, BOOL* stopRef);
 
 
 //@protocol SESchemeParserDelegate <NSObject>
@@ -49,17 +49,17 @@ typedef void (^SESchemeParserBlock)(SESchemeParser *parser, SEParserResult resul
 //
 //@end
 
-@interface SESchemeParser : NSObject
+@interface SESyntaxParser : NSObject
 
-@property (strong, nonatomic) SESchemeParserBlock delegateBlock;
+@property (strong, nonatomic) SESyntaxParserBlock delegateBlock;
 @property (strong, nonatomic) NSSet* keywords;
 @property (strong, readonly) NSString* string;
 
 + (NSSet*) keywords;
 
-- (id) initWithString: (NSString*) schemeSource
+- (id) initWithString: (NSString*) sSource
                 range: (NSRange) range
-                block: (SESchemeParserBlock) aDelegateBlock;
+                block: (SESyntaxParserBlock) aDelegateBlock;
 
 - (void) parseAll;
 

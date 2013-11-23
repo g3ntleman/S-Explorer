@@ -8,7 +8,7 @@
 
 #import <AppKit/AppKit.h>
 #import "SEREPLViewController.h"
-#import "SESchemeParser.h"
+#import "SESyntaxParser.h"
 #import "SESourceItem.h"
 #import "SEEditorController.h"
 #import "SEnREPL.h"

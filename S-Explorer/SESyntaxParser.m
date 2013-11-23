@@ -6,10 +6,10 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import "SESchemeParser.h"
+#import "SESyntaxParser.h"
 #include <ctype.h>
 
-@implementation SESchemeParser {
+@implementation SESyntaxParser {
     unichar* characters;
     NSUInteger length;
     NSUInteger position;
@@ -27,22 +27,22 @@
     return keywords;
 }
 
-- (id) initWithString: (NSString*) schemeSource
+- (id) initWithString: (NSString*) sSource
                 range: (NSRange) range
-                block: (SESchemeParserBlock) aDelegateBlock {
+                block: (SESyntaxParserBlock) aDelegateBlock {
     
-    if (! schemeSource.length) return nil;
+    if (! sSource.length) return nil;
     
-    NSParameterAssert(NSMaxRange(range) <= schemeSource.length);
+    NSParameterAssert(NSMaxRange(range) <= sSource.length);
     
     if (self = [self init]) {
         delegateBlock = aDelegateBlock;
-        _string = schemeSource;
+        _string = sSource;
         length = range.length;
         stringRange = range;
         characters = malloc(sizeof(unichar) * length + 1);
         characters[length] = EOF;
-        [schemeSource getCharacters: characters range: stringRange];
+        [sSource getCharacters: characters range: stringRange];
     }
     return self;
 }
