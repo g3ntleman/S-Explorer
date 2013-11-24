@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1080</int>
-		<string key="IBDocument.SystemVersion">12F37</string>
-		<string key="IBDocument.InterfaceBuilderVersion">4510</string>
-		<string key="IBDocument.AppKitVersion">1187.39</string>
-		<string key="IBDocument.HIToolboxVersion">626.00</string>
+		<string key="IBDocument.SystemVersion">13A603</string>
+		<string key="IBDocument.InterfaceBuilderVersion">4514</string>
+		<string key="IBDocument.AppKitVersion">1265</string>
+		<string key="IBDocument.HIToolboxVersion">695.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">4510</string>
+			<string key="NS.object.0">4514</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>NSButton</string>
@@ -102,7 +102,7 @@
 																		<int key="NSCellFlags2">2048</int>
 																		<string key="NSContents"/>
 																		<object class="NSFont" key="NSSupport">
-																			<string key="NSName">LucidaGrande</string>
+																			<string key="NSName">.LucidaGrandeUI</string>
 																			<double key="NSSize">11</double>
 																			<int key="NSfFlags">3100</int>
 																		</object>
@@ -125,7 +125,7 @@
 																		<int key="NSCellFlags2">2048</int>
 																		<string key="NSContents">Text Cell</string>
 																		<object class="NSFont" key="NSSupport" id="1008855709">
-																			<string key="NSName">LucidaGrande</string>
+																			<string key="NSName">.LucidaGrandeUI</string>
 																			<double key="NSSize">13</double>
 																			<int key="NSfFlags">1044</int>
 																		</object>
@@ -329,7 +329,7 @@
 																									<int key="NSTCFlags">1</int>
 																								</object>
 																								<object class="NSTextViewSharedData" key="NSSharedData">
-																									<int key="NSFlags">11587</int>
+																									<int key="NSFlags">67120451</int>
 																									<int key="NSTextCheckingTypes">0</int>
 																									<nil key="NSMarkedAttributes"/>
 																									<object class="NSColor" key="NSBackgroundColor" id="462492822">
@@ -405,7 +405,7 @@
 																						<string key="NSFrame">{{506, 0}, {16, 192}}</string>
 																						<reference key="NSSuperview" ref="703081702"/>
 																						<reference key="NSWindow"/>
-																						<reference key="NSNextKeyView" ref="687845010"/>
+																						<reference key="NSNextKeyView"/>
 																						<string key="NSReuseIdentifierKey">_NS:83</string>
 																						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 																						<reference key="NSTarget" ref="703081702"/>
@@ -571,12 +571,12 @@
 															<string key="NSFrame">{{0, 38}, {548, 202}}</string>
 															<reference key="NSSuperview" ref="687845010"/>
 															<reference key="NSWindow"/>
-															<reference key="NSNextKeyView" ref="971968726"/>
+															<reference key="NSNextKeyView" ref="1048998668"/>
 															<array class="NSMutableArray" key="NSTabViewItems">
 																<object class="NSTabViewItem" id="119845942">
 																	<string key="NSIdentifier">0</string>
 																	<object class="NSView" key="NSView" id="1048998668">
-																		<nil key="NSNextResponder"/>
+																		<reference key="NSNextResponder" ref="283397625"/>
 																		<int key="NSvFlags">1810</int>
 																		<array class="NSMutableArray" key="NSSubviews">
 																			<object class="NSScrollView" id="198625358">
@@ -591,14 +591,34 @@
 																								<reference key="NSNextResponder" ref="675952507"/>
 																								<int key="NSvFlags">3858</int>
 																								<object class="NSPSMatrix" key="NSFrameMatrix"/>
+																								<set class="NSMutableSet" key="NSDragTypes">
+																									<string>Apple HTML pasteboard type</string>
+																									<string>Apple PDF pasteboard type</string>
+																									<string>Apple PICT pasteboard type</string>
+																									<string>Apple PNG pasteboard type</string>
+																									<string>Apple URL pasteboard type</string>
+																									<string>CorePasteboardFlavorType 0x6D6F6F76</string>
+																									<string>NSColor pasteboard type</string>
+																									<string>NSFilenamesPboardType</string>
+																									<string>NSStringPboardType</string>
+																									<string>NeXT Encapsulated PostScript v1.2 pasteboard type</string>
+																									<string>NeXT RTFD pasteboard type</string>
+																									<string>NeXT Rich Text Format v1.0 pasteboard type</string>
+																									<string>NeXT TIFF v4.0 pasteboard type</string>
+																									<string>NeXT font pasteboard type</string>
+																									<string>NeXT ruler pasteboard type</string>
+																									<string>WebURLsWithTitlesPboardType</string>
+																									<string>public.url</string>
+																								</set>
 																								<string key="NSFrameSize">{522, 156}</string>
 																								<reference key="NSSuperview" ref="675952507"/>
+																								<reference key="NSWindow"/>
 																								<reference key="NSNextKeyView" ref="4373520"/>
 																								<object class="NSTextContainer" key="NSTextContainer" id="453800376">
 																									<object class="NSLayoutManager" key="NSLayoutManager">
 																										<object class="NSTextStorage" key="NSTextStorage">
 																											<object class="NSMutableString" key="NSString">
-																												<characters key="NS.bytes">REPL</characters>
+																												<characters key="NS.bytes">Loading REPL ...</characters>
 																											</object>
 																											<dictionary key="NSAttributes">
 																												<object class="NSFont" key="NSFont" id="181032193">
@@ -650,11 +670,12 @@
 																						</array>
 																						<string key="NSFrameSize">{522, 156}</string>
 																						<reference key="NSSuperview" ref="198625358"/>
+																						<reference key="NSWindow"/>
 																						<reference key="NSNextKeyView" ref="214181630"/>
 																						<reference key="NSDocView" ref="214181630"/>
 																						<reference key="NSBGColor" ref="67995174"/>
 																						<object class="NSCursor" key="NSCursor">
-																							<string key="NSHotSpot">{5, 5}</string>
+																							<string key="NSHotSpot">{1, -1}</string>
 																							<int key="NSCursorType">0</int>
 																						</object>
 																						<int key="NScvFlags">2</int>
@@ -665,6 +686,7 @@
 																						<object class="NSPSMatrix" key="NSFrameMatrix"/>
 																						<string key="NSFrame">{{-100, -100}, {528, 16}}</string>
 																						<reference key="NSSuperview" ref="198625358"/>
+																						<reference key="NSWindow"/>
 																						<reference key="NSNextKeyView" ref="675952507"/>
 																						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 																						<int key="NSsFlags">1</int>
@@ -678,6 +700,7 @@
 																						<object class="NSPSMatrix" key="NSFrameMatrix"/>
 																						<string key="NSFrame">{{512, 0}, {16, 156}}</string>
 																						<reference key="NSSuperview" ref="198625358"/>
+																						<reference key="NSWindow"/>
 																						<reference key="NSNextKeyView" ref="303727219"/>
 																						<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
 																						<reference key="NSTarget" ref="198625358"/>
@@ -688,6 +711,7 @@
 																				<object class="NSPSMatrix" key="NSFrameMatrix"/>
 																				<string key="NSFrame">{{4, 0}, {522, 156}}</string>
 																				<reference key="NSSuperview" ref="1048998668"/>
+																				<reference key="NSWindow"/>
 																				<reference key="NSNextKeyView" ref="126787495"/>
 																				<int key="NSsFlags">215568</int>
 																				<reference key="NSVScroller" ref="4373520"/>
@@ -700,6 +724,8 @@
 																		</array>
 																		<object class="NSPSMatrix" key="NSFrameMatrix"/>
 																		<string key="NSFrame">{{10, 33}, {528, 156}}</string>
+																		<reference key="NSSuperview" ref="283397625"/>
+																		<reference key="NSWindow"/>
 																		<reference key="NSNextKeyView" ref="198625358"/>
 																	</object>
 																	<string key="NSLabel">Main</string>
@@ -728,7 +754,6 @@
 																		<array class="NSMutableArray" key="NSSubviews"/>
 																		<object class="NSPSMatrix" key="NSFrameMatrix"/>
 																		<string key="NSFrame">{{10, 33}, {528, 156}}</string>
-																		<reference key="NSNextKeyView" ref="303727219"/>
 																	</object>
 																	<string key="NSLabel">Server</string>
 																	<reference key="NSColor" ref="442699102"/>
@@ -737,27 +762,24 @@
 																<object class="NSTabViewItem" id="138598891">
 																	<string key="NSIdentifier">3</string>
 																	<object class="NSView" key="NSView" id="971968726">
-																		<reference key="NSNextResponder" ref="283397625"/>
+																		<nil key="NSNextResponder"/>
 																		<int key="NSvFlags">1810</int>
 																		<array class="NSMutableArray" key="NSSubviews"/>
 																		<object class="NSPSMatrix" key="NSFrameMatrix"/>
 																		<string key="NSFrame">{{10, 33}, {528, 156}}</string>
-																		<reference key="NSSuperview" ref="283397625"/>
-																		<reference key="NSWindow"/>
-																		<reference key="NSNextKeyView" ref="303727219"/>
 																	</object>
 																	<string key="NSLabel">Peer</string>
 																	<reference key="NSColor" ref="442699102"/>
 																	<reference key="NSTabView" ref="283397625"/>
 																</object>
 															</array>
-															<reference key="NSSelectedTabViewItem" ref="138598891"/>
+															<reference key="NSSelectedTabViewItem" ref="119845942"/>
 															<reference key="NSFont" ref="1008855709"/>
 															<int key="NSTvFlags">0</int>
 															<bool key="NSAllowTruncatedLabels">YES</bool>
 															<bool key="NSDrawsBackground">YES</bool>
 															<array class="NSMutableArray" key="NSSubviews">
-																<reference ref="971968726"/>
+																<reference ref="1048998668"/>
 															</array>
 														</object>
 													</array>
@@ -945,6 +967,7 @@
 										<reference key="NSTextColor" ref="63263157"/>
 									</object>
 									<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
+									<int key="NSTextFieldAlignmentRectInsetsVersion">1</int>
 								</object>
 							</array>
 							<object class="NSPSMatrix" key="NSFrameMatrix"/>
@@ -1526,6 +1549,7 @@
 						<string key="saveDocument:">id</string>
 						<string key="saveDocumentAs:">id</string>
 						<string key="saveDocumentTo:">id</string>
+						<string key="saveDocumentToPDF:">id</string>
 						<string key="unlockDocument:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
@@ -1575,6 +1599,10 @@
 						</object>
 						<object class="IBActionInfo" key="saveDocumentTo:">
 							<string key="name">saveDocumentTo:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="saveDocumentToPDF:">
+							<string key="name">saveDocumentToPDF:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="unlockDocument:">
@@ -1633,6 +1661,7 @@
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="expandSelection:">id</string>
 						<string key="insertNewline:">id</string>
+						<string key="toggleComments:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="expandSelection:">
@@ -1641,6 +1670,10 @@
 						</object>
 						<object class="IBActionInfo" key="insertNewline:">
 							<string key="name">insertNewline:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleComments:">
+							<string key="name">toggleComments:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>
@@ -1670,6 +1703,7 @@
 						<string key="indentSelectedLines:">id</string>
 						<string key="insertTab:">id</string>
 						<string key="selectSpecificLine:">id</string>
+						<string key="toggleComments:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="colorize:">
@@ -1694,6 +1728,10 @@
 						</object>
 						<object class="IBActionInfo" key="selectSpecificLine:">
 							<string key="name">selectSpecificLine:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleComments:">
+							<string key="name">toggleComments:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>
@@ -1725,6 +1763,7 @@
 						<string key="saveCurrentSourceItem:">id</string>
 						<string key="saveDocument:">id</string>
 						<string key="sourceTableAction:">id</string>
+						<string key="sourceTableDoubleAction:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="evaluateSelection:">
@@ -1757,6 +1796,10 @@
 						</object>
 						<object class="IBActionInfo" key="sourceTableAction:">
 							<string key="name">sourceTableAction:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="sourceTableDoubleAction:">
+							<string key="name">sourceTableDoubleAction:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>
@@ -1840,7 +1883,7 @@
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<object class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="NS.key.0">NSActionTemplate</string>
-			<string key="NS.object.0">{15, 15}</string>
+			<string key="NS.object.0">{14, 14}</string>
 		</object>
 	</data>
 </archive>

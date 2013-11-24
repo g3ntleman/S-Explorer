@@ -24,9 +24,9 @@
 //@property (nonatomic, strong, readonly) NSArray* launchArguments;
 @property (nonatomic, readonly) SEnREPLConnection* connection;
 @property (nonatomic, strong, readonly) NSString* greeting;
-@property (nonatomic, strong, readonly) NSString* workingDirectory;
 
 @property (nonatomic, readonly) NSArray* commandHistory;
+@property (nonatomic, readonly) NSInteger previousCommandHistoryIndex;
 @property (nonatomic, readonly) NSString* identifier;
 @property (nonatomic, readonly, weak) SEProject* project;
 
