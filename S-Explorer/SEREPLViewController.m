@@ -72,9 +72,6 @@ static NSData* lineFeedData = nil;
     
     if (commandString.length) {
         NSParameterAssert(self.connection.socket.isConnected);
-        //        NSData* stringData = [commandString dataUsingEncoding: NSISOLatin1StringEncoding];
-        //        [tty.masterFileHandle writeData: stringData];
-        //        [tty.masterFileHandle writeData: lineFeedData];
         [self.connection evaluateExpression: commandString completionBlock:^(SEnREPLResultState *evalState) {
             for (NSString* result in evalState.results) {
                 [self.replView appendInterpreterString: result];
@@ -146,7 +143,7 @@ static NSData* lineFeedData = nil;
     if (commandRange.length) {
         NSLog(@"Sending command '%@'", self.currentCommand);
         
-        [self.replView colorizeRange: commandRange];
+        [self.replView appendInterpreterString: self.currentCommand];
         [self.replView appendInterpreterString: @"\n"];
         
         [self commitCurrentCommandToHistory];
@@ -256,10 +253,7 @@ static NSData* lineFeedData = nil;
 
 
 - (void) textDidChange: (NSNotification*) notification {
-    
-    //NSLog(@"REPL changed text.");
-    
-    // Move history pointer to most recent entry:
+        // Move history pointer to most recent entry:
     _previousCommandHistoryIndex = self.commandHistory.count-1;
 }
 
