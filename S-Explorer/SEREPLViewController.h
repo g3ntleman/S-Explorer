@@ -18,10 +18,6 @@
 @property (strong, nonatomic) SEREPLView* replView;
 
 @property (nonatomic, readonly) NSString* currentCommand;
-//@property (nonatomic, strong) NSTask* task;
-//@property (nonatomic, strong, readonly) NSString* commandString;
-//@property (nonatomic, strong, readonly) NSArray* commandArguments;
-//@property (nonatomic, strong, readonly) NSArray* launchArguments;
 @property (nonatomic, readonly) SEnREPLConnection* connection;
 @property (nonatomic, strong, readonly) NSString* greeting;
 

@@ -143,7 +143,11 @@
 				<string>:headless</string>
 			</array>
 			<key>WelcomeMessage</key>
-			<string>Welcome to Clojure!</string>
+			<string>Welcome to Clojure!
+    Docs: (doc function-name-here)
+          (find-doc &quot;part-of-name-here&quot;)
+  Source: (source function-name-here)
+ Javadoc: (javadoc java-object-or-class-here)</string>
 		</dict>
 		<key>Chibi-Scheme</key>
 		<dict>

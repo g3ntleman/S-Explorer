@@ -42,6 +42,10 @@
 - (void) awakeFromNib {
     
     self.smartInsertDeleteEnabled = NO;
+    self.automaticQuoteSubstitutionEnabled = NO;
+    self.automaticDashSubstitutionEnabled = NO;
+    self.automaticTextReplacementEnabled = NO;
+    self.automaticSpellingCorrectionEnabled = NO;
     //
     //    [self.textStorage beginEditing];
     //    [self.textStorage setAttributes: self.typingAttributes range:NSMakeRange(0, self.textStorage.string.length)];
@@ -145,12 +149,7 @@
         pbItem = [(NSAttributedString *)pbItem string];
     }
     
-    //pbItem = [[NSAttributedString alloc] initWithString: pbItem attributes: self.typingAttributes];
-//    if ([pbItem isEqualToString:@"foo"]) {
-        [self insertText: pbItem];
-//    }else{
-//        [super paste:sender];
-//    }
+    [self insertText: pbItem];
 }
 
 - (NSRange) commandRange {
