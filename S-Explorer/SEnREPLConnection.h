@@ -13,7 +13,7 @@
 
 typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
 
-typedef void (^SEnREPLResultBlock)(SEnREPLResultState* evalState, NSDictionary* partialResult);
+typedef void (^SEnREPLPartialResultBlock)(SEnREPLResultState* evalState, NSDictionary* partialResult);
 
 @interface SEnREPLResultState : NSObject
 
@@ -22,13 +22,13 @@ typedef void (^SEnREPLResultBlock)(SEnREPLResultState* evalState, NSDictionary* 
 @property (readonly, nonatomic) NSError* error;
 @property (readonly, nonatomic) NSString* evaluationID;
 @property (readonly, nonatomic) NSArray* results;
-@property (readonly, nonatomic) SEnREPLResultBlock resultBlock;
+@property (readonly, nonatomic) SEnREPLPartialResultBlock resultBlock;
 @property (readonly) BOOL isStatusDone;
 
 
 - (id) initWithEvaluationID: (NSString*) anId
                   sessionID: (NSString*) aSessionID
-                resultBlock: (SEnREPLResultBlock) aResultBlock;
+                resultBlock: (SEnREPLPartialResultBlock) aResultBlock;
 
 - (void) update: (NSDictionary*) partialResultDictionary;
 
@@ -46,13 +46,13 @@ typedef void (^SEnREPLResultBlock)(SEnREPLResultState* evalState, NSDictionary* 
 
 - (id) initWithHostname: (NSString*) hostname port: (NSInteger) port sessionID: (NSString*) aSessionID;
 
-- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREPLResultBlock) block timeout: (NSTimeInterval) timeout;
+- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREPLPartialResultBlock) block timeout: (NSTimeInterval) timeout;
 
 - (void) sendConsoleInput: (NSString*) inputString;
 
-- (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREPLResultBlock) block;
+- (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREPLPartialResultBlock) block;
 
-- (void) terminateSessionWithCompletionBlock: (SEnREPLResultBlock) block;
+- (void) terminateSessionWithCompletionBlock: (SEnREPLPartialResultBlock) block;
 
 - (BOOL) openWithError: (NSError**) errorPtr;
 - (void) close;

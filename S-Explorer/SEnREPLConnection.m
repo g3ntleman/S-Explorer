@@ -141,7 +141,7 @@
  * The timeout given is used for both, sending and receiving messages.
  * Returns the tag of the command.
  **/
-- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREPLResultBlock) block timeout: (NSTimeInterval) timeout {
+- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREPLPartialResultBlock) block timeout: (NSTimeInterval) timeout {
     
     NSAssert([self.socket isConnected], @"Cannot send Command without open connection. -open first.");
 
@@ -167,14 +167,14 @@
     return _tagCounter-1;
 }
 
-- (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREPLResultBlock) block {
+- (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREPLPartialResultBlock) block {
     
     NSDictionary* command = @{@"op": @"eval", @"code": expression, @"id": @(_tagCounter)};
     return [self sendCommandDictionary: command completionBlock: block timeout: 6.0];
 }
 
 
-- (void) terminateSessionWithCompletionBlock: (SEnREPLResultBlock) block {
+- (void) terminateSessionWithCompletionBlock: (SEnREPLPartialResultBlock) block {
     
     if (! _sessionID) {
         block(nil, nil);
@@ -204,7 +204,7 @@
 @property (strong, nonatomic) NSError* error;
 @property (strong, nonatomic) NSString* sessionID;
 @property (strong, nonatomic) NSString* evaluationID;
-@property (strong, nonatomic) SEnREPLResultBlock resultBlock;
+@property (strong, nonatomic) SEnREPLPartialResultBlock resultBlock;
 
 
 @end
@@ -236,7 +236,7 @@
 
 - (id) initWithEvaluationID: (NSString*) anId
                   sessionID: (NSString*) aSessionID
-                resultBlock: (SEnREPLResultBlock) aResultBlock {
+                resultBlock: (SEnREPLPartialResultBlock) aResultBlock {
     if (self = [self init]) {
         self.evaluationID = anId;
         self.sessionID = aSessionID;
