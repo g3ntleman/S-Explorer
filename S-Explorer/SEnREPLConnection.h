@@ -22,7 +22,7 @@ typedef void (^SEnREPLPartialResultBlock)(SEnREPLResultState* evalState, NSDicti
 @property (readonly, nonatomic) NSError* error;
 @property (readonly, nonatomic) NSString* evaluationID;
 @property (readonly, nonatomic) NSArray* results;
-@property (readonly, nonatomic) SEnREPLPartialResultBlock resultBlock;
+@property (readonly, nonatomic) SEnREPLPartialResultBlock partialResultBlock;
 @property (readonly) BOOL isStatusDone;
 
 

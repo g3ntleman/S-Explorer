@@ -112,19 +112,11 @@
     if (partialResult) {
         evalState.buffer.length = 0; // Not entirely correct. Need to trim only parsed part (yet unknown).
         [evalState updateWithPartialResult: partialResult];
-        if (evalState.isStatusDone) {
-            NSLog(@"Finished expression result for tag %ld", tag);
-            evalState.resultBlock(evalState, partialResult);
-            return;
-        } else if (evalState.error) {
-            NSLog(@"%@ reports an error: %@", sock, evalState.error);
-            evalState.resultBlock(evalState, partialResult);
-        }
-    } else {
-        
+        evalState.partialResultBlock(evalState, partialResult);
     }
-    // Unable to parse the result, wait for more data:
-    [self.socket readDataWithTimeout: 20.0 tag: tag]; // Warning, how do we know the timout the user wanted?
+    if (! evalState.isStatusDone) {
+        [self.socket readDataWithTimeout: 20.0 tag: tag]; // Warning, how do we know the timout the user wanted?
+    }
 }
 
 - (void) socket: (GCDAsyncSocket*) sock didWriteDataWithTag: (long) tag {
@@ -203,7 +195,7 @@
 @property (strong, nonatomic) NSError* error;
 @property (strong, nonatomic) NSString* sessionID;
 @property (strong, nonatomic) NSString* evaluationID;
-@property (strong, nonatomic) SEnREPLPartialResultBlock resultBlock;
+@property (strong, nonatomic) SEnREPLPartialResultBlock partialResultBlock;
 
 
 @end
@@ -237,7 +229,7 @@
                 resultBlock: (SEnREPLPartialResultBlock) aResultBlock {
     if (self = [self init]) {
         self.evaluationID = anId;
-        self.resultBlock = aResultBlock;
+        self.partialResultBlock = aResultBlock;
     }
     return self;
 }
