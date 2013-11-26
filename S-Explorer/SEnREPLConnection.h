@@ -27,7 +27,6 @@ typedef void (^SEnREPLPartialResultBlock)(SEnREPLResultState* evalState, NSDicti
 
 
 - (id) initWithEvaluationID: (NSString*) anId
-                  sessionID: (NSString*) aSessionID
                 resultBlock: (SEnREPLPartialResultBlock) aResultBlock;
 
 - (void) update: (NSDictionary*) partialResultDictionary;

@@ -157,7 +157,6 @@
     //[self.socket writeData: [GCDAsyncSocket LFData] withTimeout: timeout tag:_tagCounter];
     
     SEnREPLResultState* evalState = [[SEnREPLResultState alloc] initWithEvaluationID: [@(_tagCounter) description]
-                                                                                   sessionID: nil // assigned automatically
                                                                                  resultBlock: block];
     [_evaluationStatesByTag setObject: evalState forKey: @(_tagCounter)];
     
@@ -235,11 +234,9 @@
 
 
 - (id) initWithEvaluationID: (NSString*) anId
-                  sessionID: (NSString*) aSessionID
                 resultBlock: (SEnREPLPartialResultBlock) aResultBlock {
     if (self = [self init]) {
         self.evaluationID = anId;
-        self.sessionID = aSessionID;
         self.resultBlock = aResultBlock;
     }
     return self;
