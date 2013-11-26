@@ -93,7 +93,7 @@
     NSString* testExpression = @"(map inc (list 1 2 3))";
     __block NSString* evaluationResult = nil;
 
-    [self.connection evaluateExpression: testExpression completionBlock:^(SEnREPLResultState *evalState) {
+    [self.connection evaluateExpression: testExpression completionBlock:^(SEnREPLResultState *evalState, NSDictionary* partialResult) {
         XCTAssert(evalState.results.count > 0, @"Error: nil response evaluating '%@'.", testExpression);
         evaluationResult = [evalState.results firstObject];
         XCTAssertEqualObjects(@"(2 3 4)", evaluationResult, @"Unexpected evaluation result.");
@@ -107,7 +107,7 @@
     NSString* testExpressionLF = @"(map inc (list 3 4 5))";
     __block NSString* evaluationResultLF = nil;
 
-    [self.connection evaluateExpression: testExpressionLF completionBlock: ^(SEnREPLResultState *evalState) {
+    [self.connection evaluateExpression: testExpressionLF completionBlock: ^(SEnREPLResultState *evalState, NSDictionary* partialResult) {
         XCTAssert(evalState.results.count > 0, @"Error: No results evaluating '%@': %@", testExpressionLF, evalState.error);
         evaluationResultLF = [evalState.results firstObject];
         XCTAssertEqualObjects(@"(4 5 6)", evaluationResultLF, @"Unexpected evaluation result.");
@@ -122,7 +122,7 @@
     
     NSString* testExpression = @"(range 3000)";
     __block NSString* evaluationResult = nil;
-    [self.connection evaluateExpression: testExpression completionBlock: ^(SEnREPLResultState *evalState) {
+    [self.connection evaluateExpression: testExpression completionBlock: ^(SEnREPLResultState *evalState, NSDictionary* partialResult) {
         XCTAssert(evalState.results.count > 0, @"Error: nil response evaluating '%@'.", testExpression);
         evaluationResult = [evalState.results firstObject];
         XCTAssert(evaluationResult.length >= 0, @"-evaluateExpression:... returned no result.");

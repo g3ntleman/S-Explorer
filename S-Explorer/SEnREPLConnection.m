@@ -56,7 +56,7 @@
 
 - (void) close {
     
-    void (^closeBlock)(SEnREPLResultState*) = ^(SEnREPLResultState* evalState) {
+    void (^closeBlock)(SEnREPLResultState*, NSDictionary* partialResult) = ^(SEnREPLResultState* evalState, NSDictionary* partialResult) {
         _connectRetries = 0;
         if ([_socket isConnected]) {
             NSLog(@"Trying to disconnect %@", _socket);
@@ -70,7 +70,7 @@
             NSLog(@"Closing The receiver session.");
             [self terminateSessionWithCompletionBlock: closeBlock];
         } else {
-            closeBlock(nil);
+            closeBlock(nil, nil);
         }
     }
 }
@@ -108,20 +108,17 @@
     NSString* dataString = [[NSString alloc] initWithData: evalState.buffer encoding: NSUTF8StringEncoding];
     NSLog(@"Socket read data for tag %ld. Buffer now: %@", tag, dataString);
     
-    NSDictionary* result = (id)[OPBEncoder objectFromEncodedData: evalState.buffer];
-    if (result) {
+    NSDictionary* partialResult = (id)[OPBEncoder objectFromEncodedData: evalState.buffer];
+    if (partialResult) {
         evalState.buffer.length = 0; // Not entirely correct. Need to trim only parsed part (yet unknown).
-        [evalState update: result];
+        [evalState update: partialResult];
         if (evalState.isStatusDone) {
             NSLog(@"Finished expression result for tag %ld", tag);
-            if (evalState.sessionID.length) {
-                _sessionID = evalState.sessionID;
-            }
-            evalState.resultBlock(evalState);
+            evalState.resultBlock(evalState, partialResult);
             return;
         } else if (evalState.error) {
             NSLog(@"%@ reports an error: %@", sock, evalState.error);
-            evalState.resultBlock(evalState);
+            evalState.resultBlock(evalState, partialResult);
         }
     } else {
         
@@ -180,16 +177,16 @@
 - (void) terminateSessionWithCompletionBlock: (SEnREPLResultBlock) block {
     
     if (! _sessionID) {
-        block(nil);
+        block(nil, nil);
         return;
     }
     
     // NSLog(@"Closing The receiver session.");
     [self sendCommandDictionary: @{@"op": @"close", @"session": _sessionID}
-                completionBlock: ^(SEnREPLResultState *evalState) {
+                completionBlock: ^(SEnREPLResultState *evalState, NSDictionary* partialResult) {
                     if ([evalState isEqual: @"done"]) {
                     }
-                    block(evalState);
+                    block(evalState, partialResult);
                     _sessionID = nil;
                 }
                         timeout: 2.0];

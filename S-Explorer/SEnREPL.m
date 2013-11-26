@@ -143,7 +143,7 @@
     [_task setArguments: commandArguments];
 
     
-    __weak SEnREPL* this = self;
+    //__weak SEnREPL* this = self;
     
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(taskOutputReceived:)
@@ -155,12 +155,12 @@
     
     _task.terminationHandler =  ^void (NSTask* task) {
         NSLog(@"REPL Task Terminated with return code %d", task.terminationStatus);
-        if (task.terminationStatus == 1) {
-            //NSLog(@"Port %ld seems in use. Restarting...", this.port);
-            [this stop];
-            [this startWithCompletionBlock: this.completionBlock];
-            return;
-        }
+//        if (task.terminationStatus == 1) {
+//            //NSLog(@"Port %ld seems in use. Restarting...", this.port);
+//            [this stop];
+//            [this startWithCompletionBlock: this.completionBlock];
+//            return;
+//        }
     };
     
     NSLog(@"Launching '%@' with %@: %@", _task.launchPath, _task.arguments, _task);

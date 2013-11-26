@@ -13,14 +13,13 @@
 
 typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
 
-typedef void (^SEnREPLResultBlock)(SEnREPLResultState* evalState);
+typedef void (^SEnREPLResultBlock)(SEnREPLResultState* evalState, NSDictionary* partialResult);
 
 @interface SEnREPLResultState : NSObject
 
 @property (readonly, nonatomic) NSMutableData* buffer;
 @property (readonly, nonatomic) NSString* status;
 @property (readonly, nonatomic) NSError* error;
-@property (readonly, nonatomic) NSString* sessionID;
 @property (readonly, nonatomic) NSString* evaluationID;
 @property (readonly, nonatomic) NSArray* results;
 @property (readonly, nonatomic) SEnREPLResultBlock resultBlock;
