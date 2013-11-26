@@ -73,10 +73,29 @@ static NSData* lineFeedData = nil;
     if (commandString.length) {
         NSParameterAssert(self.connection.socket.isConnected);
         [self.connection evaluateExpression: commandString completionBlock:^(SEnREPLResultState* state, NSDictionary* partialResult) {
-            //for (NSString* result in partialResult) {
-                [self.replView appendInterpreterString: [partialResult description]];
-                [self.replView appendInterpreterString: @"\n"];
-            //}
+            NSString* output = partialResult[@"out"];
+            if (output.length) {
+                [self.replView appendInterpreterString: output];
+            } else {
+                NSString* resultValue = partialResult[@"value"];
+                if (resultValue) {
+                    [self.replView appendInterpreterString: resultValue];
+                    [self.replView appendInterpreterString: @"\n"];
+                    
+                } else {
+                    NSString* errorString = partialResult[@"err"];
+                    if (errorString) {
+                        [self.replView appendInterpreterString: resultValue];
+                    } else {
+                        NSString* lastStatus = [partialResult[@"status"] lastObject];
+                        if (! [lastStatus isEqualToString: @"done"]) {
+                            [self.replView appendInterpreterString: [partialResult description]];
+                            [self.replView appendInterpreterString: @"\n"];
+                        }
+
+                    }
+                }
+            }
             
             NSString* outputString = self.replView.string;
             NSRange outputRange = NSMakeRange(currentOutputStart, outputString.length-currentOutputStart);
