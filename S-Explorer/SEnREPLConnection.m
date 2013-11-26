@@ -111,7 +111,7 @@
     NSDictionary* partialResult = (id)[OPBEncoder objectFromEncodedData: evalState.buffer];
     if (partialResult) {
         evalState.buffer.length = 0; // Not entirely correct. Need to trim only parsed part (yet unknown).
-        [evalState update: partialResult];
+        [evalState updateWithPartialResult: partialResult];
         if (evalState.isStatusDone) {
             NSLog(@"Finished expression result for tag %ld", tag);
             evalState.resultBlock(evalState, partialResult);
@@ -242,7 +242,7 @@
     return self;
 }
 
-- (void) update: (NSDictionary*) partialResultDictionary {
+- (void) updateWithPartialResult: (NSDictionary*) partialResultDictionary {
     
     NSArray* status = partialResultDictionary[@"status"];
     

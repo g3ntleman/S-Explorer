@@ -29,7 +29,7 @@ typedef void (^SEnREPLPartialResultBlock)(SEnREPLResultState* evalState, NSDicti
 - (id) initWithEvaluationID: (NSString*) anId
                 resultBlock: (SEnREPLPartialResultBlock) aResultBlock;
 
-- (void) update: (NSDictionary*) partialResultDictionary;
+- (void) updateWithPartialResult: (NSDictionary*) partialResultDictionary;
 
 @end
 
