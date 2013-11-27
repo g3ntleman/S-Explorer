@@ -56,7 +56,7 @@
 
 - (void) close {
     
-    void (^closeBlock)(SEnREPLResultState*, NSDictionary* partialResult) = ^(SEnREPLResultState* evalState, NSDictionary* partialResult) {
+    void (^closeBlock)(NSDictionary* partialResult) = ^(NSDictionary* partialResult) {
         _connectRetries = 0;
         if ([_socket isConnected]) {
             NSLog(@"Trying to disconnect %@", _socket);
@@ -70,7 +70,7 @@
             NSLog(@"Closing The receiver session.");
             [self terminateSessionWithCompletionBlock: closeBlock];
         } else {
-            closeBlock(nil, nil);
+            closeBlock(nil);
         }
     }
 }
@@ -98,7 +98,8 @@
 
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag: (long) tag {
     
-    SEnREPLResultState* evalState = _evaluationStatesByTag[@(tag)]; // expect this to exist
+    NSNumber* tagNumber = @(tag);
+    SEnREPLResultState* evalState = _evaluationStatesByTag[tagNumber]; // expect this to exist
     
     NSAssert(evalState != nil, @"No evaluation state set up.");
     
@@ -108,13 +109,17 @@
     NSString* dataString = [[NSString alloc] initWithData: evalState.buffer encoding: NSUTF8StringEncoding];
     NSLog(@"Socket read data for tag %ld. Buffer now: %@", tag, dataString);
     
-    NSDictionary* partialResult = (id)[OPBEncoder objectFromEncodedData: evalState.buffer];
-    if (partialResult) {
+    NSDictionary* partialResultDictionary = (id)[OPBEncoder objectFromEncodedData: evalState.buffer];
+    if (partialResultDictionary) {
         evalState.buffer.length = 0; // Not entirely correct. Need to trim only parsed part (yet unknown).
-        [evalState updateWithPartialResult: partialResult];
-        evalState.partialResultBlock(evalState, partialResult);
+        evalState.partialResultBlock(partialResultDictionary);
+        
+        NSString* sessionID = partialResultDictionary[@"session"];
+        if (sessionID.length) _sessionID = sessionID;
     }
-    if (! evalState.isStatusDone) {
+    if ([[partialResultDictionary[@"status"] lastObject] isEqualToString: @"done"]) {
+        [_evaluationStatesByTag removeObjectForKey: tagNumber];
+    } else {
         [self.socket readDataWithTimeout: 20.0 tag: tag]; // Warning, how do we know the timout the user wanted?
     }
 }
@@ -154,8 +159,7 @@
     
     [self.socket readDataWithTimeout: timeout tag: _tagCounter];
     
-    _tagCounter += 1;
-    return _tagCounter-1;
+    return _tagCounter++;
 }
 
 - (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREPLPartialResultBlock) block {
@@ -168,16 +172,14 @@
 - (void) terminateSessionWithCompletionBlock: (SEnREPLPartialResultBlock) block {
     
     if (! _sessionID) {
-        block(nil, nil);
+        block(nil);
         return;
     }
     
     // NSLog(@"Closing The receiver session.");
     [self sendCommandDictionary: @{@"op": @"close", @"session": _sessionID}
-                completionBlock: ^(SEnREPLResultState *evalState, NSDictionary* partialResult) {
-                    if ([evalState isEqual: @"done"]) {
-                    }
-                    block(evalState, partialResult);
+                completionBlock: ^(NSDictionary* partialResult) {
+                    block(partialResult);
                     _sessionID = nil;
                 }
                         timeout: 2.0];
@@ -191,9 +193,6 @@
     NSMutableData* _buffer;
 }
 
-@property (strong, nonatomic) NSString* status;
-@property (strong, nonatomic) NSError* error;
-@property (strong, nonatomic) NSString* sessionID;
 @property (strong, nonatomic) NSString* evaluationID;
 @property (strong, nonatomic) SEnREPLPartialResultBlock partialResultBlock;
 
@@ -213,17 +212,6 @@
     return _buffer;
 }
 
-- (BOOL) isStatusDone {
-    return [self.status isEqualToString: @"done"];
-}
-
-- (NSString*) errorString {
-    if ([self.status isEqualToString: @"error"]) {
-        return @"Error";
-    }
-    return nil;
-}
-
 
 - (id) initWithEvaluationID: (NSString*) anId
                 resultBlock: (SEnREPLPartialResultBlock) aResultBlock {
@@ -234,35 +222,33 @@
     return self;
 }
 
-- (void) updateWithPartialResult: (NSDictionary*) partialResultDictionary {
-    
-    NSArray* status = partialResultDictionary[@"status"];
-    
-    if (status.count) {
-        self.status = status.lastObject;
-        
-        if ([self.status isEqualToString: @"error"]) {
-            _error = [[NSError alloc] initWithDomain: @"nREPL" code: -1 userInfo: @{NSLocalizedDescriptionKey: status.firstObject}];
-        } else {
-            _error = nil;
-        }
-    }
-    
-    //NSAssert(status.count <= 1, @"Mutliple status codes send.");
-    
-    NSString* sessionID = partialResultDictionary[@"session"];
-    if (sessionID) self.sessionID = sessionID;
-    
-    NSString* result = partialResultDictionary[@"value"];
-    if (result) {
-        if (! _results) {
-            _results = [[NSMutableArray alloc] init];
-        }
-        [_results addObject: result];
-    }
-    
-    NSLog(@"Updated status with: %@ to %@", partialResultDictionary, self);
-
-}
+//- (void) updateWithPartialResult: (NSDictionary*) partialResultDictionary {
+//    
+//    NSArray* status = partialResultDictionary[@"status"];
+//    
+//    if (status.count) {
+//        self.status = status.lastObject;
+//        
+//        if ([self.status isEqualToString: @"error"]) {
+//            _error = [[NSError alloc] initWithDomain: @"nREPL" code: -1 userInfo: @{NSLocalizedDescriptionKey: status.firstObject}];
+//        } else {
+//            _error = nil;
+//        }
+//    }
+//    
+//    NSString* sessionID = partialResultDictionary[@"session"];
+//    if (sessionID) self.sessionID = sessionID;
+//    
+//    NSString* result = partialResultDictionary[@"value"];
+//    if (result) {
+//        if (! _results) {
+//            _results = [[NSMutableArray alloc] init];
+//        }
+//        [_results addObject: result];
+//    }
+//    
+//    //NSLog(@"Updated status with: %@ to %@", partialResultDictionary, self);
+//
+//}
 
 @end

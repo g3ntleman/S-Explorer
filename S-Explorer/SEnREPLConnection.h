@@ -13,7 +13,7 @@
 
 typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
 
-typedef void (^SEnREPLPartialResultBlock)(SEnREPLResultState* evalState, NSDictionary* partialResult);
+typedef void (^SEnREPLPartialResultBlock)(NSDictionary* partialResult);
 
 @interface SEnREPLResultState : NSObject
 
@@ -29,7 +29,6 @@ typedef void (^SEnREPLPartialResultBlock)(SEnREPLResultState* evalState, NSDicti
 - (id) initWithEvaluationID: (NSString*) anId
                 resultBlock: (SEnREPLPartialResultBlock) aResultBlock;
 
-- (void) updateWithPartialResult: (NSDictionary*) partialResultDictionary;
 
 @end
 

@@ -72,7 +72,8 @@ static NSData* lineFeedData = nil;
     
     if (commandString.length) {
         NSParameterAssert(self.connection.socket.isConnected);
-        [self.connection evaluateExpression: commandString completionBlock:^(SEnREPLResultState* state, NSDictionary* partialResult) {
+        [self.connection evaluateExpression: commandString completionBlock:^(NSDictionary* partialResult) {
+            NSLog(@"<-- Received %@ from nREPL.", [partialResult description]);
             NSString* output = partialResult[@"out"];
             if (output.length) {
                 [self.replView appendInterpreterString: output];
@@ -81,11 +82,10 @@ static NSData* lineFeedData = nil;
                 if (resultValue) {
                     [self.replView appendInterpreterString: resultValue];
                     [self.replView appendInterpreterString: @"\n"];
-                    
                 } else {
-                    NSString* errorString = partialResult[@"err"];
+                    NSString* errorString = partialResult[@"err"] ?: partialResult[@"ex"];
                     if (errorString) {
-                        [self.replView appendInterpreterString: resultValue];
+                        [self.replView appendInterpreterString: errorString];
                     } else {
                         NSString* lastStatus = [partialResult[@"status"] lastObject];
                         if (! [lastStatus isEqualToString: @"done"]) {

@@ -156,7 +156,16 @@
     return NSMakeRange(commandLocation, self.string.length-commandLocation);
 }
 
+- (IBAction) insertTab: (id) sender {
+    NSBeep();
+}
+
+
 - (void) appendInterpreterString: (NSString*) aString {
+    
+    if ([aString hasPrefix: @"{"]) {
+        NSLog(@"check!");
+    }
     
     NSTextStorage* textStorage = self.textStorage;
     
