@@ -62,6 +62,7 @@ static NSData* lineFeedData = nil;
         if (! _commandHistory) {
             _commandHistory = [[NSMutableArray alloc] init];
         }
+        _previousCommandHistoryIndex = _commandHistory.count-1;
     }
 
     return _commandHistory;
