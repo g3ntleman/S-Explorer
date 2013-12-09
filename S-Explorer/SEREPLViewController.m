@@ -109,25 +109,6 @@ static NSData* lineFeedData = nil;
 }
 
 
-- (NSString*) currentCommand {
-    return [self.replView.string substringWithRange: self.replView.commandRange];
-}
-
-- (void) setCurrentCommand:(NSString *)currentCommand {
-    
-    NSTextStorage* textStorage = self.replView.textStorage;
-    NSRange commandRange = self.replView.commandRange;
-    [textStorage beginEditing];
-    [textStorage replaceCharactersInRange: commandRange withString: currentCommand];
-    commandRange.length = currentCommand.length;
-    [textStorage setAttributes: self.replView.typingAttributes range: commandRange];
-    [textStorage endEditing];
-    
-    // Place cursor behind new command:
-    self.replView.selectedRange = NSMakeRange(commandRange.location+currentCommand.length, 0);
-}
-
-
 
 - (NSURL*) historyFileURL {
     NSString* filename = [NSString stringWithFormat: @".REPL-History-%@.plist", @"1"];
@@ -143,7 +124,7 @@ static NSData* lineFeedData = nil;
 }
 
 - (void) commitCurrentCommandToHistory {
-    NSString* currentCommand = self.currentCommand;
+    NSString* currentCommand = self.replView.command;
     if (currentCommand.length) {
         _previousCommandHistoryIndex = self.commandHistory.count;
         [_commandHistory addObject: currentCommand];
@@ -151,51 +132,58 @@ static NSData* lineFeedData = nil;
     }
 }
 
+// Clojure-Example how to list all synbols in clojure.utl:
+// (keys (ns-publics 'clojure.core))
+
 - (BOOL) sendCurrentCommand {
     
     if (! self.connection.socket.isConnected) {
+        NSLog(@"Warning, no connection to nREPL server.");
         NSBeep();
         return NO;
     }
     
     NSRange commandRange = self.replView.commandRange;
     if (commandRange.length) {
-        NSLog(@"Sending command '%@'", self.currentCommand);
-        
-        [self.replView appendInterpreterString: self.currentCommand];
-        [self.replView appendInterpreterString: @"\n"];
+        NSLog(@"Sending command '%@'", self.replView.command);
         
         [self commitCurrentCommandToHistory];
-        
+
         // Prune History:
-        if (self.commandHistory.count > 50) {
-            [_commandHistory removeLastObject];
+        while (self.commandHistory.count > 100) {
+            [_commandHistory removeObjectAtIndex: 0];
             _previousCommandHistoryIndex -= 1;
         }
         
-        [self evaluateString: self.currentCommand];
-        self.currentCommand = @"";
+        [self.replView appendInterpreterString: self.replView.prompt];
+        [self.replView appendInterpreterString: self.replView.command];
+        [self.replView appendInterpreterString: @"\n"];
+        
+        
+
+        
+        [self evaluateString: self.replView.command];
+        self.replView.command = @"";
 
         currentOutputStart = self.replView.string.length;
                 
         return YES;
         
-    } else if (self.replView.isCommandMode) {
-        NSString* log = self.replView.string;
-        NSRange promptRange = [log lineRangeForRange: self.replView.selectedRange];
-        NSString* prompt = [log substringWithRange: promptRange];
+    } else
         [self.replView appendInterpreterString: @"\n"];
-        [self.replView appendInterpreterString: prompt];
-    }
-    
     return NO;
 }
 
 - (IBAction) insertNewline: (id) sender {
-    //NSLog(@"Return key action.");
-    [self sendCurrentCommand];
-    [self.replView moveToEndOfDocument: sender];
-    //[self.replView scrollRangeToVisible: self.replView.selectedRange];
+    
+    if (self.replView.isCommandMode) {
+        //NSLog(@"Return key action.");
+        [self sendCurrentCommand];
+        [self.replView moveToEndOfDocument: sender];
+    } else {
+        [self.replView moveToEndOfDocument: sender];
+        //self.replView.selectedRange = NSMakeRange(self.replView.string.length-1, 0);
+    }
 }
 
 
@@ -208,9 +196,10 @@ static NSData* lineFeedData = nil;
         //NSLog(@"History next action.");
         if (_previousCommandHistoryIndex+2 >= self.commandHistory.count) {
             NSString* lastHistoryEntry = [self.commandHistory lastObject];
-            if ([self.currentCommand isEqualToString: lastHistoryEntry]) {
+            if ([self.replView.command isEqualToString: lastHistoryEntry]) {
                 _previousCommandHistoryIndex = self.commandHistory.count-1;
-                self.currentCommand = @"";
+                self.replView.command = @"";
+                NSLog(@"%@", self.replView.textStorage);
                 return;
             }
             NSBeep();
@@ -218,10 +207,11 @@ static NSData* lineFeedData = nil;
         }
         
         _previousCommandHistoryIndex += 1;
-        self.currentCommand = self.commandHistory[self.previousCommandHistoryIndex+1];
+        self.replView.command = self.commandHistory[self.previousCommandHistoryIndex+1];
         
         //NSLog(@"History: %@, prev index %ld", self.commandHistory, previousCommandHistoryIndex);
-        
+        NSLog(@"%@", self.replView.textStorage);
+
         return;
     }
     [self.replView moveDown: sender];
@@ -248,7 +238,7 @@ static NSData* lineFeedData = nil;
         
         // Save current non-committed command in history:
         if (self.previousCommandHistoryIndex+1 == self.commandHistory.count) {
-            NSString* command = self.currentCommand;
+            NSString* command = self.replView.command;
             
             if (command.length && ! [self.commandHistory[self.previousCommandHistoryIndex] isEqualToString: command]) {
                 [self commitCurrentCommandToHistory];
@@ -257,13 +247,14 @@ static NSData* lineFeedData = nil;
         }
 
         
-        self.currentCommand = self.commandHistory[_previousCommandHistoryIndex];
+        self.replView.command = self.commandHistory[_previousCommandHistoryIndex];
         _previousCommandHistoryIndex -= 1;
         
         //NSLog(@"History: %@, prev index %ld", self.commandHistory, previousCommandHistoryIndex);
         
         [self.replView moveToEndOfDocument: self];
         
+        NSLog(@"%@", self.replView.textStorage);
         return;
     }
     [self.replView moveUp: sender];
@@ -291,30 +282,34 @@ static NSData* lineFeedData = nil;
     
     if (! self.connection.socket.isDisconnected) {
         [self.connection close];
+        self.replView.editable = NO;
+
     }
 }
 
 
 - (void) connectAndLaunchTarget: (BOOL) launch {
-
-    NSError* error = nil;
     
     [self stop: self];
     //NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
-
-    [self.replView clear: self];
-    currentOutputStart = 0;
-    
-    if (self.greeting) {
-        [self.replView appendInterpreterString: self.greeting];
-        [self.replView appendInterpreterString: @"\n\n"];
-    }
-    [self.replView moveToEndOfDocument: self];
-    
-    [self.replView setEditable: YES];
     
     _connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.nREPL.port sessionID: nil];
-    [_connection openWithError: &error];
+    [_connection openWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
+        if (error) {
+            NSLog(@"Connection to nREPL failed with error: %@", error);
+        } else {
+            [self.replView clear: self];
+            currentOutputStart = 0;
+            
+            self.replView.editable = YES;
+            
+            if (self.greeting) {
+                [self.replView appendInterpreterString: self.greeting];
+                [self.replView appendInterpreterString: @"\n\n"];
+            }
+            [self.replView moveToEndOfDocument: self];
+        }
+    }];
 
 }
 

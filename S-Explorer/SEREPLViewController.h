@@ -17,9 +17,9 @@
 
 @property (strong, nonatomic) SEREPLView* replView;
 
-@property (nonatomic, readonly) NSString* currentCommand;
 @property (nonatomic, readonly) SEnREPLConnection* connection;
-@property (nonatomic, strong, readonly) NSString* greeting;
+@property (nonatomic, readonly) SEnREPLConnection* controlConnection;
+@property (nonatomic, strong) NSString* greeting;
 
 @property (nonatomic, readonly) NSArray* commandHistory;
 @property (nonatomic, readonly) NSInteger previousCommandHistoryIndex;
@@ -38,5 +38,7 @@
 - (NSURL*) historyFileURL;
 
 - (IBAction) connectREPL: (id) sender;
+
+- (void) connectAndLaunchTarget: (BOOL) launch;
 
 @end

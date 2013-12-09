@@ -148,6 +148,8 @@
           (find-doc &quot;part-of-name-here&quot;)
   Source: (source function-name-here)
  Javadoc: (javadoc java-object-or-class-here)</string>
+			<key>Prompt</key>
+			<string>=&gt; </string>
 		</dict>
 		<key>Chibi-Scheme</key>
 		<dict>
@@ -161,6 +163,8 @@
 			</array>
 			<key>WelcomeMessage</key>
 			<string>Welcome to Chibi Scheme!</string>
+			<key>Prompt</key>
+			<string>&gt; </string>
 		</dict>
 	</dict>
 	<key>NSHumanReadableCopyright</key>

@@ -14,6 +14,9 @@
     NSUInteger commandLocation;
 }
 
+@synthesize interpreterAttributes = _interpreterAttributes;
+@synthesize font = _font;
+
 
 //- (id) initWithFrame: (NSRect) frameRect {
 //    if (self = [super initWithFrame: frameRect]) {
@@ -53,6 +56,9 @@
     //NSLog(@"%@ awoke.", self);
     self.font = [NSFont fontWithName:@"Menlo-Bold" size: 13.0];
     
+    
+    [self.textStorage setAttributes: self.interpreterAttributes range: NSMakeRange(0, self.textStorage.length)];
+    self.typingAttributes = self.commandAttributes;
 //    NSMutableDictionary* typingAttributes = [self.typingAttributes mutableCopy];
 //    typingAttributes[BKTextCommandAttributeName] = @1;
     //self.typingAttributes = self.commandAttributes;
@@ -110,17 +116,43 @@
 //}
 
 
-- (NSFont*) font {
-    return [NSFont fontWithName: @"Menlo" size: 13.0];
+- (BOOL) becomeFirstResponder {
+    
+    NSTextStorage* textStorage = self.textStorage;
+
+    if (! textStorage.string) {
+        //[self.comm]
+    }
+    
+    return [super becomeFirstResponder];
 }
 
-- (NSDictionary*) interpreterAttributes {
+- (void) setFont:(NSFont *)font {
     
-    NSMutableDictionary* interpreterAttributes = [[NSMutableDictionary alloc] init];
-    interpreterAttributes[NSFontAttributeName] = self.font;
-    interpreterAttributes[NSForegroundColorAttributeName] = [NSColor blackColor];
+    _font = font;
+    
+    [self.textStorage beginEditing];
+    
+    [self.textStorage addAttribute: NSFontAttributeName
+                             value: font
+                             range: NSMakeRange(0, self.string.length)];
+    
+    [self.textStorage endEditing];
+}
 
-    return interpreterAttributes;
+- (NSFont*) font {
+    return _font;
+}
+
+
+- (NSDictionary*) interpreterAttributes {
+
+    if (! _interpreterAttributes) {
+        _interpreterAttributes = @{NSFontAttributeName: self.font,
+                                   NSBackgroundColorAttributeName: [NSColor whiteColor],
+                                   NSForegroundColorAttributeName: [NSColor blackColor]};
+    }
+    return _interpreterAttributes;
 }
 
 - (NSDictionary*) commandAttributes {
@@ -143,6 +175,8 @@
 }
 
 -(void) paste: (id) sender {
+    
+    // Insert plain text only:
     NSPasteboard *pb = [NSPasteboard generalPasteboard];
     NSString *pbItem = [pb readObjectsForClasses: @[[NSString class],[NSAttributedString class]] options:nil].lastObject;
     if ([pbItem isKindOfClass:[NSAttributedString class]]) {
@@ -152,56 +186,108 @@
     [self insertText: pbItem];
 }
 
-- (NSRange) commandRange {
-    return NSMakeRange(commandLocation, self.string.length-commandLocation);
+- (NSString*) command {
+    return [self.textStorage.string substringWithRange: self.commandRange];
 }
 
+
+- (void) setCommand:(NSString *)currentCommand {
+    
+    NSTextStorage* textStorage = self.textStorage;
+    NSRange commandRange = self.commandRange;
+    [textStorage beginEditing];
+    [textStorage replaceCharactersInRange: commandRange withString: currentCommand];
+    commandRange.length = currentCommand.length;
+    [textStorage setAttributes: self.typingAttributes range: commandRange];
+    [textStorage endEditing];
+    
+    // Place cursor behind new command:
+    self.selectedRange = NSMakeRange(commandRange.location+currentCommand.length, 0);
+}
+
+
 - (IBAction) insertTab: (id) sender {
-    NSBeep();
+    NSBeep(); // not implemented yet
+}
+
+- (NSRange) interpreterRange {
+    NSAssert(commandLocation>=_prompt.length, @"Wrong commandLocation.");
+    return NSMakeRange(0, commandLocation-_prompt.length);
+}
+
+- (NSRange) commandRange {
+    NSAssert(commandLocation<=self.textStorage.length, @"Wrong commandLocation.");
+    return NSMakeRange(commandLocation, self.textStorage.length-commandLocation);
+}
+
+- (NSRange) promptRange {
+    NSAssert(commandLocation>=_prompt.length, @"Wrong commandLocation.");
+    return NSMakeRange(commandLocation-_prompt.length, _prompt.length);
 }
 
 
 - (void) appendInterpreterString: (NSString*) aString {
-    
-    if ([aString hasPrefix: @"{"]) {
-        NSLog(@"check!");
-    }
-    
+
     NSTextStorage* textStorage = self.textStorage;
     
     //self.typingAttributes = self.interpreterAttributes;
     
     [textStorage beginEditing];
     
-    NSRange range = NSMakeRange(commandLocation, 0);
-    [textStorage replaceCharactersInRange: range withString: aString];
+    NSRange range = [self promptRange];
+    range.length = 0;
+    //[textStorage replaceCharactersInRange: range withString: aString];
+    [textStorage replaceCharactersInRange: range withAttributedString: [[NSAttributedString alloc] initWithString: aString attributes:self.interpreterAttributes]];
     commandLocation += aString.length;
-    range.length += aString.length;
-    [textStorage setAttributes: self.interpreterAttributes range: range];
     [textStorage endEditing];
-    self.typingAttributes = self.commandAttributes;
-    
-    
     
     [self.enclosingScrollView flashScrollers];
+}
+
+//- (void) setEditable: (BOOL) flag {
+//    [super setEditable: flag];
+//    if (! [self.textStorage.string hasSuffix: self.prompt]) {
+//        [self.textStorage beginEditing];
+//        [self.textStorage replaceCharactersInRange:NSMakeRange(commandLocation, 0) withString: self.prompt];
+//        commandLocation += self.prompt.length;
+//        [self.textStorage endEditing];
+//    }
+//}
+
+/**
+ * Returns true, if the selection is at the end of the text,
+ * where the user can enter text.
+ **/
+- (BOOL) isCommandMode {
+    BOOL isCommandMode = (self.selectedRange.location >= commandLocation);
+    return isCommandMode;
 }
 
 - (BOOL) shouldChangeTextInRange: (NSRange) affectedCharRange
                replacementString: (NSString*) replacementString {
     
-    if (affectedCharRange.location<commandLocation) {
+    // Only allow editing the command string:
+    if (affectedCharRange.location < commandLocation) {
         NSBeep();
         return NO;
     }
+    
     return [super shouldChangeTextInRange: affectedCharRange replacementString: replacementString];
 }
 
-/**
- * Returns true, if the selection is at the end of the text, 
- * where the user can enter text.
- **/
-- (BOOL) isCommandMode {
-    return (self.selectedRange.location >= commandLocation);
+- (void) setPrompt:(NSString *)prompt {
+
+    NSParameterAssert(prompt);
+    
+    NSLog(@"Setting Prompt on '%@' to '%@'", self.textStorage, prompt);
+
+    [self.textStorage beginEditing];
+    
+    NSRange promptRange = [self promptRange];
+    [self.textStorage replaceCharactersInRange: promptRange withAttributedString: [[NSAttributedString alloc] initWithString: prompt attributes:self.interpreterAttributes]];
+    _prompt = prompt;
+    
+    [self.textStorage endEditing];
 }
 
 
@@ -232,10 +318,22 @@
 //    return YES;
 //}
 
+- (void) setString:(NSString *)string {
+    
+    if (!_prompt.length) {
+        [super setString: string];
+    } else {
+        string = string ? : @"";
+        NSMutableString* promptedString = [string mutableCopy];
+        [promptedString appendString: self.prompt];
+        [super setString: promptedString];
+    }
+    commandLocation = self.string.length;
+}
+
 - (IBAction) clear: (id) sender {
     
     self.string = @"";
-    commandLocation = 0;
 }
 
 @end

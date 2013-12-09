@@ -25,11 +25,11 @@
 
 @property (readonly) NSDictionary* interpreterAttributes;
 @property (readonly) NSDictionary* commandAttributes;
-
+@property (strong, nonatomic) NSString* prompt;
 @property (strong, nonatomic) NSFont* font;
+@property (strong, nonatomic) NSString* command;
 
 - (BOOL) isCommandMode;
-
 - (NSRange) commandRange;
 
 - (IBAction) clear: (id) sender;

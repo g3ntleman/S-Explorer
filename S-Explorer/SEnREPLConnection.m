@@ -14,6 +14,7 @@
 
 @property (strong, nonatomic) NSMutableDictionary* evaluationStatesByTag;
 @property (readonly, nonatomic) NSInteger connectRetries;
+@property (strong, nonatomic) SEnREPLConnectionCompletionBlock connectCompletionBlock;
 
 @end
 
@@ -39,13 +40,20 @@
     [self close];
 }
 
-- (BOOL) openWithError: (NSError**) errorPtr {
+- (void) openWithCompletion: (SEnREPLConnectionCompletionBlock) completionBlock {
     NSAssert(self.socket, @"openWithError: Socket not set.");
     NSAssert(self.socket.isDisconnected, @"openWithError: Socket still open. Close it first.");
+    
+    NSError* error = nil;
+    self.connectCompletionBlock = completionBlock;
+    
     if (_connectRetries <= 0) {
         _connectRetries = 50;
     }
-    return [self.socket connectToHost: self.hostname onPort: self.port error: errorPtr];
+    if (! [self.socket connectToHost: self.hostname onPort: self.port error: &error]) {
+        self.connectCompletionBlock(self, error);
+        self.connectCompletionBlock = nil;
+    }
 }
 
 - (void) sendConsoleInput: (NSString*) inputString {
@@ -79,6 +87,7 @@
 - (void) socket: (GCDAsyncSocket*) sock didConnectToHost: (NSString*) host port: (UInt16) port {
     NSLog(@"Connected to %@:%u.", host, port);
     _connectRetries = 0;
+    self.connectCompletionBlock(self, nil);
 }
 
 - (void) socketDidDisconnect: (GCDAsyncSocket*) sock withError: (NSError*) error {

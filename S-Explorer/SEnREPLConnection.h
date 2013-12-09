@@ -10,10 +10,13 @@
 #import "GCDAsyncSocket.h"
 
 @class SEnREPLResultState;
+@class SEnREPLConnection;
 
 typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
 
 typedef void (^SEnREPLPartialResultBlock)(NSDictionary* partialResult);
+typedef void (^SEnREPLConnectionCompletionBlock)(SEnREPLConnection* connection, NSError* error);
+
 
 @interface SEnREPLResultState : NSObject
 
@@ -52,7 +55,8 @@ typedef void (^SEnREPLPartialResultBlock)(NSDictionary* partialResult);
 
 - (void) terminateSessionWithCompletionBlock: (SEnREPLPartialResultBlock) block;
 
-- (BOOL) openWithError: (NSError**) errorPtr;
+- (void) openWithCompletion: (SEnREPLConnectionCompletionBlock) completionBlock;
+
 - (void) close;
 
 @end
