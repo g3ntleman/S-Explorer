@@ -39,22 +39,14 @@ typedef struct  {
 
 typedef void (^SESyntaxParserBlock)(SESyntaxParser *parser, SEParserResult result, BOOL* stopRef);
 
-
-//@protocol SESchemeParserDelegate <NSObject>
-//
-//- (void) parser: (SESchemeParser*) parser
-//     foundToken: (TokenOccurrence) tokenInstance
-//        atDepth: (NSInteger) depth
-//   elementCount: (NSUInteger) elementCount;
-//
-//@end
-
 @interface SESyntaxParser : NSObject
 
 @property (strong, nonatomic) SESyntaxParserBlock delegateBlock;
-@property (strong, nonatomic) NSSet* keywords;
 @property (strong, readonly) NSString* string;
 
+/**
+ * Language specific, "global" keywords, that are contained in the core library.
+ **/
 + (NSSet*) keywords;
 
 - (id) initWithString: (NSString*) sSource
