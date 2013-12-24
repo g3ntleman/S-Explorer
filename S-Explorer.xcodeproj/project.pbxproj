@@ -21,6 +21,7 @@
 		8D470B9C18196DCA00C0C654 /* OPBEncoding_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D470B9B18196DCA00C0C654 /* OPBEncoding_Tests.m */; };
 		8D4DF7E717F4587F00BC0773 /* OPCharFilterFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */; };
 		8D4DF83317F5AAF600BC0773 /* chibi-repl-server.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8D4DF83217F5AAF600BC0773 /* chibi-repl-server.scm */; };
+		8D5C020418688E69007EBFAA /* Scratchpad.clj in Resources */ = {isa = PBXBuildFile; fileRef = 8D5C020318688E69007EBFAA /* Scratchpad.clj */; };
 		8D5DD11917F6D13800E352FE /* NSView+OPCopying.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D5DD11817F6D13800E352FE /* NSView+OPCopying.m */; };
 		8D604254173BE60800149409 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D604252173BE60800149409 /* InfoPlist.strings */; };
 		8D604256173BE60800149409 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604255173BE60800149409 /* main.m */; };
@@ -102,6 +103,7 @@
 		8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPCharFilterFormatter.m; sourceTree = "<group>"; };
 		8D4DF83217F5AAF600BC0773 /* chibi-repl-server.scm */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; fileEncoding = 4; path = "chibi-repl-server.scm"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.javascript; };
 		8D59F73317F130F6001CEAE4 /* repl-server.scm */ = {isa = PBXFileReference; lastKnownFileType = text; path = "repl-server.scm"; sourceTree = "<group>"; };
+		8D5C020318688E69007EBFAA /* Scratchpad.clj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Scratchpad.clj; sourceTree = "<group>"; };
 		8D5DD11717F6D13800E352FE /* NSView+OPCopying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView+OPCopying.h"; sourceTree = "<group>"; };
 		8D5DD11817F6D13800E352FE /* NSView+OPCopying.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSView+OPCopying.m"; sourceTree = "<group>"; };
 		8D604246173BE60800149409 /* S-Explorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "S-Explorer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -295,6 +297,7 @@
 				8D88F63E182FBC1F00AB1D35 /* SEnREPL.m */,
 				8D72C53318287B6400776B14 /* SEnREPLConnection.h */,
 				8D72C53418287B6400776B14 /* SEnREPLConnection.m */,
+				8D5C020318688E69007EBFAA /* Scratchpad.clj */,
 			);
 			path = "S-Explorer";
 			sourceTree = "<group>";
@@ -451,6 +454,7 @@
 				8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */,
 				8D16399817C57FAE000DD491 /* S-Explorer.iconset in Resources */,
 				8DCBE48F17C9B4CD00A872A7 /* scheme-indexer.scm in Resources */,
+				8D5C020418688E69007EBFAA /* Scratchpad.clj in Resources */,
 				8DE762FF17FB66A900CD0A42 /* r7rs-standard.pdf in Resources */,
 				8D4DF83317F5AAF600BC0773 /* chibi-repl-server.scm in Resources */,
 				8DEB1AA217CF7BEC0088C7C1 /* README.md in Resources */,
