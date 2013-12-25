@@ -118,18 +118,27 @@
     NSString* dataString = [[NSString alloc] initWithData: evalState.buffer encoding: NSUTF8StringEncoding];
     NSLog(@"Socket read data for tag %ld. Buffer now: %@", tag, dataString);
     
+    
     NSDictionary* partialResultDictionary = (id)[OPBEncoder objectFromEncodedData: evalState.buffer];
+    
+    BOOL done = [[partialResultDictionary[@"status"] lastObject] isEqualToString: @"done"];
+
+    // Test, if the dictionary is complete:
     if (partialResultDictionary) {
         evalState.buffer.length = 0; // Not entirely correct. Need to trim only parsed part (yet unknown).
-        evalState.partialResultBlock(partialResultDictionary);
+        // Do not send the last message (for now). Remove this, if the terminating message is needed.
+        if (! done) {
+            evalState.partialResultBlock(partialResultDictionary);
+        }
         
         NSString* sessionID = partialResultDictionary[@"session"];
         if (sessionID.length) _sessionID = sessionID;
     }
-    if ([[partialResultDictionary[@"status"] lastObject] isEqualToString: @"done"]) {
+    if (done) {
+        // Cleanup:
         [_evaluationStatesByTag removeObjectForKey: tagNumber];
     } else {
-        [self.socket readDataWithTimeout: 20.0 tag: tag]; // Warning, how do we know the timout the user wanted?
+        [self.socket readDataWithTimeout: evalState.timeout tag: tag]; // Warning, how do we know the timout the user wanted?
     }
 }
 
@@ -163,7 +172,8 @@
     //[self.socket writeData: [GCDAsyncSocket LFData] withTimeout: timeout tag:_tagCounter];
     
     SEnREPLResultState* evalState = [[SEnREPLResultState alloc] initWithEvaluationID: [@(_tagCounter) description]
-                                                                                 resultBlock: block];
+                                                                             timeout: timeout
+                                                                         resultBlock: block];
     [_evaluationStatesByTag setObject: evalState forKey: @(_tagCounter)];
     
     [self.socket readDataWithTimeout: timeout tag: _tagCounter];
@@ -171,8 +181,11 @@
     return _tagCounter++;
 }
 
+/**
+ * Returns the tag of the command.
+ **/
 - (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREPLPartialResultBlock) block {
-    
+    NSParameterAssert(expression);
     NSDictionary* command = @{@"op": @"eval", @"code": expression, @"id": @(_tagCounter)};
     return [self sendCommandDictionary: command completionBlock: block timeout: 6.0];
 }
@@ -223,10 +236,12 @@
 
 
 - (id) initWithEvaluationID: (NSString*) anId
+                    timeout: (NSTimeInterval) timeoutSeconds
                 resultBlock: (SEnREPLPartialResultBlock) aResultBlock {
     if (self = [self init]) {
         self.evaluationID = anId;
         self.partialResultBlock = aResultBlock;
+        _timeout = timeoutSeconds;
     }
     return self;
 }

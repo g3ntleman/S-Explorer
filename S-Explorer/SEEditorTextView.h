@@ -17,6 +17,8 @@
 @property (readonly) NSString* selectedString;
 @property (nonatomic, strong) NoodleLineNumberView* lineNumberView;
 
+@property (nonatomic, strong) NSSet* keywords; // for colorization
+
 - (IBAction) expandSelection: (id) sender;
 - (IBAction) contractSelection: (id) sender;
 - (IBAction) selectSpecificLine: (id) sender;

@@ -15,7 +15,7 @@
 @interface SEEditorController : NSController <NSTextDelegate, NSTextViewDelegate>
 
 @property (strong, nonatomic) IBOutlet SEEditorTextView* textEditorView;
-@property (strong, nonatomic) NSArray* keywords; // sorted array
+@property (strong, nonatomic) NSArray* sortedKeywords; // sorted array (for prefix search)
 @property (strong, nonatomic) SESourceItem* sourceItem; // the source item to display
 
 

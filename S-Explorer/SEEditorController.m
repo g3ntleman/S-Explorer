@@ -336,6 +336,11 @@ static BOOL isPar(unichar aChar) {
     }
 }
 
+- (void) setSortedKeywords:(NSArray *)keywords {
+    _sortedKeywords = keywords;
+    self.textEditorView.keywords = [[NSSet alloc] initWithArray: _sortedKeywords];
+}
+
 - (void) markParCorrespondingToParAtIndex: (NSUInteger) index {
         
     NSTextStorage* textStorage = self.textEditorView.textStorage;

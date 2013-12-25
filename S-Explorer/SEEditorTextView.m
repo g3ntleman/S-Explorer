@@ -201,9 +201,9 @@ static NSCharacterSet* SEWordCharacters() {
                                                          
                                                          //NSLog(@"Colorizer found word '%@'", word);
                                                          if ([[SESyntaxParser keywords] containsObject: word]) {
-                                                             color = [NSColor purpleColor];
-                                                         } else if ([parser.keywords containsObject: word]) {
-                                                             color = [NSColor blueColor];
+                                                             color = [NSColor purpleColor]; // Mark as "core" function / name
+                                                         } else if ([self.keywords containsObject: word]) {
+                                                             color = [NSColor blueColor]; // Mark as "custom" function / name
                                                          }
                                                          
                                                          if (color) {
@@ -233,6 +233,11 @@ static NSCharacterSet* SEWordCharacters() {
     
     NSRange fullRange = NSMakeRange(0, self.string.length);
     [self colorizeRange: fullRange];
+}
+
+- (void) setKeywords:(NSSet *)keywords {
+    _keywords = keywords;
+    [self colorize: self];
 }
 
 

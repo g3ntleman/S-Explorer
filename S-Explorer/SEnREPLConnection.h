@@ -12,7 +12,7 @@
 @class SEnREPLResultState;
 @class SEnREPLConnection;
 
-typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
+//typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
 
 typedef void (^SEnREPLPartialResultBlock)(NSDictionary* partialResult);
 typedef void (^SEnREPLConnectionCompletionBlock)(SEnREPLConnection* connection, NSError* error);
@@ -27,9 +27,11 @@ typedef void (^SEnREPLConnectionCompletionBlock)(SEnREPLConnection* connection, 
 @property (readonly, nonatomic) NSArray* results;
 @property (readonly, nonatomic) SEnREPLPartialResultBlock partialResultBlock;
 @property (readonly) BOOL isStatusDone;
+@property (readonly) NSTimeInterval timeout;
 
 
 - (id) initWithEvaluationID: (NSString*) anId
+                    timeout: (NSTimeInterval) timeoutSeconds
                 resultBlock: (SEnREPLPartialResultBlock) aResultBlock;
 
 

@@ -289,7 +289,7 @@ static NSData* lineFeedData = nil;
 }
 
 
-- (void) connectAndLaunchTarget: (BOOL) launch {
+- (void) connectWithCompletion: (SEnREPLConnectionCompletionBlock) completionBlock {
     
     [self stop: self];
     //NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
@@ -310,16 +310,19 @@ static NSData* lineFeedData = nil;
             }
             [self.replView moveToEndOfDocument: self];
         }
+        completionBlock(connection, error);
     }];
 
 }
 
 - (IBAction) run: (id) sender {
-    [self connectAndLaunchTarget: YES];
+    [self connectWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
+        // TODO: Launch Target
+    }];
 }
 
 - (IBAction) connectREPL: (id) sender {
-    [self connectAndLaunchTarget: NO];
+    [self connectWithCompletion: NULL];
 }
 
 

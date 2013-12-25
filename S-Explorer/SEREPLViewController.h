@@ -39,6 +39,6 @@
 
 - (IBAction) connectREPL: (id) sender;
 
-- (void) connectAndLaunchTarget: (BOOL) launch;
+- (void) connectWithCompletion: (SEnREPLConnectionCompletionBlock) completionBlock;
 
 @end

@@ -334,7 +334,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             NSMutableDictionary* settings = [self.languageDictionary mutableCopy];
             [settings addEntriesFromDictionary: self.topREPLSettings];
             [settings setObject: [self.fileURL.path stringByDeletingLastPathComponent] forKey: @"WorkingDirectory"];
-            //NSDictionary* settings = [self.languageDictionary dictionaryByAddingEntriesFromDictionary: self.topREPLSettings];
             
             self.topREPLController.replView.string = @"Starting nREPL Server...";
             
@@ -346,9 +345,23 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                     self.topREPLController.replView.string = @"Connecting to nREPL Server...";
                     self.topREPLController.greeting = self.languageDictionary[@"WelcomeMessage"];
                     self.topREPLController.replView.prompt = self.languageDictionary[@"Prompt"];
-                    [self.topREPLController connectREPL: self];
+                    
+                    [self.topREPLController connectWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
+                        NSString* keywordExpression = self.languageDictionary[@"KeywordExpression"];
+                        if (keywordExpression) {
+                            [connection evaluateExpression: keywordExpression
+                                           completionBlock:^(NSDictionary *partialResult) {
+                                               NSMutableString* allKeywordsString = [partialResult[@"value"] mutableCopy];
+                                               [allKeywordsString deleteCharactersInRange: NSMakeRange(allKeywordsString.length-1, 1)];
+                                               [allKeywordsString deleteCharactersInRange: NSMakeRange(0, 1)];
+                                               NSArray* allKeywords = [allKeywordsString componentsSeparatedByString: @" "];
+                                               
+                                               NSLog(@"Partial keyword result: %@", allKeywords);
+                                               self.editorController.sortedKeywords = allKeywords;
+                                           }];
+                        }
+                    }];
                 }
-                
             }];
         }
         
@@ -366,7 +379,9 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     if (tabView == self.replTabView) {
         SEREPLViewController* replController = self.topREPLController;
         if (! replController.connection.socket.isConnected) {
-            [replController connectAndLaunchTarget: NO];
+            [replController connectWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
+                
+            }];
         }
     } else if (tabView == self.sourceTabView) {
         NSLog(@"selected tab %@", sourceTabView.selectedTabViewItem);

@@ -150,6 +150,8 @@
  Javadoc: (javadoc java-object-or-class-here)</string>
 			<key>Prompt</key>
 			<string>=&gt; </string>
+			<key>KeywordExpression</key>
+			<string>(sort (distinct (flatten (map #(keys (ns-publics %)) (all-ns)))))</string>
 		</dict>
 		<key>Chibi-Scheme</key>
 		<dict>
