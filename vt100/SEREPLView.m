@@ -62,6 +62,7 @@
 //    NSMutableDictionary* typingAttributes = [self.typingAttributes mutableCopy];
 //    typingAttributes[BKTextCommandAttributeName] = @1;
     //self.typingAttributes = self.commandAttributes;
+    commandLocation = self.string.length;
     
 }
 
@@ -209,7 +210,11 @@
 
 
 - (IBAction) insertTab: (id) sender {
-    NSBeep(); // not implemented yet
+    if (self.isCommandMode) {
+        NSBeep(); // not implemented yet
+        return;
+    }
+    [self insertText: @""];
 }
 
 /**
@@ -297,7 +302,7 @@
     NSRange promptRange = [self promptRange];
     [self.textStorage replaceCharactersInRange: promptRange withAttributedString: [[NSAttributedString alloc] initWithString: prompt attributes:self.interpreterAttributes]];
     // Adjust commandLocation to make up for any length change:
-    commandLocation += prompt.length - _prompt.length;
+    commandLocation += prompt.length - promptRange.length;
     _prompt = prompt;
     
     [self.textStorage endEditing];
@@ -334,30 +339,53 @@
 //    return YES;
 //}
 
-/**
- * Sets the interpreter string, keeping the prompt at the end. Removes current command.
- */
 - (void) setString:(NSString *)string {
-    
-    if (!_prompt.length) {
-        [super setString: string];
-    } else {
-        string = string ? : @"";
-        NSMutableString* promptedString = [string mutableCopy];
-        [promptedString appendString: self.prompt];
-        [super setString: promptedString];
-    }
-    commandLocation = self.string.length; // includes prompt
+    [super setString:string];
 }
+
+/**
+ * Sets the interpreter string, keeping the prompt at the end. Removes current command. Does not colorize.
+ */
+- (void) setInterpreterString:(NSString *)string {
+    
+    string = string ? : @"";
+    
+    [self.textStorage beginEditing];
+    
+    NSRange interpreterRange = self.interpreterRange;
+    [self.textStorage replaceCharactersInRange: interpreterRange withAttributedString: [[NSAttributedString alloc] initWithString: string attributes:self.interpreterAttributes]];
+    // Adjust commandLocation to make up for any length change:
+    commandLocation += string.length - interpreterRange.length;
+    
+    [self.textStorage endEditing];
+}
+
+//- (void) setInterpreterString:(NSString *)string {
+//    
+//    
+//    
+//    if (!_prompt.length) {
+//        [super setString: string];
+//    } else {
+//        string = string ? : @"";
+//        NSMutableString* promptedString = [string mutableCopy];
+//        if (sef.prompt.length) {
+//        [promptedString appendString: self.prompt];
+//        }
+//        [self setString: promptedString];
+//    }
+//    commandLocation = self.string.length; // includes prompt
+//}
 
 - (IBAction) clear: (id) sender {
     
-    self.string = @"";
+    self.interpreterString = @"";
 }
 
 - (void) insertText: (id) insertString {
     if (! self.isCommandMode) {
-        self.selectedRange = NSMakeRange(self.string.length, 0);
+        [self moveToEndOfDocument: self];
+        //self.selectedRange = NSMakeRange(self.string.length, 0);
     }
     [super insertText: insertString];
 }

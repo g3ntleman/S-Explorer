@@ -335,14 +335,14 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             [settings addEntriesFromDictionary: self.topREPLSettings];
             [settings setObject: [self.fileURL.path stringByDeletingLastPathComponent] forKey: @"WorkingDirectory"];
             
-            self.topREPLController.replView.string = @"Starting nREPL Server...";
+            self.topREPLController.replView.interpreterString = @"Starting nREPL Server...";
             
             _nREPL = [[SEnREPL alloc] initWithSettings: settings];
             [_nREPL startWithCompletionBlock:^(SEnREPL *repl, NSError *error) {
                 NSLog(@"%@ startup completed (with error %@), listening on port #%ld", repl, error, repl.port);
                 if (! error) {
                     // Connect clients:
-                    self.topREPLController.replView.string = @"Connecting to nREPL Server...";
+                    [self.topREPLController.replView appendInterpreterString:  @"Connecting to nREPL Server..."];
                     self.topREPLController.greeting = self.languageDictionary[@"WelcomeMessage"];
                     self.topREPLController.replView.prompt = self.languageDictionary[@"Prompt"];
                     

@@ -77,12 +77,19 @@ static NSData* lineFeedData = nil;
             NSLog(@"<-- Received %@ from nREPL.", [partialResult description]);
             NSString* output = partialResult[@"out"];
             if (output.length) {
+                // Just log it:
                 [self.replView appendInterpreterString: output];
             } else {
                 NSString* resultValue = partialResult[@"value"];
                 if (resultValue) {
+                    NSRange range = self.replView.interpreterRange;
+                    range.location = range.length;
+                    range.length = resultValue.length;
                     [self.replView appendInterpreterString: resultValue];
                     [self.replView appendInterpreterString: @"\n"];
+                    NSLog(@"Colorizing '%@' ", [self.replView.string substringWithRange: range]);
+                    [self.replView colorizeRange: range];
+                    
                 } else {
                     NSString* errorString = partialResult[@"err"] ?: partialResult[@"ex"];
                     if (errorString) {
@@ -98,12 +105,10 @@ static NSData* lineFeedData = nil;
                 }
             }
             
-            NSString* outputString = self.replView.string;
-            NSRange outputRange = NSMakeRange(currentOutputStart, outputString.length-currentOutputStart);
+            //NSString* outputString = self.replView.string;
+            //NSRange outputRange = NSMakeRange(currentOutputStart, outputString.length-currentOutputStart);
             
-            NSLog(@"Colorizing '%@' ", [outputString substringWithRange: outputRange]);
             
-            [self.replView colorizeRange: outputRange];
             [self.replView moveToEndOfDocument: self];
         }];
     }
@@ -172,6 +177,7 @@ static NSData* lineFeedData = nil;
         return YES;
         
     } else
+        // Just insert an newline (and possibly scroll):
         [self.replView appendInterpreterString: @"\n"];
     return NO;
 }
@@ -300,12 +306,13 @@ static NSData* lineFeedData = nil;
         if (error) {
             NSLog(@"Connection to nREPL failed with error: %@", error);
         } else {
-            [self.replView clear: self];
+            //[self.replView clear: self];
             currentOutputStart = 0;
             
             self.replView.editable = YES;
             
             if (self.greeting) {
+                [self.replView appendInterpreterString: @"\n\n"];
                 [self.replView appendInterpreterString: self.greeting];
                 [self.replView appendInterpreterString: @"\n\n"];
             }
