@@ -191,18 +191,20 @@
 }
 
 
-- (void) setCommand:(NSString *)currentCommand {
+- (void) setCommand:(NSString *)newCurrentCommand {
+    
+    NSParameterAssert(newCurrentCommand);
     
     NSTextStorage* textStorage = self.textStorage;
     NSRange commandRange = self.commandRange;
     [textStorage beginEditing];
-    [textStorage replaceCharactersInRange: commandRange withString: currentCommand];
-    commandRange.length = currentCommand.length;
+    [textStorage replaceCharactersInRange: commandRange withString: newCurrentCommand];
+    commandRange.length = newCurrentCommand.length;
     [textStorage setAttributes: self.typingAttributes range: commandRange];
     [textStorage endEditing];
     
     // Place cursor behind new command:
-    self.selectedRange = NSMakeRange(commandRange.location+currentCommand.length, 0);
+    self.selectedRange = NSMakeRange(NSMaxRange(commandRange), 0);
 }
 
 
@@ -210,16 +212,25 @@
     NSBeep(); // not implemented yet
 }
 
+/**
+ * Returns the range of the interpreter output.
+ */
 - (NSRange) interpreterRange {
     NSAssert(commandLocation>=_prompt.length, @"Wrong commandLocation.");
     return NSMakeRange(0, commandLocation-_prompt.length);
 }
 
+/**
+ * Returns the range of the current command, entered by the user.
+ */
 - (NSRange) commandRange {
     NSAssert(commandLocation<=self.textStorage.length, @"Wrong commandLocation.");
     return NSMakeRange(commandLocation, self.textStorage.length-commandLocation);
 }
 
+/**
+ * Returns the range of the current prompt between the interpreter string and the command string.
+ */
 - (NSRange) promptRange {
     NSAssert(commandLocation>=_prompt.length, @"Wrong commandLocation.");
     return NSMakeRange(commandLocation-_prompt.length, _prompt.length);
@@ -268,7 +279,7 @@
     
     // Only allow editing the command string:
     if (affectedCharRange.location < commandLocation) {
-        NSBeep();
+        // TODO: Just move selection to the end of the command string?
         return NO;
     }
     
@@ -279,12 +290,14 @@
 
     NSParameterAssert(prompt);
     
-    NSLog(@"Setting Prompt on '%@' to '%@'", self.textStorage, prompt);
+    NSLog(@"Setting Prompt on '%@' to '%@'", self.textStorage.string, prompt);
 
     [self.textStorage beginEditing];
     
     NSRange promptRange = [self promptRange];
     [self.textStorage replaceCharactersInRange: promptRange withAttributedString: [[NSAttributedString alloc] initWithString: prompt attributes:self.interpreterAttributes]];
+    // Adjust commandLocation to make up for any length change:
+    commandLocation += prompt.length - _prompt.length;
     _prompt = prompt;
     
     [self.textStorage endEditing];
@@ -295,6 +308,9 @@
     return self.commandAttributes;
 }
 
+/**
+ * Ignores argument and always sets commandAttributes as typingAttributes.
+ */
 - (void) setTypingAttributes: (NSDictionary*) attrs {
     [super setTypingAttributes: self.commandAttributes];
 }
@@ -318,6 +334,9 @@
 //    return YES;
 //}
 
+/**
+ * Sets the interpreter string, keeping the prompt at the end. Removes current command.
+ */
 - (void) setString:(NSString *)string {
     
     if (!_prompt.length) {
@@ -328,12 +347,19 @@
         [promptedString appendString: self.prompt];
         [super setString: promptedString];
     }
-    commandLocation = self.string.length;
+    commandLocation = self.string.length; // includes prompt
 }
 
 - (IBAction) clear: (id) sender {
     
     self.string = @"";
+}
+
+- (void) insertText: (id) insertString {
+    if (! self.isCommandMode) {
+        self.selectedRange = NSMakeRange(self.string.length, 0);
+    }
+    [super insertText: insertString];
 }
 
 @end

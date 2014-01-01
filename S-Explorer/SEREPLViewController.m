@@ -141,6 +141,7 @@ static NSData* lineFeedData = nil;
     if (! self.connection.socket.isConnected) {
         NSLog(@"Warning, no connection to nREPL server.");
         NSBeep();
+        // TODO: Insert NSAlert here, allowing server restart.
         return NO;
     }
     
