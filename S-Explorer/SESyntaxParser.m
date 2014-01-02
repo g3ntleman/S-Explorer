@@ -18,15 +18,6 @@
 
 @synthesize delegateBlock;
 
-+ (NSSet*) keywords {
-    
-    static NSSet* keywords = nil;
-    if (! keywords) {
-        keywords = [[NSSet alloc] initWithArray: @[@"else", @"=>", @"define", @"unquote", @"unquote-splicing", @"quote", @"lambda", @"if", @"set!", @"begin", @"cond", @"and", @"or", @"not", @"case", @"let", @"let*", @"letrec", @"do", @"delay", @"quasiquote", @"import", @"null?", @"list", @"sort", @"len", @"cdr", @"car", @"filter", @"equal?", @"map", @"string-length", @"vector-ref", @"load", @"closure?", @"number?", @"string?", @"<", @">", @"+", @"-", @"*", @"/"]];
-    }
-    return keywords;
-}
-
 - (id) initWithString: (NSString*) sSource
                 range: (NSRange) range
                 block: (SESyntaxParserBlock) aDelegateBlock {

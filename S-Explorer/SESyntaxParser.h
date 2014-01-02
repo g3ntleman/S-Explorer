@@ -44,11 +44,6 @@ typedef void (^SESyntaxParserBlock)(SESyntaxParser *parser, SEParserResult resul
 @property (strong, nonatomic) SESyntaxParserBlock delegateBlock;
 @property (strong, readonly) NSString* string;
 
-/**
- * Language specific, "global" keywords, that are contained in the core library.
- **/
-+ (NSSet*) keywords;
-
 - (id) initWithString: (NSString*) sSource
                 range: (NSRange) range
                 block: (SESyntaxParserBlock) aDelegateBlock;

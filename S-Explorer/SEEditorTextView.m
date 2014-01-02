@@ -201,9 +201,7 @@ static NSCharacterSet* SEWordCharacters() {
                                                          NSString* word = [textStorage.string substringWithRange: pResult.occurrence.range];
                                                          
                                                          //NSLog(@"Colorizer found word '%@'", word);
-                                                         if ([[SESyntaxParser keywords] containsObject: word]) {
-                                                             color = [NSColor purpleColor]; // Mark as "core" function / name
-                                                         } else if ([self.keywords containsObject: word]) {
+                                                         if ([self.keywords containsObject: word]) {
                                                              color = [NSColor blueColor]; // Mark as "custom" function / name
                                                          }
                                                          
