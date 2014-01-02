@@ -9,6 +9,7 @@
 #import "SEEditorTextView.h"
 #import "SEEditorController.h"
 #import "OPCharFilterFormatter.h"
+#import "SESyntaxParser.h"
 
 //@interface NSAlert (TextValidation) <NSTextFieldDelegate>
 //

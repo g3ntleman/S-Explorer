@@ -7,7 +7,6 @@
 //
 
 #import <AppKit/AppKit.h>
-#import "SESyntaxParser.h"
 #import "NoodleLineNumberView.h"
 
 @interface SEEditorTextView : NSTextView
