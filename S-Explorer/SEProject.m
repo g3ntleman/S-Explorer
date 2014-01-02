@@ -357,12 +357,16 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                             [connection evaluateExpression: keywordExpression
                                            completionBlock:^(NSDictionary *partialResult) {
                                                NSMutableString* allKeywordsString = [partialResult[@"value"] mutableCopy];
+                                               // Convert List (Expression) into String-Array:
                                                [allKeywordsString deleteCharactersInRange: NSMakeRange(allKeywordsString.length-1, 1)];
                                                [allKeywordsString deleteCharactersInRange: NSMakeRange(0, 1)];
                                                NSArray* allKeywords = [allKeywordsString componentsSeparatedByString: @" "];
                                                
                                                NSLog(@"Partial keyword result: %@", allKeywords);
                                                self.editorController.sortedKeywords = allKeywords;
+                                               
+                                               // Copy the set of keywords to repl view - wrong assumption!!
+                                               self.topREPLController.replView.keywords = self.editorController.textEditorView.keywords;
                                            }];
                         }
                     }];

@@ -162,11 +162,14 @@ static NSData* lineFeedData = nil;
             _previousCommandHistoryIndex -= 1;
         }
         
+        NSString* command = self.replView.command;
         [self.replView appendInterpreterString: self.replView.prompt];
-        [self.replView appendInterpreterString: self.replView.command];
+        [self.replView appendInterpreterString: command];
+        NSRange interpreterRange = self.replView.interpreterRange;
+        NSRange commandRange = NSMakeRange(NSMaxRange(interpreterRange)-command.length, command.length);
+        [self.replView colorizeRange: commandRange];
         [self.replView appendInterpreterString: @"\n"];
-        
-        
+
 
         
         [self evaluateString: self.replView.command];
