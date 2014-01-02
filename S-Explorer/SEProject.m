@@ -451,6 +451,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         SESourceItem* item = [self.projectFolderItem childWithPath: path];
         [self.sourceList expandItem: item];
     }
+    
+    self.editorController.sortedKeywords = self.languageDictionary[@"Keywords"][@"StaticList"];
 }
 
 + (BOOL) autosavesInPlace {
