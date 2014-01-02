@@ -72,6 +72,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         
         self.currentLanguage = @"Clojure";
         
+        self.editorController.sortedKeywords = [self.languageDictionary valueForKeyPath: @"Keywords.StaticList"];
+        
         return self;
     }
     
@@ -305,11 +307,14 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 - (void) setCurrentLanguage:(NSString *)language {
-    currentLanguage = language;
-    NSDictionary* langDict = self.languageDictionary;
-    NSAssert(langDict, @"No language definition for %@ in info.plist.", language);
     
-    [self checkLibraryAlias];
+    if (! [self.currentLanguage isEqualToString: language]) {
+        currentLanguage = language;
+        NSDictionary* langDict = self.languageDictionary;
+        NSAssert(langDict, @"No language definition for %@ in info.plist.", language);
+        
+        [self checkLibraryAlias];
+    }
 }
 
 - (NSDictionary*) languageDictionary {
@@ -347,8 +352,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                     self.topREPLController.replView.prompt = self.languageDictionary[@"Prompt"];
                     
                     [self.topREPLController connectWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
-                        NSString* keywordExpression = self.languageDictionary[@"KeywordExpression"];
-                        if (keywordExpression) {
+                        NSString* keywordExpression = self.languageDictionary[@"Keywords"][@"DynamicExpression"];
+                        if (keywordExpression.length) {
                             [connection evaluateExpression: keywordExpression
                                            completionBlock:^(NSDictionary *partialResult) {
                                                NSMutableString* allKeywordsString = [partialResult[@"value"] mutableCopy];
