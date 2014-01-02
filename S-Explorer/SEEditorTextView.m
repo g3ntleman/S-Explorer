@@ -332,7 +332,7 @@ static NSCharacterSet* SEWordCharacters() {
 }
 
 + (NSColor*) numberColor {
-    return [NSColor redColor];
+    return [NSColor brownColor];
 }
 
 
