@@ -291,7 +291,6 @@ static NSData* lineFeedData = nil;
     if (! self.connection.socket.isDisconnected) {
         [self.connection close];
         self.replView.editable = NO;
-
     }
 }
 
