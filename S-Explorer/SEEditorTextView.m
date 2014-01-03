@@ -235,8 +235,10 @@ static NSCharacterSet* SEWordCharacters() {
 }
 
 - (void) setKeywords:(NSSet *)keywords {
-    _keywords = keywords;
-    [self colorize: self];
+    if (_keywords != keywords) {
+        _keywords = keywords;
+        [self colorize: self];
+    }
 }
 
 

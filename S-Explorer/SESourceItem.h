@@ -13,7 +13,6 @@
 @property (readonly) BOOL isTextItem;
 @property (weak, readonly, nonatomic) SESourceItem* parent;
 @property (strong, nonatomic) NSTextStorage* content;
-
 @property (readonly) NSString* absolutePath;
 @property (readonly) NSString* relativePath;
 @property (readonly) NSString* longRelativePath;

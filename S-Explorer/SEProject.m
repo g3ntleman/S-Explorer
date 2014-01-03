@@ -137,8 +137,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     self.editorController.sourceItem = item;
 
-    
-
 }
 
 //- (BOOL) validateMenuItem:(NSMenuItem *)menuItem {

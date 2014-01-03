@@ -105,10 +105,6 @@ static NSData* lineFeedData = nil;
                 }
             }
             
-            //NSString* outputString = self.replView.string;
-            //NSRange outputRange = NSMakeRange(currentOutputStart, outputString.length-currentOutputStart);
-            
-            
             [self.replView moveToEndOfDocument: self];
         }];
     }

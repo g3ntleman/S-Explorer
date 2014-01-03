@@ -12,6 +12,9 @@
 #import "NoodleLineNumberView.h"
 #import "SESourceItem.h"
 
+/**
+ * This Controller is responsible for controlling one SEEditorTextView.
+ */
 @interface SEEditorController : NSController <NSTextDelegate, NSTextViewDelegate>
 
 @property (strong, nonatomic) IBOutlet SEEditorTextView* textEditorView;
