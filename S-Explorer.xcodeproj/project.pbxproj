@@ -32,7 +32,6 @@
 		8D604292173C142A00149409 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424C173BE60800149409 /* AppKit.framework */; };
 		8D604293173C143300149409 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424E173BE60800149409 /* Foundation.framework */; };
 		8D604297173C22D600149409 /* SEREPLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* SEREPLViewController.m */; };
-		8D60429B173C388900149409 /* SEREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604299173C388900149409 /* SEREPLView.m */; };
 		8D60FFE517EC58B600F14B50 /* Templates in Resources */ = {isa = PBXBuildFile; fileRef = 8D60FFE417EC58B600F14B50 /* Templates */; };
 		8D72C53618287B6400776B14 /* SEnREPLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D72C53418287B6400776B14 /* SEnREPLConnection.m */; };
 		8D7B0BEC181184910046403D /* OPBEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7B0BEB181184910046403D /* OPBEncoder.m */; };
@@ -55,6 +54,7 @@
 		8DCBE48D17C76EBB00A872A7 /* NSColor+OPExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DCBE48C17C76EBB00A872A7 /* NSColor+OPExtensions.m */; };
 		8DCBE48F17C9B4CD00A872A7 /* scheme-indexer.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8DCBE48E17C9B4CD00A872A7 /* scheme-indexer.scm */; };
 		8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */; };
+		8DD6BA971877562F00A88B99 /* SEREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DD6BA961877562F00A88B99 /* SEREPLView.m */; };
 		8DE762FD17FB669800CD0A42 /* r7rs-overview.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8DE762FC17FB669800CD0A42 /* r7rs-overview.pdf */; };
 		8DE762FF17FB66A900CD0A42 /* r7rs-standard.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8DE762FE17FB66A900CD0A42 /* r7rs-standard.pdf */; };
 		8DEB1AA217CF7BEC0088C7C1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8DEB1AA117CF7BEC0088C7C1 /* README.md */; };
@@ -120,8 +120,7 @@
 		8D604262173BE60800149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		8D604294173C22D600149409 /* SEREPLViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = SEREPLViewController.h; sourceTree = "<group>"; };
 		8D604295173C22D600149409 /* SEREPLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEREPLViewController.m; sourceTree = "<group>"; };
-		8D604298173C388900149409 /* SEREPLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SEREPLView.h; path = ../vt100/SEREPLView.h; sourceTree = "<group>"; };
-		8D604299173C388900149409 /* SEREPLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SEREPLView.m; path = ../vt100/SEREPLView.m; sourceTree = "<group>"; };
+		8D604298173C388900149409 /* SEREPLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEREPLView.h; sourceTree = "<group>"; };
 		8D60FFE417EC58B600F14B50 /* Templates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Templates; path = Resources/Templates; sourceTree = "<group>"; };
 		8D72C53318287B6400776B14 /* SEnREPLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEnREPLConnection.h; sourceTree = "<group>"; };
 		8D72C53418287B6400776B14 /* SEnREPLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEnREPLConnection.m; sourceTree = "<group>"; };
@@ -152,6 +151,7 @@
 		8DCBE48E17C9B4CD00A872A7 /* scheme-indexer.scm */ = {isa = PBXFileReference; explicitFileType = text.plist; fileEncoding = 4; path = "scheme-indexer.scm"; sourceTree = "<group>"; };
 		8DCBE8AB176F7918004B6AA2 /* NSDictionary+OPImmutablility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = "NSDictionary+OPImmutablility.h"; sourceTree = "<group>"; };
 		8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+OPImmutablility.m"; sourceTree = "<group>"; };
+		8DD6BA961877562F00A88B99 /* SEREPLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEREPLView.m; sourceTree = "<group>"; };
 		8DE762FC17FB669800CD0A42 /* r7rs-overview.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "r7rs-overview.pdf"; sourceTree = "<group>"; };
 		8DE762FE17FB66A900CD0A42 /* r7rs-standard.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "r7rs-standard.pdf"; sourceTree = "<group>"; };
 		8DEB1AA117CF7BEC0088C7C1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = "S-Explorer/README.md"; sourceTree = "<group>"; };
@@ -290,7 +290,7 @@
 				8DEE2AC517D434EE005BEDD0 /* SEDocumentController.m */,
 				8DB9855A17EA73E600DC72F8 /* SESavePanel.xib */,
 				8D604298173C388900149409 /* SEREPLView.h */,
-				8D604299173C388900149409 /* SEREPLView.m */,
+				8DD6BA961877562F00A88B99 /* SEREPLView.m */,
 				8D604294173C22D600149409 /* SEREPLViewController.h */,
 				8D604295173C22D600149409 /* SEREPLViewController.m */,
 				8D88F63D182FBC1F00AB1D35 /* SEnREPL.h */,
@@ -482,7 +482,6 @@
 				8D604256173BE60800149409 /* main.m in Sources */,
 				8D60425D173BE60800149409 /* SEProject.m in Sources */,
 				8D604297173C22D600149409 /* SEREPLViewController.m in Sources */,
-				8D60429B173C388900149409 /* SEREPLView.m in Sources */,
 				8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */,
 				8D27BFF51766C59D00F1F8FA /* SESyntaxParser.m in Sources */,
 				8D0904C2176A7C4800176BCF /* SESourceItem.m in Sources */,
@@ -495,6 +494,7 @@
 				8D99612B17BE42150058FD0B /* NSTimer-NoodleExtensions.m in Sources */,
 				8D85E476182C8B190096C76E /* GCDAsyncSocket.m in Sources */,
 				8D99612F17BE42FF0058FD0B /* NoodleGlue.m in Sources */,
+				8DD6BA971877562F00A88B99 /* SEREPLView.m in Sources */,
 				8D5DD11917F6D13800E352FE /* NSView+OPCopying.m in Sources */,
 				8D72C53618287B6400776B14 /* SEnREPLConnection.m in Sources */,
 				8D16399617C3B7A6000DD491 /* SEEditorTextView.m in Sources */,

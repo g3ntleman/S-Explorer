@@ -295,7 +295,7 @@
 
     NSParameterAssert(prompt);
     
-    NSLog(@"Setting Prompt on '%@' to '%@'", self.textStorage.string, prompt);
+    //NSLog(@"Setting Prompt on '%@' to '%@'", self.textStorage.string, prompt);
 
     [self.textStorage beginEditing];
     
