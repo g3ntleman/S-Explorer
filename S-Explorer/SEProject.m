@@ -45,6 +45,9 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 - (id) initWithContentsOfURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing *)outError {
 
     if (self = [super init]) {
+        
+        self.currentLanguage = @"Clojure"; // TODO: Make configurable
+        
         tabbedSourceItems = @{};
         allREPLControllers = @{};
         BOOL isDir = NO;
@@ -69,10 +72,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                 [self setSourceItem: singleSourceItem forTabIndex: 0];
             }
         }
-        
-        self.currentLanguage = @"Clojure";
-        
-        self.editorController.sortedKeywords = [self.languageDictionary valueForKeyPath: @"Keywords.StaticList"];
         
         return self;
     }
@@ -363,8 +362,11 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                                                NSLog(@"Partial keyword result: %@", allKeywords);
                                                self.editorController.sortedKeywords = allKeywords;
                                                
-                                               // Copy the set of keywords to repl view - wrong assumption!!
-                                               self.topREPLController.replView.keywords = self.editorController.textEditorView.keywords;
+//                                               // Copy the set of keywords to repl view - wrong assumption!!
+//                                               self.topREPLController.replView.keywords = self.editorController.textEditorView.keywords;
+                                               
+//                                               id allSessionIDs = [connection allSessionIDs];
+//                                               NSLog(@"allSessionIDs: %@", allSessionIDs);
                                            }];
                         }
                     }];
@@ -385,7 +387,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     if (tabView == self.replTabView) {
         SEREPLViewController* replController = self.topREPLController;
-        if (! replController.connection.socket.isConnected) {
+        if (! replController.evalConnection.socket.isConnected) {
             [replController connectWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
                 
             }];
@@ -413,7 +415,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [super windowControllerDidLoadNib: aController];
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
     
-    
+    self.editorController.defaultKeywords = self.languageDictionary[@"Keywords"][@"StaticList"];
+
     // Check, wether the user wants to create a project (from a folder):
     
     self.replTabView.delegate = self;
@@ -454,7 +457,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         [self.sourceList expandItem: item];
     }
     
-    self.editorController.sortedKeywords = self.languageDictionary[@"Keywords"][@"StaticList"];
 }
 
 + (BOOL) autosavesInPlace {

@@ -20,7 +20,6 @@ typedef void (^SEnREPLConnectionCompletionBlock)(SEnREPLConnection* connection, 
 
 @interface SEnREPLResultState : NSObject
 
-@property (readonly, nonatomic) NSMutableData* buffer;
 @property (readonly, nonatomic) NSString* status;
 @property (readonly, nonatomic) NSError* error;
 @property (readonly, nonatomic) NSString* evaluationID;
@@ -43,7 +42,7 @@ typedef void (^SEnREPLConnectionCompletionBlock)(SEnREPLConnection* connection, 
 @property (readonly, nonatomic) NSString* hostname;
 @property (readonly, nonatomic) NSString* sessionID;
 @property (readonly, nonatomic) NSInteger port;
-@property (readonly, nonatomic) NSInteger tagCounter;
+@property (readonly, nonatomic) NSInteger requestCounter;
 @property (readonly, nonatomic) BOOL isConnecting;
 
 
@@ -54,6 +53,8 @@ typedef void (^SEnREPLConnectionCompletionBlock)(SEnREPLConnection* connection, 
 - (void) sendConsoleInput: (NSString*) inputString;
 
 - (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREPLPartialResultBlock) block;
+
+//- (id) allSessionIDs;
 
 - (void) terminateSessionWithCompletionBlock: (SEnREPLPartialResultBlock) block;
 

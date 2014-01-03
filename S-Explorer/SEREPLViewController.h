@@ -17,7 +17,7 @@
 
 @property (strong, nonatomic) SEREPLView* replView;
 
-@property (nonatomic, readonly) SEnREPLConnection* connection;
+@property (nonatomic, readonly) SEnREPLConnection* evalConnection;
 @property (nonatomic, readonly) SEnREPLConnection* controlConnection;
 @property (nonatomic, strong) NSString* greeting;
 

@@ -83,6 +83,7 @@ static BOOL isPar(unichar aChar) {
     BOOL parMarkerSet;
 }
 
+@synthesize sortedKeywords = _sortedKeywords;
 
 - (void) dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
@@ -108,10 +109,10 @@ static BOOL isPar(unichar aChar) {
         NSString* pathExtension = sourceItem.relativePath.pathExtension;
         
         _colorizeSourceItem = [pathExtension caseInsensitiveCompare: @"scm"] == NSOrderedSame || [pathExtension caseInsensitiveCompare: @"clj"] == NSOrderedSame;
-        if (_colorizeSourceItem) {
-            // Do the initial colorization:
-            [self.textEditorView colorize: self];
-        }
+
+        self.sortedKeywords = self.defaultKeywords; // Also does initial colorization.
+        
+        
 
         [self.textEditorView.enclosingScrollView flashScrollers];    
     }
@@ -337,8 +338,12 @@ static BOOL isPar(unichar aChar) {
 }
 
 - (void) setSortedKeywords:(NSArray *)keywords {
-    _sortedKeywords = keywords;
-    self.textEditorView.keywords = [[NSSet alloc] initWithArray: _sortedKeywords];
+    if (_sortedKeywords != keywords) {
+        _sortedKeywords = keywords;
+        if (self.colorizeSourceItem) {
+            self.textEditorView.keywords = [[NSSet alloc] initWithArray: self.sortedKeywords];
+        }
+    }
 }
 
 - (void) markParCorrespondingToParAtIndex: (NSUInteger) index {

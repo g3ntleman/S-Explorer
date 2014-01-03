@@ -21,7 +21,6 @@ static const NSString* SEMainFunctionKey = @"MainFunction";
 
 @implementation SEREPLViewController {
     
-    NSUInteger currentOutputStart;
     NSMutableArray* _commandHistory;
 }
 
@@ -72,8 +71,8 @@ static NSData* lineFeedData = nil;
 - (void) evaluateString: (NSString*) commandString {
     
     if (commandString.length) {
-        NSParameterAssert(self.connection.socket.isConnected);
-        [self.connection evaluateExpression: commandString completionBlock:^(NSDictionary* partialResult) {
+        NSParameterAssert(self.evalConnection.socket.isConnected);
+        [self.evalConnection evaluateExpression: commandString completionBlock:^(NSDictionary* partialResult) {
             NSLog(@"<-- Received %@ from nREPL.", [partialResult description]);
             NSString* output = partialResult[@"out"];
             if (output.length) {
@@ -139,7 +138,7 @@ static NSData* lineFeedData = nil;
 
 - (BOOL) sendCurrentCommand {
     
-    if (! self.connection.socket.isConnected) {
+    if (! self.evalConnection.socket.isConnected) {
         NSLog(@"Warning, no connection to nREPL server.");
         NSBeep();
         // TODO: Insert NSAlert here, allowing server restart.
@@ -171,8 +170,6 @@ static NSData* lineFeedData = nil;
         [self evaluateString: self.replView.command];
         self.replView.command = @"";
 
-        currentOutputStart = self.replView.string.length;
-                
         return YES;
         
     } else
@@ -287,8 +284,8 @@ static NSData* lineFeedData = nil;
 
 - (IBAction) stop: (id) sender {
     
-    if (! self.connection.socket.isDisconnected) {
-        [self.connection close];
+    if (! self.evalConnection.socket.isDisconnected) {
+        [self.evalConnection close];
         self.replView.editable = NO;
     }
 }
@@ -299,13 +296,22 @@ static NSData* lineFeedData = nil;
     [self stop: self];
     //NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
     
-    _connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.nREPL.port sessionID: nil];
-    [_connection openWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
+    _evalConnection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.nREPL.port sessionID: nil];
+    [_evalConnection openWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
         if (error) {
             NSLog(@"Connection to nREPL failed with error: %@", error);
         } else {
-            //[self.replView clear: self];
-            currentOutputStart = 0;
+            [connection evaluateExpression:@"nil" completionBlock:^(NSDictionary *partialResult) {
+                // _evalConnection established.
+                if (connection.sessionID.length) {
+                    // Now connect the _controlConnection using the same sessionID:
+                    NSLog(@"Eval Connection %@ established.", _evalConnection);
+                    _controlConnection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.nREPL.port sessionID: connection.sessionID];
+                    [_controlConnection openWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
+                        NSLog(@"Control connection %@ established.", connection);
+                    }];
+                }
+            }];
             
             self.replView.editable = YES;
             
