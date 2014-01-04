@@ -500,9 +500,8 @@
 				<string>(sort (distinct (flatten (map #(keys (ns-publics %)) (all-ns)))))</string>
 				<key>StaticList</key>
 				<array>
-					<string>nil</string>
 					<string>*</string>
-					<string>*'</string>
+					<string>*&apos;</string>
 					<string>*1</string>
 					<string>*2</string>
 					<string>*3</string>
@@ -545,9 +544,9 @@
 					<string>*verbose-defrecords*</string>
 					<string>*warn-on-reflection*</string>
 					<string>+</string>
-					<string>+'</string>
+					<string>+&apos;</string>
 					<string>-</string>
-					<string>-'</string>
+					<string>-&apos;</string>
 					<string>-&gt;</string>
 					<string>-&gt;&gt;</string>
 					<string>-&gt;ArrayChunk</string>
@@ -558,7 +557,6 @@
 					<string>-&gt;VecNode</string>
 					<string>-&gt;VecSeq</string>
 					<string>-cache-protocol-fn</string>
-					<string>-main</string>
 					<string>-reset-methods</string>
 					<string>..</string>
 					<string>/</string>
@@ -716,7 +714,7 @@
 					<string>cycle</string>
 					<string>d</string>
 					<string>dec</string>
-					<string>dec'</string>
+					<string>dec&apos;</string>
 					<string>decimal?</string>
 					<string>declare</string>
 					<string>default-data-readers</string>
@@ -753,7 +751,6 @@
 					<string>dissoc</string>
 					<string>dissoc!</string>
 					<string>distinct</string>
-					<string>distinct-sorted</string>
 					<string>distinct?</string>
 					<string>do-report</string>
 					<string>do-template</string>
@@ -853,7 +850,7 @@
 					<string>import</string>
 					<string>in-ns</string>
 					<string>inc</string>
-					<string>inc'</string>
+					<string>inc&apos;</string>
 					<string>inc-report-counter</string>
 					<string>index</string>
 					<string>init-proxy</string>
@@ -955,6 +952,7 @@
 					<string>newline</string>
 					<string>next</string>
 					<string>nfirst</string>
+					<string>nil</string>
 					<string>nil?</string>
 					<string>nnext</string>
 					<string>not</string>
@@ -1313,7 +1311,7 @@
 			<key>WelcomeMessage</key>
 			<string>Welcome to Clojure!
     Docs: (doc function-name-here)
-          (find-doc "part-of-name-here")
+          (find-doc &quot;part-of-name-here&quot;)
   Source: (source function-name-here)
  Javadoc: (javadoc java-object-or-class-here)</string>
 		</dict>
