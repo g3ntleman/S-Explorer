@@ -50,7 +50,6 @@ static BOOL isPar(unichar aChar) {
 @interface  NSMutableAttributedString (SEExtensions)
 - (void) markCharsAtRange: (NSRange) parRange;
 - (void) unmarkChars;
-
 @end
 
 @implementation NSMutableAttributedString (SEExtensions) 
@@ -69,8 +68,8 @@ static BOOL isPar(unichar aChar) {
     [self removeAttribute: NSBackgroundColorAttributeName range: NSMakeRange(0, self.string.length)];
 }
 
-
 @end
+
 
 @interface SEEditorController ()
 
