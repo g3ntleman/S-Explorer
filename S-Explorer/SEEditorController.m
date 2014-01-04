@@ -74,6 +74,7 @@ static BOOL isPar(unichar aChar) {
 @interface SEEditorController ()
 
 @property(readonly) BOOL colorizeSourceItem;
+@property (nonatomic) NSRange lastCompletionRange;
 
 @end
 
@@ -414,9 +415,64 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 }
 
 
+- (NSArray*) textView: (NSTextView*) textView completions: (NSArray*) words forPartialWordRange: (NSRange) charRange indexOfSelectedItem: (NSInteger*) indexPtr {
+    
+    NSArray* keywords = self.defaultKeywords;
+
+    if (! keywords) {
+        return words;
+    }
+    
+    *indexPtr = -1;
+
+    NSString* prefix = [textView.string substringWithRange: charRange];
+    
+    if (! prefix.length) return keywords;
+    
+    NSLog(@"Completing '%@'", prefix);
+    
+    NSRange fullRange = NSMakeRange(0, keywords.count);
+    NSComparator prefixComparator = ^NSComparisonResult(NSString* obj1, NSString* obj2) {
+        return [obj1 compare: obj2 options: NSLiteralSearch range: NSMakeRange(0, MIN([obj1 length], [obj2 length]))];
+    };
+    
+    // Do binary search to find first and last keyword prefixed with 'prefix':
+    NSInteger firstIndex = [keywords indexOfObject: prefix
+                                     inSortedRange: fullRange
+                                           options: NSBinarySearchingFirstEqual
+                                   usingComparator: prefixComparator];
+    
+    // Do not complete, if nothing found:
+    if (firstIndex == NSNotFound) {
+        self.lastCompletionRange = NSMakeRange(NSNotFound, 0);
+        return nil;
+    }
+    if ([keywords[firstIndex] isEqualToString: prefix]) {
+        firstIndex += 1;
+    }
+
+    NSInteger lastIndex = [keywords indexOfObject: prefix
+                                    inSortedRange: fullRange
+                                          options: NSBinarySearchingLastEqual
+                                  usingComparator: prefixComparator];
+    
+    self.lastCompletionRange = charRange;
+    
+    return [keywords subarrayWithRange: NSMakeRange(firstIndex, lastIndex-firstIndex+1)];
+}
+
+
 - (BOOL) textView:(NSTextView*) textView shouldChangeTextInRange: (NSRange) affectedCharRange replacementString: (NSString*) replacementString {
     
     [self unmarkPar];
+    
+    if (replacementString.length == 1 && NSMaxRange(self.lastCompletionRange) == affectedCharRange.location) {
+        [self.textEditorView performSelector: @selector(complete:) withObject: self afterDelay: 0.0];
+        return YES;
+    }
+    if (replacementString.length == 0 && self.lastCompletionRange.length > 0) {
+        self.lastCompletionRange = NSMakeRange(NSNotFound, 0);
+    }
     
     return YES;
 }

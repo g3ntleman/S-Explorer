@@ -308,7 +308,9 @@ static NSData* lineFeedData = nil;
                     NSLog(@"Eval Connection %@ established.", _evalConnection);
                     _controlConnection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.nREPL.port sessionID: connection.sessionID];
                     [_controlConnection openWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
-                        NSLog(@"Control connection %@ established.", connection);
+                        [connection evaluateExpression:@"nil" completionBlock:^(NSDictionary *partialResult) {
+                            NSLog(@"Control connection %@ established.", connection);
+                        }];
                     }];
                 }
             }];

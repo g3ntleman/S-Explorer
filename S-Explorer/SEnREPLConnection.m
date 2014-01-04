@@ -113,7 +113,7 @@
     
     [self.readBuffer appendData: data];
     
-    NSString* dataString = [[NSString alloc] initWithData: self.readBuffer encoding: NSUTF8StringEncoding];
+    //NSString* dataString = [[NSString alloc] initWithData: self.readBuffer encoding: NSUTF8StringEncoding];
     //NSLog(@"Socket read data for tag %ld. Buffer now: %@", tag, dataString);
     
     
@@ -173,7 +173,7 @@
     @synchronized(self) {
         // Does not work - getting unknown session error.
         if (_sessionID.length) {
-            commandDictionary = [commandDictionary dictionaryBySettingObject: _sessionID forKey: @":session"];
+            commandDictionary = [commandDictionary dictionaryBySettingObject: _sessionID forKey: @"session"];
         }
         
         NSData* benData = [[[OPBEncoder alloc] init] encodeRootObject: commandDictionary];
