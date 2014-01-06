@@ -497,7 +497,7 @@
 			<key>Keywords</key>
 			<dict>
 				<key>DynamicExpression</key>
-				<string>(sort (distinct (flatten (map #(keys (ns-publics %)) (all-ns)))))</string>
+				<string>(distinct (flatten (map #(keys (ns-publics %)) (all-ns))))</string>
 				<key>StaticList</key>
 				<array>
 					<string>*</string>

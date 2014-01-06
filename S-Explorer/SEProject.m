@@ -357,7 +357,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                                                // Convert List (Expression) into String-Array:
                                                [allKeywordsString deleteCharactersInRange: NSMakeRange(allKeywordsString.length-1, 1)];
                                                [allKeywordsString deleteCharactersInRange: NSMakeRange(0, 1)];
-                                               NSArray* allKeywords = [allKeywordsString componentsSeparatedByString: @" "];
+                                               NSArray* allKeywords = [[allKeywordsString componentsSeparatedByString: @" "] sortedArrayUsingSelector: @selector(compare:)];
                                                
                                                NSLog(@"Partial keyword result: %@", allKeywords);
                                                self.editorController.sortedKeywords = allKeywords;
