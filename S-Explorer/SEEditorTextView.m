@@ -10,6 +10,8 @@
 #import "SEEditorController.h"
 #import "OPCharFilterFormatter.h"
 #import "SESyntaxParser.h"
+#import "NSColor+OPExtensions.h"
+
 
 //@interface NSAlert (TextValidation) <NSTextFieldDelegate>
 //
@@ -343,6 +345,53 @@ static NSCharacterSet* SEWordCharacters() {
     [self setAutomaticQuoteSubstitutionEnabled: NO];
 }
 
+- (NSRange) textView: (NSTextView*) textView willChangeSelectionFromCharacterRange: (NSRange) oldRange toCharacterRange: (NSRange) newRange {
+    NSLog(@"XXX");
+}
+
 @end
 
+
+@implementation NSMutableAttributedString (SEExtensions)
+
+- (void) markCharsAtRange: (NSRange) parRange {
+    
+    NSColor* markColor = [NSColor colorFromHexRGB: @"F0E609"];
+    
+    [self beginEditing];
+    [self addAttribute: NSBackgroundColorAttributeName value: markColor range: NSMakeRange(parRange.location, 1)];
+    [self addAttribute: NSBackgroundColorAttributeName value: markColor range: NSMakeRange(NSMaxRange(parRange)-1, 1)];
+    [self endEditing];
+}
+
+- (void) unmarkChars {
+    [self removeAttribute: NSBackgroundColorAttributeName range: NSMakeRange(0, self.string.length)];
+}
+
+@end
+
+inline BOOL isOpeningPar(unichar aChar) {
+    return aChar == '(' || aChar == '[' || aChar == '{';
+}
+
+inline BOOL isClosingPar(unichar aChar) {
+    return aChar == ')' || aChar == ']' || aChar == '}';
+}
+
+
+unichar matchingPar(unichar aPar) {
+    switch (aPar) {
+        case '(': return ')';
+        case ')': return '(';
+        case '[': return ']';
+        case ']': return '[';
+        case '{': return '}';
+        case '}': return '{';
+    }
+    return 0;
+}
+
+BOOL isPar(unichar aChar) {
+    return matchingPar(aChar) != 0;
+}
 

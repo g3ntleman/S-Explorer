@@ -34,3 +34,16 @@
 + (NSColor*) numberColor;
 
 @end
+
+@interface  NSMutableAttributedString (SEExtensions)
+- (void) markCharsAtRange: (NSRange) parRange;
+- (void) unmarkChars;
+@end
+
+
+extern BOOL isOpeningPar(unichar aChar);
+extern BOOL isClosingPar(unichar aChar);
+extern unichar matchingPar(unichar aPar);
+extern BOOL isPar(unichar aChar);
+
+

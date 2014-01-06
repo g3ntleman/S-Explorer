@@ -22,53 +22,6 @@ NSSet* SESingleIndentFunctions() {
 }
 
 
-static inline BOOL isOpeningPar(unichar aChar) {
-    return aChar == '(' || aChar == '[' || aChar == '{';
-}
-
-static inline BOOL isClosingPar(unichar aChar) {
-    return aChar == ')' || aChar == ']' || aChar == '}';
-}
-
-
-static unichar matchingPar(unichar aPar) {
-    switch (aPar) {
-        case '(': return ')';
-        case ')': return '(';
-        case '[': return ']';
-        case ']': return '[';
-        case '{': return '}';
-        case '}': return '{';
-    }
-    return 0;
-}
-
-static BOOL isPar(unichar aChar) {
-    return matchingPar(aChar) != 0;
-}
-
-@interface  NSMutableAttributedString (SEExtensions)
-- (void) markCharsAtRange: (NSRange) parRange;
-- (void) unmarkChars;
-@end
-
-@implementation NSMutableAttributedString (SEExtensions) 
-
-- (void) markCharsAtRange: (NSRange) parRange {
-    
-    NSColor* markColor = [NSColor colorFromHexRGB: @"F0E609"];
-                              
-    [self beginEditing];
-    [self addAttribute: NSBackgroundColorAttributeName value: markColor range: NSMakeRange(parRange.location, 1)];
-    [self addAttribute: NSBackgroundColorAttributeName value: markColor range: NSMakeRange(NSMaxRange(parRange)-1, 1)];
-    [self endEditing];
-}
-
-- (void) unmarkChars {
-    [self removeAttribute: NSBackgroundColorAttributeName range: NSMakeRange(0, self.string.length)];
-}
-
-@end
 
 
 @interface SEEditorController ()
