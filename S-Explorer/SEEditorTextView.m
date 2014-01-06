@@ -336,6 +336,9 @@ static NSCharacterSet* SEWordCharacters() {
     return [NSColor brownColor];
 }
 
+- (void) awakeFromNib {
+    [self setAutomaticQuoteSubstitutionEnabled: NO];
+}
 
 @end
 
