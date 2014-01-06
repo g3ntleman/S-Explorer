@@ -222,7 +222,10 @@ static NSCharacterSet* SEWordCharacters() {
     NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
     [parser parseAll];
     NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
-    NSLog(@"Parsing & Highlighting %ld chars took %ld milliseconds.", aRange.length, lround((endTime-startTime)*1000.0));
+    NSUInteger duration = lround((endTime-startTime)*1000.0);
+    if (duration > 10.0) {
+        NSLog(@"Parsing & Highlighting %ld chars took %ld milliseconds.", aRange.length, duration);
+    }
     [textStorage endEditing];
 }
 

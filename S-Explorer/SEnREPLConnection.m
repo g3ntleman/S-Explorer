@@ -173,7 +173,7 @@
     @synchronized(self) {
         // Does not work - getting unknown session error.
         if (_sessionID.length) {
-            commandDictionary = [commandDictionary dictionaryBySettingObject: _sessionID forKey: @"session"];
+            commandDictionary = [commandDictionary dictionaryBySettingObject: _sessionID forKey: @":session"];
         }
         
         NSData* benData = [[[OPBEncoder alloc] init] encodeRootObject: commandDictionary];
