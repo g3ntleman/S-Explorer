@@ -15,7 +15,11 @@
 //typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
 
 typedef void (^SEnREPLPartialResultBlock)(NSDictionary* partialResult);
-typedef void (^SEnREPLConnectionCompletionBlock)(SEnREPLConnection* connection, NSError* error);
+
+/**
+ * Called on connect, but also on disconnect.
+ */
+typedef void (^SEnREPLConnectBlock)(SEnREPLConnection* connection, NSError* error);
 
 
 @interface SEnREPLResultState : NSObject
@@ -58,7 +62,7 @@ typedef void (^SEnREPLConnectionCompletionBlock)(SEnREPLConnection* connection, 
 
 - (void) terminateSessionWithCompletionBlock: (SEnREPLPartialResultBlock) block;
 
-- (void) openWithCompletion: (SEnREPLConnectionCompletionBlock) completionBlock;
+- (void) openWithConnectBlock: (SEnREPLConnectBlock) completionBlock;
 
 - (void) close;
 

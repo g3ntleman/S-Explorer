@@ -287,21 +287,31 @@ static NSData* lineFeedData = nil;
 - (IBAction) stop: (id) sender {
     
     if (! self.evalConnection.socket.isDisconnected) {
-        [self.evalConnection close];
+        [self.evalConnection terminateSessionWithCompletionBlock:^(NSDictionary *partialResult) {
+            [self.evalConnection close];
+        }];
         self.replView.editable = NO;
     }
 }
 
-
-- (void) connectWithCompletion: (SEnREPLConnectionCompletionBlock) completionBlock {
+/**
+ * The block will be called on connect, connection error 
+ * or - after a connection has been established - on sudden disconnect.
+ */
+- (void) connectWithBlock: (SEnREPLConnectBlock) connectBlock {
     
     [self stop: self];
     //NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
     
     _evalConnection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.nREPL.port sessionID: nil];
-    [_evalConnection openWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
+    [_evalConnection openWithConnectBlock:^(SEnREPLConnection *connection, NSError *error) {
+        self.textView.editable = !error;
         if (error) {
-            NSLog(@"Connection to nREPL failed with error: %@", error);
+            //NSLog(@"Connection to nREPL failed with error: %@", error);
+            if (error.code != 49) {
+                [self.replView appendInterpreterString: [NSString stringWithFormat: @"\nError with nREPL Connection: %@\n", error]];
+            }
+            // TODO: Show NSAlert here?
         } else {
             [connection evaluateExpression:@"nil" completionBlock:^(NSDictionary *partialResult) {
                 // _evalConnection established.
@@ -309,7 +319,7 @@ static NSData* lineFeedData = nil;
                     // Now connect the _controlConnection using the same sessionID:
                     NSLog(@"Eval Connection %@ established.", _evalConnection);
                     _controlConnection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.nREPL.port sessionID: connection.sessionID];
-                    [_controlConnection openWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
+                    [_controlConnection openWithConnectBlock:^(SEnREPLConnection *connection, NSError *error) {
                         [connection evaluateExpression:@"nil" completionBlock:^(NSDictionary *partialResult) {
                             NSLog(@"Control connection %@ established.", connection);
                         }];
@@ -326,19 +336,20 @@ static NSData* lineFeedData = nil;
             }
             [self.replView moveToEndOfDocument: self];
         }
-        completionBlock(connection, error);
+        connectBlock(connection, error);
     }];
 
 }
 
 - (IBAction) run: (id) sender {
-    [self connectWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
-        // TODO: Launch Target
+    [self connectWithBlock: ^(SEnREPLConnection *connection, NSError *error) {
+        // TODO: Launch Target.
+        // TODO: Trigger UI Updates
     }];
 }
 
 - (IBAction) connectREPL: (id) sender {
-    [self connectWithCompletion: NULL];
+    [self connectWithBlock: NULL];
 }
 
 

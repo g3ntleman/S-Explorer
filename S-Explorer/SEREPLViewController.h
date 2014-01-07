@@ -40,6 +40,6 @@
 
 - (IBAction) connectREPL: (id) sender;
 
-- (void) connectWithCompletion: (SEnREPLConnectionCompletionBlock) completionBlock;
+- (void) connectWithBlock: (SEnREPLConnectBlock) connectBlock;
 
 @end

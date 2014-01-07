@@ -14,7 +14,7 @@
 
 @property (strong, nonatomic) NSMutableDictionary* evaluationStatesByTag;
 @property (readonly, nonatomic) NSInteger connectRetries;
-@property (strong, nonatomic) SEnREPLConnectionCompletionBlock connectCompletionBlock;
+@property (strong, nonatomic) SEnREPLConnectBlock connectBlock;
 @property (readonly, nonatomic) NSMutableData* readBuffer;
 
 @end
@@ -42,19 +42,19 @@
     [self close];
 }
 
-- (void) openWithCompletion: (SEnREPLConnectionCompletionBlock) completionBlock {
+- (void) openWithConnectBlock: (SEnREPLConnectBlock) completionBlock {
     NSAssert(self.socket, @"openWithError: Socket not set.");
     NSAssert(self.socket.isDisconnected, @"openWithError: Socket still open. Close it first.");
     
     NSError* error = nil;
-    self.connectCompletionBlock = completionBlock;
+    self.connectBlock = completionBlock;
     
     if (_connectRetries <= 0) {
         _connectRetries = 50;
     }
     if (! [self.socket connectToHost: self.hostname onPort: self.port error: &error]) {
-        self.connectCompletionBlock(self, error);
-        self.connectCompletionBlock = nil;
+        self.connectBlock(self, error);
+        self.connectBlock = nil;
     }
 }
 
@@ -89,18 +89,19 @@
 - (void) socket: (GCDAsyncSocket*) sock didConnectToHost: (NSString*) host port: (UInt16) port {
     NSLog(@"%@ connected to %@:%u.", self, host, port);
     _connectRetries = 0;
-    self.connectCompletionBlock(self, nil);
+    self.connectBlock(self, nil);
 }
 
 - (void) socketDidDisconnect: (GCDAsyncSocket*) sock withError: (NSError*) error {
     
     if (error.code == 61 && _connectRetries > 0) {
-        // Connection Refused, retry:
+        // Connection Refused, Server not up (yet). Retry:
         _connectRetries -= 1;
         NSTimeInterval retryInterval = 0.3;
         NSLog(@"Connection Refused. Retrying in %.01fs. %ld tries left.", retryInterval, (long)_connectRetries);
         [self performSelector: @selector(openWithError:) withObject: NULL afterDelay: retryInterval];
     } else {
+        self.connectBlock(self, error);
         NSLog(@"%@ disconnected (%@). Cleaning up...", self, error);
         [self close];
     }

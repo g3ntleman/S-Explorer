@@ -49,7 +49,7 @@
                                                              port: self.repl.port
                                                         sessionID: nil];
 
-    [self.connection openWithCompletion:^(SEnREPLConnection* connection, NSError* anError) {
+    [self.connection openWithConnectBlock:^(SEnREPLConnection* connection, NSError* anError) {
         connected = (anError == nil);
         error = anError;
             NSLog(@"Unable to open connection %@", error);

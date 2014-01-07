@@ -348,7 +348,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                     self.topREPLController.greeting = self.languageDictionary[@"WelcomeMessage"];
                     self.topREPLController.replView.prompt = self.languageDictionary[@"Prompt"];
                     
-                    [self.topREPLController connectWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
+                    [self.topREPLController connectWithBlock:^(SEnREPLConnection *connection, NSError *error) {
                         NSString* keywordExpression = self.languageDictionary[@"Keywords"][@"DynamicExpression"];
                         if (keywordExpression.length) {
                             [connection evaluateExpression: keywordExpression
@@ -388,7 +388,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     if (tabView == self.replTabView) {
         SEREPLViewController* replController = self.topREPLController;
         if (! replController.evalConnection.socket.isConnected) {
-            [replController connectWithCompletion:^(SEnREPLConnection *connection, NSError *error) {
+            [replController connectWithBlock:^(SEnREPLConnection *connection, NSError *error) {
                 
             }];
         }
