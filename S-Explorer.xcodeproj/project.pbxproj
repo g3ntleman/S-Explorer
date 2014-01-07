@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; };
 		8D0904C2176A7C4800176BCF /* SESourceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904C1176A7C4800176BCF /* SESourceItem.m */; };
-		8D16399617C3B7A6000DD491 /* SEEditorTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D16399517C3B7A6000DD491 /* SEEditorTextView.m */; };
+		8D16399617C3B7A6000DD491 /* SESourceEditorTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D16399517C3B7A6000DD491 /* SESourceEditorTextView.m */; };
 		8D16399817C57FAE000DD491 /* S-Explorer.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 8D16399717C57FAE000DD491 /* S-Explorer.iconset */; };
 		8D16399C17C6BC1D000DD491 /* SEApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D16399B17C6BC1D000DD491 /* SEApplicationDelegate.m */; };
 		8D17FE2817EA72A000883285 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D17FE2717EA72A000883285 /* XCTest.framework */; };
@@ -46,7 +46,7 @@
 		8D88F642182FBC1F00AB1D35 /* SEnREPL.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D88F63E182FBC1F00AB1D35 /* SEnREPL.m */; };
 		8D8F9AF917EBEBDA00299D24 /* OPTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F9AF717EBEBDA00299D24 /* OPTabView.m */; };
 		8D94C2471783AA8B00D8595B /* PseudoTTY.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D94C2461783AA8B00D8595B /* PseudoTTY.m */; };
-		8D99612717BDB9740058FD0B /* SEEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D99612617BDB9730058FD0B /* SEEditorController.m */; };
+		8D99612717BDB9740058FD0B /* SESourceEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D99612617BDB9730058FD0B /* SESourceEditorController.m */; };
 		8D99612B17BE42150058FD0B /* NSTimer-NoodleExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D99612917BE41520058FD0B /* NSTimer-NoodleExtensions.m */; };
 		8D99612F17BE42FF0058FD0B /* NoodleGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D99612D17BE42EC0058FD0B /* NoodleGlue.m */; };
 		8D99613117C1C7DF0058FD0B /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D99613017C1C7DF0058FD0B /* CoreServices.framework */; };
@@ -55,6 +55,7 @@
 		8DCBE48F17C9B4CD00A872A7 /* scheme-indexer.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8DCBE48E17C9B4CD00A872A7 /* scheme-indexer.scm */; };
 		8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */; };
 		8DD6BA971877562F00A88B99 /* SEREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DD6BA961877562F00A88B99 /* SEREPLView.m */; };
+		8DD87682187B761A000D4B8C /* SESourceTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DD87681187B761A000D4B8C /* SESourceTextViewController.m */; };
 		8DE762FD17FB669800CD0A42 /* r7rs-overview.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8DE762FC17FB669800CD0A42 /* r7rs-overview.pdf */; };
 		8DE762FF17FB66A900CD0A42 /* r7rs-standard.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8DE762FE17FB66A900CD0A42 /* r7rs-standard.pdf */; };
 		8DEB1AA217CF7BEC0088C7C1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8DEB1AA117CF7BEC0088C7C1 /* README.md */; };
@@ -79,8 +80,8 @@
 		8D0904C1176A7C4800176BCF /* SESourceItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SESourceItem.m; sourceTree = "<group>"; };
 		8D120D68176D2A3C0019577E /* PSMMetalTabStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = PSMMetalTabStyle.h; sourceTree = "<group>"; };
 		8D120D69176D2A3C0019577E /* PSMMetalTabStyle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PSMMetalTabStyle.m; sourceTree = "<group>"; };
-		8D16399417C3B7A6000DD491 /* SEEditorTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEEditorTextView.h; sourceTree = "<group>"; };
-		8D16399517C3B7A6000DD491 /* SEEditorTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEEditorTextView.m; sourceTree = "<group>"; };
+		8D16399417C3B7A6000DD491 /* SESourceEditorTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SESourceEditorTextView.h; sourceTree = "<group>"; };
+		8D16399517C3B7A6000DD491 /* SESourceEditorTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SESourceEditorTextView.m; sourceTree = "<group>"; };
 		8D16399717C57FAE000DD491 /* S-Explorer.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = "S-Explorer.iconset"; path = "Resources/S-Explorer.iconset"; sourceTree = "<group>"; };
 		8D16399A17C6BC1D000DD491 /* SEApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEApplicationDelegate.h; sourceTree = "<group>"; };
 		8D16399B17C6BC1D000DD491 /* SEApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEApplicationDelegate.m; sourceTree = "<group>"; };
@@ -138,8 +139,8 @@
 		8D8F9AF717EBEBDA00299D24 /* OPTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPTabView.m; sourceTree = "<group>"; };
 		8D94C2451783AA8B00D8595B /* PseudoTTY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PseudoTTY.h; sourceTree = "<group>"; };
 		8D94C2461783AA8B00D8595B /* PseudoTTY.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PseudoTTY.m; sourceTree = "<group>"; };
-		8D99612517BDB9730058FD0B /* SEEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = SEEditorController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		8D99612617BDB9730058FD0B /* SEEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEEditorController.m; sourceTree = "<group>"; };
+		8D99612517BDB9730058FD0B /* SESourceEditorController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = SESourceEditorController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		8D99612617BDB9730058FD0B /* SESourceEditorController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SESourceEditorController.m; sourceTree = "<group>"; };
 		8D99612817BE41520058FD0B /* NSTimer-NoodleExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTimer-NoodleExtensions.h"; sourceTree = "<group>"; };
 		8D99612917BE41520058FD0B /* NSTimer-NoodleExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTimer-NoodleExtensions.m"; sourceTree = "<group>"; };
 		8D99612C17BE42EB0058FD0B /* NoodleGlue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoodleGlue.h; sourceTree = "<group>"; };
@@ -152,6 +153,8 @@
 		8DCBE8AB176F7918004B6AA2 /* NSDictionary+OPImmutablility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = "NSDictionary+OPImmutablility.h"; sourceTree = "<group>"; };
 		8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+OPImmutablility.m"; sourceTree = "<group>"; };
 		8DD6BA961877562F00A88B99 /* SEREPLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEREPLView.m; sourceTree = "<group>"; };
+		8DD87680187B761A000D4B8C /* SESourceTextViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SESourceTextViewController.h; sourceTree = "<group>"; };
+		8DD87681187B761A000D4B8C /* SESourceTextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SESourceTextViewController.m; sourceTree = "<group>"; };
 		8DE762FC17FB669800CD0A42 /* r7rs-overview.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "r7rs-overview.pdf"; sourceTree = "<group>"; };
 		8DE762FE17FB66A900CD0A42 /* r7rs-standard.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "r7rs-standard.pdf"; sourceTree = "<group>"; };
 		8DEB1AA117CF7BEC0088C7C1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = "S-Explorer/README.md"; sourceTree = "<group>"; };
@@ -275,10 +278,12 @@
 				8D60425B173BE60800149409 /* SEProject.h */,
 				8D60425C173BE60800149409 /* SEProject.m */,
 				8D60425E173BE60800149409 /* SEProject.xib */,
-				8D16399417C3B7A6000DD491 /* SEEditorTextView.h */,
-				8D16399517C3B7A6000DD491 /* SEEditorTextView.m */,
-				8D99612517BDB9730058FD0B /* SEEditorController.h */,
-				8D99612617BDB9730058FD0B /* SEEditorController.m */,
+				8D16399417C3B7A6000DD491 /* SESourceEditorTextView.h */,
+				8D16399517C3B7A6000DD491 /* SESourceEditorTextView.m */,
+				8DD87680187B761A000D4B8C /* SESourceTextViewController.h */,
+				8DD87681187B761A000D4B8C /* SESourceTextViewController.m */,
+				8D99612517BDB9730058FD0B /* SESourceEditorController.h */,
+				8D99612617BDB9730058FD0B /* SESourceEditorController.m */,
 				8D27BFF21766C59C00F1F8FA /* SESyntaxParser.h */,
 				8D27BFF31766C59C00F1F8FA /* SESyntaxParser.m */,
 				8D0904C0176A7C4800176BCF /* SESourceItem.h */,
@@ -490,14 +495,15 @@
 				8D2AAB6C177A8E50008F07C4 /* NoodleLineNumberView.m in Sources */,
 				8D2AAB71177A94A8008F07C4 /* NoodleLineNumberMarker.m in Sources */,
 				8D94C2471783AA8B00D8595B /* PseudoTTY.m in Sources */,
-				8D99612717BDB9740058FD0B /* SEEditorController.m in Sources */,
+				8D99612717BDB9740058FD0B /* SESourceEditorController.m in Sources */,
 				8D99612B17BE42150058FD0B /* NSTimer-NoodleExtensions.m in Sources */,
 				8D85E476182C8B190096C76E /* GCDAsyncSocket.m in Sources */,
+				8DD87682187B761A000D4B8C /* SESourceTextViewController.m in Sources */,
 				8D99612F17BE42FF0058FD0B /* NoodleGlue.m in Sources */,
 				8DD6BA971877562F00A88B99 /* SEREPLView.m in Sources */,
 				8D5DD11917F6D13800E352FE /* NSView+OPCopying.m in Sources */,
 				8D72C53618287B6400776B14 /* SEnREPLConnection.m in Sources */,
-				8D16399617C3B7A6000DD491 /* SEEditorTextView.m in Sources */,
+				8D16399617C3B7A6000DD491 /* SESourceEditorTextView.m in Sources */,
 				8D16399C17C6BC1D000DD491 /* SEApplicationDelegate.m in Sources */,
 				8DCBE48D17C76EBB00A872A7 /* NSColor+OPExtensions.m in Sources */,
 				8D4DF7E717F4587F00BC0773 /* OPCharFilterFormatter.m in Sources */,

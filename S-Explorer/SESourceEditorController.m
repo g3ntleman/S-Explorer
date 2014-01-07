@@ -7,7 +7,7 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import "SEEditorController.h"
+#import "SESourceEditorController.h"
 #import "NoodleLineNumberView.h"
 #import "NSTimer-NoodleExtensions.h"
 #import "SEApplicationDelegate.h"
@@ -24,7 +24,7 @@ NSSet* SESingleIndentFunctions() {
 
 
 
-@interface SEEditorController ()
+@interface SESourceEditorController ()
 
 @property(readonly) BOOL colorizeSourceItem;
 @property (nonatomic) NSRange lastCompletionRange;
@@ -32,8 +32,7 @@ NSSet* SESingleIndentFunctions() {
 @end
 
 
-@implementation SEEditorController {
-    BOOL parMarkerSet;
+@implementation SESourceEditorController {
 }
 
 @synthesize sortedKeywords = _sortedKeywords;
@@ -47,8 +46,8 @@ NSSet* SESingleIndentFunctions() {
 - (void) setSourceItem: (SESourceItem*) sourceItem {
     if (_sourceItem != sourceItem) {
         _sourceItem = sourceItem;
-        [self.textEditorView.layoutManager replaceTextStorage: sourceItem.content];
-        [self.textEditorView.lineNumberView updateObservedTextStorage]; // found no better place to put this. :-/
+        [self.textView.layoutManager replaceTextStorage: sourceItem.content];
+        [self.textView.lineNumberView updateObservedTextStorage]; // found no better place to put this. :-/
         
         NSTextStorage* textStorage = sourceItem.content;
         
@@ -67,7 +66,7 @@ NSSet* SESingleIndentFunctions() {
         
         
 
-        [self.textEditorView.enclosingScrollView flashScrollers];    
+        [self.textView.enclosingScrollView flashScrollers];
     }
 }
 
@@ -78,16 +77,16 @@ NSSet* SESingleIndentFunctions() {
 
 - (void) awakeFromNib {
     
-    if (! self.textEditorView.lineNumberView) {
-        self.textEditorView.lineNumberView = [[NoodleLineNumberView alloc] initWithScrollView: self.textEditorView.enclosingScrollView];
-        self.textEditorView.lineNumberView.backgroundColor = self.textEditorView.backgroundColor;
+    if (! self.textView.lineNumberView) {
+        self.textView.lineNumberView = [[NoodleLineNumberView alloc] initWithScrollView: self.textView.enclosingScrollView];
+        self.textView.lineNumberView.backgroundColor = self.textView.backgroundColor;
     }
 }
 
 
 - (BOOL) expandRange: (NSRange*) rangePtr toParMatchingPar: (unichar) par {
 
-    NSTextStorage* textStorage = self.textEditorView.textStorage;
+    NSTextStorage* textStorage = self.textView.textStorage;
     unichar targetPar = matchingPar(par);
     switch (par) {
         case ']':
@@ -98,7 +97,7 @@ NSSet* SESingleIndentFunctions() {
                 (*rangePtr).location -= 1;
                 unichar matchingPar = [textStorage.string characterAtIndex: (*rangePtr).location];
                 NSColor* color = [textStorage attribute: NSForegroundColorAttributeName atIndex: (*rangePtr).location effectiveRange: NULL];
-                if (color != [SEEditorTextView commentColor] && color != [SEEditorTextView stringColor]) {
+                if (color != [SESourceEditorTextView commentColor] && color != [SESourceEditorTextView stringColor]) {
                     if (matchingPar == targetPar) {
                         return YES;
                     }
@@ -144,7 +143,7 @@ NSSet* SESingleIndentFunctions() {
 }
 
 - (NSUInteger) columnForLocation: (NSUInteger) location {
-    NSString* text = self.textEditorView.textStorage.string;
+    NSString* text = self.textView.textStorage.string;
     NSUInteger column = 0;
     while (location>=column && [text characterAtIndex: location-column] != '\n') {
         column += 1;
@@ -153,7 +152,7 @@ NSSet* SESingleIndentFunctions() {
 }
 
 - (NSUInteger) indentationAtLocation: (NSUInteger) lineStart {
-    NSString* text = self.textEditorView.textStorage.string;
+    NSString* text = self.textView.textStorage.string;
     NSUInteger length = text.length;
     NSUInteger location = lineStart;
     NSUInteger indentation = 0;
@@ -174,8 +173,8 @@ NSSet* SESingleIndentFunctions() {
 - (void) indentInRange: (NSRange) range {
     
     NSUInteger indentation;
-    NSRange previouslySelectedRange = self.textEditorView.selectedRange;
-    NSTextStorage* textStorage = self.textEditorView.textStorage;
+    NSRange previouslySelectedRange = self.textView.selectedRange;
+    NSTextStorage* textStorage = self.textView.textStorage;
     NSString* text = textStorage.string;
     NSRange initialRange = range = [text lineRangeForRange: range];
     NSUInteger lineNo = 0;
@@ -241,7 +240,7 @@ NSSet* SESingleIndentFunctions() {
             
             // Insert spaces, replacing the old indenting ones:
             //self.textEditorView.selectedRange = NSMakeRange(range.location, previousIndentation);
-            [self.textEditorView insertText: spaces
+            [self.textView insertText: spaces
                            replacementRange: NSMakeRange(range.location, previousIndentation)];
             //[textStorage replaceCharactersInRange: NSMakeRange(range.location, previousIndentation) withString: spaces];
             NSInteger indentationChange = indentation-previousIndentation;
@@ -265,43 +264,36 @@ NSSet* SESingleIndentFunctions() {
     NSLog(@"Indented %lu lines.", lineNo);
     
     if (previouslySelectedRange.length > 0) {
-        self.textEditorView.selectedRange = initialRange;
+        self.textView.selectedRange = initialRange;
     } else {
         if (previouslySelectedRange.location > range.location+indentation) {
-            self.textEditorView.selectedRange = previouslySelectedRange;
+            self.textView.selectedRange = previouslySelectedRange;
         }
     }
     
 }
 
 - (IBAction) insertNewline: (id) sender {
-    [self.textEditorView insertNewline: sender];
-    [self indentInRange: self.textEditorView.selectedRange];
+    [self.textView insertNewline: sender];
+    [self indentInRange: self.textView.selectedRange];
 }
 
 
 
 
-- (void) unmarkPar {
-    // Remove old par mark, if necessary:
-    if (parMarkerSet) {
-        [self.textEditorView.textStorage unmarkChars];
-        parMarkerSet = NO;
-    }
-}
 
 - (void) setSortedKeywords:(NSArray *)keywords {
     if (_sortedKeywords != keywords) {
         _sortedKeywords = keywords;
         if (self.colorizeSourceItem) {
-            self.textEditorView.keywords = [[NSSet alloc] initWithArray: self.sortedKeywords];
+            self.textView.keywords = [[NSSet alloc] initWithArray: self.sortedKeywords];
         }
     }
 }
 
 - (void) markParCorrespondingToParAtIndex: (NSUInteger) index {
         
-    NSTextStorage* textStorage = self.textEditorView.textStorage;
+    NSTextStorage* textStorage = self.textView.textStorage;
     
     if (index >= textStorage.string.length) {
         return;
@@ -310,7 +302,7 @@ NSSet* SESingleIndentFunctions() {
     NSColor* colorAtIndex = [textStorage attribute: NSForegroundColorAttributeName atIndex:index effectiveRange:NULL];
     
     // Do not mark pars within comments or strings:
-    if (colorAtIndex == [SEEditorTextView stringColor] || colorAtIndex == [SEEditorTextView commentColor]) {
+    if (colorAtIndex == [SESourceEditorTextView stringColor] || colorAtIndex == [SESourceEditorTextView commentColor]) {
         return;
     }
 
@@ -335,9 +327,9 @@ NSSet* SESingleIndentFunctions() {
 
 + (void) recolorTextNotification: (NSNotification*) notification {
     NSLog(@"recolorTextNotification.");
-    SEEditorController* editorController = notification.object;
+    SESourceEditorController* editorController = notification.object;
     if (editorController.colorizeSourceItem) {
-        [[notification.object textEditorView] colorize: nil];
+        [editorController.textView colorize: nil];
     }
 }
 
@@ -417,53 +409,19 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 
 - (BOOL) textView:(NSTextView*) textView shouldChangeTextInRange: (NSRange) affectedCharRange replacementString: (NSString*) replacementString {
     
-    [self unmarkPar];
+    BOOL result = [super textView: textView shouldChangeTextInRange: affectedCharRange replacementString:replacementString];
     
     if (replacementString.length == 1 && NSMaxRange(self.lastCompletionRange) == affectedCharRange.location) {
-        [self.textEditorView performSelector: @selector(complete:) withObject: self afterDelay: 0.0];
+        [self.textView performSelector: @selector(complete:) withObject: self afterDelay: 0.0];
         return YES;
     }
     if (replacementString.length == 0 && self.lastCompletionRange.length > 0) {
         self.lastCompletionRange = NSMakeRange(NSNotFound, 0);
     }
     
-    return YES;
+    return result;
 }
 
-
-- (NSRange) textView: (NSTextView*) textView willChangeSelectionFromCharacterRange: (NSRange) oldRange toCharacterRange: (NSRange) newRange {
-    
-    [self unmarkPar];
-    if (newRange.length == 1) {
-        // Check, if user selected one par:
-        NSTextStorage* textStorage = self.textEditorView.textStorage;
-        unichar theChar = [textStorage.string characterAtIndex: newRange.location];
-
-        if (isPar(theChar)) {
-            NSRange parRange = NSMakeRange(newRange.location, 1);
-            BOOL match = [self expandRange: &parRange toParMatchingPar: theChar];
-            
-            if (match) {
-                return parRange;
-            }
-        }
-    } else if (newRange.length+oldRange.length == 0 && (newRange.location+1 == oldRange.location || newRange.location == oldRange.location+1)) {
-        //NSLog(@"Cursor moved one char.");
-        
-        [self markParCorrespondingToParAtIndex: MIN(oldRange.location, newRange.location)];
-    }
-
-    return newRange;
-}
-
-
-//- (void) textViewDidChangeSelection: (NSNotification*) notification {
-//    NSRange newRange = [[[notification.object selectedRanges] lastObject] rangeValue];
-//    NSRange oldRange = [[notification.userInfo objectForKey: @"NSOldSelectedCharacterRange"] rangeValue];
-//    
-//    
-//    NSLog(@"Selection changed from %@ to %@", NSStringFromRange(oldRange), NSStringFromRange(newRange));
-//}
 
 - (BOOL) validateMenuItem: (NSMenuItem*) item {
     
@@ -475,8 +433,8 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 - (NSRange) topLevelExpressionContainingLocation: (NSUInteger) location {
     
     __block NSRange result = NSMakeRange(location, 0);
-    [[[SESyntaxParser alloc] initWithString: self.textEditorView.string
-                                      range: NSMakeRange(0, self.textEditorView.string.length)
+    [[[SESyntaxParser alloc] initWithString: self.textView.string
+                                      range: NSMakeRange(0, self.textView.string.length)
                                       block: ^(SESyntaxParser *parser, SEParserResult pResult, BOOL *stopRef) {
                                           if (pResult.depth == 1) {
                                               switch (pResult.occurrence.token) {
@@ -499,10 +457,10 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 
 - (IBAction) expandSelection: (id) sender {
     
-    NSRange oldRange = self.textEditorView.selectedRange;
+    NSRange oldRange = self.textView.selectedRange;
     NSRange newRange = oldRange;
 
-    NSString* text = self.textEditorView.textStorage.string;
+    NSString* text = self.textView.textStorage.string;
     
     // Check, if expansion is possible at all:
     if (oldRange.location < 1 || NSMaxRange(oldRange) >= text.length) {
@@ -529,7 +487,7 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     
     NSLog(@"Expanding selection from %@ to %@", NSStringFromRange(oldRange), NSStringFromRange(newRange));
     
-    self.textEditorView.selectedRange = newRange;
+    self.textView.selectedRange = newRange;
 }
 
 BOOL SEToggleLineComments(NSMutableString* replacement, unichar commentChar) {
@@ -622,23 +580,23 @@ BOOL SEToggleLineComments(NSMutableString* replacement, unichar commentChar) {
 
 - (IBAction) toggleComments: (id) sender {
     
-    NSString* text = self.textEditorView.textStorage.string;
-    NSRange selectedRange = self.textEditorView.selectedRange;
+    NSString* text = self.textView.textStorage.string;
+    NSRange selectedRange = self.textView.selectedRange;
     NSRange lineRange = [text lineRangeForRange: selectedRange];
-    [self.textEditorView setSelectedRange:lineRange];
+    [self.textView setSelectedRange:lineRange];
     
     NSMutableString* replacement = [[text substringWithRange: lineRange] mutableCopy];
     
     BOOL isAddingComments = SEToggleLineComments(replacement, ';');
     
-    [self.textEditorView insertText: replacement];
+    [self.textView insertText: replacement];
     
     if (selectedRange.length) {
         selectedRange = NSMakeRange(lineRange.location, replacement.length);
     } else {
         selectedRange.location += isAddingComments ? 1 : -1;
     }
-    [self.textEditorView setSelectedRange: selectedRange];
+    [self.textView setSelectedRange: selectedRange];
 
 }
 

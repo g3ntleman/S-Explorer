@@ -8,16 +8,17 @@
 
 #import <AppKit/AppKit.h>
 #import "SESyntaxParser.h"
-#import "SEEditorTextView.h"
+#import "SESourceEditorTextView.h"
 #import "NoodleLineNumberView.h"
 #import "SESourceItem.h"
+#import "SESourceTextViewController.h"
+
 
 /**
  * This Controller is responsible for controlling one SEEditorTextView.
  */
-@interface SEEditorController : NSController <NSTextDelegate, NSTextViewDelegate>
+@interface SESourceEditorController : SESourceTextViewController 
 
-@property (strong, nonatomic) IBOutlet SEEditorTextView* textEditorView;
 @property (strong, nonatomic) NSArray* defaultKeywords; // sorted array (for prefix search)
 @property (strong, nonatomic) NSArray* sortedKeywords; // sorted array (for prefix search)
 @property (strong, nonatomic) SESourceItem* sourceItem; // the source item to display

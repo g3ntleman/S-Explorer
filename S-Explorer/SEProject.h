@@ -10,7 +10,7 @@
 #import "SEREPLViewController.h"
 #import "SESyntaxParser.h"
 #import "SESourceItem.h"
-#import "SEEditorController.h"
+#import "SESourceEditorController.h"
 #import "SEnREPL.h"
 
 extern NSString* SEProjectDocumentType;
@@ -33,7 +33,7 @@ extern NSString* SEProjectDocumentType;
 @property (strong, nonatomic) IBOutlet NSOutlineView* sourceList;
 @property (strong, readonly) NSMutableDictionary* projectSettings;
 @property (strong, readonly) NSMutableDictionary* uiSettings;
-@property (strong, nonatomic) IBOutlet SEEditorController* editorController; // Controls one SEEditorTextView, switching between tabs is done by setting a new sourceItem.
+@property (strong, nonatomic) IBOutlet SESourceEditorController* editorController; // Controls one SEEditorTextView, switching between tabs is done by setting a new sourceItem.
 
 @property (strong, readonly) NSArray* availableLanguages; // NSArray of strings
 @property (strong, nonatomic) NSString* currentLanguage;

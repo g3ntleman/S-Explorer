@@ -6,8 +6,8 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import "SEEditorTextView.h"
-#import "SEEditorController.h"
+#import "SESourceEditorTextView.h"
+#import "SESourceEditorController.h"
 #import "OPCharFilterFormatter.h"
 #import "SESyntaxParser.h"
 #import "NSColor+OPExtensions.h"
@@ -42,7 +42,7 @@
 //
 //@end
 
-@implementation SEEditorTextView {
+@implementation SESourceEditorTextView {
     NSMutableArray* selectionStack;
 }
 
@@ -119,7 +119,7 @@ static NSCharacterSet* SEWordCharacters() {
 
 - (IBAction) indentSelectedLines: (id)sender {
     NSLog(@"Should indent currently selected lines.");
-    [(SEEditorController*)self.delegate indentInRange: self.selectedRange];
+    [(SESourceEditorController*)self.delegate indentInRange: self.selectedRange];
 }
 
 - (IBAction) insertTab: (id) sender {
@@ -177,17 +177,17 @@ static NSCharacterSet* SEWordCharacters() {
                                          
                                          switch (pResult.occurrence.token) {
                                              case COMMENT: {
-                                                 NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: [SEEditorTextView commentColor]};
+                                                 NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: [SESourceEditorTextView commentColor]};
                                                  [textStorage addAttributes: commentAttributes range: pResult.occurrence.range];
                                                  break;
                                              }
                                              case STRING: {
-                                                 NSDictionary* stringAttributes = @{NSForegroundColorAttributeName: [SEEditorTextView stringColor]};
+                                                 NSDictionary* stringAttributes = @{NSForegroundColorAttributeName: [SESourceEditorTextView stringColor]};
                                                  [textStorage addAttributes: stringAttributes range: pResult.occurrence.range];
                                                  break;
                                              }
                                              case NUMBER: {
-                                                 NSDictionary* constantAttributes = @{NSForegroundColorAttributeName: [SEEditorTextView numberColor]};
+                                                 NSDictionary* constantAttributes = @{NSForegroundColorAttributeName: [SESourceEditorTextView numberColor]};
                                                  [textStorage addAttributes: constantAttributes range: pResult.occurrence.range];
                                                  break;
                                              }
@@ -343,10 +343,6 @@ static NSCharacterSet* SEWordCharacters() {
 
 - (void) awakeFromNib {
     [self setAutomaticQuoteSubstitutionEnabled: NO];
-}
-
-- (NSRange) textView: (NSTextView*) textView willChangeSelectionFromCharacterRange: (NSRange) oldRange toCharacterRange: (NSRange) newRange {
-    NSLog(@"XXX");
 }
 
 @end

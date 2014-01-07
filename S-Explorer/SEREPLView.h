@@ -7,7 +7,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import "SEEditorTextView.h"
+#import "SESourceEditorTextView.h"
 
 // extern NSString* BKTextCommandAttributeName;
 
@@ -20,7 +20,7 @@
 //
 //@end
 
-@interface SEREPLView : SEEditorTextView
+@interface SEREPLView : SESourceEditorTextView
 
 
 @property (readonly) NSDictionary* interpreterAttributes;

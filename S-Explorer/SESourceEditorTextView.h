@@ -9,7 +9,7 @@
 #import <AppKit/AppKit.h>
 #import "NoodleLineNumberView.h"
 
-@interface SEEditorTextView : NSTextView
+@interface SESourceEditorTextView : NSTextView
 
 @property (strong, nonatomic) IBOutlet NSPanel* gotoPanel;
 

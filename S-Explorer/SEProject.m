@@ -285,7 +285,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 - (IBAction)sourceTableDoubleAction: (id) sender {
     NSLog(@"sourceTableDoubleAction.");
     [self sourceTableAction: sender];
-    [self.sourceList.window makeFirstResponder: self.editorController.textEditorView];
+    [self.sourceList.window makeFirstResponder: self.editorController.textView];
 }
 
 
@@ -498,7 +498,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             item.view = itemView;
         }
         SEREPLView *replView = [itemView.subviews.lastObject documentView];
-        result.replView = replView;
+        result.textView = replView;
         allREPLControllers = [allREPLControllers dictionaryBySettingObject: result forKey: identifier];
     }
     return result;
@@ -517,7 +517,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 - (IBAction) evaluateSelection: (id) sender {
     
-    NSRange evalRange = self.editorController.textEditorView.selectedRange;
+    NSRange evalRange = self.editorController.textView.selectedRange;
     if (! evalRange.length) {
         evalRange = [self.editorController topLevelExpressionContainingLocation: evalRange.location];
         if (! evalRange.length) {
@@ -526,7 +526,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         }
     }
     
-    NSString* evalString = [self.editorController.textEditorView.string substringWithRange:evalRange];
+    NSString* evalString = [self.editorController.textView.string substringWithRange:evalRange];
     SEREPLViewController* replController = self.topREPLController;
     NSLog(@"Evaluating selection: '%@'", evalString);
     [replController evaluateString: evalString];

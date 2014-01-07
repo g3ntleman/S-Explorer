@@ -10,12 +10,13 @@
 #import "SEREPLView.h"
 #import "SEnREPLConnection.h"
 #import "SEnREPL.h"
+#import "SESourceTextViewController.h"
 
 @class SEProject;
 
-@interface SEREPLViewController : NSObject <NSTextViewDelegate>
+@interface SEREPLViewController : SESourceTextViewController
 
-@property (strong, nonatomic) SEREPLView* replView;
+@property (readonly, nonatomic) SEREPLView* replView;
 
 @property (nonatomic, readonly) SEnREPLConnection* evalConnection;
 @property (nonatomic, readonly) SEnREPLConnection* controlConnection;
