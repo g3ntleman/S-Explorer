@@ -362,8 +362,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                                                NSLog(@"Partial keyword result: %@", allKeywords);
                                                self.editorController.sortedKeywords = allKeywords;
                                                
-//                                               // Copy the set of keywords to repl view - wrong assumption!!
-//                                               self.topREPLController.replView.keywords = self.editorController.textEditorView.keywords;
+                                               // Copy the set of keywords to repl view:
+                                               self.topREPLController.replView.keywords = [NSSet setWithArray: allKeywords];
                                                
 //                                               id allSessionIDs = [connection allSessionIDs];
 //                                               NSLog(@"allSessionIDs: %@", allSessionIDs);

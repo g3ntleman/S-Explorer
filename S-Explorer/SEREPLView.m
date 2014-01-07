@@ -10,10 +10,16 @@
 
 //NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 
+@interface SEREPLView ()
+
+@property (readonly) NSUInteger commandLocation;
+
+@end
+
 @implementation SEREPLView {
-    NSUInteger commandLocation;
 }
 
+@synthesize commandLocation = _commandLocation;
 @synthesize interpreterAttributes = _interpreterAttributes;
 @synthesize font = _font;
 
@@ -62,7 +68,7 @@
 //    NSMutableDictionary* typingAttributes = [self.typingAttributes mutableCopy];
 //    typingAttributes[BKTextCommandAttributeName] = @1;
     //self.typingAttributes = self.commandAttributes;
-    commandLocation = self.string.length;
+    _commandLocation = self.string.length;
     
 }
 
@@ -221,24 +227,24 @@
  * Returns the range of the interpreter output.
  */
 - (NSRange) interpreterRange {
-    NSAssert(commandLocation>=_prompt.length, @"Wrong commandLocation.");
-    return NSMakeRange(0, commandLocation-_prompt.length);
+    NSAssert(_commandLocation>=_prompt.length, @"Wrong commandLocation.");
+    return NSMakeRange(0, _commandLocation-_prompt.length);
 }
 
 /**
  * Returns the range of the current command, entered by the user.
  */
 - (NSRange) commandRange {
-    NSAssert(commandLocation<=self.textStorage.length, @"Wrong commandLocation.");
-    return NSMakeRange(commandLocation, self.textStorage.length-commandLocation);
+    NSAssert(_commandLocation<=self.textStorage.length, @"Wrong commandLocation.");
+    return NSMakeRange(_commandLocation, self.textStorage.length-_commandLocation);
 }
 
 /**
  * Returns the range of the current prompt between the interpreter string and the command string.
  */
 - (NSRange) promptRange {
-    NSAssert(commandLocation>=_prompt.length, @"Wrong commandLocation.");
-    return NSMakeRange(commandLocation-_prompt.length, _prompt.length);
+    NSAssert(_commandLocation>=_prompt.length, @"Wrong commandLocation.");
+    return NSMakeRange(_commandLocation-_prompt.length, _prompt.length);
 }
 
 
@@ -254,7 +260,7 @@
     range.length = 0;
     //[textStorage replaceCharactersInRange: range withString: aString];
     [textStorage replaceCharactersInRange: range withAttributedString: [[NSAttributedString alloc] initWithString: aString attributes:self.interpreterAttributes]];
-    commandLocation += aString.length;
+    _commandLocation += aString.length;
     [textStorage endEditing];
     
     [self.enclosingScrollView flashScrollers];
@@ -275,7 +281,7 @@
  * where the user can enter text.
  **/
 - (BOOL) isCommandMode {
-    BOOL isCommandMode = (self.selectedRange.location >= commandLocation);
+    BOOL isCommandMode = (self.selectedRange.location >= _commandLocation);
     return isCommandMode;
 }
 
@@ -283,7 +289,7 @@
                replacementString: (NSString*) replacementString {
     
     // Only allow editing the command string:
-    if (affectedCharRange.location < commandLocation) {
+    if (affectedCharRange.location < _commandLocation) {
         // TODO: Just move selection to the end of the command string?
         return NO;
     }
@@ -302,7 +308,7 @@
     NSRange promptRange = [self promptRange];
     [self.textStorage replaceCharactersInRange: promptRange withAttributedString: [[NSAttributedString alloc] initWithString: prompt attributes:self.interpreterAttributes]];
     // Adjust commandLocation to make up for any length change:
-    commandLocation += prompt.length - promptRange.length;
+    _commandLocation += prompt.length - promptRange.length;
     _prompt = prompt;
     
     [self.textStorage endEditing];
@@ -355,7 +361,7 @@
     NSRange interpreterRange = self.interpreterRange;
     [self.textStorage replaceCharactersInRange: interpreterRange withAttributedString: [[NSAttributedString alloc] initWithString: string attributes:self.interpreterAttributes]];
     // Adjust commandLocation to make up for any length change:
-    commandLocation += string.length - interpreterRange.length;
+    _commandLocation += string.length - interpreterRange.length;
     
     [self.textStorage endEditing];
 }

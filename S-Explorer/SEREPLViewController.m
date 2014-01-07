@@ -1,4 +1,3 @@
-
 //
 //  BRTerminalController.m
 //  S-Explorer
@@ -263,10 +262,15 @@ static NSData* lineFeedData = nil;
 }
 
 
-
 - (void) textDidChange: (NSNotification*) notification {
-        // Move history pointer to most recent entry:
+    
+    // Move history pointer to most recent entry:
     _previousCommandHistoryIndex = self.commandHistory.count-1;
+    NSRange commandRange = self.replView.commandRange;
+    
+    if (self.textView.selectedRange.location >= commandRange.location) {
+        [self.replView colorizeRange: commandRange];
+    }
 }
 
 //- (BOOL) textView: (NSTextView*) textView shouldChangeTextInRanges: (NSArray*) affectedRanges replacementStrings: (NSArray*) replacementStrings {
