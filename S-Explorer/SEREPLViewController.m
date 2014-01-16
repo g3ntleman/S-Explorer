@@ -313,7 +313,7 @@ static NSData* lineFeedData = nil;
             }
             // TODO: Show NSAlert here?
         } else {
-            [connection evaluateExpression:@"nil" completionBlock:^(NSDictionary *partialResult) {
+            [connection evaluateExpression:@"(use 'clojure.repl)" completionBlock:^(NSDictionary *partialResult) {
                 // _evalConnection established.
                 if (connection.sessionID.length) {
                     // Now connect the _controlConnection using the same sessionID:
