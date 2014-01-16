@@ -384,7 +384,6 @@
 //}
 
 - (IBAction) clear: (id) sender {
-    
     self.interpreterString = @"";
 }
 
