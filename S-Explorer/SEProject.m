@@ -349,6 +349,10 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                     self.topREPLController.replView.prompt = self.languageDictionary[@"Prompt"];
                     
                     [self.topREPLController connectWithBlock:^(SEnREPLConnection *connection, NSError *error) {
+                        if (error) {
+                            [self.topREPLController.replView appendInterpreterString: [NSString stringWithFormat: @"\nConnect failed: %@", error]];
+                        }
+                        
                         NSString* keywordExpression = self.languageDictionary[@"Keywords"][@"DynamicExpression"];
                         if (keywordExpression.length) {
                             [connection evaluateExpression: keywordExpression
@@ -387,7 +391,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     if (tabView == self.replTabView) {
         SEREPLViewController* replController = self.topREPLController;
-        if (! replController.evalConnection.socket.isConnected) {
+        if (self.nREPL.port && ! replController.evalConnection.socket.isConnected) {
             [replController connectWithBlock:^(SEnREPLConnection *connection, NSError *error) {
                 
             }];
@@ -420,6 +424,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     // Check, wether the user wants to create a project (from a folder):
     
     self.replTabView.delegate = self;
+    
+    // Fake a tab selection:
     [self tabView:self.replTabView didSelectTabViewItem: self.replTabView.selectedTabViewItem];
     
     [self.sourceList setDraggingSourceOperationMask: NSDragOperationLink forLocal: NO];

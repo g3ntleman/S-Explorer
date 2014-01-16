@@ -48,28 +48,11 @@
     NSData* data = n.userInfo[NSFileHandleNotificationDataItem];
     
     if (data.length) {
-        NSError* error = nil;
+        //NSError* error = nil;
         
         NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
         
         NSLog(@"-> %@", string);
-        
-//        if (! self.port) {
-//            // Try to find out, which port the nREPL server is running on:
-//            NSRegularExpression* portScanner = [[NSRegularExpression alloc] initWithPattern: @"nREPL server started on port (\\d+)"
-//                                                                                    options: NSRegularExpressionCaseInsensitive
-//                                                                                      error: &error];
-//            NSTextCheckingResult* portScannerResult = [portScanner firstMatchInString: string options: 0 range: NSMakeRange(0, string.length)];
-//            
-//            
-//            if (portScannerResult.numberOfRanges >= 2) {
-//                NSString* portString = [string substringWithRange: [portScannerResult rangeAtIndex: 1]];
-//                if (portString.length) {
-//                    _port = [portString integerValue];
-//                    _completionBlock(self, nil);
-//                }
-//            }
-//        }
         
         [filehandle readInBackgroundAndNotify];
     } else {
@@ -148,17 +131,15 @@
     self.watcher = [LVPathWatcher watcherFor: portFileURL handler: ^{
         self.watcher = nil;
         
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            NSString* portString = [NSString stringWithContentsOfURL: portFileURL encoding: NSASCIIStringEncoding error: NULL];
-            if (portString.length) {
-                _port = [portString integerValue];
-                _completionBlock(self, nil); // nRepl was successfully started
-            } else {
-                _completionBlock(self, [NSError errorWithDomain: @"org.cocoanuts.s-explorer"
-                                                           code: 404
-                                                       userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No nRepl port file found at '%@'", portFileURL]}]);
-            }
-        }];
+        NSString* portString = [NSString stringWithContentsOfURL: portFileURL encoding: NSASCIIStringEncoding error: NULL];
+        if (portString.length) {
+            _port = [portString integerValue];
+            _completionBlock(self, nil); // nRepl was successfully started
+        } else {
+            _completionBlock(self, [NSError errorWithDomain: @"org.cocoanuts.s-explorer"
+                                                       code: 404
+                                                   userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No nRepl port file found at '%@'", portFileURL]}]);
+        }
     }];
 
     
