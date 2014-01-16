@@ -8,4 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ * Returns a copy of the given object by archiving and then ∫unarchiving it.
+ */
 id <NSCopying> OPClone(id <NSCopying> obj);

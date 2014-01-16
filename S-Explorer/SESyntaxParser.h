@@ -18,7 +18,8 @@ typedef enum {
     ATOM,
     COMMENT,
     STRING,
-    NUMBER
+    NUMBER,
+    KEYWORD
 } s_token;
 
 

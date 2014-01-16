@@ -7,12 +7,12 @@
 //
 
 #import "SEnREPL.h"
-#import "PseudoTTY.h"
+#import "LVPathWatcher.h"
 
 @interface SEnREPL ()
 
-@property (strong, nonatomic) PseudoTTY* tty;
 @property (strong, nonatomic) SEnREPLCompletionBlock completionBlock;
+@property (strong, nonatomic) LVPathWatcher* watcher;
 
 @end
 
@@ -35,15 +35,9 @@
     if (self.task.isRunning) {
         NSLog(@"Terminating REPL Server Task.");
         
-        // Stop Monitoring the tty:
-        [[NSNotificationCenter defaultCenter] removeObserver: self
-                                                        name: NSFileHandleReadCompletionNotification
-                                                      object: _tty.masterFileHandle];
-        
         [self.task terminate];
 
         _task = nil;
-        _tty = nil;
     }
 }
 
@@ -60,22 +54,22 @@
         
         NSLog(@"-> %@", string);
         
-        if (! self.port) {
-            // Try to find out, which port the nREPL server is running on:
-            NSRegularExpression* portScanner = [[NSRegularExpression alloc] initWithPattern: @"nREPL server started on port (\\d+)"
-                                                                                    options: NSRegularExpressionCaseInsensitive
-                                                                                      error: &error];
-            NSTextCheckingResult* portScannerResult = [portScanner firstMatchInString: string options: 0 range: NSMakeRange(0, string.length)];
-            
-            
-            if (portScannerResult.numberOfRanges >= 2) {
-                NSString* portString = [string substringWithRange: [portScannerResult rangeAtIndex: 1]];
-                if (portString.length) {
-                    _port = [portString integerValue];
-                    _completionBlock(self, nil);
-                }
-            }
-        }
+//        if (! self.port) {
+//            // Try to find out, which port the nREPL server is running on:
+//            NSRegularExpression* portScanner = [[NSRegularExpression alloc] initWithPattern: @"nREPL server started on port (\\d+)"
+//                                                                                    options: NSRegularExpressionCaseInsensitive
+//                                                                                      error: &error];
+//            NSTextCheckingResult* portScannerResult = [portScanner firstMatchInString: string options: 0 range: NSMakeRange(0, string.length)];
+//            
+//            
+//            if (portScannerResult.numberOfRanges >= 2) {
+//                NSString* portString = [string substringWithRange: [portScannerResult rangeAtIndex: 1]];
+//                if (portString.length) {
+//                    _port = [portString integerValue];
+//                    _completionBlock(self, nil);
+//                }
+//            }
+//        }
         
         [filehandle readInBackgroundAndNotify];
     } else {
@@ -90,17 +84,11 @@
  **/
 - (void) startWithCompletionBlock: (SEnREPLCompletionBlock) block {
     
-    // Stop a running task as neccessary:
+    // Stop a running task if neccessary:
     [self stop];
     
     _completionBlock = block;
     _task = [[NSTask alloc] init];
-    _tty = [[PseudoTTY alloc] init];
-    
-    //[_task setStandardInput: _tty.slaveFileHandle];
-    [_task setStandardOutput: _tty.slaveFileHandle];
-    [_task setStandardError: _tty.slaveFileHandle];
-
 
     //NSError* error = nil;
     NSMutableArray* commandArguments = [_settings[@"RuntimeArguments"] mutableCopy];
@@ -141,16 +129,6 @@
     
     [_task setEnvironment: environment];
     [_task setArguments: commandArguments];
-
-    
-    //__weak SEnREPL* this = self;
-    
-    [[NSNotificationCenter defaultCenter] addObserver: self
-                                             selector: @selector(taskOutputReceived:)
-                                                 name:  NSFileHandleReadCompletionNotification
-                                               object: _tty.masterFileHandle];
-    
-    [_tty.masterFileHandle readInBackgroundAndNotify];
     
     
     _task.terminationHandler =  ^void (NSTask* task) {
@@ -164,6 +142,25 @@
     };
     
     NSLog(@"Launching '%@' with %@: %@", _task.launchPath, _task.arguments, _task);
+    
+    
+    NSURL* portFileURL = [[NSURL fileURLWithPath: workingDirectory] URLByAppendingPathComponent:@".nrepl-port"];
+    self.watcher = [LVPathWatcher watcherFor: portFileURL handler: ^{
+        self.watcher = nil;
+        
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            NSString* portString = [NSString stringWithContentsOfURL: portFileURL encoding: NSASCIIStringEncoding error: NULL];
+            if (portString.length) {
+                _port = [portString integerValue];
+                _completionBlock(self, nil); // nRepl was successfully started
+            } else {
+                _completionBlock(self, [NSError errorWithDomain: @"org.cocoanuts.s-explorer"
+                                                           code: 404
+                                                       userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No nRepl port file found at '%@'", portFileURL]}]);
+            }
+        }];
+    }];
+
     
     [_task launch];
  }

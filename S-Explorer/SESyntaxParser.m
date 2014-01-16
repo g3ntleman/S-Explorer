@@ -112,6 +112,8 @@
             unichar firstChar = characters[result.range.location];
             if (firstChar == '#' || isdigit(firstChar)) {
                 result.token = NUMBER;
+            } else if (firstChar == ':') {
+                result.token = KEYWORD;
             } else {
                 result.token = ATOM;
             }
