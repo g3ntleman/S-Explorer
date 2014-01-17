@@ -403,14 +403,26 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     }
 }
 
+- (void) expandSourceListToItem: (SESourceItem*) item {
+    if (! item) return;
+    
+    [self expandSourceListToItem: item.parent];
+    [self.sourceList expandItem: item];
+}
+
 - (IBAction) revealInSourceList: (id) sender {
     SESourceItem* currentSourceItem = self.currentSourceItem;
+    
+    [self expandSourceListToItem: currentSourceItem];
     // Select itemAtPath in source list:
     NSUInteger itemRow = [self.sourceList rowForItem: currentSourceItem];
+    
     if (itemRow != -1) {
         [self.sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: itemRow]
                      byExtendingSelection: NO];
+        return;
     }
+    NSLog(@"Unable to reveal %@ in source list.", currentSourceItem);
 }
 
 
@@ -445,8 +457,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                 if ([sourceTabIdentifier isEqualToString: itemAtPath.longRelativePath]) {
                     // Select tab #tabIndex:
                     [self.sourceTabView selectTabViewItemAtIndex: tabIndex];
-                    
-                    [self revealInSourceList: self];
                 }
             }
         }
@@ -462,6 +472,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         SESourceItem* item = [self.projectFolderItem childWithPath: path];
         [self.sourceList expandItem: item];
     }
+    
+    [self revealInSourceList: nil];
     
 }
 
