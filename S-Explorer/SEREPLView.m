@@ -208,6 +208,7 @@
     [textStorage replaceCharactersInRange: commandRange withString: newCurrentCommand];
     commandRange.length = newCurrentCommand.length;
     [textStorage setAttributes: self.typingAttributes range: commandRange];
+    [self colorizeRange: commandRange];
     [textStorage endEditing];
     
     // Place cursor behind new command:

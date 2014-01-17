@@ -129,7 +129,6 @@
     
     NSURL* portFileURL = [[NSURL fileURLWithPath: workingDirectory] URLByAppendingPathComponent:@".nrepl-port"];
     self.watcher = [LVPathWatcher watcherFor: portFileURL handler: ^{
-        self.watcher = nil;
         
         NSString* portString = [NSString stringWithContentsOfURL: portFileURL encoding: NSASCIIStringEncoding error: NULL];
         if (portString.length) {
@@ -140,6 +139,8 @@
                                                        code: 404
                                                    userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No nRepl port file found at '%@'", portFileURL]}]);
         }
+        self.watcher = nil;
+
     }];
 
     
