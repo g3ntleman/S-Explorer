@@ -62,11 +62,11 @@ NSSet* SESingleIndentFunctions() {
         
         _colorizeSourceItem = [pathExtension caseInsensitiveCompare: @"scm"] == NSOrderedSame || [pathExtension caseInsensitiveCompare: @"clj"] == NSOrderedSame;
 
-        self.sortedKeywords = self.defaultKeywords; // Also does initial colorization.
-        
-        
+        self.sortedKeywords = self.defaultKeywords;
 
         [self.textView.enclosingScrollView flashScrollers];
+        
+        [self.textView colorize: self];
     }
 }
 
