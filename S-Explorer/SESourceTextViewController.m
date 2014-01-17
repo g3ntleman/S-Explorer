@@ -8,6 +8,7 @@
 
 #import "SESourceTextViewController.h"
 #import "SESourceEditorTextView.h"
+#import "SESyntaxParser.h"
 
 @implementation SESourceTextViewController
 

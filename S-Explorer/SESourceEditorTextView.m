@@ -366,28 +366,5 @@ static NSCharacterSet* SEWordCharacters() {
 
 @end
 
-inline BOOL isOpeningPar(unichar aChar) {
-    return aChar == '(' || aChar == '[' || aChar == '{';
-}
 
-inline BOOL isClosingPar(unichar aChar) {
-    return aChar == ')' || aChar == ']' || aChar == '}';
-}
-
-
-unichar matchingPar(unichar aPar) {
-    switch (aPar) {
-        case '(': return ')';
-        case ')': return '(';
-        case '[': return ']';
-        case ']': return '[';
-        case '{': return '}';
-        case '}': return '{';
-    }
-    return 0;
-}
-
-BOOL isPar(unichar aChar) {
-    return matchingPar(aChar) != 0;
-}
 

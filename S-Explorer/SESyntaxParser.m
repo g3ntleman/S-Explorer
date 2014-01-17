@@ -81,10 +81,12 @@
             result.range.length = 0;
             return result;
         case '(':
+        case '[':
             result.token = LEFT_PAR;
             result.range.length = 1;
             return result;
         case ')':
+        case ']':
             result.token = RIGHT_PAR;
             result.range.length = 1;
             return result;
@@ -105,7 +107,7 @@
             
             do {
                 c = [self getc];
-            } while (c && !isspace(c) && c != '(' && c != ')' && c != ';');
+            } while (c && !isspace(c) && c != ';' && ! isPar(c));
                 
             if (c) position -= 1;
             result.range.length = position-result.range.location;
@@ -161,3 +163,28 @@
 
 
 @end
+
+inline BOOL isOpeningPar(unichar aChar) {
+    return aChar == '(' || aChar == '[' || aChar == '{';
+}
+
+inline BOOL isClosingPar(unichar aChar) {
+    return aChar == ')' || aChar == ']' || aChar == '}';
+}
+
+
+unichar matchingPar(unichar aPar) {
+    switch (aPar) {
+        case '(': return ')';
+        case ')': return '(';
+        case '[': return ']';
+        case ']': return '[';
+        case '{': return '}';
+        case '}': return '{';
+    }
+    return 0;
+}
+
+BOOL isPar(unichar aChar) {
+    return matchingPar(aChar) != 0;
+}

@@ -52,3 +52,9 @@ typedef void (^SESyntaxParserBlock)(SESyntaxParser *parser, SEParserResult resul
 - (void) parseAll;
 
 @end
+
+extern BOOL isOpeningPar(unichar aChar);
+extern BOOL isClosingPar(unichar aChar);
+extern unichar matchingPar(unichar aPar);
+extern BOOL isPar(unichar aChar);
+
