@@ -1312,8 +1312,7 @@
 			<string>Welcome to Clojure!
     Docs: (doc function-name-here)
           (find-doc &quot;part-of-name-here&quot;)
-  Source: (source function-name-here)
- Javadoc: (javadoc java-object-or-class-here)</string>
+  Source: (source function-name-here)</string>
 		</dict>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
