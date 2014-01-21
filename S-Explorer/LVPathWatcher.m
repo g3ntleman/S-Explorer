@@ -39,8 +39,10 @@
 
 void fsEventsCallback(ConstFSEventStreamRef streamRef, void *clientCallBackInfo, size_t numEvents, void *eventPaths, const FSEventStreamEventFlags eventFlags[], const FSEventStreamEventId eventIds[])
 {
-    LVPathWatcher* watcher = (__bridge LVPathWatcher*)clientCallBackInfo;
-    [watcher fileChanged];
+    if (eventFlags[0] & kFSEventStreamEventFlagItemModified) {
+        LVPathWatcher* watcher = (__bridge LVPathWatcher*)clientCallBackInfo;
+        [watcher fileChanged];
+    }
 }
 
 - (void) dealloc {
