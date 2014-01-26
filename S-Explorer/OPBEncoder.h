@@ -6,7 +6,7 @@
 @protocol OPBencoding <NSObject>
 
 - (void) encodeWithBencoder:(OPBEncoder*) encoder;
-- (id) initWithBencoder:(OPBEncoder*) decoder;
+- (instancetype) initWithBencoder:(OPBEncoder*) decoder;
 
 @end
 
@@ -34,6 +34,7 @@
 
 @property (readonly, nonatomic) NSUInteger offset;
 @property (strong, nonatomic) NSData* decodingData;
+@property (nonatomic) BOOL mutableContainers;
 
 // Encoding:
 @property (strong, readonly) NSData* encodingData;
@@ -63,7 +64,11 @@
 //  anything from the source, it may return a nil, which you need to check for.
 
 + (NSData*) encodedDataFromObject: (id <OPBencoding>) object;
-+ (id <OPBencoding>) objectFromEncodedData: (NSData*) sourceData;
+
++ (instancetype) decoderForData: (NSData*) sourceData mutableContainers: (BOOL) mutable;
++ (instancetype) decoderForData: (NSData*) sourceData;
+
+- (id <OPBencoding>) objectFromEncodedData: (NSData*) sourceData;
 
 - (NSData*) encodeRootObject:(id <OPBencoding>) object;
 

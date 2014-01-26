@@ -5,6 +5,7 @@
 
 @implementation OPBEncoder {
     NSMutableData* _encodingData;
+    BOOL _mutableContainers;
 }
 
 - (void) advanceOffsetBy: (NSUInteger) diff {
@@ -52,8 +53,8 @@
     return NO;
 }
 
-- (NSString*) decodeStringOfLength: (NSUInteger) length {
-    NSString* result = [[NSString alloc] initWithBytes: _decodingData.bytes + _offset length: length encoding: NSUTF8StringEncoding];
+- (NSMutableString*) decodeStringOfLength: (NSUInteger) length {
+    NSMutableString* result = [[NSMutableString alloc] initWithBytes: _decodingData.bytes + _offset length: length encoding: NSUTF8StringEncoding];
     _offset += length;
     return result;
 }
@@ -63,19 +64,20 @@
 	 * of the encoded entity, for example the i in the bencoded integer "i18e" */
     
     if (_offset < _decodingData.length) {
+        
         switch ([self peek]) {
             case 'l': {
-                return [[NSArray alloc] initWithBencoder: self];
+                return [_mutableContainers ? [NSMutableArray alloc] : [NSArray alloc] initWithBencoder: self];
             }
             case 'd': {
-                return [[NSDictionary alloc] initWithBencoder: self];
+                return [_mutableContainers ? [NSMutableDictionary alloc] : [NSDictionary alloc] initWithBencoder: self];
             }
             case 'i':
             case 'f': {
                 return [[NSNumber alloc] initWithBencoder: self];
             }
             default:
-                return [[NSString alloc] initWithBencoder: self];
+                return [[NSMutableString alloc] initWithBencoder: self];
         }
         
         // If we reach here, it doesn't appear that this is bencoded data. So, we'll
@@ -111,11 +113,23 @@
     return encoder.encodingData;
 }
 
-+ (id <OPBencoding>) objectFromEncodedData: (NSData*) sourceData {
-    
-    OPBEncoder* decoder = [[self alloc] init];
-    decoder.decodingData = sourceData;
-    return [decoder decodeObject];
++ (instancetype) decoderForData: (NSData*) sourceData mutableContainers: (BOOL) mutable {
+    id result = [[self alloc] init];
+    [result setDecodingData: sourceData];
+    [result setMutableContainers: mutable];
+    return result;
+}
+
+/**
+ * Defaults to immutable containers.
+ */
++ (instancetype) decoderForData: (NSData*) sourceData {
+    return [self decoderForData: sourceData mutableContainers: NO];
+}
+
+- (id <OPBencoding>) objectFromEncodedData: (NSData*) sourceData {
+    self.decodingData = sourceData;
+    return [self decodeObject];
 }
 
 
@@ -123,7 +137,7 @@
 
 @implementation NSString (OPBEncodingSupport)
 
-- (id) initWithBencoder:(OPBEncoder *)decoder {
+- (instancetype) initWithBencoder:(OPBEncoder *)decoder {
     
     uint64 length = [decoder decodeInt];
     if ([decoder decodeChar: ':']) {
@@ -177,7 +191,7 @@
 
 @implementation NSNumber (OPBEncodingSupport)
 
-- (id) initWithBencoder:(OPBEncoder *)decoder {
+- (instancetype) initWithBencoder:(OPBEncoder *)decoder {
     
     id result = nil;
     if ([decoder decodeChar:'i']) {
@@ -220,7 +234,7 @@
 
 @implementation NSArray (OPBEncodingSupport)
 
-- (id) initWithBencoder:(OPBEncoder *)decoder {
+- (instancetype) initWithBencoder:(OPBEncoder *)decoder {
     
     NSMutableArray* result = nil;
     
@@ -252,7 +266,7 @@
 @implementation NSDictionary (OPBEncodingSupport)
 
 
-- (id) initWithBencoder:(OPBEncoder *)decoder {
+- (instancetype) initWithBencoder: (OPBEncoder*) decoder {
     
     NSMutableDictionary* result = nil;
     
@@ -263,7 +277,7 @@
             id <OPBencoding> value = [decoder decodeObject];
             if (! value) return nil;
             if (! result) {
-                result = [NSMutableDictionary dictionary];
+                result = [[NSMutableDictionary alloc] init];
             }
             [result setObject: value forKey: key];
         }

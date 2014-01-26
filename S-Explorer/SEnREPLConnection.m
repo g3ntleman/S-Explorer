@@ -118,9 +118,17 @@
     //NSLog(@"Socket read data for tag %ld. Buffer now: %@", tag, dataString);
     
     
-    NSDictionary* partialResultDictionary = (id)[OPBEncoder objectFromEncodedData: self.readBuffer];
+    NSMutableDictionary* partialResultDictionary = [[OPBEncoder decoderForData: self.readBuffer mutableContainers: YES] decodeObject];
     
-    BOOL done = [[partialResultDictionary[@"status"] lastObject] isEqualToString: @"done"];
+    NSArray* status = partialResultDictionary[@"status"];
+    NSString* lastStatus = [status lastObject];
+    if ([lastStatus isEqualToString: @"error"]) {
+        NSLog(@"nREPL error received: %@", status);
+        partialResultDictionary[@"NSError"] = [NSError errorWithDomain: @"org.cocoanuts.S-Explorer" code: -12 userInfo: @{NSLocalizedDescriptionKey: status[0]}]; // use all bust last array elements in description?
+    }
+    
+    
+    BOOL done = [lastStatus isEqualToString: @"done"];
 
     // Test, if the dictionary is complete:
     if (partialResultDictionary) {
@@ -285,16 +293,7 @@
 //    
 //    NSArray* status = partialResultDictionary[@"status"];
 //    
-//    if (status.count) {
-//        self.status = status.lastObject;
-//        
-//        if ([self.status isEqualToString: @"error"]) {
-//            _error = [[NSError alloc] initWithDomain: @"nREPL" code: -1 userInfo: @{NSLocalizedDescriptionKey: status.firstObject}];
-//        } else {
-//            _error = nil;
-//        }
-//    }
-//    
+//
 //    NSString* sessionID = partialResultDictionary[@"session"];
 //    if (sessionID) self.sessionID = sessionID;
 //    
