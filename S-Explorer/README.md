@@ -1,14 +1,10 @@
 S-Explorer
 =======
 
-An Editor targeted at developing in Lisp-Like languages, initially Scheme.
+An Editor targeted at developing in Lisp-Like languages, initially Clojure.
 Written in Obj-C/Cocoa for Mac OS X 10.8 and up.
 
 Note: This is not in a usable state yet!
-
-Please install chibi-scheme for the build-in scheme support (using homebrew):
-
-> brew install chibi-scheme
 
 Please install leiningen for the build-in Clojure support (using homebrew):
 
@@ -16,34 +12,32 @@ Please install leiningen for the build-in Clojure support (using homebrew):
 
 Implemented Features
 
-* Editor for scm-File Editing, featuring...
+* Editor for Source-File Editing, featuring...
   * Syntax-Highlighting (initial version done, no runtime support yet)
   * Parenthesis Highlighting 
-  * Expression Selection by double-clicking Parenthesis (done)
+  * Expression Selection by double-clicking Parenthesis
   * Auto-Indentation (press TAB)
   * "Evaluate" Menu Item to evaluate current selection or top-level expression at cursor
 
 
-* Generic REPL with ...
+* nREPL with ...
   * Syntax-Highlighting
-    * Parenthesis Highlighting
+  * Parenthesis Highlighting
   * Persistent REPL History
+  * Expression Selection by double-clicking Parenthesis
 
 
 Planned Features
 
 * Project Directory Display (started)
-* Infrastructure for multiple S-Expression-Based Languages with initial plans for
+* Project management
+* Infrastructure for more S-Expression-Based Languages with initial plans for (in addition to Clojure):
   * Chibi-Scheme, a lightweight Scheme implementation suitable for embedding / scripting
-  * Clojure
-* REPL with ...
-  * Parenthesis Highlighting
-  * Expression Selection by double-clicking Parenthesis
 * Project templates for convenient project creation
 * Support for running Tests and multiple REPLs per project
-* Symbol indexing and completion
+* Symbol indexing and completion (started)
 * Documentation integration
-
+* Debug-Features for REPL like "pause execution", "display stack trace", "display locals"
 
 Immediate Todo:
 
