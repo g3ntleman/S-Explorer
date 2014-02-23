@@ -28,7 +28,7 @@
 //  as such you simply call the class methods as required when you need them.
 //
 //  The OPBEncoder class can encode and decode data to and from bencoded byte
-//  data as defined here: http://wiki.theory.org/BitTorrentSpecification
+//  data as defined here: https://wiki.theory.org/BitTorrentSpecification#Bencoding
 
 @interface OPBEncoder : NSObject 
 

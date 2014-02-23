@@ -547,7 +547,11 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     NSString* evalString = [self.editorController.textView.string substringWithRange:evalRange];
     SEREPLViewController* replController = self.topREPLController;
     NSLog(@"Evaluating selection: '%@'", evalString);
-    [replController evaluateString: evalString];
+    [replController.replView  moveToEndOfDocument: sender];
+    [replController.replView setCommand: evalString];
+    [replController sendCurrentCommand];
+//    [replController.replView insertText: evalString];
+//    [replController performSelector: @selector(insertNewline:) withObject: sender afterDelay: 0.1];
 }
 
 - (IBAction) revertCurrentSourceItemToSaved: (id) sender {
