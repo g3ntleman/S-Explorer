@@ -191,6 +191,11 @@ static NSCharacterSet* SEWordCharacters() {
                                                  [textStorage addAttributes: constantAttributes range: pResult.occurrence.range];
                                                  break;
                                              }
+                                             case CONSTANT: {
+                                                 NSDictionary* constantAttributes = @{NSForegroundColorAttributeName: [SESourceEditorTextView constantColor]};
+                                                 [textStorage addAttributes: constantAttributes range: pResult.occurrence.range];
+                                                 break;
+                                             }
                                              case ATOM: {
                                                  
                                                  if (pResult.depth>=1) {
@@ -338,7 +343,11 @@ static NSCharacterSet* SEWordCharacters() {
 }
 
 + (NSColor*) numberColor {
-    return [NSColor brownColor];
+    return [NSColor purpleColor];
+}
+
++ (NSColor*) constantColor {
+    return [NSColor orangeColor];
 }
 
 - (void) awakeFromNib {

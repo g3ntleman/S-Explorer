@@ -19,6 +19,7 @@ typedef enum {
     COMMENT,
     STRING,
     NUMBER,
+    CONSTANT,
     KEYWORD
 } s_token;
 

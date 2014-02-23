@@ -76,50 +76,56 @@
     result.range.location = position-1;
 
     switch (c) {
-        case 0:
+        case 0: {
             result.token = END_OF_INPUT;
             result.range.length = 0;
             return result;
+        }
         case '(':
-        case '[':
+        case '[': {
             result.token = LEFT_PAR;
             result.range.length = 1;
             return result;
+        }
         case ')':
-        case ']':
+        case ']': {
             result.token = RIGHT_PAR;
             result.range.length = 1;
             return result;
-        case '.':
+        }
+        case '.': {
             result.token = DOT;
             result.range.length = 1;
             return result;
+        }
         case '"':
-            result.token = STRING;
-            do {
-                c = [self getc];
-            } while (c != 0 && c != '"');
-            result.range.length = position-result.range.location;
-            
-            return result;
-
+        result.token = STRING;
+        do {
+            c = [self getc];
+        } while (c != 0 && c != '"');
+        result.range.length = position-result.range.location;
+        
+        return result;
+        
         default:
-            
-            do {
-                c = [self getc];
-            } while (c && !isspace(c) && c != ';' && ! isPar(c));
-                
-            if (c) position -= 1;
-            result.range.length = position-result.range.location;
-            unichar firstChar = characters[result.range.location];
-            if (firstChar == '#' || isdigit(firstChar)) {
-                result.token = NUMBER;
-            } else if (firstChar == ':') {
-                result.token = KEYWORD;
-            } else {
-                result.token = ATOM;
-            }
-            return result;
+        
+        do {
+            c = [self getc];
+        } while (c && !isspace(c) && c != ';' && ! isPar(c));
+        
+        if (c) position -= 1;
+        result.range.length = position-result.range.location;
+        unichar firstChar = characters[result.range.location];
+        if (firstChar == '#') {
+            result.token = CONSTANT;
+        } else if (isdigit(firstChar)) {
+            result.token = NUMBER;
+        } else if (firstChar == ':') {
+            result.token = KEYWORD;
+        } else {
+            result.token = ATOM;
+        }
+        return result;
     }
 }
 
