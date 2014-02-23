@@ -133,6 +133,9 @@ static NSData* lineFeedData = nil;
 // Clojure-Example how to list all synbols in clojure.utl:
 // (keys (ns-publics 'clojure.core))
 
+/**
+ * Returns YES, if the command was sent.
+ */
 - (BOOL) sendCurrentCommand {
     
     if (! self.evalConnection.socket.isConnected) {
@@ -169,9 +172,10 @@ static NSData* lineFeedData = nil;
 
         return YES;
         
-    } else
+    } else {
         // Just insert an newline (and possibly scroll):
         [self.replView appendInterpreterString: @"\n"];
+    }
     return NO;
 }
 

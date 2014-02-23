@@ -70,7 +70,7 @@
 
 - (id <OPBencoding>) objectFromEncodedData: (NSData*) sourceData;
 
-- (NSData*) encodeRootObject:(id <OPBencoding>) object;
+- (NSData*) encodedDataFromObject: (id <OPBencoding>) object;
 
 - (id) decodeObject;
 

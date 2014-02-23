@@ -95,7 +95,7 @@
 
 //  NSNumbers are encoded and decoded with their longLongValue.
 //  NSDictionary keys must be NSStrings.
-- (NSData*) encodeRootObject: (id<OPBencoding>) object {
+- (NSData*) encodedDataFromObject: (id<OPBencoding>) object {
     if (_encodingData) {
         [_encodingData setLength: 0];
     } else {
@@ -105,13 +105,6 @@
     return self.encodingData;
 }
 
-
-+ (NSData*) encodedDataFromObject: (id <OPBencoding>) object {
-    
-    OPBEncoder* encoder = [[self alloc] init];
-    [encoder encodeRootObject: object];
-    return encoder.encodingData;
-}
 
 + (instancetype) decoderForData: (NSData*) sourceData mutableContainers: (BOOL) mutable {
     id result = [[self alloc] init];

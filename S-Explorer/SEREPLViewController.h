@@ -42,4 +42,6 @@
 
 - (void) connectWithBlock: (SEnREPLConnectBlock) connectBlock;
 
+- (BOOL) sendCurrentCommand;
+
 @end

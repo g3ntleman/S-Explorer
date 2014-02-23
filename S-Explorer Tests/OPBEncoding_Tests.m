@@ -11,6 +11,7 @@
 
 @interface OPBEncoding_Tests : XCTestCase {
     OPBEncoder* encoder;
+    OPBEncoder* decoder;
 }
 
 @end
@@ -21,6 +22,7 @@
     [super setUp];
     
     encoder = [[OPBEncoder alloc] init];
+    decoder = [[OPBEncoder alloc] init];
     
     // Put setup code here. This method is called before the invocation of each test method in the class.
 }
@@ -38,7 +40,7 @@
 //}
 
 - (void) recode: (id <OPBencoding>) object {
-    XCTAssertEqualObjects(object, [OPBEncoder objectFromEncodedData: [encoder encodeRootObject: object]]);
+    XCTAssertEqualObjects(object, [decoder objectFromEncodedData: [encoder encodedDataFromObject: object]]);
 }
 
 - (void) testStringRecoding {
@@ -54,29 +56,29 @@
 }
 
 - (void) testStringEncoding {
-    XCTAssertEqualObjects([encoder encodeRootObject: @"spam"], [@"4:spam" dataUsingEncoding: NSUTF8StringEncoding], @"String encoding failed.");
-    XCTAssertEqualObjects([encoder encodeRootObject: @""], [@"0:" dataUsingEncoding: NSUTF8StringEncoding], @"Empty string encoding failed.");
+    XCTAssertEqualObjects([encoder encodedDataFromObject: @"spam"], [@"4:spam" dataUsingEncoding: NSUTF8StringEncoding], @"String encoding failed.");
+    XCTAssertEqualObjects([encoder encodedDataFromObject: @""], [@"0:" dataUsingEncoding: NSUTF8StringEncoding], @"Empty string encoding failed.");
 }
 
 - (void) testIntegerNumberEncoding {
-    XCTAssertEqualObjects([encoder encodeRootObject: @(4711)], [@"i4711e" dataUsingEncoding: NSUTF8StringEncoding], @"Integer Number encoding failed.");
-    XCTAssertEqualObjects([encoder encodeRootObject: @(4000000000)], [@"i4000000000e" dataUsingEncoding: NSUTF8StringEncoding], @"Integer Number encoding failed.");
-    XCTAssertEqualObjects([encoder encodeRootObject: @(-3)], [@"i-3e" dataUsingEncoding: NSUTF8StringEncoding], @"Integer Number encoding failed.");
+    XCTAssertEqualObjects([encoder encodedDataFromObject: @(4711)], [@"i4711e" dataUsingEncoding: NSUTF8StringEncoding], @"Integer Number encoding failed.");
+    XCTAssertEqualObjects([encoder encodedDataFromObject: @(4000000000)], [@"i4000000000e" dataUsingEncoding: NSUTF8StringEncoding], @"Integer Number encoding failed.");
+    XCTAssertEqualObjects([encoder encodedDataFromObject: @(-3)], [@"i-3e" dataUsingEncoding: NSUTF8StringEncoding], @"Integer Number encoding failed.");
 }
 
 - (void) testFloatNumberEncoding {
-    XCTAssertEqualObjects([encoder encodeRootObject: @(-47.11)], [@"i-47.11e" dataUsingEncoding: NSUTF8StringEncoding], @"Float Number encoding failed.");
+    XCTAssertEqualObjects([encoder encodedDataFromObject: @(-47.11)], [@"i-47.11e" dataUsingEncoding: NSUTF8StringEncoding], @"Float Number encoding failed.");
 }
 
 - (void) testArrayEncoding {
     NSArray* testArray = @[@"spam", @"eggs"];
-    XCTAssertEqualObjects([encoder encodeRootObject: testArray], [@"l4:spam4:eggse" dataUsingEncoding: NSUTF8StringEncoding], @"Array encoding failed.");
+    XCTAssertEqualObjects([encoder encodedDataFromObject: testArray], [@"l4:spam4:eggse" dataUsingEncoding: NSUTF8StringEncoding], @"Array encoding failed.");
 }
 
 
 - (void) testDictionaryEncoding {
     NSDictionary* testDictionary = @{@"cow": @"moo", @"spam": @"eggs"};
-    XCTAssertEqualObjects([encoder encodeRootObject: testDictionary], [@"d3:cow3:moo4:spam4:eggse" dataUsingEncoding: NSUTF8StringEncoding], @"Array encoding failed.");
+    XCTAssertEqualObjects([encoder encodedDataFromObject: testDictionary], [@"d3:cow3:moo4:spam4:eggse" dataUsingEncoding: NSUTF8StringEncoding], @"Array encoding failed.");
     
     //NSDictionary* nREPLQueryDictionary = @{@"op": @"eval", @"code": @"(map inc (list 1 2 3))"};
     //NSLog(@"nREPLDict = '%@'", [[NSString alloc] initWithData: [encoder encodeRootObject: nREPLQueryDictionary] encoding: NSUTF8StringEncoding]);
