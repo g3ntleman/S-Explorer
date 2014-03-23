@@ -748,6 +748,14 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 //    return draggedFilenames;
 //}
 
+- (NSPrintOperation*) printOperationWithSettings: (NSDictionary*) printSettings error: (NSError **)outError {
+    
+    // Minimalistic printing support:
+    NSPrintInfo * printInfo = [self printInfo];
+    NSPrintOperation * printOp = [NSPrintOperation printOperationWithView: self.editorController.textView printInfo: printInfo];
+    return printOp;
+}
+
 
 
 
