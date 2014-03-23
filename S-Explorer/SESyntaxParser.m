@@ -68,7 +68,7 @@
             result.token = COMMENT;
             result.range.location = position-1;
             do c = [self getc]; while (c != '\n' && c);
-            result.range.length = position - result.range.location-1;
+            result.range.length = position - result.range.location;
             return result;
         }
     } while (c && isspace(c));
