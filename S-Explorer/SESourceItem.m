@@ -8,10 +8,16 @@
 
 #import "SESourceItem.h"
 
+typedef enum {
+    SESourceItemTypeUnknown = 0,
+    SESourceItemTypeFile,
+    SESourceItemTypeFolder
+} SESourceItemType;
+
 @implementation SESourceItem {
     NSString* path;
-    NSMutableArray* children;
-    BOOL isDir;
+    NSMutableArray* children; // SESourceItem objects
+    SESourceItemType type;
 }
 
 @synthesize parent;
@@ -27,7 +33,7 @@
         } else {
             path = aPath;
         }
-        isDir = YES; // will be checked in -children
+        type = SESourceItemTypeUnknown; // will be checked in -children
     }
     return self;
 }
@@ -71,7 +77,7 @@
 
 - (BOOL) isTextItem {
     
-    if (isDir) {
+    if (type == SESourceItemTypeFolder) {
         return NO;
     }
     
@@ -132,16 +138,16 @@
   **/
 - (NSArray *)children {
     
-    if (! isDir) {
-        return nil;
+    if (type == SESourceItemTypeFile) {
+        return nil; // Files cannot have children
     }
     
     if (children == nil) {
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSString* fullPath = self.absolutePath;
-        BOOL valid;
-        
-        valid = [fileManager fileExistsAtPath: fullPath isDirectory: &isDir];
+        BOOL isDir;
+        BOOL valid = [fileManager fileExistsAtPath: fullPath isDirectory: &isDir];
+        type = isDir ? SESourceItemTypeFolder : SESourceItemTypeFile;
         
         if (valid && isDir) {
             NSArray *array = [fileManager contentsOfDirectoryAtPath: fullPath error:NULL];
@@ -227,9 +233,9 @@
 
 /* Returns the appropriate property list object for the provided type.  This will commonly be the NSData for that data type.  However, if this method returns either a string, or any other property-list type, the pasteboard will automatically convert these items to the correct NSData format required for the pasteboard.
  */
-- (id) pasteboardPropertyListForType: (NSString*) type {
+- (id) pasteboardPropertyListForType: (NSString*) pbType {
     
-    if (type == NSPasteboardTypeString) {
+    if (pbType == NSPasteboardTypeString) {
         return self.absolutePath;
     }
     NSURL* url = [NSURL fileURLWithPath: self.absolutePath];
