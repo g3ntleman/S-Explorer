@@ -13,6 +13,7 @@
 #import "NoodleLineNumberView.h"
 #import "OPUtilityFunctions.h"
 #import "OPTabView.h"
+#import "SEImageView.h"
 
 NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
@@ -73,10 +74,27 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             }
         }
         
+        NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+        [nc addObserver: self selector: @selector(sourceItemEditedStateDidChange:)
+                   name: SESourceItemChangedEditedStateNotification
+                 object: nil];
+        
         return self;
     }
     
     return nil;
+}
+
+- (void) dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
+}
+
+- (void) sourceItemEditedStateDidChange: (NSNotification*) notification {
+    SESourceItem* sourceItem = notification.object;
+    //SESourceItem* sourceItemp = [self.sourceList parentForItem: sourceItem];
+    NSInteger row = [self.sourceList rowForItem: sourceItem];
+    [self.sourceList reloadDataForRowIndexes: [NSIndexSet indexSetWithIndex: row] columnIndexes: [NSIndexSet indexSetWithIndex: 0]];
+    //[self.sourceList reloadItem: sourceItem];
 }
 
 - (NSUInteger) numberOfEditedSourceItems {
@@ -113,19 +131,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return self.fileURL.lastPathComponent;
 }
 
-
-#pragma mark - Convert between relative paths and sourceItems
-
-- (NSString*) relativePathForSourceItem: (SESourceItem*) sourceItem {
-    NSString* path = sourceItem.fileURL.absoluteString;
-    NSString* rootPath = self.projectFolderItem.fileURL.absoluteString;
-    NSString* relativePath = [path substringFromIndex: rootPath.length];
-    return relativePath;
-}
-
-- (SESourceItem*) sourceItemForRelativePath: (NSString*) path {
-    return [self.projectFolderItem childWithPath: path];
-}
 
 /**
  *  item may be nil to indicate a removal.
@@ -293,22 +298,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 
-- (IBAction) sourceTableAction: (id) sender {
-    NSLog(@"sourceTableAction.");
-    SESourceItem* selectedSourceItem = [self.sourceList itemAtRow: self.sourceList.selectedRow];
-    
-    if (selectedSourceItem.isTextItem) {
-        [self setCurrentSourceItem: selectedSourceItem];
-    }
-}
-
-- (IBAction)sourceTableDoubleAction: (id) sender {
-    NSLog(@"sourceTableDoubleAction.");
-    [self sourceTableAction: sender];
-    [self.sourceList.window makeFirstResponder: self.editorController.textView];
-}
-
-
 - (void) checkLibraryAlias {
     
     NSString* libraryFolder = self.languageDictionary[@"libraryFolder"];
@@ -339,15 +328,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return languageDictionaries[self.currentLanguage];
 }
 
-- (IBAction) runProject: (id) sender {
-    [self.topREPLController run: sender];
-}
-
-- (void) replServerDidStart: (SEnREPL*) repl {
-    if (repl.task.isRunning) {
-        NSLog(@"replServerDidStart: %@", repl);
-    }
-}
 
 - (void) startREPLServerAsNeccessary {
     
@@ -428,21 +408,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     [self expandSourceListToItem: item.parent];
     [self.sourceList expandItem: item];
-}
-
-- (IBAction) revealInSourceList: (id) sender {
-    SESourceItem* currentSourceItem = self.currentSourceItem;
-    
-    [self expandSourceListToItem: currentSourceItem];
-    // Select itemAtPath in source list:
-    NSUInteger itemRow = [self.sourceList rowForItem: currentSourceItem];
-    
-    if (itemRow != -1) {
-        [self.sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: itemRow]
-                     byExtendingSelection: NO];
-        return;
-    }
-    NSLog(@"Unable to reveal %@ in source list.", currentSourceItem);
 }
 
 
@@ -563,6 +528,64 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return [self replControllerForIdentifier: self.replTabView.selectedTabViewItem.identifier];
 }
 
+#pragma mark - Convert between relative paths and sourceItems
+
+- (NSString*) relativePathForSourceItem: (SESourceItem*) sourceItem {
+    NSString* path = sourceItem.fileURL.absoluteString;
+    NSString* rootPath = self.projectFolderItem.fileURL.absoluteString;
+    NSString* relativePath = [path substringFromIndex: rootPath.length];
+    return relativePath;
+}
+
+
+- (SESourceItem*) sourceItemForRelativePath: (NSString*) path {
+    return [self.projectFolderItem childWithPath: path];
+}
+
+
+#pragma mark - Actions
+
+
+- (IBAction) sourceTableAction: (id) sender {
+    NSLog(@"sourceTableAction.");
+    SESourceItem* selectedSourceItem = [self.sourceList itemAtRow: self.sourceList.selectedRow];
+    
+    if (selectedSourceItem.isTextItem) {
+        [self setCurrentSourceItem: selectedSourceItem];
+    }
+}
+
+- (IBAction)sourceTableDoubleAction: (id) sender {
+    NSLog(@"sourceTableDoubleAction.");
+    [self sourceTableAction: sender];
+    [self.sourceList.window makeFirstResponder: self.editorController.textView];
+}
+
+- (IBAction) runProject: (id) sender {
+    [self.topREPLController run: sender];
+}
+
+- (void) replServerDidStart: (SEnREPL*) repl {
+    if (repl.task.isRunning) {
+        NSLog(@"replServerDidStart: %@", repl);
+    }
+}
+
+- (IBAction) revealInSourceList: (id) sender {
+    SESourceItem* currentSourceItem = self.currentSourceItem;
+    
+    [self expandSourceListToItem: currentSourceItem];
+    // Select itemAtPath in source list:
+    NSUInteger itemRow = [self.sourceList rowForItem: currentSourceItem];
+    
+    if (itemRow != -1) {
+        [self.sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: itemRow]
+                     byExtendingSelection: NO];
+        return;
+    }
+    NSLog(@"Unable to reveal %@ in source list.", currentSourceItem);
+}
+
 - (IBAction) revealInFinder: (id) sender {
     SESourceItem* selectedItem  = [sourceList itemAtRow: sourceList.selectedRowIndexes.firstIndex];
     [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs: @[selectedItem.fileURL]];
@@ -656,6 +679,16 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return [item children][index];
 }
 
+//- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+//    
+//    BOOL isItemEdited = [item isDocumentEdited];
+//    if (isItemEdited) {
+//        ((SEImageView*)[cell imageView]).highlighted = isItemEdited;
+//    }
+//
+//    
+//}
+
 
 - (id) outlineView: (NSOutlineView*) outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
     
@@ -725,9 +758,12 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     NSURL* fileURL = [item fileURL];
     result.textField.stringValue = [fileURL lastPathComponent];
     result.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType: fileURL.pathExtension];
+    BOOL isItemEdited = [item isDocumentEdited];
+    ((SEImageView*)result.imageView).highlighted = isItemEdited;
     
     return result;
 }
+
 
 
 //- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {

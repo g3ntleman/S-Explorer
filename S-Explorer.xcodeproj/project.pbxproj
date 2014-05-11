@@ -18,6 +18,7 @@
 		8D27BFF51766C59D00F1F8FA /* SESyntaxParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFF31766C59C00F1F8FA /* SESyntaxParser.m */; };
 		8D2AAB6C177A8E50008F07C4 /* NoodleLineNumberView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AAB68177A8E50008F07C4 /* NoodleLineNumberView.m */; };
 		8D2AAB71177A94A8008F07C4 /* NoodleLineNumberMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AAB66177A8E50008F07C4 /* NoodleLineNumberMarker.m */; };
+		8D31EE6C191FE5150054ADD8 /* OPImageTinting.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D31EE6B191FE5150054ADD8 /* OPImageTinting.m */; };
 		8D470B9C18196DCA00C0C654 /* OPBEncoding_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D470B9B18196DCA00C0C654 /* OPBEncoding_Tests.m */; };
 		8D4DF7E717F4587F00BC0773 /* OPCharFilterFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */; };
 		8D4DF83317F5AAF600BC0773 /* chibi-repl-server.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8D4DF83217F5AAF600BC0773 /* chibi-repl-server.scm */; };
@@ -33,6 +34,7 @@
 		8D604293173C143300149409 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424E173BE60800149409 /* Foundation.framework */; };
 		8D604297173C22D600149409 /* SEREPLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* SEREPLViewController.m */; };
 		8D60FFE517EC58B600F14B50 /* Templates in Resources */ = {isa = PBXBuildFile; fileRef = 8D60FFE417EC58B600F14B50 /* Templates */; };
+		8D68CC5D191FCE30004C727A /* SEImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D68CC5C191FCE30004C727A /* SEImageView.m */; };
 		8D72C53618287B6400776B14 /* SEnREPLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D72C53418287B6400776B14 /* SEnREPLConnection.m */; };
 		8D7B0BEC181184910046403D /* OPBEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7B0BEB181184910046403D /* OPBEncoder.m */; };
 		8D7E69571829E44300F320A9 /* SEnREPLConnection_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7E69561829E44300F320A9 /* SEnREPLConnection_Tests.m */; };
@@ -99,6 +101,8 @@
 		8D2AAB68177A8E50008F07C4 /* NoodleLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoodleLineNumberView.m; sourceTree = "<group>"; };
 		8D2AAB6D177A93EB008F07C4 /* MarkerLineNumberView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = MarkerLineNumberView.h; sourceTree = "<group>"; };
 		8D2AAB6E177A93EB008F07C4 /* MarkerLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerLineNumberView.m; sourceTree = "<group>"; };
+		8D31EE6B191FE5150054ADD8 /* OPImageTinting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPImageTinting.m; sourceTree = "<group>"; };
+		8D31EE6D191FE52C0054ADD8 /* OPImageTinting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OPImageTinting.h; sourceTree = "<group>"; };
 		8D470B9B18196DCA00C0C654 /* OPBEncoding_Tests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPBEncoding_Tests.m; sourceTree = "<group>"; };
 		8D4DF7E417F4587F00BC0773 /* OPCharFilterFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = OPCharFilterFormatter.h; sourceTree = "<group>"; };
 		8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPCharFilterFormatter.m; sourceTree = "<group>"; };
@@ -123,6 +127,8 @@
 		8D604295173C22D600149409 /* SEREPLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEREPLViewController.m; sourceTree = "<group>"; };
 		8D604298173C388900149409 /* SEREPLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEREPLView.h; sourceTree = "<group>"; };
 		8D60FFE417EC58B600F14B50 /* Templates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Templates; path = Resources/Templates; sourceTree = "<group>"; };
+		8D68CC5B191FCE30004C727A /* SEImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEImageView.h; sourceTree = "<group>"; };
+		8D68CC5C191FCE30004C727A /* SEImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEImageView.m; sourceTree = "<group>"; };
 		8D72C53318287B6400776B14 /* SEnREPLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEnREPLConnection.h; sourceTree = "<group>"; };
 		8D72C53418287B6400776B14 /* SEnREPLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEnREPLConnection.m; sourceTree = "<group>"; };
 		8D7B0BEA181184910046403D /* OPBEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OPBEncoder.h; sourceTree = "<group>"; };
@@ -365,6 +371,10 @@
 				8D5DD11817F6D13800E352FE /* NSView+OPCopying.m */,
 				8D7B0BEA181184910046403D /* OPBEncoder.h */,
 				8D7B0BEB181184910046403D /* OPBEncoder.m */,
+				8D68CC5B191FCE30004C727A /* SEImageView.h */,
+				8D68CC5C191FCE30004C727A /* SEImageView.m */,
+				8D31EE6D191FE52C0054ADD8 /* OPImageTinting.h */,
+				8D31EE6B191FE5150054ADD8 /* OPImageTinting.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -490,10 +500,12 @@
 			files = (
 				8D604256173BE60800149409 /* main.m in Sources */,
 				8D60425D173BE60800149409 /* SEProject.m in Sources */,
+				8D68CC5D191FCE30004C727A /* SEImageView.m in Sources */,
 				8D604297173C22D600149409 /* SEREPLViewController.m in Sources */,
 				8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */,
 				8D27BFF51766C59D00F1F8FA /* SESyntaxParser.m in Sources */,
 				8D0904C2176A7C4800176BCF /* SESourceItem.m in Sources */,
+				8D31EE6C191FE5150054ADD8 /* OPImageTinting.m in Sources */,
 				8D8F9AF917EBEBDA00299D24 /* OPTabView.m in Sources */,
 				8DD87685187E0B0F000D4B8C /* LVPathWatcher.m in Sources */,
 				8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */,

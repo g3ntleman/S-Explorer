@@ -8,12 +8,14 @@
 
 #import "SESourceItem.h"
 
+NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEditedState";
 
 @implementation SESourceItem {
     NSString* _name;
     NSURL* _fileURL;
     NSMutableArray* _children; // SESourceItem objects
     __weak SESourceItem* _parent;
+    NSInteger changeCount;
 }
 
 @synthesize content;
@@ -21,6 +23,7 @@
 
 - (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem {
     if (self = [self init]) {
+        NSParameterAssert(aURL != nil);
         _parent = parentItem;
         _fileURL = [aURL fileReferenceURL];
         NSNumber* typeNo;
@@ -234,6 +237,38 @@
 //    
 //    return result;
 //}
+
+- (BOOL) isDocumentEdited {
+    return changeCount != 0;
+}
+
+- (void) setChangeCount: (NSInteger) newCount {
+    if (changeCount != newCount) {
+        BOOL isDocumentEditedChanged = (changeCount == 0 || newCount == 0);
+        changeCount = newCount;
+
+        if (isDocumentEditedChanged) {
+            [[NSNotificationCenter defaultCenter] postNotificationName: @"SESourceItemChangedEditedState" object: self];
+        }
+    }
+}
+
+
+- (void) updateChangeCount: (NSDocumentChangeType) change {
+    if (change == NSChangeCleared) {
+        [self setChangeCount: 0];
+        return;
+    }
+    if (change == NSChangeDone || change == NSChangeRedone) {
+        [self setChangeCount: changeCount+1];
+        return;
+    }
+    
+    if (change == NSChangeUndone) {
+        [self setChangeCount: changeCount-1];
+        return;
+    }
+}
 
 @end
 

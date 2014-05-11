@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+extern NSString* SESourceItemChangedEditedStateNotification;
+
 typedef enum {
     SESourceItemTypeUnknown = 0,
     SESourceItemTypeFile,

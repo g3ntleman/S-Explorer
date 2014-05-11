@@ -53,6 +53,7 @@ extern NSString* SEProjectDocumentType;
 - (IBAction) revertCurrentSourceItemToSaved: (id) sender;
 - (IBAction) saveCurrentSourceItem: (id) sender;
 - (IBAction) runProject: (id) sender;
+- (IBAction) revealInFinder: (id) sender;
 
 
 - (void) setSourceItem: (SESourceItem*) item forTabIndex: (NSUInteger) index;
