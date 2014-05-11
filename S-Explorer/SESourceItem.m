@@ -123,6 +123,9 @@
 }
 
 - (SESourceItem*) childItemWithName: (NSString*) name {
+    if ([name isEqualToString: @"/"]) {
+        return self;
+    }
     for (SESourceItem* child in self.children) {
         if ([child.name isEqualToString: name]) {
             return child;
