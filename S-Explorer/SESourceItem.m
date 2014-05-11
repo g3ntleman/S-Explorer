@@ -88,16 +88,13 @@
     }
     
     BOOL result = YES;
-    NSString* extension = self.name.pathExtension;
-    if (extension.length) {
-        CFStringRef textUTI = CFSTR("public.text");
-        // If the UTI is any kind of text (RTF, plain text, Unicode, and so forth), the function UTTypeConformsTo returns true.
-        CFStringRef itemUTI = UTTypeCreatePreferredIdentifierForTag (kUTTagClassFilenameExtension, (__bridge CFStringRef)(extension), textUTI);
-
-        
-        result = UTTypeConformsTo(itemUTI, textUTI);
-        CFRelease(itemUTI);
-     }
+    
+    NSString *type;
+    NSError *error;
+    if ([self.fileURL getResourceValue:&type forKey:NSURLTypeIdentifierKey error:&error]) {
+        result = ([[NSWorkspace sharedWorkspace] type:type conformsToType:@"public.text"]);
+    }
+    
     return result; // should we cache the result?
 }
 
