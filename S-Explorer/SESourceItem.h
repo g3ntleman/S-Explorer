@@ -8,14 +8,22 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum {
+    SESourceItemTypeUnknown = 0,
+    SESourceItemTypeFile,
+    SESourceItemTypeFolder
+} SESourceItemType;
+
 @interface SESourceItem : NSDocument
 
-@property (readonly) BOOL isTextItem;
-@property (weak, readonly, nonatomic) SESourceItem* parent;
-@property (strong, nonatomic) NSTextStorage* content;
-@property (readonly) NSString* absolutePath;
-@property (readonly) NSString* relativePath;
-@property (readonly) NSString* longRelativePath;
+@property (nonatomic, readonly) BOOL isTextItem;
+@property (nonatomic, weak, readonly) SESourceItem* parent;
+@property (nonatomic, strong) NSTextStorage* content;
+@property (nonatomic, readonly) NSString* name;
+@property (nonatomic, readonly) SESourceItemType type;
+@property (nonatomic, readonly) NSURL* fileURL;
+
+
 
 @property (readonly) NSError* lastError;
 

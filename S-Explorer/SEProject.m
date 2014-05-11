@@ -120,19 +120,19 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     NSParameterAssert([item isTextItem]);
     NSParameterAssert(index<self.sourceTabView.numberOfTabViewItems);
     NSNumber* indexNumber = @(index);
+    
     if (item) {
         NSParameterAssert([item isKindOfClass: [SESourceItem class]]);
-
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryBySettingObject: item forKey: indexNumber];
         
-        self.uiSettings[@"tabbedSources"][indexNumber.stringValue] = item.longRelativePath;
+        self.uiSettings[@"tabbedSources"][indexNumber.stringValue] = item.fileURL;
     } else {
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryByRemovingObjectForKey: indexNumber];
         [self.uiSettings[@"tabbedSources"] removeObjectForKey: indexNumber.stringValue];
     }
     [self uiSettingsNeedSave];
     
-    [self.sourceTabView tabViewItemAtIndex: index].label = item.relativePath;
+    [self.sourceTabView tabViewItemAtIndex: index].label = item.name;
     
     self.editorController.sourceItem = item;
 
@@ -164,10 +164,13 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return sourceItem;
 }
 
+
+
 - (void) setCurrentSourceItem: (SESourceItem*) sourceItem {
     
-    [self setSourceItem: sourceItem forTabIndex: [sourceTabView indexOfSelectedTabViewItem]];
-    self.uiSettings[@"selectedSourceTab"] = sourceItem.longRelativePath;
+    NSUInteger tabNo = [sourceTabView indexOfSelectedTabViewItem];
+    [self setSourceItem: sourceItem forTabIndex: tabNo];
+    self.uiSettings[@"selectedSourceTab"] = @(tabNo);
     [self uiSettingsNeedSave];
 }
 
@@ -221,8 +224,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 - (NSString*) uiSettingsPath {
-    NSString* uiFolderPath = self.projectFolderItem.absolutePath;
-    NSString* uiFilePath = [uiFolderPath stringByAppendingPathComponent: @".UISettings.plist"];
+    NSURL* uiFolderURL = self.projectFolderItem.fileURL;
+    NSString* uiFilePath = [uiFolderURL.absoluteString stringByAppendingPathComponent: @".UISettings.plist"];
     return uiFilePath;
 }
 
@@ -443,7 +446,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [self.sourceList setDraggingSourceOperationMask: NSDragOperationLink forLocal: NO];
 
     // Restore Source Tabs and Selection:
-    NSString* sourceTabIdentifier = [self.uiSettings[@"selectedSourceTab"] description];
 
     NSDictionary* pathsByTabIndex = self.uiSettings[@"tabbedSources"];
     for (NSString* indexString in [pathsByTabIndex allKeys]) {
@@ -452,15 +454,25 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             NSString* path = pathsByTabIndex[indexString];
             SESourceItem* itemAtPath = [self.projectFolderItem childWithPath: path];
             if ([itemAtPath isTextItem]) {
-                [self setSourceItem: itemAtPath forTabIndex: [indexString integerValue]];
-                
-                if ([sourceTabIdentifier isEqualToString: itemAtPath.longRelativePath]) {
-                    // Select tab #tabIndex:
-                    [self.sourceTabView selectTabViewItemAtIndex: tabIndex];
-                }
+                [self setSourceItem: itemAtPath forTabIndex: tabIndex];
             }
         }
     }
+    
+    NSUInteger selectedSourceTabIndex = [self.uiSettings[@"selectedSourceTab"] unsignedIntegerValue];
+    [self.sourceTabView selectTabViewItemAtIndex: selectedSourceTabIndex];
+    if (! self.currentSourceItem) {
+        // If no sourceItem is selected in the current tab, select the first text item
+        __block SESourceItem* firstItem;
+        [self.projectFolderItem enumerateAllUsingBlock:^(SESourceItem *item, BOOL *stop) {
+            if ([item isTextItem]) {
+                *stop = YES;
+                firstItem = item;
+            }
+        }];
+        self.currentSourceItem = firstItem;
+    }
+    
     
 //    // Make sure the displayed source is selected in source list:
 //    NSUInteger row = [sourceList rowForItem: self.currentSourceItem];
@@ -473,12 +485,14 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         [self.sourceList expandItem: item];
     }
     
+    
+    
     [self revealInSourceList: nil];
     
 }
 
 + (BOOL) autosavesInPlace {
-    return NO; // Turn on later!
+    return YES;
 }
 
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError {
@@ -529,8 +543,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 - (IBAction) revealInFinder: (id) sender {
     SESourceItem* selectedItem  = [sourceList itemAtRow: sourceList.selectedRowIndexes.firstIndex];
-    NSString* selectedItemPath = selectedItem.absolutePath;
-    [[NSWorkspace sharedWorkspace] selectFile: selectedItemPath inFileViewerRootedAtPath: nil];
+    [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs: @[selectedItem.fileURL]];
 }
 
 - (IBAction) evaluateSelection: (id) sender {
@@ -559,9 +572,15 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 - (IBAction) saveCurrentSourceItem: (id) sender {
+    
+    NSLog(@"Saving current source item %@ to disk.", self.currentSourceItem);
+    
     [self.currentSourceItem saveDocument: sender];
 }
 
+/* 
+ * The project is edited, if the project file or any of the source items has unsaved changes.
+ */
 - (BOOL) isDocumentEdited {
     __block BOOL edited = [super isDocumentEdited];
     
@@ -623,21 +642,25 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         item = self.projectFolderItem;
     }
     
-    return [item relativePath];
+    return [item name];
 }
 
 - (BOOL) outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item {
     SESourceItem* sourceItem = item;
-    NSString* path = sourceItem.longRelativePath;
-    self.uiSettings[@"expandedFolders"][path] = @YES;
+    NSString* path = sourceItem.fileURL.absoluteString;
+    NSString* rootPath = self.projectFolderItem.fileURL.absoluteString;
+    NSString* relativePath = [path substringFromIndex: rootPath.length];
+    self.uiSettings[@"expandedFolders"][relativePath] = @YES;
     [self uiSettingsNeedSave];
     return YES;
 }
 
 - (BOOL) outlineView:(NSOutlineView *)outlineView shouldCollapseItem:(id)item {
     SESourceItem* sourceItem = item;
-    NSString* path = sourceItem.longRelativePath;
-    [self.uiSettings[@"expandedFolders"] removeObjectForKey: path];
+    NSString* path = sourceItem.fileURL.absoluteString;
+    NSString* rootPath = self.projectFolderItem.fileURL.absoluteString;
+    NSString* relativePath = [path substringFromIndex: rootPath.length];
+    [self.uiSettings[@"expandedFolders"] removeObjectForKey: relativePath];
     [self uiSettingsNeedSave];
     return YES;
 }
@@ -651,7 +674,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     NSMutableSet* urlStrings = [NSMutableSet set];
     for (SESourceItem* item in items) {
-        NSString* urlString = [[NSURL fileURLWithPath: item.absolutePath] absoluteString];
+        NSString* urlString = item.fileURL.absoluteString;
         if (urlString.length) {
             [urlStrings addObject: urlString];
         }
@@ -685,8 +708,9 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     NSTableCellView *result = [outlineView makeViewWithIdentifier: [tableColumn identifier] owner: self];
 
-    result.textField.stringValue = [item relativePath];
-    result.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType: [item relativePath].pathExtension];
+    NSURL* fileURL = [item fileURL];
+    result.textField.stringValue = [fileURL lastPathComponent];
+    result.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType: fileURL.pathExtension];
     
     return result;
 }

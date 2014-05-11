@@ -58,7 +58,7 @@ NSSet* SESingleIndentFunctions() {
         [textStorage setAttributes: attributes range: NSMakeRange(0, fileContent.length)];
         
         // Colorize scheme files:
-        NSString* pathExtension = sourceItem.relativePath.pathExtension;
+        NSString* pathExtension = sourceItem.name.pathExtension;
         
         _colorizeSourceItem = [pathExtension caseInsensitiveCompare: @"scm"] == NSOrderedSame || [pathExtension caseInsensitiveCompare: @"clj"] == NSOrderedSame;
 

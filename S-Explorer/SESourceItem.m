@@ -8,52 +8,51 @@
 
 #import "SESourceItem.h"
 
-typedef enum {
-    SESourceItemTypeUnknown = 0,
-    SESourceItemTypeFile,
-    SESourceItemTypeFolder
-} SESourceItemType;
 
 @implementation SESourceItem {
-    NSString* path;
-    NSMutableArray* children; // SESourceItem objects
-    SESourceItemType type;
+    NSString* _name;
+    NSURL* _fileURL;
+    NSMutableArray* _children; // SESourceItem objects
+    __weak SESourceItem* _parent;
 }
 
-@synthesize parent;
 @synthesize content;
 
 
-- (id) initWithPath: (NSString*) aPath parent: (SESourceItem*) parentItem {
-
+- (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem {
     if (self = [self init]) {
-        if (parentItem) {
-            path = [[aPath lastPathComponent] copy];
-            parent = parentItem;
-        } else {
-            path = aPath;
-        }
-        type = SESourceItemTypeUnknown; // will be checked in -children
+        _parent = parentItem;
+        _fileURL = [aURL fileReferenceURL];
+        NSNumber* typeNo;
+        [aURL getResourceValue: &typeNo forKey: NSURLIsDirectoryKey error: NULL];
+        _type = [typeNo boolValue] ? SESourceItemTypeFolder : SESourceItemTypeFile;
     }
     return self;
 }
 
-
 - (id) initWithFileURL: (NSURL*) aURL {
-    return [self initWithPath: aURL.path parent: nil];
+    return [self initWithFileURL: aURL parent: nil];
 }
 
-- (IBAction) saveDocument: (id) sender {
-    if (self.isDocumentEdited) {
-        [super saveDocument: sender];
+- (NSString*) name {
+    if (! _name) {
+        _name = [_fileURL lastPathComponent];
     }
+    return _name;
+}
+
+
+- (IBAction) saveDocument: (id) sender {
+    //if (self.isDocumentEdited) {
+        [super saveDocument: sender];
+    //}
 }
 
 
 - (NSTextStorage*) content {
     if (! content) {
         NSError* readError = nil;
-        [self readFromURL: [NSURL fileURLWithPath: self.absolutePath] ofType: @"public.text" error:&readError];
+        [self readFromURL: self.fileURL ofType: @"public.text" error:&readError];
         _lastError = readError;
     }
     return content;
@@ -70,6 +69,13 @@ typedef enum {
     }
 }
 
+//- (NSString*) relativePath {
+//    if (_fileURL) {
+//        return @"";
+//    }
+//    return [[_parent relativePath] stringByAppendingPathComponent: _pathComponent];
+//}
+
 - (void) enumerateAllUsingBlock: (void (^)(SESourceItem* item, BOOL *stop)) block {
     BOOL stop = NO;
     [self enumerateAllUsingBlock:block stop: &stop];
@@ -77,12 +83,12 @@ typedef enum {
 
 - (BOOL) isTextItem {
     
-    if (type == SESourceItemTypeFolder) {
+    if (_type == SESourceItemTypeFolder) {
         return NO;
     }
     
     BOOL result = YES;
-    NSString* extension = path.pathExtension;
+    NSString* extension = self.name.pathExtension;
     if (extension.length) {
         CFStringRef textUTI = CFSTR("public.text");
         // If the UTI is any kind of text (RTF, plain text, Unicode, and so forth), the function UTTypeConformsTo returns true.
@@ -93,6 +99,10 @@ typedef enum {
         CFRelease(itemUTI);
      }
     return result; // should we cache the result?
+}
+
+- (NSString*) displayName {
+    return [self.fileURL lastPathComponent];
 }
 
 - (BOOL) readFromURL: (NSURL*) absoluteURL
@@ -107,14 +117,14 @@ typedef enum {
     return contentString != nil;
 }
 
-- (BOOL)writeToURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing *)outError {
-    BOOL result = [self.content.string writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error: outError];
-    return result;
+- (BOOL) writeToURL: (NSURL*) url ofType: (NSString*) typeName error: (NSError *__autoreleasing *) outError {
+    BOOL success = [self.content.string writeToURL: url atomically: NO encoding: NSUTF8StringEncoding error: outError];
+    return success;
 }
 
 - (SESourceItem*) childItemWithName: (NSString*) name {
     for (SESourceItem* child in self.children) {
-        if ([child.relativePath isEqualToString: name]) {
+        if ([child.name isEqualToString: name]) {
             return child;
         }
     }
@@ -138,65 +148,68 @@ typedef enum {
   **/
 - (NSArray *)children {
     
-    if (type == SESourceItemTypeFile) {
+    if (self.type != SESourceItemTypeFolder) {
         return nil; // Files cannot have children
     }
     
-    if (children == nil) {
+    if (_children == nil) {
         NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSString* fullPath = self.absolutePath;
-        BOOL isDir;
-        BOOL valid = [fileManager fileExistsAtPath: fullPath isDirectory: &isDir];
-        type = isDir ? SESourceItemTypeFolder : SESourceItemTypeFile;
+
+        _children = [[NSMutableArray alloc] initWithCapacity: 10];
         
-        if (valid && isDir) {
-            NSArray *array = [fileManager contentsOfDirectoryAtPath: fullPath error:NULL];
-                        
-            children = [[NSMutableArray alloc] initWithCapacity: array.count];
-            
-            for (NSString* childPath in array) {
-                if (! [childPath hasPrefix: @"."]) {
-                    SESourceItem* newChild = [[[self class] alloc] initWithPath: childPath parent: self];
-                    [children addObject: newChild];
-                }
-            }
-            children = [children copy]; // make immutable
+        for (NSURL* itemURL in [fileManager enumeratorAtURL: self.fileURL
+                                 includingPropertiesForKeys: @[NSURLIsDirectoryKey]
+                                                    options: NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
+                                               errorHandler: ^BOOL(NSURL *url, NSError *error) {
+                                                   NSLog(@"Error enumerating %@. Error %@", url, error);
+                                                   return YES;
+                                               }])
+        {
+            SESourceItem* item = [[[self class] alloc] initWithFileURL: itemURL parent: self];
+            NSLog(@"item = %@", itemURL);
+            [_children addObject: item];
         }
+        
+        _children = [_children copy]; // make immutable
     }
-    return children;
+    return _children;
 }
 
 
-- (NSString*) relativePath {
-    if (parent == nil) {
-        return @"";
-    }
-    
-    return path;
-}
+//- (NSString*) relativePath {
+//    if (parent == nil) {
+//        return @"";
+//    }
+//    
+//    return path;
+//}
 
-/**
- * Returns the path relative to the root parent. For the root item, returns the empty string.
- */
-- (NSString*) longRelativePath {
-    if (! parent) {
-        return @"";
-    }
-    return [[parent longRelativePath] stringByAppendingPathComponent: path];
-}
+///**
+// * Returns the path relative to the root parent. For the root item, returns the empty string.
+// */
+//- (NSString*) longRelativePath {
+//    if (! parent) {
+//        return @"";
+//    }
+//    return [[parent longRelativePath] stringByAppendingPathComponent: path];
+//}
 
-- (NSString*) absolutePath {
-    // If no parent, return path
-    if (parent == nil) {
-        return path;
-    }
-    
-    // recurse up the hierarchy, prepending each parent’s path
-    return [parent.absolutePath stringByAppendingPathComponent:path];
-}
+//- (NSString*) absolutePath {
+//    // If no parent, return path
+//    if (parent == nil) {
+//        return path;
+//    }
+//    
+//    // recurse up the hierarchy, prepending each parent’s path
+//    return [parent.absolutePath stringByAppendingPathComponent:path];
+//}
 
 - (NSURL*) fileURL {
-    return [NSURL fileURLWithPath: self.absolutePath];
+    if (_fileURL) {
+        return [_fileURL filePathURL];
+    }
+    NSURL* url = [[NSURL alloc] initWithString: _name relativeToURL: [self.parent fileURL]];
+    return url;
 }
 
 - (void) setFileURL:(NSURL *)url {
@@ -205,22 +218,22 @@ typedef enum {
 }
 
 - (NSString*) description {
-    return [NSString stringWithFormat: @"%@ @ '%@'", [super description], self.absolutePath];
+    return [NSString stringWithFormat: @"%@ @ '%@'", [super description], self.fileURL];
 }
 
-- (NSArray*) sortedItemsWithPathExtension: (NSString*) pathExtension {
-    NSMutableArray* result = [[NSMutableArray alloc] init];
-    [self enumerateAllUsingBlock:^(SESourceItem *item, BOOL *stop) {
-        if ([item.relativePath.pathExtension compare: pathExtension options: NSCaseInsensitiveSearch] == NSOrderedSame) {
-            [result addObject: item];
-        }
-    }];
-    [result sortWithOptions:NSSortConcurrent usingComparator:^NSComparisonResult(id obj1, id obj2) {
-        return [[obj1 relativePath] compare: [obj2 relativePath] options: NSCaseInsensitiveSearch];
-    }];
-    
-    return result;
-}
+//- (NSArray*) sortedItemsWithPathExtension: (NSString*) pathExtension {
+//    NSMutableArray* result = [[NSMutableArray alloc] init];
+//    [self enumerateAllUsingBlock:^(SESourceItem *item, BOOL *stop) {
+//        if (! pathExtension || [item.relativePath.pathExtension compare: pathExtension options: NSCaseInsensitiveSearch] == NSOrderedSame) {
+//            [result addObject: item];
+//        }
+//    }];
+//    [result sortWithOptions:NSSortConcurrent usingComparator:^NSComparisonResult(id obj1, id obj2) {
+//        return [[obj1 relativePath] compare: [obj2 relativePath] options: NSCaseInsensitiveSearch];
+//    }];
+//    
+//    return result;
+//}
 
 @end
 
@@ -236,11 +249,10 @@ typedef enum {
 - (id) pasteboardPropertyListForType: (NSString*) pbType {
     
     if (pbType == NSPasteboardTypeString) {
-        return self.absolutePath;
+        return self.fileURL.path;
     }
-    NSURL* url = [NSURL fileURLWithPath: self.absolutePath];
     //NSLog(@"pasteboardPropertyListForType %@ is %@", type, url);
-    return url.absoluteString;
+    return self.fileURL;
 }
 
 
