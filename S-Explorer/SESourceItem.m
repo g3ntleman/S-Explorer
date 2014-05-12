@@ -24,11 +24,18 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 - (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem {
     if (self = [self init]) {
         NSParameterAssert(aURL != nil);
-        _parent = parentItem;
-        _fileURL = [aURL fileReferenceURL];
         NSNumber* typeNo;
         [aURL getResourceValue: &typeNo forKey: NSURLIsDirectoryKey error: NULL];
         _type = [typeNo boolValue] ? SESourceItemTypeFolder : SESourceItemTypeFile;
+
+        _parent = parentItem;
+        
+        _fileURL = aURL;
+        
+        if (! parentItem && _type == SESourceItemTypeFolder) {
+            // Assume root item
+            _fileURL = [aURL fileReferenceURL];
+        }
     }
     return self;
 }

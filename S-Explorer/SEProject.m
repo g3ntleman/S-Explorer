@@ -35,7 +35,12 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 
 - (id) init {
-    return nil;
+    if (self = [super init]) {
+        self.currentLanguage = @"Clojure"; // TODO: Make configurable
+        tabbedSourceItems = @{};
+        allREPLControllers = @{};
+    }
+    return self;
 }
 
 - (id) initForURL: (NSURL*) absoluteDocumentURL withContentsOfURL: (NSURL*) absoluteDocumentContentsURL ofType: (NSString*) typeName error: (NSError**) outError {
@@ -43,46 +48,48 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
     
-- (id) initWithContentsOfURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing *)outError {
+- (id) initWithContentsOfURL: (NSURL*) url ofType:(NSString*) typeName error:(NSError*__autoreleasing*) errorPtr {
+    
+    BOOL isDir = NO;
+    [[NSFileManager defaultManager] fileExistsAtPath: url.path isDirectory: &isDir];
+    if (isDir) {
+        return [self initWithContentsOfURL: [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"seproj"]] ofType: SEProjectDocumentType error: errorPtr];
+    } else {
+        
+        NSURL* sourceURL = nil;
+        
+        // Set the fileURL:
+        if (! [typeName isEqualToString: SEProjectDocumentType]) {
+            // Propably some source file, use the parent folder as project name:
+            NSURL* folderURL = [url URLByDeletingLastPathComponent];
+            NSString* projectFileName = [folderURL.lastPathComponent stringByAppendingPathExtension: @"seproj"];
+            sourceURL = url;
+            url = [folderURL URLByAppendingPathComponent: projectFileName];
+        }
+        
+        
+        if (self = [super initWithContentsOfURL: url ofType: typeName error: errorPtr]) {
+            
+            
+            self.fileURL = url;
 
-    if (self = [super init]) {
-        
-        self.currentLanguage = @"Clojure"; // TODO: Make configurable
-        
-        tabbedSourceItems = @{};
-        allREPLControllers = @{};
-        BOOL isDir = NO;
-        [[NSFileManager defaultManager] fileExistsAtPath: url.path isDirectory: &isDir];
-        if (isDir) {
-            self = [self initWithContentsOfURL: [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"seproj"]] ofType: SEProjectDocumentType error: outError];
-        } else {
+
             NSLog(@"Opening document of type %@", typeName);
             
-            // Set the fileURL:
-            if ([typeName isEqualToString: SEProjectDocumentType]) {
-                self.fileURL = url;
-            } else {
-                // Propably some source file, use the parent folder as project name:
-                NSURL* folderURL = [url URLByDeletingLastPathComponent];
-                NSString* projectFileName = [folderURL.lastPathComponent stringByAppendingPathExtension: @"seproj"];
-                self.fileURL = [folderURL URLByAppendingPathComponent: projectFileName];
-                
-                SESourceItem* singleSourceItem = [self.projectFolderItem childItemWithName: [url lastPathComponent]];
-                
-                // Open singleSourceItem in the first Tab:
+            if (sourceURL) {
+                // Open sourceURL in the first Tab:
+                SESourceItem* singleSourceItem = [self.projectFolderItem childItemWithName: [sourceURL lastPathComponent]];
                 [self setSourceItem: singleSourceItem forTabIndex: 0];
             }
-        }
         
         NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
         [nc addObserver: self selector: @selector(sourceItemEditedStateDidChange:)
                    name: SESourceItemChangedEditedStateNotification
                  object: nil];
-        
+            
+        }
         return self;
     }
-    
-    return nil;
 }
 
 - (void) dealloc {
@@ -198,14 +205,9 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 - (NSMutableDictionary*) projectSettings {
     
     if (! projectSettings) {
-        NSError* error = nil;
-        NSData* projectData = [NSData dataWithContentsOfURL: self.fileURL];
-        if (projectData) {
-            projectSettings = [NSPropertyListSerialization propertyListWithData: projectData options: NSPropertyListMutableContainers format: NULL error: &error];
-        } else {
-            projectSettings = [[NSMutableDictionary alloc] init];
-        }
+        //[self revertDocumentToSaved: self];
     }
+        
     return projectSettings;
 }
 
@@ -293,8 +295,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 - (void) awakeFromNib {
     self.sourceList.doubleAction = @selector(sourceTableDoubleAction:);
-    
-    [self startREPLServerAsNeccessary];
 }
 
 
@@ -476,26 +476,38 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     [self revealInSourceList: nil];
     
+    
+    [self startREPLServerAsNeccessary];
 }
 
 + (BOOL) autosavesInPlace {
     return YES;
 }
 
-- (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError {
+- (NSData*) dataOfType: (NSString*) typeName error: (NSError**) errorPtr {
     // Insert code here to write your document to data of the specified type. If outError != NULL, ensure that you create and set an appropriate error when returning nil.
     // You can also choose to override -fileWrapperOfType:error:, -writeToURL:ofType:error:, or -writeToURL:ofType:forSaveOperation:originalContentsURL:error: instead.
-    NSException *exception = [NSException exceptionWithName:@"UnimplementedMethod" reason:[NSString stringWithFormat:@"%@ is unimplemented", NSStringFromSelector(_cmd)] userInfo:nil];
-    @throw exception;
-    return nil;
+//    NSException *exception = [NSException exceptionWithName:@"UnimplementedMethod" reason:[NSString stringWithFormat:@"%@ is unimplemented", NSStringFromSelector(_cmd)] userInfo:nil];
+//    @throw exception;
+//    return nil;
+    
+    return [NSPropertyListSerialization dataWithPropertyList: projectSettings format: NSPropertyListXMLFormat_v1_0 options: 0 error: errorPtr];
 }
 
-- (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError {
+- (BOOL) readFromData: (NSData*) projectData ofType: (NSString*) typeName error: (NSError**) errorPtr {
     // Insert code here to read your document from the given data of the specified type. If outError != NULL, ensure that you create and set an appropriate error when returning NO.
     // You can also choose to override -readFromFileWrapper:ofType:error: or -readFromURL:ofType:error: instead.
     // If you override either of these, you should also override -isEntireFileLoaded to return NO if the contents are lazily loaded.
-    NSException *exception = [NSException exceptionWithName:@"UnimplementedMethod" reason:[NSString stringWithFormat:@"%@ is unimplemented", NSStringFromSelector(_cmd)] userInfo:nil];
-    @throw exception;
+//    NSException *exception = [NSException exceptionWithName:@"UnimplementedMethod" reason:[NSString stringWithFormat:@"%@ is unimplemented", NSStringFromSelector(_cmd)] userInfo:nil];
+//    @throw exception;
+    
+    if (projectData) {
+        projectSettings = [NSPropertyListSerialization propertyListWithData: projectData options: NSPropertyListMutableContainers format: NULL error: errorPtr];
+    }
+    if (!projectSettings) {
+        projectSettings = [[NSMutableDictionary alloc] init];
+    }
+    
     return YES;
 }
 
