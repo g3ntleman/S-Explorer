@@ -272,8 +272,10 @@ NSSet* SESingleIndentFunctions() {
 }
 
 - (IBAction) insertNewline: (id) sender {
+    [self.textView.undoManager beginUndoGrouping];
     [self.textView insertNewline: sender];
     [self indentInRange: self.textView.selectedRange];
+    [self.textView.undoManager endUndoGrouping];
 }
 
 

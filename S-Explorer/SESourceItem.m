@@ -16,10 +16,18 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     NSMutableArray* _children; // SESourceItem objects
     __weak SESourceItem* _parent;
     NSInteger changeCount;
+    BOOL changeCountValid;
 }
 
 @synthesize content;
 
+- (id) init {
+    if (self = [super init]) {
+        changeCountValid = YES;
+        //[self.undoManager setGroupsByEvent: NO];
+    }
+    return self;
+}
 
 - (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem {
     if (self = [self init]) {
@@ -53,9 +61,9 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 
 
 - (IBAction) saveDocument: (id) sender {
-    //if (self.isDocumentEdited) {
+    if (self.isDocumentEdited) {
         [super saveDocument: sender];
-    //}
+    }
 }
 
 
@@ -246,34 +254,53 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 //}
 
 - (BOOL) isDocumentEdited {
-    return changeCount != 0;
+    return changeCount != 0 || ! changeCountValid;
 }
 
 - (void) setChangeCount: (NSInteger) newCount {
     if (changeCount != newCount) {
         BOOL isDocumentEditedChanged = (changeCount == 0 || newCount == 0);
+        
         changeCount = newCount;
-
+        
         if (isDocumentEditedChanged) {
             [[NSNotificationCenter defaultCenter] postNotificationName: @"SESourceItemChangedEditedState" object: self];
         }
     }
 }
 
+//- (void) invalidateChangeCount {
+//    changeCountValid = NO;
+//    changeCount = 0;
+//}
+
 
 - (void) updateChangeCount: (NSDocumentChangeType) change {
+    
     if (change == NSChangeCleared) {
+        changeCountValid = YES;
         [self setChangeCount: 0];
         return;
     }
-    if (change == NSChangeDone || change == NSChangeRedone) {
-        [self setChangeCount: changeCount+1];
-        return;
-    }
-    
-    if (change == NSChangeUndone) {
-        [self setChangeCount: changeCount-1];
-        return;
+    if (changeCountValid) {
+        if (change == NSChangeDone) {
+            if (changeCount >= 0) {
+                [self setChangeCount: changeCount+1];
+            } else {
+                // User forked prior to save point, stop tracking until next save:
+                changeCountValid = NO;
+            }
+        }
+        
+        if (change == NSChangeRedone) {
+            [self setChangeCount: changeCount+1];
+            return;
+        }
+        
+        if (change == NSChangeUndone) {
+            [self setChangeCount: changeCount-1];
+            return;
+        }
     }
 }
 

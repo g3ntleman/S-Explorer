@@ -58,7 +58,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         
         NSURL* sourceURL = nil;
         
-        // Set the fileURL:
         if (! [typeName isEqualToString: SEProjectDocumentType]) {
             // Propably some source file, use the parent folder as project name:
             NSURL* folderURL = [url URLByDeletingLastPathComponent];
@@ -69,9 +68,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         
         
         if (self = [super initWithContentsOfURL: url ofType: typeName error: errorPtr]) {
-            
-            
-            self.fileURL = url;
 
 
             NSLog(@"Opening document of type %@", typeName);
