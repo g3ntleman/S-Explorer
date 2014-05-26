@@ -23,7 +23,6 @@ typedef enum {
 @property (nonatomic, strong) NSTextStorage* content;
 @property (nonatomic, readonly) NSString* name;
 @property (nonatomic, readonly) SESourceItemType type;
-@property (nonatomic, readonly) NSURL* fileURL;
 
 
 

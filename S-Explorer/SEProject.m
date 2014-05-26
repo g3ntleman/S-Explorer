@@ -764,7 +764,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     NSTableCellView *result = [outlineView makeViewWithIdentifier: [tableColumn identifier] owner: self];
 
     NSURL* fileURL = [item fileURL];
-    result.textField.stringValue = [fileURL lastPathComponent];
+    result.textField.stringValue = [[fileURL filePathURL] lastPathComponent];
     result.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType: fileURL.pathExtension];
     BOOL isItemEdited = [item isDocumentEdited];
     ((SEImageView*)result.imageView).highlighted = isItemEdited;

@@ -12,7 +12,6 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 
 @implementation SESourceItem {
     NSString* _name;
-    NSURL* _fileURL;
     NSMutableArray* _children; // SESourceItem objects
     __weak SESourceItem* _parent;
     NSInteger changeCount;
@@ -30,20 +29,31 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 }
 
 - (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem {
+    NSError* error = nil;
     if (self = [self init]) {
         NSParameterAssert(aURL != nil);
         NSNumber* typeNo;
-        [aURL getResourceValue: &typeNo forKey: NSURLIsDirectoryKey error: NULL];
+        [aURL getResourceValue: &typeNo forKey: NSURLIsDirectoryKey error: &error];
         _type = [typeNo boolValue] ? SESourceItemTypeFolder : SESourceItemTypeFile;
-
         _parent = parentItem;
+
+        self.fileURL = aURL;
+        if (_type == SESourceItemTypeFile) {
+            NSString* theType;
+            [aURL getResourceValue:&theType forKey:NSURLTypeIdentifierKey error:&error];
+            self.fileType = theType;
+        }
         
-        _fileURL = aURL;
+        NSDate* modDate = nil;
+        [aURL getResourceValue: &modDate forKey: NSURLContentModificationDateKey error: &error];
+
+        self.fileModificationDate = modDate;
         
         if (! parentItem && _type == SESourceItemTypeFolder) {
             // Assume root item
-            _fileURL = [aURL fileReferenceURL];
+            self.fileURL = [aURL fileReferenceURL];
         }
+        NSAssert(self.fileModificationDate, @"No file mod date set after init.");
     }
     return self;
 }
@@ -54,23 +64,68 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 
 - (NSString*) name {
     if (! _name) {
-        _name = [_fileURL lastPathComponent];
+        _name = [self.fileURL lastPathComponent];
     }
     return _name;
 }
+
+//+ (BOOL) canConcurrentlyReadDocumentsOfType: (NSString*) typeName {
+//    return NO;
+//}
 
 
 - (IBAction) saveDocument: (id) sender {
     if (self.isDocumentEdited) {
         [super saveDocument: sender];
+        NSAssert(self.fileModificationDate, @"No file mod date set after save.");
     }
 }
 
+//
+//- (void) saveDocumentWithDelegate: delegate didSaveSelector: (SEL) selector contextInfo: (void*) info {
+//    if (self.fileURL != nil) {
+////        for (id editor in [_activeEditors copy])
+////            [editor commitEditing];
+//        
+//        // Check if file has been changed by another process
+//        NSFileManager * fileManager = [NSFileManager defaultManager];
+//        NSString * path = [_fileURL path];
+//        NSDictionary * attributes = [fileManager attributesOfItemAtPath: path error: NULL];
+//        NSDate * dateModified = [attributes objectForKey:NSFileModificationDate];
+//        if (attributes != nil && ![dateModified isEqualToDate: self.fileModificationDate]) {
+//            int result = NSRunAlertPanel([self displayName],
+//                                         @"Another user or process has changed this document's file on disk.\n\nIf you save now, those changes will be lost. Save anyway?",
+//                                         @"Don't Save", @"Save", nil);
+//            if (result == NSAlertDefaultReturn) {
+//                // The user canceled the save operation.
+//                if ([delegate respondsToSelector:selector])
+//                {
+//                    void (*delegateMethod)(id, SEL, id, BOOL, void *);
+//                    delegateMethod = (void (*)(id, SEL, id, BOOL, void *))[delegate methodForSelector:selector];
+//                    delegateMethod(delegate, selector, self, NO, info);
+//                }
+//                return;
+//            }
+//        }
+//        
+//        [self saveToURL: self.fileURL
+//                 ofType: self.fileType
+//       forSaveOperation: NSSaveOperation
+//               delegate: delegate
+//        didSaveSelector: selector
+//            contextInfo: info];
+//    } else {
+//        [self runModalSavePanelForSaveOperation:NSSaveOperation
+//                                       delegate:delegate
+//                                didSaveSelector:selector
+//                                    contextInfo:info];
+//    }
+//}
 
 - (NSTextStorage*) content {
     if (! content) {
         NSError* readError = nil;
-        [self readFromURL: self.fileURL ofType: @"public.text" error:&readError];
+        [self readFromURL: self.fileURL ofType: self.fileType error: &readError];
         _lastError = readError;
     }
     return content;
@@ -86,6 +141,14 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
         [child enumerateAllUsingBlock: block stop: stopPtr];
     }
 }
+
+//- (BOOL) keepBackupFile {
+//    return NO;
+//}
+//
+//- (NSURL *)backupFileURL {
+//    return nil;
+//}
 
 //- (NSString*) relativePath {
 //    if (_fileURL) {
@@ -134,6 +197,17 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 
 - (BOOL) writeToURL: (NSURL*) url ofType: (NSString*) typeName error: (NSError *__autoreleasing *) outError {
     BOOL success = [self.content.string writeToURL: url atomically: NO encoding: NSUTF8StringEncoding error: outError];
+    if (success) {
+        NSError* error2 = nil;
+        NSDictionary * attributes = [[NSFileManager defaultManager] attributesOfItemAtPath: url.path error: &error2];
+        if (error2) {
+            if (outError) *outError = error2;
+            return NO;
+        }
+        if (attributes) {
+            self.fileModificationDate = attributes[NSFileModificationDate];
+        }
+    }
     return success;
 }
 
@@ -222,18 +296,19 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 //    return [parent.absolutePath stringByAppendingPathComponent:path];
 //}
 
-- (NSURL*) fileURL {
-    if (_fileURL) {
-        return [_fileURL filePathURL];
-    }
-    NSURL* url = [[NSURL alloc] initWithString: _name relativeToURL: [self.parent fileURL]];
-    return url;
-}
+//- (NSURL*) fileURL {
+//    if (! _fileURL) {
+//        //    if (_fileURL) {
+//        //        return [_fileURL filePathURL];
+//        //    }
+//        if (_name.length && self.parent.fileURL) {
+//            _fileURL = [[NSURL alloc] initWithString: _name relativeToURL: self.parent.fileURL];
+//        }
+//    }
+//    return _fileURL;
+//}
 
-- (void) setFileURL:(NSURL *)url {
-    // File URLs cannot be changed. Create a new instance instead!
-    NSParameterAssert([url isEqual: self.fileURL]);
-}
+
 
 - (NSString*) description {
     return [NSString stringWithFormat: @"%@ @ '%@'", [super description], self.fileURL];
@@ -269,10 +344,6 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     }
 }
 
-//- (void) invalidateChangeCount {
-//    changeCountValid = NO;
-//    changeCount = 0;
-//}
 
 
 - (void) updateChangeCount: (NSDocumentChangeType) change {
