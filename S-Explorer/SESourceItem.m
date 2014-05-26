@@ -128,7 +128,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     if (contentString) {
         content = [[NSTextStorage alloc] initWithString: contentString];
     }
-    self.fileType = typeName;
+    //self.fileType = typeName;
     return contentString != nil;
 }
 
