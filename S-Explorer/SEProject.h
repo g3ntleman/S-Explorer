@@ -52,6 +52,8 @@ extern NSString* SEProjectDocumentType;
 - (IBAction) sourceTableAction: (id) sender;
 - (IBAction) revertCurrentSourceItemToSaved: (id) sender;
 - (IBAction) saveCurrentSourceItem: (id) sender;
+- (IBAction) saveAllSourceItems: (id) sender;
+
 - (IBAction) runProject: (id) sender;
 - (IBAction) revealInFinder: (id) sender;
 

@@ -104,7 +104,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return 0;
 }
 
-- (void) saveAllSourceItems {
+- (IBAction) saveAllSourceItems: (id) sender {
     [self.projectFolderItem enumerateAllUsingBlock:^(SESourceItem* item, BOOL* stop) {
         if (item.isDocumentEdited) {
             [item saveDocument: self];
@@ -651,7 +651,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 - (void) canCloseDocumentWithDelegate: (id) delegate shouldCloseSelector: (SEL)shouldCloseSelector contextInfo: (void*) contextInfo {
     NSLog(@"closing sourceItems...");
-    [self saveAllSourceItems];
+    [self saveAllSourceItems: nil];
     
     [super canCloseDocumentWithDelegate:delegate shouldCloseSelector:shouldCloseSelector contextInfo:contextInfo];
 }
