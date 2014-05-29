@@ -60,6 +60,8 @@
 		8DD87685187E0B0F000D4B8C /* LVPathWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DD87684187E0B0F000D4B8C /* LVPathWatcher.m */; };
 		8DE762FD17FB669800CD0A42 /* r7rs-overview.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8DE762FC17FB669800CD0A42 /* r7rs-overview.pdf */; };
 		8DE762FF17FB66A900CD0A42 /* r7rs-standard.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8DE762FE17FB66A900CD0A42 /* r7rs-standard.pdf */; };
+		8DE794481937F38B0093DCCF /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = 8DE794461937F38B0093DCCF /* folder.png */; };
+		8DE794491937F38B0093DCCF /* folder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8DE794471937F38B0093DCCF /* folder@2x.png */; };
 		8DEB1AA217CF7BEC0088C7C1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8DEB1AA117CF7BEC0088C7C1 /* README.md */; };
 		8DEE2AC717D434EE005BEDD0 /* SEDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE2AC517D434EE005BEDD0 /* SEDocumentController.m */; };
 		8DF3C39617CFA3D200C75197 /* OPUtilityFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DF3C39517CFA3D200C75197 /* OPUtilityFunctions.m */; };
@@ -165,6 +167,9 @@
 		8DD87684187E0B0F000D4B8C /* LVPathWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LVPathWatcher.m; sourceTree = "<group>"; };
 		8DE762FC17FB669800CD0A42 /* r7rs-overview.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "r7rs-overview.pdf"; sourceTree = "<group>"; };
 		8DE762FE17FB66A900CD0A42 /* r7rs-standard.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "r7rs-standard.pdf"; sourceTree = "<group>"; };
+		8DE794461937F38B0093DCCF /* folder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = folder.png; sourceTree = "<group>"; };
+		8DE794471937F38B0093DCCF /* folder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "folder@2x.png"; sourceTree = "<group>"; };
+		8DE7944A1937F5750093DCCF /* S-Explorer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "S-Explorer.entitlements"; sourceTree = "<group>"; };
 		8DEB1AA117CF7BEC0088C7C1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = "S-Explorer/README.md"; sourceTree = "<group>"; };
 		8DEE2AC417D434EE005BEDD0 /* SEDocumentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = SEDocumentController.h; sourceTree = "<group>"; };
 		8DEE2AC517D434EE005BEDD0 /* SEDocumentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEDocumentController.m; sourceTree = "<group>"; };
@@ -273,6 +278,7 @@
 		8D60424F173BE60800149409 /* S-Explorer */ = {
 			isa = PBXGroup;
 			children = (
+				8DE7944A1937F5750093DCCF /* S-Explorer.entitlements */,
 				8D85E471182C8AF60096C76E /* Vendor */,
 				8D8F9AFA17EBEF8300299D24 /* Resources */,
 				8DCBE48A17C76DDF00A872A7 /* Helpers */,
@@ -341,6 +347,8 @@
 		8D8F9AFA17EBEF8300299D24 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8DE794461937F38B0093DCCF /* folder.png */,
+				8DE794471937F38B0093DCCF /* folder@2x.png */,
 				8DE762FC17FB669800CD0A42 /* r7rs-overview.pdf */,
 				8DE762FE17FB66A900CD0A42 /* r7rs-standard.pdf */,
 				8D60FFE417EC58B600F14B50 /* Templates */,
@@ -424,11 +432,18 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = SE;
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = Cocoanuts;
 				TargetAttributes = {
 					8D17FE2517EA72A000883285 = {
 						TestTargetID = 8D604245173BE60800149409;
+					};
+					8D604245173BE60800149409 = {
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
 					};
 				};
 			};
@@ -472,11 +487,13 @@
 				8DB9855B17EA73E600DC72F8 /* SESavePanel.xib in Resources */,
 				8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */,
 				8D16399817C57FAE000DD491 /* S-Explorer.iconset in Resources */,
+				8DE794491937F38B0093DCCF /* folder@2x.png in Resources */,
 				8DCBE48F17C9B4CD00A872A7 /* scheme-indexer.scm in Resources */,
 				8D5C020418688E69007EBFAA /* Scratchpad.clj in Resources */,
 				8DE762FF17FB66A900CD0A42 /* r7rs-standard.pdf in Resources */,
 				8D4DF83317F5AAF600BC0773 /* chibi-repl-server.scm in Resources */,
 				8DEB1AA217CF7BEC0088C7C1 /* README.md in Resources */,
+				8DE794481937F38B0093DCCF /* folder.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -591,6 +608,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
@@ -618,6 +636,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
@@ -698,6 +717,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "S-Explorer/S-Explorer-Prefix.pch";
@@ -718,6 +738,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "S-Explorer/S-Explorer-Prefix.pch";

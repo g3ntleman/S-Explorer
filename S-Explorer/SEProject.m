@@ -687,17 +687,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return [item children][index];
 }
 
-//- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item {
-//    
-//    BOOL isItemEdited = [item isDocumentEdited];
-//    if (isItemEdited) {
-//        ((SEImageView*)[cell imageView]).highlighted = isItemEdited;
-//    }
-//
-//    
-//}
-
-
 - (id) outlineView: (NSOutlineView*) outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
     
     //NSLog(@"Finding objectValue for %@", item);
@@ -759,13 +748,21 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return (SESourceItem*)item;
 }
 
-- (NSView*) outlineView: (NSOutlineView*) outlineView viewForTableColumn: (NSTableColumn*) tableColumn item:(id) item {
+- (NSView*) outlineView: (NSOutlineView*) outlineView viewForTableColumn: (NSTableColumn*) tableColumn item:(SESourceItem*) item {
     
     NSTableCellView *result = [outlineView makeViewWithIdentifier: [tableColumn identifier] owner: self];
 
     NSURL* fileURL = [item fileURL];
     result.textField.stringValue = [[fileURL filePathURL] lastPathComponent];
-    result.imageView.image = [[NSWorkspace sharedWorkspace] iconForFileType: fileURL.pathExtension];
+    NSImage* image;
+    
+    if (item.type == SESourceItemTypeFolder) {
+        image = [NSImage imageNamed: @"folder"];
+    } else {
+        NSString* path = fileURL.path;
+        image = [[NSWorkspace sharedWorkspace] iconForFile: path];
+    }
+    result.imageView.image = image;
     BOOL isItemEdited = [item isDocumentEdited];
     ((SEImageView*)result.imageView).highlighted = isItemEdited;
     

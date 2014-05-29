@@ -63,14 +63,12 @@
 //  Bad data should not cause any problems, however if it is unable to deserialise
 //  anything from the source, it may return a nil, which you need to check for.
 
-+ (NSData*) encodedDataFromObject: (id <OPBencoding>) object;
+- (NSData*) encodedDataFromObject: (id<OPBencoding>) object;
 
 + (instancetype) decoderForData: (NSData*) sourceData mutableContainers: (BOOL) mutable;
 + (instancetype) decoderForData: (NSData*) sourceData;
 
 - (id <OPBencoding>) objectFromEncodedData: (NSData*) sourceData;
-
-- (NSData*) encodedDataFromObject: (id <OPBencoding>) object;
 
 - (id) decodeObject;
 

@@ -1,9 +1,33 @@
-# General
+# OSX
 .DS_Store
 
-# Xcode
-xcuserdata
-*.xccheckout
-DerivedData/
-Build/
+# Thumbnails
+._*
 
+# Pods 
+Podfile.lock
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Xcode
+build/*
+Pods
+*.build
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+profile
+*.moved-aside
+*.xccheckout
+
+# When using Auto Versioning via custom script
+
+AutoVersionNumbers.h

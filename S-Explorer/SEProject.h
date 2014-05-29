@@ -17,7 +17,7 @@ extern NSString* SEProjectDocumentType;
 
 @class SESourceItem;
 
-@interface SEProject : NSDocument <NSOutlineViewDataSource, NSUserInterfaceValidations, NSTabViewDelegate>
+@interface SEProject : NSDocument <NSOutlineViewDataSource, NSOutlineViewDelegate, NSUserInterfaceValidations, NSTabViewDelegate>
 
 @property (nonatomic, readonly) SEnREPL* nREPL;
 @property (readonly, nonatomic) SEREPLViewController* topREPLController;
