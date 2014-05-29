@@ -87,12 +87,12 @@
 		8D16399717C57FAE000DD491 /* S-Explorer.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = "S-Explorer.iconset"; path = "Resources/S-Explorer.iconset"; sourceTree = "<group>"; };
 		8D16399A17C6BC1D000DD491 /* SEApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEApplicationDelegate.h; sourceTree = "<group>"; };
 		8D16399B17C6BC1D000DD491 /* SEApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEApplicationDelegate.m; sourceTree = "<group>"; };
-		8D17FE2617EA72A000883285 /* S-Explorer Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "S-Explorer Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D17FE2617EA72A000883285 /* S-Explorer-Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "S-Explorer-Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D17FE2717EA72A000883285 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		8D17FE2B17EA72A000883285 /* S-Explorer Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "S-Explorer Tests-Info.plist"; sourceTree = "<group>"; };
+		8D17FE2B17EA72A000883285 /* S-Explorer-Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "S-Explorer-Tests-Info.plist"; sourceTree = "<group>"; };
 		8D17FE2D17EA72A000883285 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8D17FE2F17EA72A000883285 /* S_Explorer_Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = S_Explorer_Tests.m; sourceTree = "<group>"; };
-		8D17FE3117EA72A000883285 /* S-Explorer Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "S-Explorer Tests-Prefix.pch"; sourceTree = "<group>"; };
+		8D17FE3117EA72A000883285 /* S-Explorer-Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "S-Explorer-Tests-Prefix.pch"; sourceTree = "<group>"; };
 		8D27BFF21766C59C00F1F8FA /* SESyntaxParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SESyntaxParser.h; sourceTree = "<group>"; };
 		8D27BFF31766C59C00F1F8FA /* SESyntaxParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SESyntaxParser.m; sourceTree = "<group>"; };
 		8D2AAB65177A8E50008F07C4 /* NoodleLineNumberMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = NoodleLineNumberMarker.h; sourceTree = "<group>"; };
@@ -215,7 +215,7 @@
 			name = NoodleLineNumberView;
 			sourceTree = "<group>";
 		};
-		8D17FE2917EA72A000883285 /* S-Explorer Tests */ = {
+		8D17FE2917EA72A000883285 /* S-Explorer-Tests */ = {
 			isa = PBXGroup;
 			children = (
 				8D17FE2F17EA72A000883285 /* S_Explorer_Tests.m */,
@@ -223,15 +223,15 @@
 				8D7E69561829E44300F320A9 /* SEnREPLConnection_Tests.m */,
 				8D17FE2A17EA72A000883285 /* Supporting Files */,
 			);
-			path = "S-Explorer Tests";
+			path = "S-Explorer-Tests";
 			sourceTree = "<group>";
 		};
 		8D17FE2A17EA72A000883285 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				8D17FE2B17EA72A000883285 /* S-Explorer Tests-Info.plist */,
+				8D17FE2B17EA72A000883285 /* S-Explorer-Tests-Info.plist */,
 				8D17FE2C17EA72A000883285 /* InfoPlist.strings */,
-				8D17FE3117EA72A000883285 /* S-Explorer Tests-Prefix.pch */,
+				8D17FE3117EA72A000883285 /* S-Explorer-Tests-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -242,7 +242,7 @@
 				8DEB1AA117CF7BEC0088C7C1 /* README.md */,
 				8D60424F173BE60800149409 /* S-Explorer */,
 				8D604250173BE60800149409 /* Supporting Files */,
-				8D17FE2917EA72A000883285 /* S-Explorer Tests */,
+				8D17FE2917EA72A000883285 /* S-Explorer-Tests */,
 				8D604248173BE60800149409 /* Frameworks */,
 				8D604247173BE60800149409 /* Products */,
 			);
@@ -252,7 +252,7 @@
 			isa = PBXGroup;
 			children = (
 				8D604246173BE60800149409 /* S-Explorer.app */,
-				8D17FE2617EA72A000883285 /* S-Explorer Tests.xctest */,
+				8D17FE2617EA72A000883285 /* S-Explorer-Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -382,9 +382,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D17FE2517EA72A000883285 /* S-Explorer Tests */ = {
+		8D17FE2517EA72A000883285 /* S-Explorer-Tests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8D17FE3417EA72A000883285 /* Build configuration list for PBXNativeTarget "S-Explorer Tests" */;
+			buildConfigurationList = 8D17FE3417EA72A000883285 /* Build configuration list for PBXNativeTarget "S-Explorer-Tests" */;
 			buildPhases = (
 				8D17FE2217EA72A000883285 /* Sources */,
 				8D17FE2317EA72A000883285 /* Frameworks */,
@@ -395,9 +395,9 @@
 			dependencies = (
 				8D17FE3317EA72A000883285 /* PBXTargetDependency */,
 			);
-			name = "S-Explorer Tests";
-			productName = "S-Explorer Tests";
-			productReference = 8D17FE2617EA72A000883285 /* S-Explorer Tests.xctest */;
+			name = "S-Explorer-Tests";
+			productName = "S-Explorer-Tests";
+			productReference = 8D17FE2617EA72A000883285 /* S-Explorer-Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		8D604245173BE60800149409 /* S-Explorer */ = {
@@ -445,7 +445,7 @@
 			projectRoot = "";
 			targets = (
 				8D604245173BE60800149409 /* S-Explorer */,
-				8D17FE2517EA72A000883285 /* S-Explorer Tests */,
+				8D17FE2517EA72A000883285 /* S-Explorer-Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -596,7 +596,7 @@
 					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "S-Explorer Tests/S-Explorer Tests-Prefix.pch";
+				GCC_PREFIX_HEADER = "S-Explorer-Tests/S-Explorer-Tests-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -604,7 +604,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = "S-Explorer Tests/S-Explorer Tests-Info.plist";
+				INFOPLIST_FILE = "S-Explorer-Tests/S-Explorer-Tests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -624,11 +624,11 @@
 					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "S-Explorer Tests/S-Explorer Tests-Prefix.pch";
+				GCC_PREFIX_HEADER = "S-Explorer-Tests/S-Explorer-Tests-Prefix.pch";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = "S-Explorer Tests/S-Explorer Tests-Info.plist";
+				INFOPLIST_FILE = "S-Explorer-Tests/S-Explorer-Tests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -737,7 +737,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8D17FE3417EA72A000883285 /* Build configuration list for PBXNativeTarget "S-Explorer Tests" */ = {
+		8D17FE3417EA72A000883285 /* Build configuration list for PBXNativeTarget "S-Explorer-Tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8D17FE3517EA72A000883285 /* Debug */,
