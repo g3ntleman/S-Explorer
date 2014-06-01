@@ -32,7 +32,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 @synthesize projectSettings;
 @synthesize currentLanguage;
 @synthesize projectFolderItem;
-
+@synthesize currentSourceItem = _currentSourceItem;
 
 - (id) init {
     if (self = [super init]) {
@@ -74,8 +74,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             
             if (sourceURL) {
                 // Open sourceURL in the first Tab:
-                SESourceItem* singleSourceItem = [self.projectFolderItem childItemWithName: [sourceURL lastPathComponent]];
-                [self setSourceItem: singleSourceItem forTabIndex: 0];
+                self.currentSourceItem = [self.projectFolderItem childItemWithName: [sourceURL lastPathComponent]];
             }
         
         NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
@@ -140,7 +139,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
  */
 - (void) setSourceItem: (SESourceItem*) item forTabIndex: (NSUInteger) index {
     
-    NSParameterAssert([item isTextItem]);
+    NSParameterAssert(item == nil || [item isTextItem]);
     NSParameterAssert(index<self.sourceTabView.numberOfTabViewItems);
     NSNumber* indexNumber = @(index);
     
@@ -183,19 +182,26 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 - (SESourceItem*) currentSourceItem {
-    NSUInteger selectedTabViewIndex = [sourceTabView indexOfSelectedTabViewItem];
-    SESourceItem* sourceItem = self.tabbedSourceItems[@(selectedTabViewIndex)];
-    return sourceItem;
+    if (! _currentSourceItem && sourceTabView) {
+        NSUInteger selectedTabViewIndex = [sourceTabView indexOfSelectedTabViewItem];
+        _currentSourceItem = self.tabbedSourceItems[@(selectedTabViewIndex)];
+    }
+    return _currentSourceItem;
+}
+
+- (void) displayCurrentSourceItem {
+    if (sourceList && [self.currentSourceItem isTextItem]) {
+        NSUInteger tabNo = [sourceTabView indexOfSelectedTabViewItem];
+        [self setSourceItem: self.currentSourceItem forTabIndex: tabNo];
+        self.uiSettings[@"selectedSourceTab"] = @(tabNo);
+        [self uiSettingsNeedSave];
+    }
 }
 
 
-
 - (void) setCurrentSourceItem: (SESourceItem*) sourceItem {
-    
-    NSUInteger tabNo = [sourceTabView indexOfSelectedTabViewItem];
-    [self setSourceItem: sourceItem forTabIndex: tabNo];
-    self.uiSettings[@"selectedSourceTab"] = @(tabNo);
-    [self uiSettingsNeedSave];
+    _currentSourceItem = sourceItem;
+    [self displayCurrentSourceItem];
 }
 
 - (NSMutableDictionary*) projectSettings {
@@ -455,6 +461,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         }];
         self.currentSourceItem = firstItem;
     }
+    [self displayCurrentSourceItem];
     
     
 //    // Make sure the displayed source is selected in source list:

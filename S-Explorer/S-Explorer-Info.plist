@@ -12,7 +12,7 @@
 				<string>seproj</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string></string>
+			<string>doc_clojure</string>
 			<key>CFBundleTypeName</key>
 			<string>S-Explorer Project</string>
 			<key>CFBundleTypeRole</key>
@@ -39,17 +39,13 @@
 			<array/>
 			<key>CFBundleTypeName</key>
 			<string>Scheme Source</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>????</string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>org.cocoanuts.scheme-source</string>
-				<string>public.plain-text</string>
 				<string>public.source-code</string>
+				<string>public.plain-text</string>
 				<string>public.item</string>
 			</array>
 			<key>LSTypeIsPackage</key>
@@ -63,22 +59,18 @@
 				<string>clj</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string></string>
+			<string>doc_clojure</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array/>
 			<key>CFBundleTypeName</key>
 			<string>Clojure Source</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>????</string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>org.cocoanuts.clojure-source</string>
-				<string>public.plain-text</string>
 				<string>public.source-code</string>
+				<string>public.plain-text</string>
 				<string>public.item</string>
 			</array>
 			<key>LSTypeIsPackage</key>
@@ -118,11 +110,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.1</string>
+	<string>0.2</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>2</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
 	<key>LSMinimumSystemVersion</key>
@@ -501,7 +493,7 @@
 				<key>StaticList</key>
 				<array>
 					<string>*</string>
-					<string>*&apos;</string>
+					<string>*'</string>
 					<string>*1</string>
 					<string>*2</string>
 					<string>*3</string>
@@ -544,9 +536,9 @@
 					<string>*verbose-defrecords*</string>
 					<string>*warn-on-reflection*</string>
 					<string>+</string>
-					<string>+&apos;</string>
+					<string>+'</string>
 					<string>-</string>
-					<string>-&apos;</string>
+					<string>-'</string>
 					<string>-&gt;</string>
 					<string>-&gt;&gt;</string>
 					<string>-&gt;ArrayChunk</string>
@@ -714,7 +706,7 @@
 					<string>cycle</string>
 					<string>d</string>
 					<string>dec</string>
-					<string>dec&apos;</string>
+					<string>dec'</string>
 					<string>decimal?</string>
 					<string>declare</string>
 					<string>default-data-readers</string>
@@ -850,7 +842,7 @@
 					<string>import</string>
 					<string>in-ns</string>
 					<string>inc</string>
-					<string>inc&apos;</string>
+					<string>inc'</string>
 					<string>inc-report-counter</string>
 					<string>index</string>
 					<string>init-proxy</string>
@@ -1311,7 +1303,7 @@
 			<key>WelcomeMessage</key>
 			<string>Welcome to Clojure!
     Docs: (doc function-name-here)
-          (find-doc &quot;part-of-name-here&quot;)
+          (find-doc "part-of-name-here")
   Source: (source function-name-here)</string>
 		</dict>
 	</dict>
@@ -1323,6 +1315,21 @@
 	<string>NSApplication</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.source-code</string>
+			</array>
+			<key>UTTypeIdentifier</key>
+			<string>public-cojure-source</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>clj</string>
+				</array>
+			</dict>
+		</dict>
 		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
