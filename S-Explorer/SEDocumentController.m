@@ -60,11 +60,21 @@
 //                  }];
 }
 
-//- (id) makeDocumentForURL:(NSURL *)urlOrNil withContentsOfURL:(NSURL *)contentsURL ofType:(NSString *)typeName error:(NSError **)outError {
-//    return [super makeDocumentForURL: urlOrNil withContentsOfURL: contentsURL ofType:typeName error: outError];
-//}
-
-- (void)openDocumentWithContentsOfURL:(NSURL *)url display:(BOOL)displayDocument completionHandler:(void (^)(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error))completionHandler {
+- (void) openDocumentWithContentsOfURL: (NSURL*) url display: (BOOL) displayDocument completionHandler: (void (^)(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error)) completionHandler {
+    
+    // Find the project for the url given:
+    // Check, if we are trying to open a file in a project that is already open:
+    NSString* urlPath = url.path;
+    for (SEProject* project in self.documents) {
+        NSString* projectPath = project.projectFolderItem.fileURL.path;
+        if ([urlPath hasPrefix: projectPath]) {
+            // Do not open any document, just show an existing one:
+            NSString* filePath = [urlPath substringFromIndex: projectPath.length];
+            SESourceItem* sourceItem = [[project projectFolderItem] childWithPath: filePath];
+            [project openSourceItem: sourceItem];
+            return;
+        }
+    }
     
     NSFileManager *fm = [NSFileManager defaultManager];
     BOOL isDir;
@@ -82,10 +92,12 @@
     if (isDir) {
         url = [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"seproj"]];
     }
+    
+    // Project found. url now points to a project file.
 
     [super openDocumentWithContentsOfURL:url display:displayDocument completionHandler: ^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
         completionHandler(document, documentWasAlreadyOpen, error); // "super" call
-        // Now that the project is open, show the SESourceItem for filename:
+        // Now that the project is open, show the SESourceItem for filename (if any):
         SEProject* project = (SEProject*)document;
         if (filename.length) {
             SESourceItem* sourceItem = [[project projectFolderItem] childItemWithName: filename];
@@ -93,8 +105,6 @@
         }
     }];
 }
-
-
 
 
 - (IBAction) newDocument: (id) sender {
