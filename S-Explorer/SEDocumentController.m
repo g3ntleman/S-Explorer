@@ -60,6 +60,42 @@
 //                  }];
 }
 
+//- (id) makeDocumentForURL:(NSURL *)urlOrNil withContentsOfURL:(NSURL *)contentsURL ofType:(NSString *)typeName error:(NSError **)outError {
+//    return [super makeDocumentForURL: urlOrNil withContentsOfURL: contentsURL ofType:typeName error: outError];
+//}
+
+- (void)openDocumentWithContentsOfURL:(NSURL *)url display:(BOOL)displayDocument completionHandler:(void (^)(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error))completionHandler {
+    
+    NSFileManager *fm = [NSFileManager defaultManager];
+    BOOL isDir;
+    NSString* filename = nil;
+    if ([fm fileExistsAtPath: [url path] isDirectory: &isDir]) {
+        if (! isDir && ! [[url pathExtension] isEqualToString: @"seproj"]) {
+        // We are trying to open a file (not a project file or directory):
+            filename = [url lastPathComponent];
+            url = [url URLByDeletingLastPathComponent];
+            isDir = YES;
+        }
+    }
+    NSLog(@"Opening project at folder %@", url);
+    
+    if (isDir) {
+        url = [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"seproj"]];
+    }
+
+    [super openDocumentWithContentsOfURL:url display:displayDocument completionHandler: ^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
+        completionHandler(document, documentWasAlreadyOpen, error); // "super" call
+        // Now that the project is open, show the SESourceItem for filename:
+        SEProject* project = (SEProject*)document;
+        if (filename.length) {
+            SESourceItem* sourceItem = [[project projectFolderItem] childItemWithName: filename];
+            [project openSourceItem: sourceItem];
+        }
+    }];
+}
+
+
+
 
 - (IBAction) newDocument: (id) sender {
     

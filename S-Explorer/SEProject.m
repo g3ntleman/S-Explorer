@@ -58,17 +58,16 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         
         NSURL* sourceURL = nil;
         
-        if (! [typeName isEqualToString: SEProjectDocumentType]) {
-            // Propably some source file, use the parent folder as project name:
-            NSURL* folderURL = [url URLByDeletingLastPathComponent];
-            NSString* projectFileName = [folderURL.lastPathComponent stringByAppendingPathExtension: @"seproj"];
-            sourceURL = url;
-            url = [folderURL URLByAppendingPathComponent: projectFileName];
-        }
+//        if (! [typeName isEqualToString: SEProjectDocumentType]) {
+//            // Propably some source file, use the parent folder as project name:
+//            NSURL* folderURL = [url URLByDeletingLastPathComponent];
+//            NSString* projectFileName = [folderURL.lastPathComponent stringByAppendingPathExtension: @"seproj"];
+//            sourceURL = url;
+//            url = [folderURL URLByAppendingPathComponent: projectFileName];
+//        }
         
         
         if (self = [super initWithContentsOfURL: url ofType: typeName error: errorPtr]) {
-
 
             NSLog(@"Opening document of type %@", typeName);
             
@@ -202,6 +201,18 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 - (void) setCurrentSourceItem: (SESourceItem*) sourceItem {
     _currentSourceItem = sourceItem;
     [self displayCurrentSourceItem];
+}
+
+- (void) openSourceItem: (SESourceItem*) item {
+    NSUInteger tabIndex = [self indexOfTabViewForItem: item];
+    if (tabIndex != NSNotFound) {
+        [self.sourceTabView selectTabViewItemAtIndex: tabIndex];
+        return;
+    }
+    
+    self.currentSourceItem = item;
+    
+    [self revealInSourceList: self];
 }
 
 - (NSMutableDictionary*) projectSettings {
@@ -403,6 +414,15 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         SESourceItem* sourceItem = self.tabbedSourceItems[sourceTabView.selectedTabViewItem.identifier];
         [self setCurrentSourceItem: sourceItem];
     }
+}
+
+- (NSUInteger) indexOfTabViewForItem: (SESourceItem*) item {
+    for (NSNumber* tabNo in self.tabbedSourceItems) {
+        if ([self.tabbedSourceItems[tabNo] isEqual: item]) {
+            return tabNo.integerValue;
+        }
+    }
+    return NSNotFound;
 }
 
 - (void) expandSourceListToItem: (SESourceItem*) item {

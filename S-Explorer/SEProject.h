@@ -62,4 +62,6 @@ extern NSString* SEProjectDocumentType;
 
 - (void) startREPLServerAsNeccessary;
 
+- (void) openSourceItem: (SESourceItem*) item;
+
 @end
