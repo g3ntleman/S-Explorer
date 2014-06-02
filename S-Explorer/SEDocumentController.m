@@ -71,6 +71,9 @@
             // Do not open any document, just show an existing one:
             NSString* filePath = [urlPath substringFromIndex: projectPath.length];
             SESourceItem* sourceItem = [[project projectFolderItem] childWithPath: filePath];
+            if (displayDocument) {
+                [project showWindows];
+            }
             [project openSourceItem: sourceItem];
             return;
         }
