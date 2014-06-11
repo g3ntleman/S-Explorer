@@ -5,7 +5,4 @@
 #pod 'AFNetworking'
 #end
 
-target "S-Explorer-Tests" do
-    pod 'XCTestAsync'
-end
 

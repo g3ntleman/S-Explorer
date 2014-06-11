@@ -16,6 +16,79 @@
 
 @end
 
+#import <sys/socket.h>
+#import <netinet/in.h>
+#import <net/if.h>
+#import <sys/socket.h>
+#import <sys/types.h>
+#import <sys/ioctl.h>
+
+#define SOCKET_NULL -1
+
+/**
+ * Returns an unused socket port or -1 on failure.
+ */
+int OPGetUnusedSocketPort() {
+    
+    int socketFD = socket(AF_INET, SOCK_STREAM, 0);
+    
+    if (socketFD == SOCKET_NULL) {
+        NSString *reason = @"Error in socket() function";
+        NSLog(@"Finding free port: %@", reason);
+        return SOCKET_NULL;
+    }
+    
+    int status;
+    
+    // Set socket options
+    
+    status = fcntl(socketFD, F_SETFL, O_NONBLOCK);
+    if (status == -1) {
+        NSString *reason = @"Error enabling non-blocking IO on socket (fcntl)";
+        NSLog(@"Finding free port: %@", reason);
+        close(socketFD);
+        return SOCKET_NULL;
+    }
+    
+    int reuseOn = 1;
+    status = setsockopt(socketFD, SOL_SOCKET, SO_REUSEADDR, &reuseOn, sizeof(reuseOn));
+    if (status == -1) {
+        NSString *reason = @"Error enabling address reuse (setsockopt)";
+        NSLog(@"Finding free port: %@", reason);
+        close(socketFD);
+        return SOCKET_NULL;
+    }
+    
+    struct sockaddr_in sockaddr4;
+    memset(&sockaddr4, 0, sizeof(sockaddr4));
+    sockaddr4.sin_len         = sizeof(sockaddr4);
+    sockaddr4.sin_family      = AF_INET;
+    sockaddr4.sin_port        = htons(0);
+    sockaddr4.sin_addr.s_addr = htonl(INADDR_ANY);
+    
+    // Bind socket:
+    status = bind(socketFD, (const struct sockaddr *)&sockaddr4, sizeof(sockaddr4));
+    if (status == -1) {
+        NSString *reason = @"Error in bind() function";
+        NSLog(@"Finding free port: %@", reason);
+        close(socketFD);
+        return SOCKET_NULL;
+    }
+    
+    // bind() has assigned a free random socket port in sockaddr4. request it:
+    memset(&sockaddr4, 0, sizeof(sockaddr4));
+    socklen_t sockaddr4Len = sizeof(sockaddr4);
+    in_port_t result = SOCKET_NULL;
+    status = getsockname(socketFD, (struct sockaddr *)&sockaddr4, &sockaddr4Len);
+    if (status == 0) {
+        result = ntohs(sockaddr4.sin_port);
+    }
+    close(socketFD);
+    
+    return result;
+}
+
+
 @implementation SEnREPL
 
 
@@ -88,6 +161,13 @@
         [commandArguments addObject: [NSString stringWithFormat: @"-e%@", expression]];
     }
     
+//    int port = OPGetUnusedSocketPort();
+//    port = OPGetUnusedSocketPort();
+    //    [commandArguments addObject: [NSString stringWithFormat: @":port %d", port]];
+    [commandArguments addObject: @":headless"];
+
+    
+    
 //    NSString* portFormat = _settings[@"RuntimePortArgumentFormat"];
 //    if (portFormat.length) {
 //        [commandArguments addObjectsFromArray: [[NSString stringWithFormat: portFormat, @(_port)] componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
@@ -126,25 +206,28 @@
     
     NSLog(@"Launching '%@' with %@: %@", _task.launchPath, _task.arguments, _task);
     
-    
-    NSURL* portFileURL = [[NSURL fileURLWithPath: workingDirectory] URLByAppendingPathComponent:@".nrepl-port"];
-    self.watcher = [LVPathWatcher watcherFor: portFileURL handler: ^{
-        
-        NSString* portString = [NSString stringWithContentsOfURL: portFileURL encoding: NSASCIIStringEncoding error: NULL];
-        if (portString.length) {
-            _port = [portString integerValue];
-            _completionBlock(self, nil); // nRepl was successfully started
-        } else {
-            _completionBlock(self, [NSError errorWithDomain: @"org.cocoanuts.s-explorer"
-                                                       code: 404
-                                                   userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No nRepl port file found at '%@'", portFileURL]}]);
-        }
-        self.watcher = nil;
-
-    }];
-
-    
     [_task launch];
+
+    _completionBlock(self, nil); // nRepl was successfully started
+
+//    
+//    NSURL* portFileURL = [[NSURL fileURLWithPath: workingDirectory] URLByAppendingPathComponent:@".nrepl-port"];
+//    self.watcher = [LVPathWatcher watcherFor: portFileURL handler: ^{
+//        
+//        NSString* portString = [NSString stringWithContentsOfURL: portFileURL encoding: NSASCIIStringEncoding error: NULL];
+//        if (portString.length) {
+//            _port = [portString integerValue];
+//            _completionBlock(self, nil); // nRepl was successfully started
+//        } else {
+//            _completionBlock(self, [NSError errorWithDomain: @"org.cocoanuts.s-explorer"
+//                                                       code: 404
+//                                                   userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No nRepl port file found at '%@'", portFileURL]}]);
+//        }
+//        self.watcher = nil;
+//        
+//    }];
+
+    
  }
 
 

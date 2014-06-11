@@ -9,6 +9,7 @@
 #import <XCTest/XCTest.h>
 #import "SEnREPLConnection.h"
 #import "SEnREPL.h"
+#import "XCTestAsync.h"
 
 @interface SEnREPLConnection_Tests : XCTestCase
 
@@ -28,7 +29,8 @@
     
     NSDictionary* settings = @{@"RuntimeTool": @"/usr/local/bin/lein",
                                @"RuntimeArguments": @[@"repl", @":headless"],
-                               @"WorkingDirectory": [[NSBundle bundleForClass: [self class]] bundlePath]};
+                               @"WorkingDirectory": @"/tmp/"//[[NSBundle bundleForClass: [self class]] bundlePath]};
+                               };
     
     
     _repl = [[SEnREPL alloc] initWithSettings: settings];
@@ -38,8 +40,8 @@
     __block BOOL connected = NO;
     
     [_repl startWithCompletionBlock:^(SEnREPL* repl, NSError* anError) {
-        started = (error == nil);
         error = anError;
+        started = (error == nil);
     }];
     
     while (!started && !error) {
@@ -98,6 +100,8 @@
 
 - (void) testMultipleExpressionEvaluations {
     
+    XCAsyncFailAfter(5.0, @"%@ did not finish in time.", NSStringFromSelector(_cmd));
+    
     NSString* testExpression = @"(map inc (list 1 2 3))";
     __block NSString* evaluationResult = nil;
 
@@ -105,25 +109,21 @@
         //XCTAssert(evalState.results.count > 0, @"Error: nil response evaluating '%@'.", testExpression);
         evaluationResult = partialResult[@"value"];
         XCTAssertEqualObjects(@"(2 3 4)", evaluationResult, @"Unexpected evaluation result.");
-    }];
-    // Wait for result:
-    [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
-    XCTAssert(evaluationResult.length > 0, @"-evaluateExpression:... returned no result in time.");
-    
-    // Second evaluation on same connection:
-    
-    NSString* testExpressionLF = @"(map inc (list 3 4 5))";
-    __block NSString* evaluationResultLF = nil;
+        
+        // Second evaluation on same connection:
+        
+        NSString* testExpressionLF = @"(map inc (list 3 4 5))";
+        __block NSString* evaluationResultLF = nil;
+        
+        [self.connection evaluateExpression: testExpressionLF completionBlock: ^(/*SEnREPLResultState *evalState,*/ NSDictionary* partialResult) {
+            //XCTAssert(evalState.results.count > 0, @"Error: No results evaluating '%@': %@", testExpressionLF, evalState.error);
+            //evaluationResultLF = [evalState.results firstObject];
+            evaluationResultLF = partialResult[@"value"];
+            XCTAssertEqualObjects(@"(4 5 6)", evaluationResultLF, @"Unexpected evaluation result.");
+            XCAsyncSuccess();
+        }];
 
-    [self.connection evaluateExpression: testExpressionLF completionBlock: ^(/*SEnREPLResultState *evalState,*/ NSDictionary* partialResult) {
-        //XCTAssert(evalState.results.count > 0, @"Error: No results evaluating '%@': %@", testExpressionLF, evalState.error);
-        //evaluationResultLF = [evalState.results firstObject];
-        evaluationResultLF = partialResult[@"value"];
-        XCTAssertEqualObjects(@"(4 5 6)", evaluationResultLF, @"Unexpected evaluation result.");
     }];
-    // Wait for result:
-    [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
-    XCTAssert(evaluationResultLF.length > 0, @"-evaluateExpression:... returned no result.");
 }
 
 

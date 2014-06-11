@@ -12,8 +12,9 @@
 		8D16399617C3B7A6000DD491 /* SESourceEditorTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D16399517C3B7A6000DD491 /* SESourceEditorTextView.m */; };
 		8D16399817C57FAE000DD491 /* S-Explorer.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 8D16399717C57FAE000DD491 /* S-Explorer.iconset */; };
 		8D16399C17C6BC1D000DD491 /* SEApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D16399B17C6BC1D000DD491 /* SEApplicationDelegate.m */; };
+		8D179893193D4423002FA4AB /* XCTestAsync.h in Sources */ = {isa = PBXBuildFile; fileRef = 8D179891193D4423002FA4AB /* XCTestAsync.h */; };
+		8D179894193D4423002FA4AB /* XCTestAsync.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D179892193D4423002FA4AB /* XCTestAsync.m */; };
 		8D17FE2817EA72A000883285 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D17FE2717EA72A000883285 /* XCTest.framework */; };
-		8D17FE3017EA72A000883285 /* S_Explorer_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D17FE2F17EA72A000883285 /* S_Explorer_Tests.m */; };
 		8D27BFF51766C59D00F1F8FA /* SESyntaxParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D27BFF31766C59C00F1F8FA /* SESyntaxParser.m */; };
 		8D2AAB6C177A8E50008F07C4 /* NoodleLineNumberView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AAB68177A8E50008F07C4 /* NoodleLineNumberView.m */; };
 		8D2AAB71177A94A8008F07C4 /* NoodleLineNumberMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AAB66177A8E50008F07C4 /* NoodleLineNumberMarker.m */; };
@@ -90,6 +91,8 @@
 		8D16399717C57FAE000DD491 /* S-Explorer.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = "S-Explorer.iconset"; path = "Resources/S-Explorer.iconset"; sourceTree = "<group>"; };
 		8D16399A17C6BC1D000DD491 /* SEApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEApplicationDelegate.h; sourceTree = "<group>"; };
 		8D16399B17C6BC1D000DD491 /* SEApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEApplicationDelegate.m; sourceTree = "<group>"; };
+		8D179891193D4423002FA4AB /* XCTestAsync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = XCTestAsync.h; sourceTree = "<group>"; };
+		8D179892193D4423002FA4AB /* XCTestAsync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XCTestAsync.m; sourceTree = "<group>"; };
 		8D17FE2617EA72A000883285 /* S-Explorer-Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "S-Explorer-Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D17FE2717EA72A000883285 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		8D17FE2B17EA72A000883285 /* S-Explorer-Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "S-Explorer-Tests-Info.plist"; sourceTree = "<group>"; };
@@ -225,6 +228,8 @@
 		8D17FE2917EA72A000883285 /* S-Explorer-Tests */ = {
 			isa = PBXGroup;
 			children = (
+				8D179891193D4423002FA4AB /* XCTestAsync.h */,
+				8D179892193D4423002FA4AB /* XCTestAsync.m */,
 				8D17FE2F17EA72A000883285 /* S_Explorer_Tests.m */,
 				8D470B9B18196DCA00C0C654 /* OPBEncoding_Tests.m */,
 				8D7E69561829E44300F320A9 /* SEnREPLConnection_Tests.m */,
@@ -508,8 +513,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D179893193D4423002FA4AB /* XCTestAsync.h in Sources */,
 				8D88F642182FBC1F00AB1D35 /* SEnREPL.m in Sources */,
-				8D17FE3017EA72A000883285 /* S_Explorer_Tests.m in Sources */,
+				8D179894193D4423002FA4AB /* XCTestAsync.m in Sources */,
 				8D470B9C18196DCA00C0C654 /* OPBEncoding_Tests.m in Sources */,
 				8D7E69571829E44300F320A9 /* SEnREPLConnection_Tests.m in Sources */,
 			);
