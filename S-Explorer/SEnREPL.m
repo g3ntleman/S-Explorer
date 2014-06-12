@@ -129,7 +129,6 @@
         
         NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
         
-        NSLog(@"-> %@", string);
         
         if (_completionBlock && [string hasPrefix: @"nREPL"]) {
             NSRange portPrefixRange = [string rangeOfString: @"port "];
@@ -138,6 +137,8 @@
             [scanner scanInteger: &_port];
             _completionBlock(self, nil); // nRepl was successfully started
             _completionBlock = NULL;
+        } else {
+            NSLog(@"Read unexpected: '%@'", string);
         }
         
         [filehandle readInBackgroundAndNotify];
@@ -145,6 +146,7 @@
         if (! self.port) {
             NSLog(@"\n--> Process exited with exit code %d.\n", self.task.terminationStatus);
         }
+        _completionBlock(self, [[NSError alloc] initWithDomain: @"NSTaskErrorDomain" code:self.task.terminationStatus userInfo: nil]); // nRepl was successfully started
     }
 }
 
@@ -177,8 +179,6 @@
 //    int port = OPGetUnusedSocketPort();
 //    port = OPGetUnusedSocketPort();
     //    [commandArguments addObject: [NSString stringWithFormat: @":port %d", port]];
-    [commandArguments addObject: @":headless"];
-
     
     
 //    NSString* portFormat = _settings[@"RuntimePortArgumentFormat"];
