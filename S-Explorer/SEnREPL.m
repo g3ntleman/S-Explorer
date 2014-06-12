@@ -7,12 +7,15 @@
 //
 
 #import "SEnREPL.h"
+#import "PseudoTTY.h"
 #import "LVPathWatcher.h"
 
 @interface SEnREPL ()
 
 @property (strong, nonatomic) SEnREPLCompletionBlock completionBlock;
 @property (strong, nonatomic) LVPathWatcher* watcher;
+@property (strong, nonatomic) PseudoTTY* tty;
+
 
 @end
 
@@ -28,69 +31,70 @@
 /**
  * Returns an unused socket port or -1 on failure.
  */
-int OPGetUnusedSocketPort() {
-    
-    int socketFD = socket(AF_INET, SOCK_STREAM, 0);
-    
-    if (socketFD == SOCKET_NULL) {
-        NSString *reason = @"Error in socket() function";
-        NSLog(@"Finding free port: %@", reason);
-        return SOCKET_NULL;
-    }
-    
-    int status;
-    
-    // Set socket options
-    
-    status = fcntl(socketFD, F_SETFL, O_NONBLOCK);
-    if (status == -1) {
-        NSString *reason = @"Error enabling non-blocking IO on socket (fcntl)";
-        NSLog(@"Finding free port: %@", reason);
-        close(socketFD);
-        return SOCKET_NULL;
-    }
-    
-    int reuseOn = 1;
-    status = setsockopt(socketFD, SOL_SOCKET, SO_REUSEADDR, &reuseOn, sizeof(reuseOn));
-    if (status == -1) {
-        NSString *reason = @"Error enabling address reuse (setsockopt)";
-        NSLog(@"Finding free port: %@", reason);
-        close(socketFD);
-        return SOCKET_NULL;
-    }
-    
-    struct sockaddr_in sockaddr4;
-    memset(&sockaddr4, 0, sizeof(sockaddr4));
-    sockaddr4.sin_len         = sizeof(sockaddr4);
-    sockaddr4.sin_family      = AF_INET;
-    sockaddr4.sin_port        = htons(0);
-    sockaddr4.sin_addr.s_addr = htonl(INADDR_ANY);
-    
-    // Bind socket:
-    status = bind(socketFD, (const struct sockaddr *)&sockaddr4, sizeof(sockaddr4));
-    if (status == -1) {
-        NSString *reason = @"Error in bind() function";
-        NSLog(@"Finding free port: %@", reason);
-        close(socketFD);
-        return SOCKET_NULL;
-    }
-    
-    // bind() has assigned a free random socket port in sockaddr4. request it:
-    memset(&sockaddr4, 0, sizeof(sockaddr4));
-    socklen_t sockaddr4Len = sizeof(sockaddr4);
-    in_port_t result = SOCKET_NULL;
-    status = getsockname(socketFD, (struct sockaddr *)&sockaddr4, &sockaddr4Len);
-    if (status == 0) {
-        result = ntohs(sockaddr4.sin_port);
-    }
-    close(socketFD);
-    
-    return result;
-}
+//int OPGetUnusedSocketPort() {
+//    
+//    int socketFD = socket(AF_INET, SOCK_STREAM, 0);
+//    
+//    if (socketFD == SOCKET_NULL) {
+//        NSString *reason = @"Error in socket() function";
+//        NSLog(@"Finding free port: %@", reason);
+//        return SOCKET_NULL;
+//    }
+//    
+//    int status;
+//    
+//    // Set socket options
+//    
+//    status = fcntl(socketFD, F_SETFL, O_NONBLOCK);
+//    if (status == -1) {
+//        NSString *reason = @"Error enabling non-blocking IO on socket (fcntl)";
+//        NSLog(@"Finding free port: %@", reason);
+//        close(socketFD);
+//        return SOCKET_NULL;
+//    }
+//    
+//    int reuseOn = 1;
+//    status = setsockopt(socketFD, SOL_SOCKET, SO_REUSEADDR, &reuseOn, sizeof(reuseOn));
+//    if (status == -1) {
+//        NSString *reason = @"Error enabling address reuse (setsockopt)";
+//        NSLog(@"Finding free port: %@", reason);
+//        close(socketFD);
+//        return SOCKET_NULL;
+//    }
+//    
+//    struct sockaddr_in sockaddr4;
+//    memset(&sockaddr4, 0, sizeof(sockaddr4));
+//    sockaddr4.sin_len         = sizeof(sockaddr4);
+//    sockaddr4.sin_family      = AF_INET;
+//    sockaddr4.sin_port        = htons(0);
+//    sockaddr4.sin_addr.s_addr = htonl(INADDR_ANY);
+//    
+//    // Bind socket:
+//    status = bind(socketFD, (const struct sockaddr *)&sockaddr4, sizeof(sockaddr4));
+//    if (status == -1) {
+//        NSString *reason = @"Error in bind() function";
+//        NSLog(@"Finding free port: %@", reason);
+//        close(socketFD);
+//        return SOCKET_NULL;
+//    }
+//    
+//    // bind() has assigned a free random socket port in sockaddr4. request it:
+//    memset(&sockaddr4, 0, sizeof(sockaddr4));
+//    socklen_t sockaddr4Len = sizeof(sockaddr4);
+//    in_port_t result = SOCKET_NULL;
+//    status = getsockname(socketFD, (struct sockaddr *)&sockaddr4, &sockaddr4Len);
+//    if (status == 0) {
+//        result = ntohs(sockaddr4.sin_port);
+//    }
+//    close(socketFD);
+//    
+//    return result;
+//}
+
+
 
 
 @implementation SEnREPL
-
 
 
 - (id) initWithSettings: (NSDictionary*) initialSettings {
@@ -126,6 +130,15 @@ int OPGetUnusedSocketPort() {
         NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
         
         NSLog(@"-> %@", string);
+        
+        if (_completionBlock && [string hasPrefix: @"nREPL"]) {
+            NSRange portPrefixRange = [string rangeOfString: @"port "];
+            NSScanner* scanner = [[NSScanner alloc] initWithString: string];
+            [scanner setScanLocation: NSMaxRange(portPrefixRange)];
+            [scanner scanInteger: &_port];
+            _completionBlock(self, nil); // nRepl was successfully started
+            _completionBlock = NULL;
+        }
         
         [filehandle readInBackgroundAndNotify];
     } else {
@@ -206,9 +219,22 @@ int OPGetUnusedSocketPort() {
     
     NSLog(@"Launching '%@' with %@: %@", _task.launchPath, _task.arguments, _task);
     
+    
+    self.tty = [[PseudoTTY alloc] init];
+    
+    [_task setStandardInput: [self.tty slaveFileHandle]];
+    [_task setStandardOutput: [self.tty slaveFileHandle]];
+    [_task setStandardError: [self.tty slaveFileHandle]];
+    
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(taskOutputReceived:)
+                                                 name: NSFileHandleReadCompletionNotification
+                                               object: self.tty.masterFileHandle];
+    
+    [[self.tty masterFileHandle] readInBackgroundAndNotify];
+    
     [_task launch];
 
-    _completionBlock(self, nil); // nRepl was successfully started
 
 //    
 //    NSURL* portFileURL = [[NSURL fileURLWithPath: workingDirectory] URLByAppendingPathComponent:@".nrepl-port"];
