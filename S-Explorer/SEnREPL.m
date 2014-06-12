@@ -209,6 +209,13 @@
     
     _task.terminationHandler =  ^void (NSTask* task) {
         NSLog(@"REPL Task Terminated with return code %d", task.terminationStatus);
+        if (_completionBlock) {
+            NSError* error = [NSError errorWithDomain: @"NSTask"
+                                                 code: task.terminationStatus
+                                             userInfo: @{@"reason": @(task.terminationReason)}];
+            _completionBlock(nil, error);
+            _completionBlock = NULL;
+        }
 //        if (task.terminationStatus == 1) {
 //            //NSLog(@"Port %ld seems in use. Restarting...", this.port);
 //            [this stop];

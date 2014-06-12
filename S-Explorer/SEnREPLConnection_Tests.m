@@ -23,6 +23,29 @@
 
 @implementation SEnREPLConnection_Tests
 
+//- (void)enumerateObjectsUsingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block NS_AVAILABLE(10_6, 4_0);
+
+
+- (void) evaluateExpression: (NSString*) expression completionBlock:  (void (^)(SEnREPLConnection* connection, NSDictionary* partialResult)) block {
+    
+    [self.repl startWithCompletionBlock: ^(SEnREPL* repl, NSError* anError) {
+        XCTAssert(anError == nil, @"Error starting REPL: %@", anError);
+        
+        self.connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost"
+                                                                 port: self.repl.port
+                                                            sessionID: nil];
+        
+        [self.connection openWithConnectBlock: ^(SEnREPLConnection* connection, NSError* anError) {
+            XCTAssert(anError == nil, @"Error connecting to REPL: %@", anError);
+
+            [self.connection evaluateExpression: expression completionBlock:^(NSDictionary* partialResult) {
+                block(self.connection, partialResult);
+            }];
+        }];
+    }];
+}
+
+
 - (void) setUp {
     [super setUp];
     // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -34,48 +57,6 @@
     
     
     _repl = [[SEnREPL alloc] initWithSettings: settings];
-    
-    __block NSError* error = nil;
-    __block BOOL started = NO;
-    __block BOOL connected = NO;
-    
-    [_repl startWithCompletionBlock:^(SEnREPL* repl, NSError* anError) {
-        error = anError;
-        started = (error == nil);
-    }];
-    
-    while (!started && !error) {
-        [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
-    }
-    self.connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost"
-                                                             port: self.repl.port
-                                                        sessionID: nil];
-
-    [self.connection openWithConnectBlock:^(SEnREPLConnection* connection, NSError* anError) {
-        connected = (anError == nil);
-        error = anError;
-            NSLog(@"Unable to open connection %@", error);
-    }];
-    
-    while (!connected && !error) {
-        [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.2]];
-    }
-    
-    if (! self.repl.task.isRunning) {
-        XCTAssertEqual(self.repl.task.terminationStatus, 0, @"REPL task exited with error.");
-    }
-    
-    // Wait until connection is established:
-    if (self.connection.isConnecting) {
-        NSLog(@"Waiting for client socket to connect...");
-        while (self.connection.isConnecting) {
-            [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.5]];
-        }
-        if (self.connection.socket.isConnected) {
-            NSLog(@"Connected.");
-        }
-    }
-    XCTAssert(self.connection.socket.isConnected, @"Unable to connect to REPL server on port %ld", (long)self.repl.port);
 }
 
 
@@ -100,35 +81,31 @@
 
 - (void) testMultipleExpressionEvaluations {
     
-    XCAsyncFailAfter(5.0, @"%@ did not finish in time.", NSStringFromSelector(_cmd));
+    XCAsyncFailAfter(15.0, @"%@ did not finish in time.", NSStringFromSelector(_cmd));
     
     NSString* testExpression = @"(map inc (list 1 2 3))";
-    __block NSString* evaluationResult = nil;
-
-    [self.connection evaluateExpression: testExpression completionBlock:^(NSDictionary* partialResult) {
+    
+    [self evaluateExpression: testExpression completionBlock:^(SEnREPLConnection *connection, NSDictionary *partialResult) {
         //XCTAssert(evalState.results.count > 0, @"Error: nil response evaluating '%@'.", testExpression);
-        evaluationResult = partialResult[@"value"];
+        NSString* evaluationResult = partialResult[@"value"];
         XCTAssertEqualObjects(@"(2 3 4)", evaluationResult, @"Unexpected evaluation result.");
         
         // Second evaluation on same connection:
         
         NSString* testExpressionLF = @"(map inc (list 3 4 5))";
-        __block NSString* evaluationResultLF = nil;
-        
-        [self.connection evaluateExpression: testExpressionLF completionBlock: ^(/*SEnREPLResultState *evalState,*/ NSDictionary* partialResult) {
+        [connection evaluateExpression: testExpressionLF completionBlock: ^(/*SEnREPLResultState *evalState,*/ NSDictionary* partialResult) {
             //XCTAssert(evalState.results.count > 0, @"Error: No results evaluating '%@': %@", testExpressionLF, evalState.error);
             //evaluationResultLF = [evalState.results firstObject];
-            evaluationResultLF = partialResult[@"value"];
+            NSString* evaluationResultLF = partialResult[@"value"];
             XCTAssertEqualObjects(@"(4 5 6)", evaluationResultLF, @"Unexpected evaluation result.");
             XCAsyncSuccess();
         }];
-
     }];
 }
 
 
 //- (void) testLongResultExpressionEvaluation {
-//    
+//
 //    NSString* testExpression = @"(range 3000)";
 //    __block NSString* evaluationResult = nil;
 //    [self.connection evaluateExpression: testExpression completionBlock: ^(SEnREPLResultState *evalState, NSDictionary* partialResult) {
