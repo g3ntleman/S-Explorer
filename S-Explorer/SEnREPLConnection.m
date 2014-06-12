@@ -102,7 +102,7 @@
         NSLog(@"Connection Refused. Retrying in %.01fs. %ld tries left.", retryInterval, (long)_connectRetries);
         [self performSelector: @selector(openWithError:) withObject: NULL afterDelay: retryInterval];
     } else {
-        self.connectBlock(self, error);
+        //self.connectBlock(self, error);
         NSLog(@"%@ disconnected (%@). Cleaning up...", self, error);
         [self close];
     }

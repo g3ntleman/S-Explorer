@@ -79,7 +79,7 @@
 
 
 
-- (void) testMultipleExpressionEvaluations {
+- (void) testMultipleExpressionEvaluationsAsync {
     
     XCAsyncFailAfter(15.0, @"%@ did not finish in time.", NSStringFromSelector(_cmd));
     
@@ -104,20 +104,17 @@
 }
 
 
-//- (void) testLongResultExpressionEvaluation {
-//
-//    NSString* testExpression = @"(range 3000)";
-//    __block NSString* evaluationResult = nil;
-//    [self.connection evaluateExpression: testExpression completionBlock: ^(SEnREPLResultState *evalState, NSDictionary* partialResult) {
-//        XCTAssert(evalState.results.count > 0, @"Error: nil response evaluating '%@'.", testExpression);
-//        evaluationResult = [evalState.results firstObject];
-//        XCTAssert(evaluationResult.length >= 0, @"-evaluateExpression:... returned no result.");
-//    }];
-//    // Wait for result:
-//    [[NSRunLoop currentRunLoop] runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1.5]];
-//    XCTAssert([evaluationResult hasSuffix: @" 2999)"], @"-evaluateExpression:... returned wrong result.");
-//    //NSLog(@"testLongResultExpressionEvaluation returned %@", evaluationResults);
-//}
+- (void) testLongResultExpressionEvaluationAsync {
+
+    XCAsyncFailAfter(20.0, @"%@ did not finish in time.", NSStringFromSelector(_cmd));
+
+    NSString* testExpression = @"(range 3000)";
+    [self evaluateExpression: testExpression completionBlock:^(SEnREPLConnection *connection, NSDictionary *partialResult) {
+        NSString* evaluationResult = partialResult[@"value"];
+        XCTAssert([evaluationResult hasSuffix: @" 2999)"], @"-evaluateExpression:... returned wrong result.");
+        XCAsyncSuccess();
+    }];
+}
 
 
 @end
