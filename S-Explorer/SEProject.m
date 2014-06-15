@@ -370,20 +370,28 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                         if (keywordExpression.length) {
                             [connection evaluateExpression: keywordExpression
                                            completionBlock:^(NSDictionary *partialResult) {
-                                               NSMutableString* allKeywordsString = [partialResult[@"value"] mutableCopy];
-                                               // Convert List (Expression) into String-Array:
-                                               [allKeywordsString deleteCharactersInRange: NSMakeRange(allKeywordsString.length-1, 1)];
-                                               [allKeywordsString deleteCharactersInRange: NSMakeRange(0, 1)];
-                                               NSArray* allKeywords = [[allKeywordsString componentsSeparatedByString: @" "] sortedArrayUsingSelector: @selector(compare:)];
+                                               NSString* allKeywordsString = [partialResult[@"value"] mutableCopy];
+                                               if ([allKeywordsString hasPrefix: @"("] && [allKeywordsString hasSuffix: @")"]) {
+                                                   allKeywordsString = [allKeywordsString substringWithRange: NSMakeRange(1, allKeywordsString.length-2)];
                                                
-                                               NSLog(@"Partial keyword result: %@", allKeywords);
-                                               self.editorController.sortedKeywords = allKeywords;
+                                                   // Convert List (Expression) into String-Array:
+                                                   //NSOrderedSet* allKeywords = [self.editorController.keywords];
+                                                   
+                                                   NSMutableArray* allKeywords = [self.editorController.defaultKeywords mutableCopy];
+                                                   [allKeywords addObjectsFromArray: [allKeywordsString componentsSeparatedByString: @" "]];
+                                                   [allKeywords sortUsingSelector: @selector(compare:)];
+                                                   
+                                                   NSOrderedSet* orderedKeywords = [NSOrderedSet orderedSetWithArray: allKeywords];
+                                                   
+                                                   NSLog(@"'Partial' keyword result: %@", orderedKeywords);
+                                                   
+                                                   // Copy the set of keywords to editor and repl view:
+                                                   self.editorController.textView.keywords = orderedKeywords;
+                                                   self.topREPLController.replView.keywords = orderedKeywords;
                                                
-                                               // Copy the set of keywords to repl view:
-                                               self.topREPLController.replView.keywords = [NSSet setWithArray: allKeywords];
-                                               
-//                                               id allSessionIDs = [connection allSessionIDs];
-//                                               NSLog(@"allSessionIDs: %@", allSessionIDs);
+                                                   //                                               id allSessionIDs = [connection allSessionIDs];
+                                                   //                                               NSLog(@"allSessionIDs: %@", allSessionIDs);
+                                               }
                                            }];
                         }
                     }];

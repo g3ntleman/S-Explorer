@@ -35,7 +35,7 @@ NSSet* SESingleIndentFunctions() {
 @implementation SESourceEditorController {
 }
 
-@synthesize sortedKeywords = _sortedKeywords;
+//@synthesize sortedKeywords = _sortedKeywords;
 
 - (void) dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
@@ -60,7 +60,7 @@ NSSet* SESingleIndentFunctions() {
         
         _colorizeSourceItem = [pathExtension caseInsensitiveCompare: @"scm"] == NSOrderedSame || [pathExtension caseInsensitiveCompare: @"clj"] == NSOrderedSame;
 
-        self.sortedKeywords = self.defaultKeywords;
+        self.textView.keywords = [NSOrderedSet orderedSetWithArray: self.defaultKeywords];
 
         [self.textView.enclosingScrollView flashScrollers];
         
@@ -279,17 +279,14 @@ NSSet* SESingleIndentFunctions() {
 }
 
 
-
-
-
-- (void) setSortedKeywords:(NSArray *)keywords {
-    if (_sortedKeywords != keywords) {
-        _sortedKeywords = keywords;
-        if (self.colorizeSourceItem) {
-            self.textView.keywords = [[NSSet alloc] initWithArray: self.sortedKeywords];
-        }
-    }
-}
+//- (void) setSortedKeywords:(NSArray *)keywords {
+//    if (_sortedKeywords != keywords) {
+//        _sortedKeywords = keywords;
+//        if (self.colorizeSourceItem) {
+//            self.textView.keywords = [[NSSet alloc] initWithArray: self.sortedKeywords];
+//        }
+//    }
+//}
 
 - (void) markParCorrespondingToParAtIndex: (NSUInteger) index {
         

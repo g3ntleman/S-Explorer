@@ -244,7 +244,7 @@ static NSCharacterSet* SEWordCharacters() {
     [self colorizeRange: fullRange];
 }
 
-- (void) setKeywords:(NSSet *)keywords {
+- (void) setKeywords:(NSOrderedSet *)keywords {
     if (_keywords != keywords) {
         _keywords = keywords;
         [self colorize: self];

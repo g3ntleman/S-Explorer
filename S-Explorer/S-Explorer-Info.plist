@@ -26,16 +26,16 @@
 			<key>NSDocumentClass</key>
 			<string>SEProject</string>
 		</dict>
-        <dict>
+		<dict>
 			<key>CFBundleTypeName</key>
 			<string>Generic S-Explorer Document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSItemContentTypes</key>
 			<array>
-                <string>public.source-code</string>
-                <string>public.plain-text</string>
-                <string>public.item</string>
+				<string>public.source-code</string>
+				<string>public.plain-text</string>
+				<string>public.item</string>
 			</array>
 			<key>LSTypeIsPackage</key>
 			<false/>
@@ -496,8 +496,25 @@
 				<string>(distinct (flatten (map #(keys (ns-publics %)) (all-ns))))</string>
 				<key>StaticList</key>
 				<array>
+					<string>def</string>
+					<string>if</string>
+					<string>then</string>
+					<string>else</string>
+					<string>do</string>
+					<string>let</string>
+					<string>quote</string>
+					<string>var</string>
+					<string>fn</string>
+					<string>loop</string>
+					<string>recur</string>
+					<string>throw</string>
+					<string>try</string>
+					<string>monitor-enter</string>
+					<string>monitor-exit</string>
+					<string>new</string>
+					<string>set!</string>
 					<string>*</string>
-					<string>*'</string>
+					<string>*&apos;</string>
 					<string>*1</string>
 					<string>*2</string>
 					<string>*3</string>
@@ -540,9 +557,9 @@
 					<string>*verbose-defrecords*</string>
 					<string>*warn-on-reflection*</string>
 					<string>+</string>
-					<string>+'</string>
+					<string>+&apos;</string>
 					<string>-</string>
-					<string>-'</string>
+					<string>-&apos;</string>
 					<string>-&gt;</string>
 					<string>-&gt;&gt;</string>
 					<string>-&gt;ArrayChunk</string>
@@ -710,7 +727,7 @@
 					<string>cycle</string>
 					<string>d</string>
 					<string>dec</string>
-					<string>dec'</string>
+					<string>dec&apos;</string>
 					<string>decimal?</string>
 					<string>declare</string>
 					<string>default-data-readers</string>
@@ -846,7 +863,7 @@
 					<string>import</string>
 					<string>in-ns</string>
 					<string>inc</string>
-					<string>inc'</string>
+					<string>inc&apos;</string>
 					<string>inc-report-counter</string>
 					<string>index</string>
 					<string>init-proxy</string>
@@ -1307,7 +1324,7 @@
 			<key>WelcomeMessage</key>
 			<string>Welcome to Clojure!
     Docs: (doc function-name-here)
-          (find-doc "part-of-name-here")
+          (find-doc &quot;part-of-name-here&quot;)
   Source: (source function-name-here)</string>
 		</dict>
 	</dict>
@@ -1323,8 +1340,8 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.source-code</string>
-                <string>public.plain-text</string>
-                <string>public.text</string>
+				<string>public.plain-text</string>
+				<string>public.text</string>
 				<string>public.data</string>
 			</array>
 			<key>UTTypeIdentifier</key>
@@ -1337,12 +1354,12 @@
 				</array>
 			</dict>
 		</dict>
-        <dict>
+		<dict>
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.source-code</string>
-                <string>public.plain-text</string>
-                <string>public.text</string>
+				<string>public.plain-text</string>
+				<string>public.text</string>
 				<string>public.data</string>
 			</array>
 			<key>UTTypeIdentifier</key>
