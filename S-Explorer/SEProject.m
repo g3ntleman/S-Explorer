@@ -31,7 +31,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 @synthesize sourceList;
 @synthesize projectSettings;
 @synthesize currentLanguage;
-@synthesize projectFolderItem;
+@synthesize projectFolderItem = _projectFolderItem;
 @synthesize currentSourceItem = _currentSourceItem;
 
 - (id) init {
@@ -113,7 +113,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 - (void) setFileURL:(NSURL *)url {
     if (! [url isEqual: self.fileURL]) {
         [super setFileURL:url];
-        projectFolderItem = nil;
+        _projectFolderItem = nil;
     }
 }
 
@@ -121,10 +121,13 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
  * The source item describing the folder containing the project file.
  */
 - (SESourceItem*) projectFolderItem {
-    if (! projectFolderItem && self.fileURL) {
-        projectFolderItem = [[SESourceItem alloc] initWithFileURL: [self.fileURL URLByDeletingLastPathComponent]];
+    if (! _projectFolderItem && self.fileURL) {
+        _projectFolderItem = [[SESourceItem alloc] initWithFileURL: [self.fileURL URLByDeletingLastPathComponent]];
+        self.fileWatcher = [[CDEvents alloc] initWithURLs: @[_projectFolderItem.fileURL] block: ^(CDEvents *watcher, CDEvent *event) {
+            NSLog(@"fileWatcher reports: %@", event);
+        }];
     }
-    return projectFolderItem;
+    return _projectFolderItem;
 }
 
 

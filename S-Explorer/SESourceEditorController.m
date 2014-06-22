@@ -56,9 +56,12 @@ NSSet* SESingleIndentFunctions() {
         [textStorage setAttributes: attributes range: NSMakeRange(0, fileContent.length)];
         
         // Colorize scheme files:
-        NSString* pathExtension = sourceItem.name.pathExtension;
+        NSString* pathExtension = [sourceItem.name.pathExtension lowercaseString];
         
-        _colorizeSourceItem = [pathExtension caseInsensitiveCompare: @"scm"] == NSOrderedSame || [pathExtension caseInsensitiveCompare: @"clj"] == NSOrderedSame;
+        
+        NSSet* sourceExtensions = [NSSet setWithObjects: @"scm", @"sld", @"clj", nil]; // make more flexible!
+        
+        _colorizeSourceItem = [sourceExtensions containsObject: pathExtension];
 
         self.textView.keywords = [NSOrderedSet orderedSetWithArray: self.defaultKeywords];
 

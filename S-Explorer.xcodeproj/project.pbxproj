@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0284ABD74E89483CA36D5274 /* libPods-S-Explorer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 910FEBFB5D694D2FB3D688F0 /* libPods-S-Explorer.a */; };
 		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; };
 		8D0904C2176A7C4800176BCF /* SESourceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904C1176A7C4800176BCF /* SESourceItem.m */; };
 		8D16399617C3B7A6000DD491 /* SESourceEditorTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D16399517C3B7A6000DD491 /* SESourceEditorTextView.m */; };
@@ -58,7 +59,6 @@
 		8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DCBE8AC176F7918004B6AA2 /* NSDictionary+OPImmutablility.m */; };
 		8DD6BA971877562F00A88B99 /* SEREPLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DD6BA961877562F00A88B99 /* SEREPLView.m */; };
 		8DD87682187B761A000D4B8C /* SESourceTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DD87681187B761A000D4B8C /* SESourceTextViewController.m */; };
-		8DD87685187E0B0F000D4B8C /* LVPathWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DD87684187E0B0F000D4B8C /* LVPathWatcher.m */; };
 		8DE762FD17FB669800CD0A42 /* r7rs-overview.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8DE762FC17FB669800CD0A42 /* r7rs-overview.pdf */; };
 		8DE762FF17FB66A900CD0A42 /* r7rs-standard.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8DE762FE17FB66A900CD0A42 /* r7rs-standard.pdf */; };
 		8DE794481937F38B0093DCCF /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = 8DE794461937F38B0093DCCF /* folder.png */; };
@@ -81,6 +81,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		15929986F07E47DCADF70F06 /* Pods-S-Explorer.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-S-Explorer.xcconfig"; path = "Pods/Pods-S-Explorer.xcconfig"; sourceTree = "<group>"; };
 		8D00FA911740D31B00E1AF90 /* NSAlert+OPBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAlert+OPBlocks.h"; sourceTree = "<group>"; };
 		8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAlert+OPBlocks.m"; sourceTree = "<group>"; };
 		8D0904C0176A7C4800176BCF /* SESourceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SESourceItem.h; sourceTree = "<group>"; };
@@ -167,8 +168,6 @@
 		8DD6BA961877562F00A88B99 /* SEREPLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEREPLView.m; sourceTree = "<group>"; };
 		8DD87680187B761A000D4B8C /* SESourceTextViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SESourceTextViewController.h; sourceTree = "<group>"; };
 		8DD87681187B761A000D4B8C /* SESourceTextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SESourceTextViewController.m; sourceTree = "<group>"; };
-		8DD87683187E0B0F000D4B8C /* LVPathWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LVPathWatcher.h; sourceTree = "<group>"; };
-		8DD87684187E0B0F000D4B8C /* LVPathWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LVPathWatcher.m; sourceTree = "<group>"; };
 		8DE762FC17FB669800CD0A42 /* r7rs-overview.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "r7rs-overview.pdf"; sourceTree = "<group>"; };
 		8DE762FE17FB66A900CD0A42 /* r7rs-standard.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "r7rs-standard.pdf"; sourceTree = "<group>"; };
 		8DE794461937F38B0093DCCF /* folder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = folder.png; sourceTree = "<group>"; };
@@ -181,6 +180,7 @@
 		8DEE2AC517D434EE005BEDD0 /* SEDocumentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEDocumentController.m; sourceTree = "<group>"; };
 		8DF3C39417CFA3D200C75197 /* OPUtilityFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OPUtilityFunctions.h; sourceTree = "<group>"; };
 		8DF3C39517CFA3D200C75197 /* OPUtilityFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPUtilityFunctions.m; sourceTree = "<group>"; };
+		910FEBFB5D694D2FB3D688F0 /* libPods-S-Explorer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-S-Explorer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -203,6 +203,7 @@
 				8D99613117C1C7DF0058FD0B /* CoreServices.framework in Frameworks */,
 				8D604293173C143300149409 /* Foundation.framework in Frameworks */,
 				8D604292173C142A00149409 /* AppKit.framework in Frameworks */,
+				0284ABD74E89483CA36D5274 /* libPods-S-Explorer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +258,7 @@
 				8D17FE2917EA72A000883285 /* S-Explorer-Tests */,
 				8D604248173BE60800149409 /* Frameworks */,
 				8D604247173BE60800149409 /* Products */,
+				15929986F07E47DCADF70F06 /* Pods-S-Explorer.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -278,6 +280,7 @@
 				8D60424C173BE60800149409 /* AppKit.framework */,
 				8D60424E173BE60800149409 /* Foundation.framework */,
 				8D17FE2717EA72A000883285 /* XCTest.framework */,
+				910FEBFB5D694D2FB3D688F0 /* libPods-S-Explorer.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -368,8 +371,6 @@
 		8DCBE48A17C76DDF00A872A7 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				8DD87683187E0B0F000D4B8C /* LVPathWatcher.h */,
-				8DD87684187E0B0F000D4B8C /* LVPathWatcher.m */,
 				8D00FA911740D31B00E1AF90 /* NSAlert+OPBlocks.h */,
 				8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */,
 				8DCBE8AB176F7918004B6AA2 /* NSDictionary+OPImmutablility.h */,
@@ -421,9 +422,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8D60427A173BE60900149409 /* Build configuration list for PBXNativeTarget "S-Explorer" */;
 			buildPhases = (
+				D527C83F7C404D5884DCDDC6 /* Check Pods Manifest.lock */,
 				8D604242173BE60800149409 /* Sources */,
 				8D604243173BE60800149409 /* Frameworks */,
 				8D604244173BE60800149409 /* Resources */,
+				9E7BDEDAA63B4411A205039A /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -509,6 +512,39 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		9E7BDEDAA63B4411A205039A /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-S-Explorer-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D527C83F7C404D5884DCDDC6 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		8D17FE2217EA72A000883285 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -535,7 +571,6 @@
 				8D0904C2176A7C4800176BCF /* SESourceItem.m in Sources */,
 				8D31EE6C191FE5150054ADD8 /* OPImageTinting.m in Sources */,
 				8D8F9AF917EBEBDA00299D24 /* OPTabView.m in Sources */,
-				8DD87685187E0B0F000D4B8C /* LVPathWatcher.m in Sources */,
 				8DCBE8AE176F7918004B6AA2 /* NSDictionary+OPImmutablility.m in Sources */,
 				8D2AAB6C177A8E50008F07C4 /* NoodleLineNumberView.m in Sources */,
 				8D2AAB71177A94A8008F07C4 /* NoodleLineNumberMarker.m in Sources */,
@@ -719,6 +754,7 @@
 		};
 		8D60427B173BE60900149409 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 15929986F07E47DCADF70F06 /* Pods-S-Explorer.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -726,13 +762,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "S-Explorer/S-Explorer-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
-				HEADER_SEARCH_PATHS = /usr/local/include/;
 				INFOPLIST_FILE = "S-Explorer/S-Explorer-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				OTHER_CFLAGS = "-Wno-error=shorten-64-to-32";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -740,6 +774,7 @@
 		};
 		8D60427C173BE60900149409 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 15929986F07E47DCADF70F06 /* Pods-S-Explorer.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -747,13 +782,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "S-Explorer/S-Explorer-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
-				HEADER_SEARCH_PATHS = /usr/local/include/;
 				INFOPLIST_FILE = "S-Explorer/S-Explorer-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
-				OTHER_CFLAGS = "-Wno-error=shorten-64-to-32";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

@@ -8,14 +8,12 @@
 
 #import "SEnREPL.h"
 #import "PseudoTTY.h"
-#import "LVPathWatcher.h"
+#import "CDEvents.h"
 
 @interface SEnREPL ()
 
 @property (strong, nonatomic) SEnREPLCompletionBlock completionBlock;
-@property (strong, nonatomic) LVPathWatcher* watcher;
 @property (strong, nonatomic) PseudoTTY* tty;
-
 
 @end
 
@@ -208,20 +206,16 @@
     
     
     _task.terminationHandler =  ^void (NSTask* task) {
-        NSLog(@"REPL Task Terminated with return code %d", task.terminationStatus);
+        NSLog(@"REPL Task %@ Terminated with return code %d", task, task.terminationStatus);
         if (_completionBlock) {
-            NSError* error = [NSError errorWithDomain: @"NSTask"
-                                                 code: task.terminationStatus
-                                             userInfo: @{@"reason": @(task.terminationReason)}];
-            _completionBlock(nil, error);
+            if (task.terminationStatus != 0) {
+                NSError* error = [NSError errorWithDomain: @"NSTask" code: task.terminationStatus
+                                                 userInfo: @{@"reason": @(task.terminationReason)}];
+                _completionBlock(nil, error);
+            }
+            _task = nil; // break retain cycle
             _completionBlock = NULL;
         }
-//        if (task.terminationStatus == 1) {
-//            //NSLog(@"Port %ld seems in use. Restarting...", this.port);
-//            [this stop];
-//            [this startWithCompletionBlock: this.completionBlock];
-//            return;
-//        }
     };
     
     NSLog(@"Launching '%@' with %@: %@", _task.launchPath, _task.arguments, _task);

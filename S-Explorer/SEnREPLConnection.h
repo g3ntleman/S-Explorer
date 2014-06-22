@@ -42,6 +42,8 @@ typedef void (^SEnREPLConnectBlock)(SEnREPLConnection* connection, NSError* erro
 
 @interface SEnREPLConnection : NSObject <GCDAsyncSocketDelegate>
 
+// USe CFStreamCreatePairWithSocketToHost instead?
+
 @property (readonly, nonatomic) GCDAsyncSocket* socket;
 @property (readonly, nonatomic) NSString* hostname;
 @property (readonly, nonatomic) NSString* sessionID;
@@ -65,5 +67,7 @@ typedef void (^SEnREPLConnectBlock)(SEnREPLConnection* connection, NSError* erro
 - (void) openWithConnectBlock: (SEnREPLConnectBlock) completionBlock;
 
 - (void) close;
+
+- (id) allSessionIDs;
 
 @end

@@ -12,12 +12,15 @@
 #import "SESourceItem.h"
 #import "SESourceEditorController.h"
 #import "SEnREPL.h"
+#import "CDEvents.h"
 
 extern NSString* SEProjectDocumentType;
 
 @class SESourceItem;
 
 @interface SEProject : NSDocument <NSOutlineViewDataSource, NSOutlineViewDelegate, NSUserInterfaceValidations, NSTabViewDelegate>
+
+@property (strong, nonatomic) CDEvents* fileWatcher;
 
 @property (nonatomic, readonly) SEnREPL* nREPL;
 @property (readonly, nonatomic) SEREPLViewController* topREPLController;

@@ -46,6 +46,7 @@
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>scm</string>
+				<string>sld</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>doc_clojure</string>
@@ -1360,7 +1361,6 @@
 				<string>public.source-code</string>
 				<string>public.plain-text</string>
 				<string>public.text</string>
-				<string>public.data</string>
 			</array>
 			<key>UTTypeIdentifier</key>
 			<string>public.scheme-source</string>
@@ -1369,6 +1369,7 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>scm</string>
+					<string>sld</string>
 				</array>
 			</dict>
 		</dict>
@@ -1386,23 +1387,6 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>seproj</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.text</string>
-			</array>
-			<key>UTTypeIdentifier</key>
-			<string>public.scheme-source</string>
-			<key>UTTypeReferenceURL</key>
-			<string>http://developer.apple.com/tools/xcode/</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>scm</string>
 				</array>
 			</dict>
 		</dict>

@@ -44,6 +44,8 @@
 }
 
 - (void) openWithConnectBlock: (SEnREPLConnectBlock) completionBlock {
+    
+    NSAssert(self.evaluationStatesByTag.count == 0, @"Looks like the connection %@ had been used before. Allocate a new connection each time.", self);
     NSAssert(self.socket, @"openWithError: Socket not set.");
     NSAssert(self.socket.isDisconnected, @"openWithError: Socket still open. Close it first.");
     
@@ -78,11 +80,11 @@
     
     if ([_socket isConnected]) {
         if (self.sessionID.length) {
-            NSLog(@"Closing The receiver session.");
+            NSLog(@"Connection %@ will first close session.", self);
             [self terminateSessionWithCompletionBlock: closeBlock];
-        } else {
-            closeBlock(nil);
+            return;
         }
+        closeBlock(nil);
     }
 }
 
@@ -124,7 +126,7 @@
     NSArray* status = partialResultDictionary[@"status"];
     NSString* lastStatus = [status lastObject];
     if ([lastStatus isEqualToString: @"error"]) {
-        NSLog(@"nREPL error received: %@", status);
+        NSLog(@"%@ received error: %@", self, status);
         partialResultDictionary[@"NSError"] = [NSError errorWithDomain: @"org.cocoanuts.S-Explorer" code: -12 userInfo: @{NSLocalizedDescriptionKey: status[0]}]; // use all bust last array elements in description?
     }
     
@@ -137,19 +139,26 @@
         NSNumber* requestNo = partialResultDictionary[@"id"];
         SEnREPLResultState* evalState = _evaluationStatesByTag[requestNo]; // expect this to exist
 
-        NSAssert(evalState, @"No eval state found for partialResultDictionary %@", partialResultDictionary);
-        
-        NSLog(@"%@ received: %@ for requestNo %@", self, partialResultDictionary, requestNo);
+        NSString* sessionID = partialResultDictionary[@"session"];
+        if (sessionID.length) {
+            if (_sessionID && ! [_sessionID isEqualToString: sessionID]) {
+                NSLog(@"Warning! Session ID is changing.");
+            }
+            _sessionID = sessionID;
+            NSLog(@"%@ assigned session id.", self);
+        }
         
         self.readBuffer.length = 0; // Not always correct. Need to trim only parsed part (yet unknown).
         
-        NSString* sessionID = partialResultDictionary[@"session"];
-        if (sessionID.length) _sessionID = sessionID;
 
         // Do not send the last message (for now). Remove this, if the terminating message is needed.
         if (! done) {
+            NSAssert(evalState, @"No eval state found for partialResultDictionary %@", partialResultDictionary);
+
             evalState.partialResultBlock(partialResultDictionary);
         } else {
+            NSLog(@"%@ received: %@ for requestNo %@", self, partialResultDictionary, requestNo);
+
             // Cleanup:
             [_evaluationStatesByTag removeObjectForKey: requestNo];
         }
@@ -212,23 +221,22 @@
     return [self sendCommandDictionary: command completionBlock: block timeout: 6.0];
 }
 
-//- (id) allSessionIDs {
-//    __block NSString* sessionIDsString = nil;
-//    NSDictionary* command = @{@"op": @"ls-sessions", @"id": @(_tagCounter)};
-//    [self sendCommandDictionary: command completionBlock:^(NSDictionary *partialResult) {
-//        sessionIDsString = partialResult[@"value"];
-//    } timeout: 6.0];
-//    
-//    NSDate* start = [NSDate date];
-//    
-//    // Wait synchonously:
-//    while (! sessionIDsString && [start timeIntervalSinceDate: start] < 6.0) {
-//        NSLog(@"Waiting...");
-//    	[[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate: [NSDate dateWithTimeIntervalSinceNow: 0.2]];
-//    }
-//    return sessionIDsString;
-//}
-
+- (id) allSessionIDs {
+    __block NSString* sessionIDsString = nil;
+    NSDictionary* command = @{@"op": @"clone", @"id": @(_requestCounter)};
+    [self sendCommandDictionary: command completionBlock:^(NSDictionary *partialResult) {
+        sessionIDsString = partialResult[@"value"];
+    } timeout: 6.0];
+    
+    NSDate* start = [NSDate date];
+    
+    // Wait synchonously:
+    while (! sessionIDsString && [[NSDate date] timeIntervalSinceDate: start] < 6.0) {
+        NSLog(@"Waiting...");
+    	[[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate: [NSDate dateWithTimeIntervalSinceNow: 0.2]];
+    }
+    return sessionIDsString;
+}
 
 - (void) terminateSessionWithCompletionBlock: (SEnREPLPartialResultBlock) block {
     

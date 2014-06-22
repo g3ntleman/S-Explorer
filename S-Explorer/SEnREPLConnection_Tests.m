@@ -26,6 +26,7 @@
 //- (void)enumerateObjectsUsingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block NS_AVAILABLE(10_6, 4_0);
 
 
+
 - (void) evaluateExpression: (NSString*) expression completionBlock:  (void (^)(SEnREPLConnection* connection, NSDictionary* partialResult)) block {
     
     [self.repl startWithCompletionBlock: ^(SEnREPL* repl, NSError* anError) {
@@ -40,6 +41,7 @@
 
             [self.connection evaluateExpression: expression completionBlock:^(NSDictionary* partialResult) {
                 block(self.connection, partialResult);
+                XCTAssert(self.connection.sessionID.length, @"No Session ID after successful evaluation of %@", expression);
             }];
         }];
     }];
@@ -65,23 +67,54 @@
     [super tearDown];
     
     [self.connection close];
+    
+    if (self.connection.socket.isConnected) {
+        NSLog(@"Waiting for connection to close...");
+        while (self.connection.socket.isConnected) {
+            sleep(0.1);
+        }
+    }
+    
     [self.repl stop];
     // Wait for the task to actually terminate, so we can restart it:
+    sleep(0.1);
     if (self.repl.task.isRunning) {
-        NSLog(@"Waiting for JVM to terminate.");
+        NSLog(@"Waiting for server to terminate...");
         while (self.repl.task.isRunning) {
             sleep(0.1);
         }
         _repl = nil;
     }
+    self.connection = nil;
 }
 
 
+- (void) testListingAllSessionsAsync {
+    
+    XCAsyncFailAfter(20.0, @"%@ did not finish in time.", NSStringFromSelector(_cmd));
+
+    [self.repl startWithCompletionBlock: ^(SEnREPL* repl, NSError* anError) {
+        XCTAssert(anError == nil, @"Error starting REPL: %@", anError);
+        
+        self.connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost"
+                                                                 port: self.repl.port
+                                                            sessionID: nil];
+        
+        [self.connection openWithConnectBlock: ^(SEnREPLConnection* connection, NSError* anError) {
+            XCTAssert(anError == nil, @"Error connecting to REPL: %@", anError);
+
+    
+            NSString* allSessions = self.connection.allSessionIDs;
+            NSLog(@"All Session IDs = %@", allSessions);
+            XCAsyncSuccess();
+        }];
+    }];
+}
 
 
 - (void) testMultipleExpressionEvaluationsAsync {
     
-    XCAsyncFailAfter(15.0, @"%@ did not finish in time.", NSStringFromSelector(_cmd));
+    XCAsyncFailAfter(20.0, @"%@ did not finish in time.", NSStringFromSelector(_cmd));
     
     NSString* testExpression = @"(map inc (list 1 2 3))";
     
@@ -106,12 +139,13 @@
 
 - (void) testLongResultExpressionEvaluationAsync {
 
-    XCAsyncFailAfter(20.0, @"%@ did not finish in time.", NSStringFromSelector(_cmd));
+    XCAsyncFailAfter(30.0, @"%@ did not finish in time.", NSStringFromSelector(_cmd));
 
     NSString* testExpression = @"(range 3000)";
     [self evaluateExpression: testExpression completionBlock:^(SEnREPLConnection *connection, NSDictionary *partialResult) {
         NSString* evaluationResult = partialResult[@"value"];
         XCTAssert([evaluationResult hasSuffix: @" 2999)"], @"-evaluateExpression:... returned wrong result.");
+        NSLog(@"%@ received correct eval result.", connection);
         XCAsyncSuccess();
     }];
 }
