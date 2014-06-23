@@ -30,10 +30,12 @@ typedef enum {
 
 - (id) initWithFileURL: (NSURL*) aURL;
 
-- (SESourceItem*) childItemWithName: (NSString*) name;
+- (void) syncChildren;
 - (SESourceItem*) childWithPath: (NSString*) path;
 
 - (void) enumerateAllUsingBlock: (void (^)(SESourceItem* item, BOOL *stop)) block;
+
+
 
 @end
 

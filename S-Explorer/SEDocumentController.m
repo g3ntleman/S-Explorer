@@ -103,7 +103,7 @@
         // Now that the project is open, show the SESourceItem for filename (if any):
         SEProject* project = (SEProject*)document;
         if (filename.length) {
-            SESourceItem* sourceItem = [[project projectFolderItem] childItemWithName: filename];
+            SESourceItem* sourceItem = [[project projectFolderItem] childWithPath: filename];
             [project openSourceItem: sourceItem];
         }
     }];

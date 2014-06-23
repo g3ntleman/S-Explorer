@@ -73,7 +73,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             
             if (sourceURL) {
                 // Open sourceURL in the first Tab:
-                self.currentSourceItem = [self.projectFolderItem childItemWithName: [sourceURL lastPathComponent]];
+                self.currentSourceItem = [self.projectFolderItem childWithPath: [sourceURL lastPathComponent]];
             }
         
         NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
@@ -125,7 +125,11 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         _projectFolderItem = [[SESourceItem alloc] initWithFileURL: [self.fileURL URLByDeletingLastPathComponent]];
         self.fileWatcher = [[CDEvents alloc] initWithURLs: @[_projectFolderItem.fileURL] block: ^(CDEvents *watcher, CDEvent *event) {
             NSLog(@"fileWatcher reports: %@", event);
+            
+            [_projectFolderItem syncChildren];
+            [self.sourceList reloadData];
         }];
+        self.fileWatcher.ignoreEventsFromSubDirectories = NO;
     }
     return _projectFolderItem;
 }

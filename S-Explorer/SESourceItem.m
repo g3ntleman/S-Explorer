@@ -211,11 +211,14 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     return success;
 }
 
+/**
+ * Primitive. Does not automatically sync.
+ */
 - (SESourceItem*) childItemWithName: (NSString*) name {
-    if ([name isEqualToString: @"/"]) {
+    if (name.length == 0 || [name isEqualToString: @"/"]) {
         return self;
     }
-    for (SESourceItem* child in self.children) {
+    for (SESourceItem* child in _children) {
         if ([child.name isEqualToString: name]) {
             return child;
         }
@@ -224,6 +227,9 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 }
 
 - (SESourceItem*) childWithPath: (NSString*) aPath {
+    if (_children == nil) {
+        [self syncChildren];
+    }
     NSArray* pathComponents = [aPath pathComponents];
     SESourceItem* current = self;
     for (NSString* name in pathComponents) {
@@ -233,8 +239,38 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     return current;
 }
 
+/**
+ * Syncs the children array with the file system. Call this, whenevery the file system has changed, so the documents can reflect that.
+ */
+- (void) syncChildren {
+    
+    if (self.type != SESourceItemTypeFolder) {
+        return; // Files cannot have children
+    }
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSMutableArray* newChildren = [[NSMutableArray alloc] initWithCapacity: _children.count];
+    
+    for (NSURL* itemURL in [fileManager enumeratorAtURL: self.fileURL
+                             includingPropertiesForKeys: @[NSURLIsDirectoryKey]
+                                                options: NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
+                                           errorHandler: ^BOOL(NSURL *url, NSError *error) {
+                                               NSLog(@"Error enumerating %@. Error %@", url, error);
+                                               return YES;
+                                           }])
+    {
+        SESourceItem* item =  [self childItemWithName: [itemURL lastPathComponent]];
+        if (! item) {
+            item = [[[self class] alloc] initWithFileURL: itemURL parent: self];
+        }
+        [newChildren addObject: item];
+    }
+    
+    _children = [newChildren copy]; // make immutable
+}
 
-/** 
+/**
   * Creates, caches, and returns the array of children SESourceItem objects.
   * Loads children incrementally. Returns nil for file items that cannot have children.
   **/
@@ -245,24 +281,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     }
     
     if (_children == nil) {
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-
-        _children = [[NSMutableArray alloc] initWithCapacity: 10];
-        
-        for (NSURL* itemURL in [fileManager enumeratorAtURL: self.fileURL
-                                 includingPropertiesForKeys: @[NSURLIsDirectoryKey]
-                                                    options: NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
-                                               errorHandler: ^BOOL(NSURL *url, NSError *error) {
-                                                   NSLog(@"Error enumerating %@. Error %@", url, error);
-                                                   return YES;
-                                               }])
-        {
-            SESourceItem* item = [[[self class] alloc] initWithFileURL: itemURL parent: self];
-            NSLog(@"item = %@", itemURL);
-            [_children addObject: item];
-        }
-        
-        _children = [_children copy]; // make immutable
+        [self syncChildren];
     }
     return _children;
 }
