@@ -239,6 +239,12 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     return current;
 }
 
+- (void) setFileURL:(NSURL *)url {
+    if (! [self.fileURL isEqual: url]) {
+        [super setFileURL: url];
+    }
+}
+
 /**
  * Syncs the children array with the file system. Call this whenever the file system has changed, so the documents can reflect that.
  */
@@ -263,8 +269,13 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
         SESourceItem* item =  [self childItemWithName: [itemURL lastPathComponent]];
         if (! item) {
             item = [[[self class] alloc] initWithFileURL: itemURL parent: self];
+        } else {
+            // Set fileURL of item here to reflect changes in the path above self:
+            item.fileURL = itemURL;
         }
         [newChildren addObject: item];
+
+        [item syncChildren];
     }
     
     // Detect all documents that are no longer a child:
