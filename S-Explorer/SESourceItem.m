@@ -240,7 +240,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 }
 
 /**
- * Syncs the children array with the file system. Call this, whenevery the file system has changed, so the documents can reflect that.
+ * Syncs the children array with the file system. Call this whenever the file system has changed, so the documents can reflect that.
  */
 - (void) syncChildren {
     
@@ -265,6 +265,16 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
             item = [[[self class] alloc] initWithFileURL: itemURL parent: self];
         }
         [newChildren addObject: item];
+    }
+    
+    // Detect all documents that are no longer a child:
+    NSMutableSet* orphanedChildren = [NSMutableSet setWithArray: _children];
+    for (SESourceItem* child in newChildren) {
+        [orphanedChildren removeObject: child];
+    }
+    // CLose any orphaned childen:
+    for (SESourceItem* orphanedChild in orphanedChildren) {
+        [orphanedChild close];
     }
     
     _children = [newChildren copy]; // make immutable
