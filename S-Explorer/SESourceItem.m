@@ -15,7 +15,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     NSMutableArray* _children; // SESourceItem objects
     __weak SESourceItem* _parent;
     NSInteger changeCount;
-    BOOL changeCountValid;
+    BOOL changeCountValid; // supports undo functionality
 }
 
 @synthesize content;
@@ -226,9 +226,12 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     return nil;
 }
 
+/**
+ * Returns the child source item at results from navigating the relative path given starting from the receier.
+ */
 - (SESourceItem*) childWithPath: (NSString*) aPath {
     if (_children == nil) {
-        [self syncChildren];
+        [self syncChildrenRecursive: YES];
     }
     NSArray* pathComponents = [aPath pathComponents];
     SESourceItem* current = self;
@@ -248,7 +251,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 /**
  * Syncs the children array with the file system. Call this whenever the file system has changed, so the documents can reflect that.
  */
-- (void) syncChildren {
+- (void) syncChildrenRecursive: (BOOL) recursive {
     
     if (self.type != SESourceItemTypeFolder) {
         return; // Files cannot have children
@@ -274,8 +277,9 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
             item.fileURL = itemURL;
         }
         [newChildren addObject: item];
-
-        [item syncChildren];
+        if (recursive) {
+            [item syncChildrenRecursive: YES];
+        }
     }
     
     // Detect all documents that are no longer a child:
@@ -302,7 +306,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     }
     
     if (_children == nil) {
-        [self syncChildren];
+        [self syncChildrenRecursive: NO];
     }
     return _children;
 }

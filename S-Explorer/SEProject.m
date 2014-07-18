@@ -123,12 +123,40 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 - (SESourceItem*) projectFolderItem {
     if (! _projectFolderItem && self.fileURL) {
         _projectFolderItem = [[SESourceItem alloc] initWithFileURL: [self.fileURL URLByDeletingLastPathComponent]];
-        self.fileWatcher = [[CDEvents alloc] initWithURLs: @[_projectFolderItem.fileURL] block: ^(CDEvents *watcher, CDEvent *event) {
-            NSLog(@"fileWatcher reports: %@", event);
-            
-            [_projectFolderItem syncChildren];
-            [self.sourceList reloadData];
-        }];
+        self.fileWatcher = [[CDEvents alloc] initWithURLs: @[_projectFolderItem.fileURL]
+                                                    block: ^(CDEvents *watcher, CDEvent *event) {
+                                                        NSLog(@"fileWatcher reports: %@", event);
+                                                        NSString* changedURLString = event.URL.path;
+                                                        if (event.flags & (kFSEventStreamEventFlagUserDropped | kFSEventStreamEventFlagKernelDropped)) {
+                                                            [_projectFolderItem syncChildrenRecursive: YES];
+                                                            [self.sourceList reloadData];
+                                                        } else {
+                                                            // Find the respective SourceItem and make it syn with the file system:
+                                                            NSString* projectPath = [[_projectFolderItem fileURL] path];
+                                                            if ([changedURLString hasPrefix: projectPath]) {
+                                                                NSString* relativePath = [changedURLString substringFromIndex: projectPath.length];
+                                                                SESourceItem* item = [_projectFolderItem childWithPath: relativePath];
+                                                                if (item.type == SESourceItemTypeFolder) {
+                                                                    BOOL recursive = event.mustRescanSubDirectories;
+                                                                    [item syncChildrenRecursive: recursive];
+                                                                    [self.sourceList reloadData];
+                                                                } else {
+                                                                    // TODO: reload file content or display conflict error:
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                onRunLoop: [NSRunLoop currentRunLoop]
+                                     sinceEventIdentifier: 0
+                                     notificationLantency: 3.0
+                                  ignoreEventsFromSubDirs: NO
+                                              excludeURLs: nil
+                                      streamCreationFlags: kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagIgnoreSelf | kFSEventStreamCreateFlagFileEvents];
+                            
+                            
+                            
+                            
+                            
         self.fileWatcher.ignoreEventsFromSubDirectories = NO;
     }
     return _projectFolderItem;
