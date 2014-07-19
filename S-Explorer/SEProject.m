@@ -117,6 +117,18 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     }
 }
 
+// Reload Source List (mostly) without loosing selection:
+- (void) reloadSourceList {
+    NSOutlineView* slist = self.sourceList;
+    id selectedItem = [slist itemAtRow: slist.selectedRow];
+    [self.sourceList reloadData];
+    NSInteger rowToSelect = [slist rowForItem: selectedItem];
+    if (rowToSelect != NSNotFound) {
+        [slist selectRowIndexes: [NSIndexSet indexSetWithIndex: [self.sourceList rowForItem: selectedItem]]
+           byExtendingSelection: NO];
+    }
+}
+
 /**
  * The source item describing the folder containing the project file.
  */
@@ -128,7 +140,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                                                         NSString* changedURLString = event.URL.path;
                                                         if (event.flags & (kFSEventStreamEventFlagUserDropped | kFSEventStreamEventFlagKernelDropped)) {
                                                             [_projectFolderItem syncChildrenRecursive: YES];
-                                                            [self.sourceList reloadData];
+                                                            [self reloadSourceList];
                                                         } else {
                                                             if ([changedURLString.lastPathComponent hasPrefix: @"."]) {
                                                                 return; // skip hidden files
@@ -147,7 +159,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                                                                         if (item.type == SESourceItemTypeFolder) {
                                                                             BOOL recursive = event.mustRescanSubDirectories;
                                                                             [item syncChildrenRecursive: recursive];
-                                                                            [self.sourceList reloadData];
+                                                                            [self reloadSourceList];
                                                                         } else {
                                                                             // TODO: reload file content or display conflict error:
                                                                             NSLog(@"Content of file %@ changed.", changedURLString);
@@ -357,6 +369,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 - (void) awakeFromNib {
     self.sourceList.doubleAction = @selector(sourceTableDoubleAction:);
+    self.sourceList.indentationMarkerFollowsCell = NO;
 }
 
 

@@ -12,7 +12,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 
 @implementation SESourceItem {
     NSString* _name;
-    NSMutableArray* _children; // SESourceItem objects
+    NSArray* _children; // SESourceItem objects
     __weak SESourceItem* _parent;
     NSInteger changeCount;
     BOOL changeCountValid; // supports undo functionality
@@ -292,7 +292,15 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
         [orphanedChild close];
     }
     
-    _children = [newChildren copy]; // make immutable
+    _children = [newChildren sortedArrayUsingComparator: ^NSComparisonResult(SESourceItem* i1, SESourceItem* i2) {
+        if (i1.type == i2.type) {
+            return [i1.name compare: i2.name];
+        }
+        if (i1.type == SESourceItemTypeFolder) {
+            return NSOrderedAscending;
+        }
+        return NSOrderedDescending;
+    }]; // makes immutable
 }
 
 - (BOOL) isOpen {
