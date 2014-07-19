@@ -123,7 +123,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 //}
 
 - (NSTextStorage*) content {
-    if (! content) {
+     if (! content) {
         NSError* readError = nil;
         [self readFromURL: self.fileURL ofType: self.fileType error: &readError];
         _lastError = readError;
@@ -259,7 +259,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
-    NSMutableArray* newChildren = [[NSMutableArray alloc] initWithCapacity: _children.count];
+    NSMutableArray* newChildren = [[NSMutableArray alloc] initWithCapacity: _children.count + 1];
     
     for (NSURL* itemURL in [fileManager enumeratorAtURL: self.fileURL
                              includingPropertiesForKeys: @[NSURLIsDirectoryKey]
@@ -293,6 +293,15 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     }
     
     _children = [newChildren copy]; // make immutable
+}
+
+- (BOOL) isOpen {
+    return content != nil;
+}
+
+- (void) close {
+    content = nil;
+    [super close];
 }
 
 /**

@@ -125,24 +125,38 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         _projectFolderItem = [[SESourceItem alloc] initWithFileURL: [self.fileURL URLByDeletingLastPathComponent]];
         self.fileWatcher = [[CDEvents alloc] initWithURLs: @[_projectFolderItem.fileURL]
                                                     block: ^(CDEvents *watcher, CDEvent *event) {
-                                                        NSLog(@"fileWatcher reports: %@", event);
                                                         NSString* changedURLString = event.URL.path;
                                                         if (event.flags & (kFSEventStreamEventFlagUserDropped | kFSEventStreamEventFlagKernelDropped)) {
                                                             [_projectFolderItem syncChildrenRecursive: YES];
                                                             [self.sourceList reloadData];
                                                         } else {
-                                                            // Find the respective SourceItem and make it syn with the file system:
-                                                            NSString* projectPath = [[_projectFolderItem fileURL] path];
-                                                            if ([changedURLString hasPrefix: projectPath]) {
-                                                                NSString* relativePath = [changedURLString substringFromIndex: projectPath.length];
-                                                                SESourceItem* item = [_projectFolderItem childWithPath: relativePath];
-                                                                if (item.type == SESourceItemTypeFolder) {
-                                                                    BOOL recursive = event.mustRescanSubDirectories;
-                                                                    [item syncChildrenRecursive: recursive];
-                                                                    [self.sourceList reloadData];
-                                                                } else {
-                                                                    // TODO: reload file content or display conflict error:
-                                                                }
+                                                            if ([changedURLString.lastPathComponent hasPrefix: @"."]) {
+                                                                return; // skip hidden files
+                                                            }
+                                                            if (event.flags & (kFSEventStreamEventFlagItemCreated | kFSEventStreamEventFlagItemRemoved | kFSEventStreamEventFlagItemModified)) {
+                                                                NSLog(@"fileWatcher reports: %@", event);
+                                                                    // Find the respective SourceItem and make it syn with the file system:
+                                                                    NSString* projectPath = [[_projectFolderItem fileURL] path];
+                                                                    if ([changedURLString hasPrefix: projectPath]) {
+                                                                        NSString* relativePath = [changedURLString substringFromIndex: projectPath.length];
+                                                                        SESourceItem* item = [_projectFolderItem childWithPath: relativePath];
+                                                                        if (! item) {
+                                                                            NSLog(@"Oops! No item found for path '%@'. Ignoring.", relativePath);
+                                                                            return;
+                                                                        }
+                                                                        if (item.type == SESourceItemTypeFolder) {
+                                                                            BOOL recursive = event.mustRescanSubDirectories;
+                                                                            [item syncChildrenRecursive: recursive];
+                                                                            [self.sourceList reloadData];
+                                                                        } else {
+                                                                            // TODO: reload file content or display conflict error:
+                                                                            NSLog(@"Content of file %@ changed.", changedURLString);
+                                                                            if (item.isOpen && ! item.isDocumentEdited) {
+                                                                                [item revertToContentsOfURL: event.URL ofType: item.fileType error: NULL];
+                                                                            }
+                                                                        }
+                                                                    }
+
                                                             }
                                                         }
                                                     }
@@ -151,7 +165,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                                      notificationLantency: 3.0
                                   ignoreEventsFromSubDirs: NO
                                               excludeURLs: nil
-                                      streamCreationFlags: kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagIgnoreSelf | kFSEventStreamCreateFlagFileEvents];
+                                      streamCreationFlags: kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagIgnoreSelf /*| kFSEventStreamCreateFlagFileEvents*/];
                             
                             
                             

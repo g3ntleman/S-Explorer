@@ -36,7 +36,7 @@ typedef enum {
 
 - (void) enumerateAllUsingBlock: (void (^)(SESourceItem* item, BOOL *stop)) block;
 
-
+- (BOOL) isOpen;
 
 @end
 
