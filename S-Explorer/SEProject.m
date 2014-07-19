@@ -133,7 +133,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                                                             if ([changedURLString.lastPathComponent hasPrefix: @"."]) {
                                                                 return; // skip hidden files
                                                             }
-                                                            if (event.flags & (kFSEventStreamEventFlagItemCreated | kFSEventStreamEventFlagItemRemoved | kFSEventStreamEventFlagItemModified)) {
+                                                            if (YES || event.flags & (kFSEventStreamEventFlagItemCreated | kFSEventStreamEventFlagItemRemoved | kFSEventStreamEventFlagItemModified)) {
                                                                 NSLog(@"fileWatcher reports: %@", event);
                                                                     // Find the respective SourceItem and make it syn with the file system:
                                                                     NSString* projectPath = [[_projectFolderItem fileURL] path];
@@ -162,7 +162,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                                                     }
                                                 onRunLoop: [NSRunLoop currentRunLoop]
                                      sinceEventIdentifier: 0
-                                     notificationLantency: 3.0
+                                     notificationLantency: 2.0
                                   ignoreEventsFromSubDirs: NO
                                               excludeURLs: nil
                                       streamCreationFlags: kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagIgnoreSelf /*| kFSEventStreamCreateFlagFileEvents*/];
