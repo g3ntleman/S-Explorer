@@ -41,13 +41,18 @@ NSSet* SESingleIndentFunctions() {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
 }
 
+
+
 - (void) setSourceItem: (SESourceItem*) sourceItem {
     if (_sourceItem != sourceItem) {
         _sourceItem = sourceItem;
-        [self.textView.layoutManager replaceTextStorage: sourceItem.content];
+
+        [_sourceItem open];
+        
+        [self.textView.layoutManager replaceTextStorage: _sourceItem.contents];
         [self.textView.lineNumberView updateObservedTextStorage]; // found no better place to put this. :-/
         
-        NSTextStorage* textStorage = sourceItem.content;
+        NSTextStorage* textStorage = _sourceItem.contents;
         
         NSString* fileContent = textStorage.string;
         if (! fileContent)
@@ -55,19 +60,20 @@ NSSet* SESingleIndentFunctions() {
         NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [NSFont fontWithName: @"Menlo" size: 13.0], NSFontAttributeName, nil, nil];
         [textStorage setAttributes: attributes range: NSMakeRange(0, fileContent.length)];
         
-        // Colorize scheme files:
+        // Colorize certain files:
         NSString* pathExtension = [sourceItem.name.pathExtension lowercaseString];
         
         
         NSSet* sourceExtensions = [NSSet setWithObjects: @"scm", @"sld", @"clj", nil]; // make more flexible!
         
         _colorizeSourceItem = [sourceExtensions containsObject: pathExtension];
-
+        
         self.textView.keywords = [NSOrderedSet orderedSetWithArray: self.defaultKeywords];
-
+        
         [self.textView.enclosingScrollView flashScrollers];
         
         [self.textView colorize: self];
+    
     }
 }
 

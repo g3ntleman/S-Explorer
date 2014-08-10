@@ -14,6 +14,9 @@
 #import "OPUtilityFunctions.h"
 #import "OPTabView.h"
 #import "SEImageView.h"
+#import "NSTableView+OPSelection.h"
+#import "SCEvents.h"
+
 
 NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
@@ -110,6 +113,19 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     }];
 }
 
+- (IBAction) newFile: (id) sender {
+    
+    NSError* error = nil;
+    NSString* filename = @"Untitled.scm";
+    NSURL* newURL = [self.projectFolderItem.fileURL URLByAppendingPathComponent: filename];
+    [@"" writeToURL: newURL atomically: NO encoding: NSUTF8StringEncoding error: &error];
+    [self.projectFolderItem syncChildrenRecursive: NO];
+    [self.sourceList reloadData];
+    SESourceItem* newSourceItem = [self.projectFolderItem childWithPath: filename];
+    [self.sourceList selectRowIndex: [self.sourceList rowForItem: newSourceItem]];
+}
+
+
 - (void) setFileURL:(NSURL *)url {
     if (! [url isEqual: self.fileURL]) {
         [super setFileURL:url];
@@ -129,12 +145,41 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     }
 }
 
+- (void) pathWatcher: (SCEvents*) pathWatcher eventOccurred: (SCEvent*) event {
+    NSLog(@"File Event occured: %@", event);
+    
+    NSTextStorage* prevTS = self.editorController.textView.textStorage;
+    NSTextStorage* itemPrevTS = self.currentSourceItem.contents;
+
+    //SCEventStreamEventFlagMustScanSubDirs
+    [self.projectFolderItem syncChildrenRecursive: YES];
+    
+    NSTextStorage* newTS = self.editorController.textView.textStorage;
+    NSTextStorage* itemNewTS = self.currentSourceItem.contents;
+
+    [self reloadSourceList];
+    
+//    if (self.currentSourceItem.content != self.editorController.textView.textStorage) {
+//        self.editorController.textView.layoutManager.textStorage = self.currentSourceItem.content;
+//    }
+}
+
+
 /**
  * The source item describing the folder containing the project file.
  */
 - (SESourceItem*) projectFolderItem {
     if (! _projectFolderItem && self.fileURL) {
         _projectFolderItem = [[SESourceItem alloc] initWithFileURL: [self.fileURL URLByDeletingLastPathComponent]];
+        
+        self.pathWatcher = [[SCEvents alloc] init];
+        self.pathWatcher.delegate = self;
+        [self.pathWatcher startWatchingPaths: @[_projectFolderItem.fileURL.path]];
+        
+        NSLog(@"%@", [self.pathWatcher streamDescription]);
+
+        
+/*
         self.fileWatcher = [[CDEvents alloc] initWithURLs: @[_projectFolderItem.fileURL]
                                                     block: ^(CDEvents *watcher, CDEvent *event) {
                                                         NSString* changedURLString = event.URL.path;
@@ -150,10 +195,14 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                                                                     // Find the respective SourceItem and make it syn with the file system:
                                                                     NSString* projectPath = [[_projectFolderItem fileURL] path];
                                                                     if ([changedURLString hasPrefix: projectPath]) {
-                                                                        NSString* relativePath = [changedURLString substringFromIndex: projectPath.length];
-                                                                        SESourceItem* item = [_projectFolderItem childWithPath: relativePath];
+                                                                        SESourceItem* item = _projectFolderItem;
+                                                                        NSString* relativePath = @"";
+                                                                        if (changedURLString.length > projectPath.length) {
+                                                                            relativePath = [changedURLString substringFromIndex: projectPath.length];
+                                                                            item = [_projectFolderItem childWithPath: relativePath];
+                                                                        }
                                                                         if (! item) {
-                                                                            NSLog(@"Oops! No item found for path '%@'. Ignoring.", relativePath);
+                                                                            NSLog(@"Oops! No item found for path '%@'. Ignoring.", relativePath); // TODO!!
                                                                             return;
                                                                         }
                                                                         if (item.type == SESourceItemTypeFolder) {
@@ -177,13 +226,12 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                                      notificationLantency: 2.0
                                   ignoreEventsFromSubDirs: NO
                                               excludeURLs: nil
-                                      streamCreationFlags: kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagIgnoreSelf /*| kFSEventStreamCreateFlagFileEvents*/];
-                            
-                            
-                            
-                            
-                            
+                                      streamCreationFlags: kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagIgnoreSelf 
+ //| kFSEventStreamCreateFlagFileEvents
+        ];
+        
         self.fileWatcher.ignoreEventsFromSubDirectories = NO;
+        */
     }
     return _projectFolderItem;
 }
@@ -746,8 +794,17 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return edited;
 }
 
+- (void) close {
+    [self.pathWatcher stopWatchingPaths];
+    self.pathWatcher.delegate = nil;
+    self.pathWatcher = nil;
+    [super close];
+}
+
+
 - (void) canCloseDocumentWithDelegate: (id) delegate shouldCloseSelector: (SEL)shouldCloseSelector contextInfo: (void*) contextInfo {
     NSLog(@"closing sourceItems...");
+
     [self saveAllSourceItems: nil];
     
     [super canCloseDocumentWithDelegate:delegate shouldCloseSelector:shouldCloseSelector contextInfo:contextInfo];

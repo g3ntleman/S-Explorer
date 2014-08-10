@@ -8,7 +8,6 @@
 
 #import "SEnREPL.h"
 #import "PseudoTTY.h"
-#import "CDEvents.h"
 
 @interface SEnREPL ()
 

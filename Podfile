@@ -4,7 +4,7 @@ xcodeproj 'S-Explorer.xcodeproj'
 
 target "S-Explorer" do
 #pod 'AFNetworking'
-pod 'CDEvents'
+pod 'SCEvents'
 end
 
 

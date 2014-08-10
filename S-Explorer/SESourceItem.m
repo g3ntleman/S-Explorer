@@ -7,6 +7,7 @@
 //
 
 #import "SESourceItem.h"
+#import "NSMutableAttributedString+OPConvenience.h"
 
 NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEditedState";
 
@@ -16,9 +17,11 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     __weak SESourceItem* _parent;
     NSInteger changeCount;
     BOOL changeCountValid; // supports undo functionality
+    BOOL _wasRead;
+
 }
 
-@synthesize content;
+//@synthesize content;
 
 - (id) init {
     if (self = [super init]) {
@@ -32,26 +35,32 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     NSError* error = nil;
     if (self = [self init]) {
         NSParameterAssert(aURL != nil);
-        NSNumber* typeNo;
-        [aURL getResourceValue: &typeNo forKey: NSURLIsDirectoryKey error: &error];
-        _type = [typeNo boolValue] ? SESourceItemTypeFolder : SESourceItemTypeFile;
+        
         _parent = parentItem;
 
-        self.fileURL = aURL;
-        if (_type == SESourceItemTypeFile) {
-            NSString* theType;
-            [aURL getResourceValue:&theType forKey:NSURLTypeIdentifierKey error:&error];
-            self.fileType = theType;
-        }
-        
-        NSDate* modDate = nil;
-        [aURL getResourceValue: &modDate forKey: NSURLContentModificationDateKey error: &error];
-
-        self.fileModificationDate = modDate;
-        
-        if (! parentItem && _type == SESourceItemTypeFolder) {
-            // Assume root item
-            self.fileURL = [aURL fileReferenceURL];
+        NSNumber* typeNo; // bool
+        [aURL getResourceValue: &typeNo forKey: NSURLIsDirectoryKey error: &error];
+        if (error) {
+            _type = SESourceItemTypeFile;
+            self.fileModificationDate = [NSDate date];
+        } else {
+            _type = [typeNo boolValue] ? SESourceItemTypeFolder : SESourceItemTypeFile; // defaults to SESourceItemTypeFile
+            self.fileURL = aURL;
+            if (_type == SESourceItemTypeFile) {
+                NSString* theType;
+                [aURL getResourceValue:&theType forKey:NSURLTypeIdentifierKey error:&error];
+                self.fileType = theType;
+            }
+            
+            NSDate* modDate = nil;
+            [aURL getResourceValue: &modDate forKey: NSURLContentModificationDateKey error: &error];
+            
+            self.fileModificationDate = modDate;
+            
+            if (! parentItem && _type == SESourceItemTypeFolder) {
+                // Assume root item
+                self.fileURL = [aURL fileReferenceURL];
+            }
         }
         NSAssert(self.fileModificationDate, @"No file mod date set after init.");
     }
@@ -122,13 +131,11 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 //    }
 //}
 
-- (NSTextStorage*) content {
-     if (! content) {
-        NSError* readError = nil;
-        [self readFromURL: self.fileURL ofType: self.fileType error: &readError];
-        _lastError = readError;
+- (NSTextStorage*) contents {
+     if (! _contents) {
+         _contents = [[NSTextStorage alloc] init];
     }
-    return content;
+    return _contents;
 }
 
 - (void) enumerateAllUsingBlock: (void (^)(SESourceItem* item, BOOL *stop)) block stop: (BOOL*) stopPtr {
@@ -189,14 +196,15 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     
     NSString* contentString = [NSString stringWithContentsOfURL:absoluteURL encoding:NSUTF8StringEncoding error: outError];
     if (contentString) {
-        content = [[NSTextStorage alloc] initWithString: contentString];
+        self.contents.string = contentString;
+        _wasRead = YES;
     }
     //self.fileType = typeName;
     return contentString != nil;
 }
 
 - (BOOL) writeToURL: (NSURL*) url ofType: (NSString*) typeName error: (NSError *__autoreleasing *) outError {
-    BOOL success = [self.content.string writeToURL: url atomically: NO encoding: NSUTF8StringEncoding error: outError];
+    BOOL success = [self.contents.string writeToURL: url atomically: NO encoding: NSUTF8StringEncoding error: outError];
     if (success) {
         NSError* error2 = nil;
         NSDictionary * attributes = [[NSFileManager defaultManager] attributesOfItemAtPath: url.path error: &error2];
@@ -230,6 +238,10 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
  * Returns the child source item at results from navigating the relative path given starting from the receier.
  */
 - (SESourceItem*) childWithPath: (NSString*) aPath {
+    if ([aPath hasPrefix: @"/"]) {
+        aPath = [aPath substringFromIndex: 1];
+    }
+    
     if (_children == nil) {
         [self syncChildrenRecursive: YES];
     }
@@ -247,6 +259,12 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
         [super setFileURL: url];
     }
 }
+
+//- (void) setContents:(NSTextStorage *)contents {
+//    [self willChangeValueForKey: @"contents"];
+//    [super setContents: contents];
+//    [self didChangeValueForKey: @"contents"];
+//}
 
 /**
  * Syncs the children array with the file system. Call this whenever the file system has changed, so the documents can reflect that.
@@ -273,8 +291,23 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
         if (! item) {
             item = [[[self class] alloc] initWithFileURL: itemURL parent: self];
         } else {
-            // Set fileURL of item here to reflect changes in the path above self:
-            item.fileURL = itemURL;
+            if (![item.fileURL isEqual: itemURL]) {
+                // Set fileURL of item here to reflect changes in the path above self:
+                item.fileURL = itemURL;
+            }
+            if (item.isOpen) {
+                if ([item isDocumentEdited]) {
+                    NSBeep(); // TODO: Ask user which content to use
+                } else {
+                    // No changes have been made locally, so just revert to the file version:
+                    NSError* error = nil;
+                    if ([item revertToContentsOfURL: item.fileURL ofType: item.fileType error: &error]) {
+                        NSLog(@"Reverted content: '%@'", item.contents);
+                    } else {
+                        NSBeep();
+                    }
+                }
+            }
         }
         [newChildren addObject: item];
         if (recursive) {
@@ -287,7 +320,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     for (SESourceItem* child in newChildren) {
         [orphanedChildren removeObject: child];
     }
-    // CLose any orphaned childen:
+    // Close any orphaned childen:
     for (SESourceItem* orphanedChild in orphanedChildren) {
         [orphanedChild close];
     }
@@ -304,11 +337,22 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 }
 
 - (BOOL) isOpen {
-    return content != nil;
+    return _wasRead;
+}
+
+- (void) open {
+    if (! self.isOpen) {
+        NSError* error = nil;
+        [self readFromURL: self.fileURL ofType: self.fileType error: &error];
+        if (error) {
+            _lastError = error;
+        }
+    }
 }
 
 - (void) close {
-    content = nil;
+    _contents = nil;
+    _wasRead = NO;
     [super close];
 }
 

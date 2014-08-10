@@ -2,9 +2,9 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1080</int>
-		<string key="IBDocument.SystemVersion">13D65</string>
+		<string key="IBDocument.SystemVersion">13E28</string>
 		<string key="IBDocument.InterfaceBuilderVersion">5056</string>
-		<string key="IBDocument.AppKitVersion">1265.20</string>
+		<string key="IBDocument.AppKitVersion">1265.21</string>
 		<string key="IBDocument.HIToolboxVersion">698.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -194,6 +194,15 @@
 								<object class="NSMenuItem" id="705341025">
 									<reference key="NSMenu" ref="720053764"/>
 									<string key="NSTitle">New Project</string>
+									<string key="NSKeyEquiv">N</string>
+									<int key="NSKeyEquivModMask">1048576</int>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="1033313550"/>
+									<reference key="NSMixedImage" ref="310636482"/>
+								</object>
+								<object class="NSMenuItem" id="852800337">
+									<reference key="NSMenu" ref="720053764"/>
+									<string key="NSTitle">New File</string>
 									<string key="NSKeyEquiv">n</string>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -1191,6 +1200,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">newFile:</string>
+						<reference key="source" ref="1014"/>
+						<reference key="destination" ref="852800337"/>
+					</object>
+					<string key="id">3W7-bb-NjX</string>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">openSchemeTutorial:</string>
 						<reference key="source" ref="471048480"/>
 						<reference key="destination" ref="253952766"/>
@@ -1287,6 +1304,7 @@
 							<reference ref="29004375"/>
 							<reference ref="526381279"/>
 							<reference ref="254191351"/>
+							<reference ref="852800337"/>
 						</array>
 						<reference key="parent" ref="379814623"/>
 					</object>
@@ -1791,6 +1809,11 @@
 						<reference key="object" ref="254191351"/>
 						<reference key="parent" ref="720053764"/>
 					</object>
+					<object class="IBObjectRecord">
+						<string key="id">UK3-bj-gqs</string>
+						<reference key="object" ref="852800337"/>
+						<reference key="parent" ref="720053764"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -1881,6 +1904,7 @@
 				<string key="92.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="L8K-BV-PeY.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="NOg-B2-ltq.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="UK3-bj-gqs.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="dxJ-kF-dnh.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="rbj-OD-CBu.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="rci-D7-81W.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -2067,6 +2091,7 @@
 					<string key="superclassName">NSDocument</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="evaluateSelection:">id</string>
+						<string key="newFile:">id</string>
 						<string key="revealInFinder:">id</string>
 						<string key="revealInSourceList:">id</string>
 						<string key="revertCurrentSourceItemToSaved:">id</string>
@@ -2080,6 +2105,10 @@
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="evaluateSelection:">
 							<string key="name">evaluateSelection:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="newFile:">
+							<string key="name">newFile:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="revealInFinder:">

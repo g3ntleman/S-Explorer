@@ -68,11 +68,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SESourceEditorController.m"
-            timestampString = "424908427.039367"
+            timestampString = "429404482.044155"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "75"
-            endingLineNumber = "75"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
             landmarkName = "-undoManagerForTextView:"
             landmarkType = "5">
          </BreakpointContent>
@@ -300,12 +300,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SESourceItem.m"
-            timestampString = "427432761.2232"
+            timestampString = "429404482.044155"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "399"
-            endingLineNumber = "399"
-            landmarkName = "-setChangeCount:"
+            startingLineNumber = "437"
+            endingLineNumber = "437"
+            landmarkName = "-isDocumentEdited"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -316,11 +316,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SESourceItem.m"
-            timestampString = "427432761.2232"
+            timestampString = "429404482.044155"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "429"
-            endingLineNumber = "429"
+            startingLineNumber = "467"
+            endingLineNumber = "467"
             landmarkName = "-updateChangeCount:"
             landmarkType = "5">
          </BreakpointContent>

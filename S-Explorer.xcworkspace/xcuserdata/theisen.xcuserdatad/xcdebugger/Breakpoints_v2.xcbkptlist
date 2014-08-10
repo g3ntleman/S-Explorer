@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEProject.m"
-            timestampString = "423337551.402568"
+            timestampString = "429390633.551521"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "54"
-            endingLineNumber = "54"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
             landmarkName = "-initWithContentsOfURL:ofType:error:"
             landmarkType = "5">
          </BreakpointContent>
@@ -90,11 +90,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEnREPL.m"
-            timestampString = "425087668.751272"
+            timestampString = "429393561.209205"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "147"
-            endingLineNumber = "147"
+            startingLineNumber = "146"
+            endingLineNumber = "146"
             landmarkName = "-taskOutputReceived:"
             landmarkType = "5">
          </BreakpointContent>
@@ -245,13 +245,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "S-Explorer/SEProject.m"
-            timestampString = "427433715.803564"
+            filePath = "S-Explorer/SESourceItem.m"
+            timestampString = "429403843.679789"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "141"
-            endingLineNumber = "141"
-            landmarkName = "-projectFolderItem"
+            startingLineNumber = "242"
+            endingLineNumber = "242"
+            landmarkName = "-childWithPath:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -262,12 +262,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEProject.m"
-            timestampString = "427433715.803564"
+            timestampString = "429390633.551521"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "161"
-            endingLineNumber = "161"
-            landmarkName = "-projectFolderItem"
+            startingLineNumber = "125"
+            endingLineNumber = "125"
+            landmarkName = "-newFile:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -277,45 +277,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "S-Explorer/SEProject.m"
-            timestampString = "427433715.803564"
+            filePath = "S-Explorer/SESourceItem.m"
+            timestampString = "429403896.23505"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "151"
-            endingLineNumber = "151"
-            landmarkName = "-projectFolderItem"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "S-Explorer/SEProject.m"
-            timestampString = "427433715.803564"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "148"
-            endingLineNumber = "148"
-            landmarkName = "-projectFolderItem"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "S-Explorer/SEProject.m"
-            timestampString = "427433715.803564"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "157"
-            endingLineNumber = "157"
-            landmarkName = "-projectFolderItem"
+            startingLineNumber = "136"
+            endingLineNumber = "136"
+            landmarkName = "-contents"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

@@ -20,7 +20,7 @@ typedef enum {
 
 @property (nonatomic, readonly) BOOL isTextItem;
 @property (nonatomic, weak, readonly) SESourceItem* parent;
-@property (nonatomic, strong) NSTextStorage* content;
+@property (nonatomic, strong) NSTextStorage* contents;
 @property (nonatomic, readonly) NSString* name;
 @property (nonatomic, readonly) SESourceItemType type;
 
@@ -29,6 +29,7 @@ typedef enum {
 @property (readonly) NSError* lastError;
 
 - (id) initWithFileURL: (NSURL*) aURL;
+- (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem;
 
 - (void) syncChildrenRecursive: (BOOL) recursive;
 
@@ -36,6 +37,8 @@ typedef enum {
 
 - (void) enumerateAllUsingBlock: (void (^)(SESourceItem* item, BOOL *stop)) block;
 
+- (void) open;
+- (void) close;
 - (BOOL) isOpen;
 
 @end

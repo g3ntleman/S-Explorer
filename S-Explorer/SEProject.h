@@ -12,15 +12,15 @@
 #import "SESourceItem.h"
 #import "SESourceEditorController.h"
 #import "SEnREPL.h"
-#import "CDEvents.h"
+#import "SCEvents.h"
 
 extern NSString* SEProjectDocumentType;
 
 @class SESourceItem;
 
-@interface SEProject : NSDocument <NSOutlineViewDataSource, NSOutlineViewDelegate, NSUserInterfaceValidations, NSTabViewDelegate>
+@interface SEProject : NSDocument <NSOutlineViewDataSource, NSOutlineViewDelegate, NSUserInterfaceValidations, NSTabViewDelegate, SCEventListenerProtocol>
 
-@property (strong, nonatomic) CDEvents* fileWatcher;
+@property (strong, nonatomic) SCEvents* pathWatcher;
 
 @property (nonatomic, readonly) SEnREPL* nREPL;
 @property (readonly, nonatomic) SEREPLViewController* topREPLController;
@@ -59,6 +59,7 @@ extern NSString* SEProjectDocumentType;
 
 - (IBAction) runProject: (id) sender;
 - (IBAction) revealInFinder: (id) sender;
+- (IBAction) newFile: (id) sender;
 
 
 - (void) setSourceItem: (SESourceItem*) item forTabIndex: (NSUInteger) index;
