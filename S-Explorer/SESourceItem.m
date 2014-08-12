@@ -22,7 +22,15 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 
 }
 
-//@synthesize content;
++ (NSDictionary*) languageKeysByFileType {
+    static NSDictionary* languageKeysByFileType = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        languageKeysByFileType = @{@"public.scheme-source": @"Chibi-Scheme",
+                                   @"public.clojure-source": @"Clojure"};
+    });
+    return languageKeysByFileType;
+}
 
 - (id) init {
     if (self = [super init]) {
@@ -92,7 +100,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 
 - (NSDictionary*) languageDictionary {
     NSDictionary* languageDictionaries = [[NSBundle mainBundle] infoDictionary][@"LanguageSupport"];
-    return languageDictionaries[@"Chibi-Scheme"];
+    return languageDictionaries[[[self class] languageKeysByFileType][self.fileType]];
 }
 
 
