@@ -36,7 +36,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     return [[self class] description];
 }
 
-- (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem {
+- (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem error: (NSError*__autoreleasing*) outError {
     NSError* error = nil;
     if (self = [self init]) {
         NSParameterAssert(aURL != nil);
@@ -69,6 +69,9 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
         }
         NSAssert(self.fileModificationDate, @"No file mod date set after init.");
     }
+    if (outError) {
+        *outError = error;
+    }
     return self;
 }
 
@@ -77,7 +80,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 //}
 
 - (id) initWithContentsOfURL: (NSURL*) aURL ofType: (NSString*) typeName error: (NSError*__autoreleasing*) outError {
-    return [self initWithFileURL: aURL parent: nil];
+    return [self initWithFileURL: aURL parent: nil error: outError];
 }
 
 - (NSString*) name {
@@ -299,7 +302,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     {
         SESourceItem* item =  [self childItemWithName: [itemURL lastPathComponent]];
         if (! item) {
-            item = [[[self class] alloc] initWithFileURL: itemURL parent: self];
+            item = [[[self class] alloc] initWithFileURL: itemURL parent: self error: nil];
         } else {
             if (![item.fileURL isEqual: itemURL]) {
                 // Set fileURL of item here to reflect changes in the path above self:

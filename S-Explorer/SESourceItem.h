@@ -29,7 +29,7 @@ typedef enum {
 @property (readonly) NSError* lastError;
 
 //- (id) initWithFileURL: (NSURL*) aURL;
-- (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem;
+- (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem error: (NSError*__autoreleasing*) outError;
 
 - (id) initWithContentsOfURL: (NSURL*) url ofType: (NSString*) typeName error: (NSError*__autoreleasing*) outError;
 
