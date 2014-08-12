@@ -8,6 +8,7 @@
 
 #import "SESourceItem.h"
 #import "NSMutableAttributedString+OPConvenience.h"
+#import "SESourceEditorController.h"
 
 NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEditedState";
 
@@ -36,7 +37,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     return [[self class] description];
 }
 
-- (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem error: (NSError*__autoreleasing*) outError {
+- (id) initWithContentsOfURL: (NSURL*) aURL parent: (SESourceItem*) parentItem ofType: (NSString*) typeName error: (NSError*__autoreleasing*) outError {
     NSError* error = nil;
     if (self = [self init]) {
         NSParameterAssert(aURL != nil);
@@ -51,11 +52,10 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
         } else {
             _type = [typeNo boolValue] ? SESourceItemTypeFolder : SESourceItemTypeFile; // defaults to SESourceItemTypeFile
             self.fileURL = aURL;
-            if (_type == SESourceItemTypeFile) {
-                NSString* theType;
-                [aURL getResourceValue:&theType forKey:NSURLTypeIdentifierKey error:&error];
-                self.fileType = theType;
+            if (_type == SESourceItemTypeFile && ! typeName) {
+                [aURL getResourceValue: &typeName forKey: NSURLTypeIdentifierKey error: &error];
             }
+            self.fileType = typeName;
             
             NSDate* modDate = nil;
             [aURL getResourceValue: &modDate forKey: NSURLContentModificationDateKey error: &error];
@@ -80,8 +80,21 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 //}
 
 - (id) initWithContentsOfURL: (NSURL*) aURL ofType: (NSString*) typeName error: (NSError*__autoreleasing*) outError {
-    return [self initWithFileURL: aURL parent: nil error: outError];
+    return [self initWithContentsOfURL: aURL parent: nil ofType: typeName error: outError];
 }
+
+- (void)windowControllerDidLoadNib:(NSWindowController *)aController {
+    [super windowControllerDidLoadNib:aController];
+    self.sourceEditorController.defaultKeywords = self.languageDictionary[@"Keywords"][@"StaticList"];
+    self.sourceEditorController.sourceItem = self;
+}
+
+
+- (NSDictionary*) languageDictionary {
+    NSDictionary* languageDictionaries = [[NSBundle mainBundle] infoDictionary][@"LanguageSupport"];
+    return languageDictionaries[@"Chibi-Scheme"];
+}
+
 
 - (NSString*) name {
     if (! _name) {
@@ -302,7 +315,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     {
         SESourceItem* item =  [self childItemWithName: [itemURL lastPathComponent]];
         if (! item) {
-            item = [[[self class] alloc] initWithFileURL: itemURL parent: self error: nil];
+            item = [[[self class] alloc] initWithContentsOfURL: itemURL parent: self ofType: nil error: nil];
         } else {
             if (![item.fileURL isEqual: itemURL]) {
                 // Set fileURL of item here to reflect changes in the path above self:

@@ -61,7 +61,7 @@
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
 			<key>NSDocumentClass</key>
-			<string>SEProjectDocument</string>
+			<string>SESourceItem</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -81,7 +81,7 @@
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
 			<key>NSDocumentClass</key>
-			<string>SEProjectDocument</string>
+			<string>SESourceItem</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeName</key>

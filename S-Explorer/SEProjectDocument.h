@@ -38,7 +38,6 @@ extern NSString* SEProjectDocumentType;
 @property (strong, readonly) NSMutableDictionary* uiSettings;
 @property (strong, nonatomic) IBOutlet SESourceEditorController* editorController; // Controls one SEEditorTextView, switching between tabs is done by setting a new sourceItem.
 
-@property (strong, readonly) NSArray* availableLanguages; // NSArray of strings representing programming languages
 @property (strong, nonatomic) NSString* currentLanguage;
 @property (strong, readonly) NSDictionary* languageDictionary;
 @property (strong, readonly) SESourceItem* currentSourceItem;

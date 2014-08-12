@@ -21,7 +21,7 @@
 
 @property (strong, nonatomic) NSArray* defaultKeywords; // sorted array (for prefix search)
 //@property (strong, nonatomic) NSArray* sortedKeywords; // sorted array (for prefix search)
-@property (strong, nonatomic) SESourceItem* sourceItem; // the source item to display
+@property (weak, nonatomic) SESourceItem* sourceItem; // the source item to display
 
 - (void) indentInRange: (NSRange) range;
 

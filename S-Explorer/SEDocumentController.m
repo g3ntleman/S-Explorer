@@ -66,6 +66,9 @@
     // Check, if we are trying to open a file in a project that is already open:
     NSString* urlPath = url.path;
     for (SEProjectDocument* project in self.documents) {
+        if (! [project isKindOfClass: [SEProjectDocument class]]) {
+            continue;
+        }
         NSString* projectPath = project.projectFolderItem.fileURL.path;
         if ([urlPath hasPrefix: projectPath]) {
             // Do not open any document, just show an existing one:
@@ -80,6 +83,17 @@
         }
     }
     // The source file spefified in url is not already part of an open project document.
+    
+    if ([[url pathExtension] isEqualTo: @"scm"]) {
+        [super openDocumentWithContentsOfURL: url display: displayDocument completionHandler: completionHandler];
+//        NSError* error = nil;
+//        SESourceItem* sourceDocument = [[SESourceItem alloc] initWithContentsOfURL: url ofType:  error: &error];
+//        if (displayDocument) {
+//            [sourceDocument ]
+//        }
+//        completionHandler(sourceDocument, NO, error);
+        return;
+    }
     
     NSURL* projectFileURL = nil;
     NSURL* projectFolderURL = nil;

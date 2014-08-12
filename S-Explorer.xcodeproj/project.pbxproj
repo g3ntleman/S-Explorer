@@ -16,7 +16,6 @@
 		8D16399817C57FAE000DD491 /* S-Explorer.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 8D16399717C57FAE000DD491 /* S-Explorer.iconset */; };
 		8D16399C17C6BC1D000DD491 /* SEApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D16399B17C6BC1D000DD491 /* SEApplicationDelegate.m */; };
 		8D16FB5C19491FDE00DF9F91 /* PseudoTTY.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D94C2461783AA8B00D8595B /* PseudoTTY.m */; };
-		8D179893193D4423002FA4AB /* XCTestAsync.h in Sources */ = {isa = PBXBuildFile; fileRef = 8D179891193D4423002FA4AB /* XCTestAsync.h */; };
 		8D179894193D4423002FA4AB /* XCTestAsync.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D179892193D4423002FA4AB /* XCTestAsync.m */; };
 		8D17FE2817EA72A000883285 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D17FE2717EA72A000883285 /* XCTest.framework */; };
 		8D20FB281988660B002A8995 /* NSTableView+OPSelection.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D20FB271988660B002A8995 /* NSTableView+OPSelection.m */; };
@@ -564,7 +563,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D179893193D4423002FA4AB /* XCTestAsync.h in Sources */,
 				8D88F642182FBC1F00AB1D35 /* SEnREPL.m in Sources */,
 				8D179894193D4423002FA4AB /* XCTestAsync.m in Sources */,
 				8D470B9C18196DCA00C0C654 /* OPBEncoding_Tests.m in Sources */,

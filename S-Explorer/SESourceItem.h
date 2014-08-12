@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class SESourceEditorController;
+
 extern NSString* SESourceItemChangedEditedStateNotification;
 
 typedef enum {
@@ -23,13 +25,13 @@ typedef enum {
 @property (nonatomic, strong) NSTextStorage* contents;
 @property (nonatomic, readonly) NSString* name;
 @property (nonatomic, readonly) SESourceItemType type;
-
+@property (nonatomic, strong) IBOutlet SESourceEditorController* sourceEditorController;
 
 
 @property (readonly) NSError* lastError;
 
 //- (id) initWithFileURL: (NSURL*) aURL;
-- (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem error: (NSError*__autoreleasing*) outError;
+- (id) initWithContentsOfURL: (NSURL*) aURL parent: (SESourceItem*) parentItem ofType: (NSString*) typeName error: (NSError*__autoreleasing*) outError;
 
 - (id) initWithContentsOfURL: (NSURL*) url ofType: (NSString*) typeName error: (NSError*__autoreleasing*) outError;
 
