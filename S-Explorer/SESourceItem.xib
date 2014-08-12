@@ -16,25 +16,26 @@
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="597" height="270"/>
+            <rect key="contentRect" x="40" y="90" width="750" height="700"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1280" height="778"/>
+            <value key="minSize" type="size" width="300" height="200"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="597" height="270"/>
+                <rect key="frame" x="0.0" y="0.0" width="750" height="700"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="13" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="OTI-dU-Xha" userLabel="Bordered Scroll View - Text View">
-                        <rect key="frame" x="0.0" y="0.0" width="597" height="270"/>
+                        <rect key="frame" x="0.0" y="0.0" width="750" height="700"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" copiesOnScroll="NO" id="Zhq-Oh-ay1">
-                            <rect key="frame" x="0.0" y="0.0" width="597" height="270"/>
+                            <rect key="frame" x="0.0" y="0.0" width="750" height="700"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView importsGraphics="NO" richText="NO" findStyle="panel" allowsUndo="YES" usesRuler="YES" verticallyResizable="YES" spellingCorrection="YES" id="nR1-Xn-Rz4" customClass="SESourceEditorTextView">
-                                    <rect key="frame" x="0.0" y="0.0" width="597" height="270"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="750" height="700"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="597" height="270"/>
-                                    <size key="maxSize" width="597" height="10000000"/>
+                                    <size key="minSize" width="750" height="700"/>
+                                    <size key="maxSize" width="750" height="10000000"/>
                                     <attributedString key="textStorage">
                                         <fragment content="(source editor)">
                                             <attributes>
@@ -44,8 +45,8 @@
                                         </fragment>
                                     </attributedString>
                                     <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="597" height="270"/>
-                                    <size key="maxSize" width="597" height="10000000"/>
+                                    <size key="minSize" width="750" height="700"/>
+                                    <size key="maxSize" width="750" height="10000000"/>
                                 </textView>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
