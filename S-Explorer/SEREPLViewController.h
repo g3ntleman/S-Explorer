@@ -12,7 +12,7 @@
 #import "SEnREPL.h"
 #import "SESourceTextViewController.h"
 
-@class SEProject;
+@class SEProjectDocument;
 
 @interface SEREPLViewController : SESourceTextViewController
 
@@ -25,10 +25,10 @@
 @property (nonatomic, readonly) NSArray* commandHistory;
 @property (nonatomic, readonly) NSInteger previousCommandHistoryIndex;
 @property (nonatomic, readonly) NSString* identifier;
-@property (nonatomic, readonly, weak) SEProject* project;
+@property (nonatomic, readonly, weak) SEProjectDocument* project;
 
 
-- (id) initWithProject: (SEProject*) aProject identifier: (NSString*) anIdentifier;
+- (id) initWithProject: (SEProjectDocument*) aProject identifier: (NSString*) anIdentifier;
 
 - (IBAction) run: (id) sender;
 

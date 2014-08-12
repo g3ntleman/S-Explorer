@@ -24,7 +24,7 @@
 			<key>LSTypeIsPackage</key>
 			<false/>
 			<key>NSDocumentClass</key>
-			<string>SEProject</string>
+			<string>SEProjectDocument</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeName</key>
@@ -40,7 +40,7 @@
 			<key>LSTypeIsPackage</key>
 			<false/>
 			<key>NSDocumentClass</key>
-			<string>SEProject</string>
+			<string>SEProjectDocument</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -61,7 +61,7 @@
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
 			<key>NSDocumentClass</key>
-			<string>SEProject</string>
+			<string>SEProjectDocument</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -81,7 +81,7 @@
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
 			<key>NSDocumentClass</key>
-			<string>SEProject</string>
+			<string>SEProjectDocument</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeName</key>
@@ -99,7 +99,7 @@
 			<key>LSTypeIsPackage</key>
 			<false/>
 			<key>NSDocumentClass</key>
-			<string>SEProject</string>
+			<string>SEProjectDocument</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>

@@ -18,7 +18,7 @@ extern NSString* SEProjectDocumentType;
 
 @class SESourceItem;
 
-@interface SEProject : NSDocument <NSOutlineViewDataSource, NSOutlineViewDelegate, NSUserInterfaceValidations, NSTabViewDelegate, SCEventListenerProtocol>
+@interface SEProjectDocument : NSDocument <NSOutlineViewDataSource, NSOutlineViewDelegate, NSUserInterfaceValidations, NSTabViewDelegate, SCEventListenerProtocol>
 
 @property (strong, nonatomic) SCEvents* pathWatcher;
 

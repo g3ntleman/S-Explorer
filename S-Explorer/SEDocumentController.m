@@ -7,7 +7,7 @@
 //
 
 #import "SEDocumentController.h"
-#import "SEProject.h"
+#import "SEProjectDocument.h"
 
 @interface NSSavePanel (SEDocumentController)
 
@@ -60,12 +60,12 @@
 //                  }];
 }
 
-- (void) openDocumentWithContentsOfURL: (NSURL*) url display: (BOOL) displayDocument completionHandler: (void (^)(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error)) completionHandler {
+- (void) openDocumentWithContentsOfURL: (NSURL*) url display: (BOOL) displayDocument completionHandler: (void (^)(NSDocument* document, BOOL documentWasAlreadyOpen, NSError* error)) completionHandler {
     
     // Find the project for the url given:
     // Check, if we are trying to open a file in a project that is already open:
     NSString* urlPath = url.path;
-    for (SEProject* project in self.documents) {
+    for (SEProjectDocument* project in self.documents) {
         NSString* projectPath = project.projectFolderItem.fileURL.path;
         if ([urlPath hasPrefix: projectPath]) {
             // Do not open any document, just show an existing one:
@@ -75,38 +75,62 @@
                 [project showWindows];
             }
             [project openSourceItem: sourceItem];
+            completionHandler(project, YES, nil);
             return;
         }
     }
+    // The source file spefified in url is not already part of an open project document.
     
+    NSURL* projectFileURL = nil;
+    NSURL* projectFolderURL = nil;
     NSFileManager *fm = [NSFileManager defaultManager];
     BOOL isDir;
     NSString* filename = nil;
     if ([fm fileExistsAtPath: [url path] isDirectory: &isDir]) {
-        if (! isDir && ! [[url pathExtension] isEqualToString: @"seproj"]) {
-        // We are trying to open a file (not a project file or directory):
-            filename = [url lastPathComponent];
-            url = [url URLByDeletingLastPathComponent];
-            isDir = YES;
+        if (isDir) {
+            projectFolderURL = url;
+        } else {
+            if ([[url pathExtension] isEqualToString: @"seproj"]) {
+                projectFileURL = url;
+                projectFolderURL = [projectFileURL URLByDeletingLastPathComponent];
+            } else {
+                // We are trying to open a source file (not a project file or directory):
+                filename = [url lastPathComponent];
+                projectFolderURL = [url URLByDeletingLastPathComponent];
+                isDir = YES;
+            }
         }
     }
     NSLog(@"Opening project at folder %@", url);
+    NSAssert(projectFolderURL, @"projectFolderURL not determined.");
     
-    if (isDir) {
-        url = [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"seproj"]];
+    if (! projectFileURL) {
+        projectFileURL = [projectFolderURL URLByAppendingPathComponent: [projectFolderURL.lastPathComponent stringByAppendingPathExtension: @"seproj"]];
     }
     
-    // Project found. url now points to a project file.
+    NSAssert(projectFileURL, @"projectFileURL not determined.");
 
-    [super openDocumentWithContentsOfURL:url display:displayDocument completionHandler: ^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
-        completionHandler(document, documentWasAlreadyOpen, error); // "super" call
-        // Now that the project is open, show the SESourceItem for filename (if any):
-        SEProject* project = (SEProject*)document;
-        if (filename.length) {
-            SESourceItem* sourceItem = [[project projectFolderItem] childWithPath: filename];
-            [project openSourceItem: sourceItem];
-        }
-    }];
+    // Project found. projectFileURL now points to a project file.
+
+    // Check, if file exists at URL:
+    if ([fm fileExistsAtPath: [projectFileURL path]]) {
+        // Project file exists:
+        [super openDocumentWithContentsOfURL:url display:displayDocument completionHandler: ^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
+            completionHandler(document, documentWasAlreadyOpen, error); // "super" call
+            // Now that the project is open, show the SESourceItem for filename (if any):
+            SEProjectDocument* project = (SEProjectDocument*)document;
+            if (filename.length) {
+                SESourceItem* sourceItem = [[project projectFolderItem] childWithPath: filename];
+                [project openSourceItem: sourceItem];
+            }
+        }];
+    } else {
+        // No project file exists. Create new document and set fileURL, return it:
+        NSError* error = nil;
+        SESourceItem* sourceDocument = [[SESourceItem alloc] initWithContentsOfURL: url ofType: nil error: nil];
+        
+        completionHandler(sourceDocument, NO, error);
+    }
 }
 
 
@@ -173,7 +197,7 @@
             // Open the new Project:
             [self openDocumentWithContentsOfURL: projectURL display: YES completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
                 NSLog(@"New Document opened: %@", document);
-                SEProject* project = (SEProject*)document;
+                SEProjectDocument* project = (SEProjectDocument*)document;
                 if (error) {
                     [[NSAlert alertWithError:error] runModal];
                 } else {

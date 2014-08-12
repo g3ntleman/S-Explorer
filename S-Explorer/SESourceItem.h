@@ -28,8 +28,11 @@ typedef enum {
 
 @property (readonly) NSError* lastError;
 
-- (id) initWithFileURL: (NSURL*) aURL;
+//- (id) initWithFileURL: (NSURL*) aURL;
 - (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem;
+
+- (id) initWithContentsOfURL: (NSURL*) url ofType: (NSString*) typeName error: (NSError*__autoreleasing*) outError;
+
 
 - (void) syncChildrenRecursive: (BOOL) recursive;
 

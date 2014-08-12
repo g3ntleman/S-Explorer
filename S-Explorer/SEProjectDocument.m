@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import "SEProject.h"
+#import "SEProjectDocument.h"
 #import "NSAlert+OPBlocks.h"
 #import "SESourceItem.h"
 #import "NSDictionary+OPImmutablility.h"
@@ -20,11 +20,11 @@
 
 NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
-@interface SEProject ()
+@interface SEProjectDocument ()
 @property (readonly) NSString* uiSettingsPath;
 @end
 
-@implementation SEProject {
+@implementation SEProjectDocument {
     NSMutableDictionary* uiSettings;
 }
 
@@ -55,38 +55,33 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     BOOL isDir = NO;
     [[NSFileManager defaultManager] fileExistsAtPath: url.path isDirectory: &isDir];
-    if (isDir) {
-        return [self initWithContentsOfURL: [url URLByAppendingPathComponent: [url.lastPathComponent stringByAppendingPathExtension: @"seproj"]] ofType: SEProjectDocumentType error: errorPtr];
-    } else {
+    NSAssert(! isDir, @"Try to open document of type '%@' from directory at '%@'.", typeName, url);
+    
+    //        if (! [typeName isEqualToString: SEProjectDocumentType]) {
+    //            // Propably some source file, use the parent folder as project name:
+    //            NSURL* folderURL = [url URLByDeletingLastPathComponent];
+    //            NSString* projectFileName = [folderURL.lastPathComponent stringByAppendingPathExtension: @"seproj"];
+    //            sourceURL = url;
+    //            url = [folderURL URLByAppendingPathComponent: projectFileName];
+    //        }
+    
+    
+    if (self = [super initWithContentsOfURL: url ofType: typeName error: errorPtr]) {
         
-        NSURL* sourceURL = nil;
+        NSLog(@"Opening document of type %@", typeName);
         
-//        if (! [typeName isEqualToString: SEProjectDocumentType]) {
-//            // Propably some source file, use the parent folder as project name:
-//            NSURL* folderURL = [url URLByDeletingLastPathComponent];
-//            NSString* projectFileName = [folderURL.lastPathComponent stringByAppendingPathExtension: @"seproj"];
-//            sourceURL = url;
-//            url = [folderURL URLByAppendingPathComponent: projectFileName];
+//        if (sourceURL) {
+//            // Open sourceURL in the first Tab:
+//            self.currentSourceItem = [self.projectFolderItem childWithPath: [sourceURL lastPathComponent]];
 //        }
-        
-        
-        if (self = [super initWithContentsOfURL: url ofType: typeName error: errorPtr]) {
-
-            NSLog(@"Opening document of type %@", typeName);
-            
-            if (sourceURL) {
-                // Open sourceURL in the first Tab:
-                self.currentSourceItem = [self.projectFolderItem childWithPath: [sourceURL lastPathComponent]];
-            }
         
         NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
         [nc addObserver: self selector: @selector(sourceItemEditedStateDidChange:)
                    name: SESourceItemChangedEditedStateNotification
                  object: nil];
-            
-        }
-        return self;
+        
     }
+    return self;
 }
 
 - (void) dealloc {
@@ -170,7 +165,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
  */
 - (SESourceItem*) projectFolderItem {
     if (! _projectFolderItem && self.fileURL) {
-        _projectFolderItem = [[SESourceItem alloc] initWithFileURL: [self.fileURL URLByDeletingLastPathComponent]];
+        _projectFolderItem = [[SESourceItem alloc] initWithContentsOfURL: [self.fileURL URLByDeletingLastPathComponent] ofType: nil error: nil];
         
         self.pathWatcher = [[SCEvents alloc] init];
         self.pathWatcher.delegate = self;
@@ -284,9 +279,9 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return YES;
 }
 
-- (NSString *)windowNibName {
+- (NSString*) windowNibName {
     // If you need to use a subclass of NSWindowController or if your document supports multiple NSWindowControllers, you should remove this method and override -makeWindowControllers instead.
-    return @"SEProject";
+    return [[self class] description];
 }
 
 - (SESourceItem*) currentSourceItem {
@@ -812,7 +807,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 @end
 
-@implementation SEProject (SourceOutlineViewDataSource)
+@implementation SEProjectDocument (SourceOutlineViewDataSource)
 // Data Source methods
 
 - (NSInteger) outlineView:(NSOutlineView*) outlineView numberOfChildrenOfItem: (id) item {

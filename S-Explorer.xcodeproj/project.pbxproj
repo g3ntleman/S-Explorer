@@ -10,8 +10,8 @@
 		0284ABD74E89483CA36D5274 /* libPods-S-Explorer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 910FEBFB5D694D2FB3D688F0 /* libPods-S-Explorer.a */; };
 		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; };
 		8D0904C2176A7C4800176BCF /* SESourceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904C1176A7C4800176BCF /* SESourceItem.m */; };
-		8D14A97419982D4F00DC8D7F /* NSMutableAttributedString+OPConvenience.h in Sources */ = {isa = PBXBuildFile; fileRef = 8D14A97219982D4F00DC8D7F /* NSMutableAttributedString+OPConvenience.h */; };
 		8D14A97519982D4F00DC8D7F /* NSMutableAttributedString+OPConvenience.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D14A97319982D4F00DC8D7F /* NSMutableAttributedString+OPConvenience.m */; };
+		8D14A97B1999825300DC8D7F /* SESourceItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D14A97A1999825300DC8D7F /* SESourceItem.xib */; };
 		8D16399617C3B7A6000DD491 /* SESourceEditorTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D16399517C3B7A6000DD491 /* SESourceEditorTextView.m */; };
 		8D16399817C57FAE000DD491 /* S-Explorer.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 8D16399717C57FAE000DD491 /* S-Explorer.iconset */; };
 		8D16399C17C6BC1D000DD491 /* SEApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D16399B17C6BC1D000DD491 /* SEApplicationDelegate.m */; };
@@ -32,8 +32,8 @@
 		8D604254173BE60800149409 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D604252173BE60800149409 /* InfoPlist.strings */; };
 		8D604256173BE60800149409 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604255173BE60800149409 /* main.m */; };
 		8D60425A173BE60800149409 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 8D604258173BE60800149409 /* Credits.rtf */; };
-		8D60425D173BE60800149409 /* SEProject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D60425C173BE60800149409 /* SEProject.m */; };
-		8D604260173BE60800149409 /* SEProject.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D60425E173BE60800149409 /* SEProject.xib */; };
+		8D60425D173BE60800149409 /* SEProjectDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D60425C173BE60800149409 /* SEProjectDocument.m */; };
+		8D604260173BE60800149409 /* SEProjectDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D60425E173BE60800149409 /* SEProjectDocument.xib */; };
 		8D604263173BE60800149409 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D604261173BE60800149409 /* MainMenu.xib */; };
 		8D604292173C142A00149409 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424C173BE60800149409 /* AppKit.framework */; };
 		8D604293173C143300149409 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D60424E173BE60800149409 /* Foundation.framework */; };
@@ -93,6 +93,7 @@
 		8D120D69176D2A3C0019577E /* PSMMetalTabStyle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PSMMetalTabStyle.m; sourceTree = "<group>"; };
 		8D14A97219982D4F00DC8D7F /* NSMutableAttributedString+OPConvenience.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = "NSMutableAttributedString+OPConvenience.h"; sourceTree = "<group>"; };
 		8D14A97319982D4F00DC8D7F /* NSMutableAttributedString+OPConvenience.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+OPConvenience.m"; sourceTree = "<group>"; };
+		8D14A97A1999825300DC8D7F /* SESourceItem.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SESourceItem.xib; sourceTree = "<group>"; };
 		8D16399417C3B7A6000DD491 /* SESourceEditorTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SESourceEditorTextView.h; sourceTree = "<group>"; };
 		8D16399517C3B7A6000DD491 /* SESourceEditorTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SESourceEditorTextView.m; sourceTree = "<group>"; };
 		8D16399717C57FAE000DD491 /* S-Explorer.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = "S-Explorer.iconset"; path = "Resources/S-Explorer.iconset"; sourceTree = "<group>"; };
@@ -133,9 +134,9 @@
 		8D604255173BE60800149409 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8D604257173BE60800149409 /* S-Explorer-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "S-Explorer-Prefix.pch"; sourceTree = "<group>"; };
 		8D604259173BE60800149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		8D60425B173BE60800149409 /* SEProject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SEProject.h; sourceTree = "<group>"; };
-		8D60425C173BE60800149409 /* SEProject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SEProject.m; sourceTree = "<group>"; };
-		8D60425F173BE60800149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/SEProject.xib; sourceTree = "<group>"; };
+		8D60425B173BE60800149409 /* SEProjectDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = SEProjectDocument.h; sourceTree = "<group>"; };
+		8D60425C173BE60800149409 /* SEProjectDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SEProjectDocument.m; sourceTree = "<group>"; };
+		8D60425F173BE60800149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/SEProjectDocument.xib; sourceTree = "<group>"; };
 		8D604262173BE60800149409 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		8D604294173C22D600149409 /* SEREPLViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = SEREPLViewController.h; sourceTree = "<group>"; };
 		8D604295173C22D600149409 /* SEREPLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEREPLViewController.m; sourceTree = "<group>"; };
@@ -306,9 +307,14 @@
 				8D8298D31758088000336E2F /* S-Explorer-support.scm */,
 				8D4DF83217F5AAF600BC0773 /* chibi-repl-server.scm */,
 				8D59F73317F130F6001CEAE4 /* repl-server.scm */,
-				8D60425B173BE60800149409 /* SEProject.h */,
-				8D60425C173BE60800149409 /* SEProject.m */,
-				8D60425E173BE60800149409 /* SEProject.xib */,
+				8DEE2AC417D434EE005BEDD0 /* SEDocumentController.h */,
+				8DEE2AC517D434EE005BEDD0 /* SEDocumentController.m */,
+				8D60425B173BE60800149409 /* SEProjectDocument.h */,
+				8D60425C173BE60800149409 /* SEProjectDocument.m */,
+				8D60425E173BE60800149409 /* SEProjectDocument.xib */,
+				8D0904C0176A7C4800176BCF /* SESourceItem.h */,
+				8D0904C1176A7C4800176BCF /* SESourceItem.m */,
+				8D14A97A1999825300DC8D7F /* SESourceItem.xib */,
 				8D16399417C3B7A6000DD491 /* SESourceEditorTextView.h */,
 				8D16399517C3B7A6000DD491 /* SESourceEditorTextView.m */,
 				8DD87680187B761A000D4B8C /* SESourceTextViewController.h */,
@@ -317,13 +323,9 @@
 				8D99612617BDB9730058FD0B /* SESourceEditorController.m */,
 				8D27BFF21766C59C00F1F8FA /* SESyntaxParser.h */,
 				8D27BFF31766C59C00F1F8FA /* SESyntaxParser.m */,
-				8D0904C0176A7C4800176BCF /* SESourceItem.h */,
-				8D0904C1176A7C4800176BCF /* SESourceItem.m */,
 				8D120D68176D2A3C0019577E /* PSMMetalTabStyle.h */,
 				8D120D69176D2A3C0019577E /* PSMMetalTabStyle.m */,
 				8DCBE48E17C9B4CD00A872A7 /* scheme-indexer.scm */,
-				8DEE2AC417D434EE005BEDD0 /* SEDocumentController.h */,
-				8DEE2AC517D434EE005BEDD0 /* SEDocumentController.m */,
 				8DB9855A17EA73E600DC72F8 /* SESavePanel.xib */,
 				8D604298173C388900149409 /* SEREPLView.h */,
 				8DD6BA961877562F00A88B99 /* SEREPLView.m */,
@@ -504,9 +506,10 @@
 				8D604254173BE60800149409 /* InfoPlist.strings in Resources */,
 				8D60425A173BE60800149409 /* Credits.rtf in Resources */,
 				8DE762FD17FB669800CD0A42 /* r7rs-overview.pdf in Resources */,
-				8D604260173BE60800149409 /* SEProject.xib in Resources */,
+				8D604260173BE60800149409 /* SEProjectDocument.xib in Resources */,
 				8D604263173BE60800149409 /* MainMenu.xib in Resources */,
 				8DB9855B17EA73E600DC72F8 /* SESavePanel.xib in Resources */,
+				8D14A97B1999825300DC8D7F /* SESourceItem.xib in Resources */,
 				8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */,
 				8D16399817C57FAE000DD491 /* S-Explorer.iconset in Resources */,
 				8DE794491937F38B0093DCCF /* folder@2x.png in Resources */,
@@ -574,7 +577,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D604256173BE60800149409 /* main.m in Sources */,
-				8D60425D173BE60800149409 /* SEProject.m in Sources */,
+				8D60425D173BE60800149409 /* SEProjectDocument.m in Sources */,
 				8D68CC5D191FCE30004C727A /* SEImageView.m in Sources */,
 				8D604297173C22D600149409 /* SEREPLViewController.m in Sources */,
 				8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */,
@@ -589,7 +592,6 @@
 				8D99612B17BE42150058FD0B /* NSTimer-NoodleExtensions.m in Sources */,
 				8D85E476182C8B190096C76E /* GCDAsyncSocket.m in Sources */,
 				8DD87682187B761A000D4B8C /* SESourceTextViewController.m in Sources */,
-				8D14A97419982D4F00DC8D7F /* NSMutableAttributedString+OPConvenience.h in Sources */,
 				8D99612F17BE42FF0058FD0B /* NoodleGlue.m in Sources */,
 				8DD6BA971877562F00A88B99 /* SEREPLView.m in Sources */,
 				8D5DD11917F6D13800E352FE /* NSView+OPCopying.m in Sources */,
@@ -635,12 +637,12 @@
 			name = Credits.rtf;
 			sourceTree = "<group>";
 		};
-		8D60425E173BE60800149409 /* SEProject.xib */ = {
+		8D60425E173BE60800149409 /* SEProjectDocument.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				8D60425F173BE60800149409 /* en */,
 			);
-			name = SEProject.xib;
+			name = SEProjectDocument.xib;
 			sourceTree = "<group>";
 		};
 		8D604261173BE60800149409 /* MainMenu.xib */ = {

@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Cocoanuts. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 
 @interface SEDocumentController : NSDocumentController
 

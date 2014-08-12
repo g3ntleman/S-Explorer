@@ -31,6 +31,11 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     return self;
 }
 
+- (NSString*) windowNibName {
+    // If you need to use a subclass of NSWindowController or if your document supports multiple NSWindowControllers, you should remove this method and override -makeWindowControllers instead.
+    return [[self class] description];
+}
+
 - (id) initWithFileURL: (NSURL*) aURL parent: (SESourceItem*) parentItem {
     NSError* error = nil;
     if (self = [self init]) {
@@ -67,7 +72,11 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     return self;
 }
 
-- (id) initWithFileURL: (NSURL*) aURL {
+//- (id) initWithFileURL: (NSURL*) aURL {
+//    return [self initWithFileURL: aURL parent: nil];
+//}
+
+- (id) initWithContentsOfURL: (NSURL*) aURL ofType: (NSString*) typeName error: (NSError*__autoreleasing*) outError {
     return [self initWithFileURL: aURL parent: nil];
 }
 
@@ -253,6 +262,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     }
     return current;
 }
+
 
 - (void) setFileURL:(NSURL *)url {
     if (! [self.fileURL isEqual: url]) {

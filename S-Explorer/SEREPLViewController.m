@@ -9,7 +9,7 @@
 #import "SEREPLViewController.h"
 #import "SEREPLView.h"
 #import "SESyntaxParser.h"
-#import "SEProject.h"
+#import "SEProjectDocument.h"
 
 static const NSString* SEMainFunctionKey = @"MainFunction";
 
@@ -33,7 +33,7 @@ static NSData* lineFeedData = nil;
     lineFeedData = [NSData dataWithBytes: "\n" length: 1];
 }
 
-- (id) initWithProject: (SEProject*) aProject identifier: (NSString*) anIdentifier {
+- (id) initWithProject: (SEProjectDocument*) aProject identifier: (NSString*) anIdentifier {
     if (self = [self init]) {
         _project = aProject;
         identifier = anIdentifier;
