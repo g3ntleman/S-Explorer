@@ -300,11 +300,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SESourceItem.m"
-            timestampString = "429572756.39622"
+            timestampString = "429585368.035217"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "471"
-            endingLineNumber = "471"
+            startingLineNumber = "463"
+            endingLineNumber = "463"
             landmarkName = "-isDocumentEdited"
             landmarkType = "5">
          </BreakpointContent>
@@ -316,11 +316,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SESourceItem.m"
-            timestampString = "429572756.39622"
+            timestampString = "429585368.035217"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "501"
-            endingLineNumber = "501"
+            startingLineNumber = "493"
+            endingLineNumber = "493"
             landmarkName = "-updateChangeCount:"
             landmarkType = "5">
          </BreakpointContent>

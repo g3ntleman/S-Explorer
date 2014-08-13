@@ -84,67 +84,58 @@
     }
     // The source file spefified in url is not already part of an open project document.
     
-    if ([[url pathExtension] isEqualTo: @"scm"]) {
-        [super openDocumentWithContentsOfURL: url display: displayDocument completionHandler: completionHandler];
-//        NSError* error = nil;
-//        SESourceItem* sourceDocument = [[SESourceItem alloc] initWithContentsOfURL: url ofType:  error: &error];
-//        if (displayDocument) {
-//            [sourceDocument ]
+    [super openDocumentWithContentsOfURL: url display: displayDocument completionHandler: completionHandler];
+    
+//    NSURL* projectFileURL = nil;
+//    NSURL* projectFolderURL = nil;
+//    NSFileManager *fm = [NSFileManager defaultManager];
+//    BOOL isDir;
+//    NSString* filename = nil;
+//    if ([fm fileExistsAtPath: [url path] isDirectory: &isDir]) {
+//        if (isDir) {
+//            projectFolderURL = url;
+//        } else {
+//            if ([[url pathExtension] isEqualToString: @"seproj"]) {
+//                projectFileURL = url;
+//                projectFolderURL = [projectFileURL URLByDeletingLastPathComponent];
+//            } else {
+//                // We are trying to open a source file (not a project file or directory):
+//                filename = [url lastPathComponent];
+//                projectFolderURL = [url URLByDeletingLastPathComponent];
+//                isDir = YES;
+//            }
 //        }
+//    }
+//    NSLog(@"Opening project at folder %@", url);
+//    NSAssert(projectFolderURL, @"projectFolderURL not determined.");
+//    
+//    if (! projectFileURL) {
+//        projectFileURL = [projectFolderURL URLByAppendingPathComponent: [projectFolderURL.lastPathComponent stringByAppendingPathExtension: @"seproj"]];
+//    }
+//    
+//    NSAssert(projectFileURL, @"projectFileURL not determined.");
+//
+//    // Project found. projectFileURL now points to a project file.
+//
+//    // Check, if file exists at URL:
+//    if ([fm fileExistsAtPath: [projectFileURL path]]) {
+//        // Project file exists:
+//        [super openDocumentWithContentsOfURL:url display:displayDocument completionHandler: ^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
+//            completionHandler(document, documentWasAlreadyOpen, error); // "super" call
+//            // Now that the project is open, show the SESourceItem for filename (if any):
+//            SEProjectDocument* project = (SEProjectDocument*)document;
+//            if (filename.length) {
+//                SESourceItem* sourceItem = [[project projectFolderItem] childWithPath: filename];
+//                [project openSourceItem: sourceItem];
+//            }
+//        }];
+//    } else {
+//        // No project file exists. Create new document and set fileURL, return it:
+//        NSError* error = nil;
+//        SESourceItem* sourceDocument = [[SESourceItem alloc] initWithContentsOfURL: url ofType: nil error: nil];
+//        
 //        completionHandler(sourceDocument, NO, error);
-        return;
-    }
-    
-    NSURL* projectFileURL = nil;
-    NSURL* projectFolderURL = nil;
-    NSFileManager *fm = [NSFileManager defaultManager];
-    BOOL isDir;
-    NSString* filename = nil;
-    if ([fm fileExistsAtPath: [url path] isDirectory: &isDir]) {
-        if (isDir) {
-            projectFolderURL = url;
-        } else {
-            if ([[url pathExtension] isEqualToString: @"seproj"]) {
-                projectFileURL = url;
-                projectFolderURL = [projectFileURL URLByDeletingLastPathComponent];
-            } else {
-                // We are trying to open a source file (not a project file or directory):
-                filename = [url lastPathComponent];
-                projectFolderURL = [url URLByDeletingLastPathComponent];
-                isDir = YES;
-            }
-        }
-    }
-    NSLog(@"Opening project at folder %@", url);
-    NSAssert(projectFolderURL, @"projectFolderURL not determined.");
-    
-    if (! projectFileURL) {
-        projectFileURL = [projectFolderURL URLByAppendingPathComponent: [projectFolderURL.lastPathComponent stringByAppendingPathExtension: @"seproj"]];
-    }
-    
-    NSAssert(projectFileURL, @"projectFileURL not determined.");
-
-    // Project found. projectFileURL now points to a project file.
-
-    // Check, if file exists at URL:
-    if ([fm fileExistsAtPath: [projectFileURL path]]) {
-        // Project file exists:
-        [super openDocumentWithContentsOfURL:url display:displayDocument completionHandler: ^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
-            completionHandler(document, documentWasAlreadyOpen, error); // "super" call
-            // Now that the project is open, show the SESourceItem for filename (if any):
-            SEProjectDocument* project = (SEProjectDocument*)document;
-            if (filename.length) {
-                SESourceItem* sourceItem = [[project projectFolderItem] childWithPath: filename];
-                [project openSourceItem: sourceItem];
-            }
-        }];
-    } else {
-        // No project file exists. Create new document and set fileURL, return it:
-        NSError* error = nil;
-        SESourceItem* sourceDocument = [[SESourceItem alloc] initWithContentsOfURL: url ofType: nil error: nil];
-        
-        completionHandler(sourceDocument, NO, error);
-    }
+//    }
 }
 
 

@@ -19,17 +19,6 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     NSInteger changeCount;
     BOOL changeCountValid; // supports undo functionality
     BOOL _wasRead;
-
-}
-
-+ (NSDictionary*) languageKeysByFileType {
-    static NSDictionary* languageKeysByFileType = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        languageKeysByFileType = @{@"public.scheme-source": @"Chibi-Scheme",
-                                   @"public.clojure-source": @"Clojure"};
-    });
-    return languageKeysByFileType;
 }
 
 - (id) init {
@@ -99,8 +88,10 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 
 
 - (NSDictionary*) languageDictionary {
-    NSDictionary* languageDictionaries = [[NSBundle mainBundle] infoDictionary][@"LanguageSupport"];
-    return languageDictionaries[[[self class] languageKeysByFileType][self.fileType]];
+    NSDictionary* infoDict = [[NSBundle mainBundle] infoDictionary];
+    NSDictionary* languageByFileType = infoDict[@"LanguageByFileType"];
+    NSDictionary* languageDictionaries = infoDict[@"LanguageSupport"];
+    return languageDictionaries[languageByFileType[self.fileType]];
 }
 
 
