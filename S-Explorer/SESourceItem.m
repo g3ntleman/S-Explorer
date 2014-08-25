@@ -114,6 +114,16 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     }
 }
 
+- (IBAction) saveCurrentSourceItem: (id) sender {
+    [self saveDocument: sender];
+}
+
+- (NSUndoManager *)windowWillReturnUndoManager:(NSWindow *)window {
+    NSUndoManager* undoManager = self.sourceEditorController.textView.undoManager;
+    return undoManager;
+}
+
+
 //
 //- (void) saveDocumentWithDelegate: delegate didSaveSelector: (SEL) selector contextInfo: (void*) info {
 //    if (self.fileURL != nil) {
@@ -470,6 +480,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
         
         if (isDocumentEditedChanged) {
             [[NSNotificationCenter defaultCenter] postNotificationName: @"SESourceItemChangedEditedState" object: self];
+            [self.sourceEditorController.textView.window setDocumentEdited: newCount != 0];
         }
     }
 }

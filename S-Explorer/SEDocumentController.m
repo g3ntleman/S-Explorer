@@ -21,13 +21,13 @@
     return SEProjectDocumentType;
 }
 
-- (id) makeUntitledDocumentOfType:(NSString*) typeName error: (NSError**) outError {
-    return nil;
-}
-
-- (id) openUntitledDocumentAndDisplay: (BOOL) displayDocument error: (NSError**) outError {
-    return nil;
-}
+//- (id) makeUntitledDocumentOfType:(NSString*) typeName error: (NSError**) outError {
+//    return nil;
+//}
+//
+//- (id) openUntitledDocumentAndDisplay: (BOOL) displayDocument error: (NSError**) outError {
+//    return nil;
+//}
 
 - (void) openDocument: (id) sender {
     
@@ -82,17 +82,33 @@
             return;
         }
     }
-    // The source file spefified in url is not already part of an open project document.
+    // The source file specified in url is not already part of an open project document.
     
-    [super openDocumentWithContentsOfURL: url display: displayDocument completionHandler: completionHandler];
+    
     
 //    NSURL* projectFileURL = nil;
 //    NSURL* projectFolderURL = nil;
-//    NSFileManager *fm = [NSFileManager defaultManager];
-//    BOOL isDir;
+    NSFileManager *fm = [NSFileManager defaultManager];
+    BOOL isDir;
 //    NSString* filename = nil;
-//    if ([fm fileExistsAtPath: [url path] isDirectory: &isDir]) {
-//        if (isDir) {
+    if ([fm fileExistsAtPath: [url path] isDirectory: &isDir]) {
+        if (isDir) {
+            url = [url URLByAppendingPathComponent: [[url lastPathComponent] stringByAppendingPathExtension: @"seproj"]];
+            NSError* error = nil;
+
+            
+            NSDocument* document = [self openUntitledDocumentAndDisplay: displayDocument error: &error];
+            document.fileURL = url;
+            
+//            if (displayDocument) {
+//                [document makeWindowControllers];
+//            }
+        }
+    }
+    
+    [super openDocumentWithContentsOfURL: url display: displayDocument completionHandler: completionHandler];
+
+    
 //            projectFolderURL = url;
 //        } else {
 //            if ([[url pathExtension] isEqualToString: @"seproj"]) {

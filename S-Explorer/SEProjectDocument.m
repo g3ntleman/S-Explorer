@@ -16,6 +16,7 @@
 #import "SEImageView.h"
 #import "NSTableView+OPSelection.h"
 #import "SCEvents.h"
+#import "SCEvent.h"
 
 
 NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
@@ -40,6 +41,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 - (id) init {
     if (self = [super init]) {
         self.currentLanguage = @"Clojure"; // TODO: Make configurable
+        projectSettings = [[NSMutableDictionary alloc] init];
+
         tabbedSourceItems = @{};
         allREPLControllers = @{};
     }
@@ -106,6 +109,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             [item saveDocument: self];
         }
     }];
+    [self saveDocument: sender];
 }
 
 - (IBAction) newFile: (id) sender {
@@ -125,6 +129,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     if (! [url isEqual: self.fileURL]) {
         [super setFileURL:url];
         _projectFolderItem = nil;
+        [self reloadSourceList];
     }
 }
 
@@ -143,14 +148,18 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 - (void) pathWatcher: (SCEvents*) pathWatcher eventOccurred: (SCEvent*) event {
     NSLog(@"File Event occured: %@", event);
     
-    NSTextStorage* prevTS = self.editorController.textView.textStorage;
-    NSTextStorage* itemPrevTS = self.currentSourceItem.contents;
-
-    //SCEventStreamEventFlagMustScanSubDirs
-    [self.projectFolderItem syncChildrenRecursive: YES];
+    SESourceItem* item = self.projectFolderItem;
     
-    NSTextStorage* newTS = self.editorController.textView.textStorage;
-    NSTextStorage* itemNewTS = self.currentSourceItem.contents;
+    NSString* changedURLString = event.eventPath;
+    NSString* projectPath = [[_projectFolderItem fileURL] path];
+    if ([changedURLString hasPrefix: projectPath]) {
+        if (changedURLString.length > projectPath.length) {
+            NSString* relativePath = [changedURLString substringFromIndex: projectPath.length];
+            item = [_projectFolderItem childWithPath: relativePath];
+        }
+    }
+
+    [item syncChildrenRecursive: event.eventFlags & SCEventStreamEventFlagMustScanSubDirs];
 
     [self reloadSourceList];
     
@@ -334,7 +343,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     }
 }
 
-- (void)saveDocument:(id)sender {
+- (void) saveDocument: (id) sender {
     [self saveProjectSettings];
 }
 
@@ -449,7 +458,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 - (void) startREPLServerAsNeccessary {
     
-    if (! self.nREPL.task.isRunning) {
+    if (! self.nREPL.task.isRunning && self.fileURL) {
         if (! self.nREPL) {
             NSMutableDictionary* settings = [self.languageDictionary mutableCopy];
             [settings addEntriesFromDictionary: self.topREPLSettings];
@@ -769,6 +778,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     NSLog(@"Saving current source item %@ to disk.", self.currentSourceItem);
     
     [self.currentSourceItem saveDocument: sender];
+    [self saveDocument: sender];
 }
 
 /* 

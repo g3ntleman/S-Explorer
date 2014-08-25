@@ -76,7 +76,7 @@
 		</dict>
 		<dict>
 			<key>CFBundleTypeName</key>
-			<string>Generic S-Explorer Document</string>
+			<string> S-Explorer Source Code</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSItemContentTypes</key>
@@ -88,7 +88,7 @@
 			<key>LSTypeIsPackage</key>
 			<false/>
 			<key>NSDocumentClass</key>
-			<string>SESourceItem</string>
+			<string>SEProjectDocument</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeName</key>

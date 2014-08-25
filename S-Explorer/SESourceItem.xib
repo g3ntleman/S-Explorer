@@ -62,6 +62,9 @@
                     </scrollView>
                 </subviews>
             </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="ULh-dk-EkN"/>
+            </connections>
         </window>
         <customObject id="GzU-of-0O0" customClass="SESourceEditorController">
             <connections>
