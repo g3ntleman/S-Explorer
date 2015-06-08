@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0284ABD74E89483CA36D5274 /* libPods-S-Explorer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 910FEBFB5D694D2FB3D688F0 /* libPods-S-Explorer.a */; };
 		8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */; };
+		8D05309B1B25B1DF00312A7C /* SCEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0530971B25B1CB00312A7C /* SCEvent.m */; };
+		8D05309C1B25B1E300312A7C /* SCEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D05309A1B25B1CB00312A7C /* SCEvents.m */; };
 		8D0904C2176A7C4800176BCF /* SESourceItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D0904C1176A7C4800176BCF /* SESourceItem.m */; };
 		8D14A97519982D4F00DC8D7F /* NSMutableAttributedString+OPConvenience.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D14A97319982D4F00DC8D7F /* NSMutableAttributedString+OPConvenience.m */; };
 		8D14A97B1999825300DC8D7F /* SESourceItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8D14A97A1999825300DC8D7F /* SESourceItem.xib */; };
@@ -86,6 +87,14 @@
 		15929986F07E47DCADF70F06 /* Pods-S-Explorer.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-S-Explorer.xcconfig"; path = "Pods/Pods-S-Explorer.xcconfig"; sourceTree = "<group>"; };
 		8D00FA911740D31B00E1AF90 /* NSAlert+OPBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAlert+OPBlocks.h"; sourceTree = "<group>"; };
 		8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAlert+OPBlocks.m"; sourceTree = "<group>"; };
+		8D0530931B25B1CB00312A7C /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		8D0530941B25B1CB00312A7C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		8D0530951B25B1CB00312A7C /* SCConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = SCConstants.h; sourceTree = "<group>"; };
+		8D0530961B25B1CB00312A7C /* SCEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = SCEvent.h; sourceTree = "<group>"; };
+		8D0530971B25B1CB00312A7C /* SCEvent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCEvent.m; sourceTree = "<group>"; };
+		8D0530981B25B1CB00312A7C /* SCEventListenerProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = SCEventListenerProtocol.h; sourceTree = "<group>"; };
+		8D0530991B25B1CB00312A7C /* SCEvents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = SCEvents.h; sourceTree = "<group>"; };
+		8D05309A1B25B1CB00312A7C /* SCEvents.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SCEvents.m; sourceTree = "<group>"; };
 		8D0904C0176A7C4800176BCF /* SESourceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SESourceItem.h; sourceTree = "<group>"; };
 		8D0904C1176A7C4800176BCF /* SESourceItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SESourceItem.m; sourceTree = "<group>"; };
 		8D120D68176D2A3C0019577E /* PSMMetalTabStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; path = PSMMetalTabStyle.h; sourceTree = "<group>"; };
@@ -210,13 +219,27 @@
 				8D99613117C1C7DF0058FD0B /* CoreServices.framework in Frameworks */,
 				8D604293173C143300149409 /* Foundation.framework in Frameworks */,
 				8D604292173C142A00149409 /* AppKit.framework in Frameworks */,
-				0284ABD74E89483CA36D5274 /* libPods-S-Explorer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8D0530921B25B1CB00312A7C /* SCEvents */ = {
+			isa = PBXGroup;
+			children = (
+				8D0530931B25B1CB00312A7C /* .gitignore */,
+				8D0530941B25B1CB00312A7C /* README.md */,
+				8D0530951B25B1CB00312A7C /* SCConstants.h */,
+				8D0530961B25B1CB00312A7C /* SCEvent.h */,
+				8D0530971B25B1CB00312A7C /* SCEvent.m */,
+				8D0530981B25B1CB00312A7C /* SCEventListenerProtocol.h */,
+				8D0530991B25B1CB00312A7C /* SCEvents.h */,
+				8D05309A1B25B1CB00312A7C /* SCEvents.m */,
+			);
+			path = SCEvents;
+			sourceTree = "<group>";
+		};
 		8D16399D17C6BC51000DD491 /* NoodleLineNumberView */ = {
 			isa = PBXGroup;
 			children = (
@@ -379,6 +402,7 @@
 		8DCBE48A17C76DDF00A872A7 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				8D0530921B25B1CB00312A7C /* SCEvents */,
 				8D00FA911740D31B00E1AF90 /* NSAlert+OPBlocks.h */,
 				8D00FA921740D31B00E1AF90 /* NSAlert+OPBlocks.m */,
 				8DCBE8AB176F7918004B6AA2 /* NSDictionary+OPImmutablility.h */,
@@ -538,7 +562,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-S-Explorer-resources.sh\"\n";
+			shellScript = "#\"${SRCROOT}/Pods/Pods-S-Explorer-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D527C83F7C404D5884DCDDC6 /* Check Pods Manifest.lock */ = {
@@ -580,6 +604,7 @@
 				8D604297173C22D600149409 /* SEREPLViewController.m in Sources */,
 				8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */,
 				8D27BFF51766C59D00F1F8FA /* SESyntaxParser.m in Sources */,
+				8D05309C1B25B1E300312A7C /* SCEvents.m in Sources */,
 				8D0904C2176A7C4800176BCF /* SESourceItem.m in Sources */,
 				8D31EE6C191FE5150054ADD8 /* OPImageTinting.m in Sources */,
 				8D8F9AF917EBEBDA00299D24 /* OPTabView.m in Sources */,
@@ -602,6 +627,7 @@
 				8DF3C39617CFA3D200C75197 /* OPUtilityFunctions.m in Sources */,
 				8D7B0BEC181184910046403D /* OPBEncoder.m in Sources */,
 				8DEE2AC717D434EE005BEDD0 /* SEDocumentController.m in Sources */,
+				8D05309B1B25B1DF00312A7C /* SCEvent.m in Sources */,
 				8D88F641182FBC1F00AB1D35 /* SEnREPL.m in Sources */,
 				8D20FB281988660B002A8995 /* NSTableView+OPSelection.m in Sources */,
 				8D16FB5C19491FDE00DF9F91 /* PseudoTTY.m in Sources */,

@@ -2,9 +2,9 @@
 #platform :macosx, "10.8"
 xcodeproj 'S-Explorer.xcodeproj'
 
-target "S-Explorer" do
+#target "S-Explorer" do
 #pod 'AFNetworking'
-pod 'SCEvents'
-end
+#pod 'SCEvents', :git => 'https://github.com/jnutting/SCEvents'
+#end
 
 

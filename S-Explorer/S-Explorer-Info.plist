@@ -252,6 +252,7 @@
 					<string>current-second</string>
 					<string>define</string>
 					<string>define-record-type</string>
+					<string>define-record</string>
 					<string>define-syntax</string>
 					<string>define-values</string>
 					<string>delay</string>
