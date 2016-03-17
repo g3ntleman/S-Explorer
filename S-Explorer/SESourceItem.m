@@ -310,7 +310,9 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
         return; // Files cannot have children
     }
     
-    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSLog(@"Syncing item %@ %@", self, recursive ? @"recursive" : @"");
+    
+    NSFileManager* fileManager = [NSFileManager defaultManager];
     
     NSMutableArray* newChildren = [[NSMutableArray alloc] initWithCapacity: _children.count + 1];
     

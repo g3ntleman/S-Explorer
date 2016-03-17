@@ -67,8 +67,7 @@
 - (id)initWithEventId:(NSUInteger)identifier 
 			eventDate:(NSDate *)date 
 			eventPath:(NSString *)path 
-		   eventFlags:(SCEventFlags)flags
-{
+		   eventFlags:(SCEventFlags)flags {
     if ((self = [super init])) {
         [self setEventId:identifier];
         [self setEventDate:date];
@@ -83,18 +82,52 @@
 #pragma mark Other
 
 /**
+ * Provides a textual representation of the eventFlags property. Useful for
+ * debugging purposes.
+ *
+ * @return The description string
+ */
+- (NSString*) flagDescription {
+    NSMutableArray* flagDescriptions = [NSMutableArray array];
+    if (_eventFlags & SCEventStreamEventFlagMustScanSubDirs) {
+        [flagDescriptions addObject: @"MustScanSubDirs"];
+    }
+    if (_eventFlags & SCEventStreamEventFlagUserDropped)       [flagDescriptions addObject: @"UserDropped"];
+    if (_eventFlags & SCEventStreamEventFlagKernelDropped)     [flagDescriptions addObject: @"KernelDropped"];
+    if (_eventFlags & SCEventStreamEventFlagEventIdsWrapped)   [flagDescriptions addObject: @"EventIdsWrapped"];
+    if (_eventFlags & SCEventStreamEventFlagHistoryDone)       [flagDescriptions addObject: @"HistoryDone"];
+    if (_eventFlags & SCEventStreamEventFlagRootChanged)       [flagDescriptions addObject: @"RootChanged"];
+    if (_eventFlags & SCEventStreamEventFlagMount)             [flagDescriptions addObject: @"Mount"];
+    if (_eventFlags & SCEventStreamEventFlagUnmount)           [flagDescriptions addObject: @"Unmount"];
+    if (_eventFlags & SCEventStreamEventFlagItemCreated)       [flagDescriptions addObject: @"ItemCreated"];
+    if (_eventFlags & SCEventStreamEventFlagItemRemoved)       [flagDescriptions addObject: @"ItemRemoved"];
+    if (_eventFlags & SCEventStreamEventFlagItemInodeMetaMod)  [flagDescriptions addObject: @"ItemInodeMetaMod"];
+    if (_eventFlags & SCEventStreamEventFlagItemRenamed)       [flagDescriptions addObject: @"ItemRenamed"];
+    if (_eventFlags & SCEventStreamEventFlagItemModified)      [flagDescriptions addObject: @"ItemModified"];
+    if (_eventFlags & SCEventStreamEventFlagItemFinderInfoMod) [flagDescriptions addObject: @"ItemFinderInfoMod"];
+    if (_eventFlags & SCEventStreamEventFlagItemChangeOwner)   [flagDescriptions addObject: @"ItemChangeOwner"];
+    if (_eventFlags & SCEventStreamEventFlagItemXattrMod)      [flagDescriptions addObject: @"ItemXattrMod"];
+    if (_eventFlags & SCEventStreamEventFlagItemIsFile)        [flagDescriptions addObject: @"ItemIsFile"];
+    if (_eventFlags & SCEventStreamEventFlagItemIsDir)         [flagDescriptions addObject: @"ItemIsDir"];
+    if (_eventFlags & SCEventStreamEventFlagItemIsSymlink)     [flagDescriptions addObject: @"IsSymlink"];
+    if (_eventFlags & SCEventStreamEventFlagOwnEvent)          [flagDescriptions addObject: @"OwnEvent"];
+    
+    return [flagDescriptions componentsJoinedByString: @", "];
+}
+
+/**
  * Provides the string used when printing this object in NSLog, etc. Useful for
  * debugging purposes.
  *
  * @return The description string
  */
-- (NSString *)description
-{
-	return [NSString stringWithFormat:@"<%@ { eventId = %ld, eventPath = %@, eventFlags = %ld } >", 
+- (NSString*) description {
+    
+	return [NSString stringWithFormat:@"<%@ { eventId = %ld, eventPath = %@, eventFlags = (%@) } >",
 			[self className], 
 			((unsigned long)_eventId), 
 			[self eventPath], 
-			((unsigned long)_eventFlags)];
+            [self flagDescription]];
 }
 
 @end

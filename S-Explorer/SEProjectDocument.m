@@ -1,4 +1,4 @@
-//
+ //
 //  BRProject
 //  S-Explorer
 //
@@ -146,22 +146,45 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 - (void) pathWatcher: (SCEvents*) pathWatcher eventOccurred: (SCEvent*) event {
+    
+    SCEventFlags flags = event.eventFlags;
+    
+    // Ignore some event types:
+//    if (flags & SCEventStreamEventFlagItemChangeOwner) {
+//        return;
+//    }
+    
+    NSString* pathChanged = event.eventPath;
+
+    // Ignore all dotfiles:
+    if ([[pathChanged lastPathComponent] hasPrefix: @"."]) {
+        return;
+    }
+    
     NSLog(@"File Event occured: %@", event);
     
     SESourceItem* item = self.projectFolderItem;
     
-    NSString* changedURLString = event.eventPath;
     NSString* projectPath = [[_projectFolderItem fileURL] path];
-    if ([changedURLString hasPrefix: projectPath]) {
-        if (changedURLString.length > projectPath.length) {
-            NSString* relativePath = [changedURLString substringFromIndex: projectPath.length];
-            item = [_projectFolderItem childWithPath: relativePath];
+    if ([pathChanged hasPrefix: projectPath]) {
+        if (pathChanged.length > projectPath.length) {
+            NSString* relativePath = [pathChanged substringFromIndex: projectPath.length];
+            while (! (item = [_projectFolderItem childWithPath: relativePath]) && relativePath.length) {
+                relativePath = [relativePath stringByDeletingLastPathComponent]; // walk up!
+            }
         }
     }
-
-    [item syncChildrenRecursive: event.eventFlags & SCEventStreamEventFlagMustScanSubDirs];
-
-    [self reloadSourceList];
+    
+    if (item) {
+        
+        if (item.isTextItem) {
+            NSLog(@"Textfile %@ has changed.", item);
+            [self.sourceList reloadItem: item];
+        } else {
+            [item syncChildrenRecursive: flags & SCEventStreamEventFlagMustScanSubDirs];
+            [self reloadSourceList];
+        }        
+    }
     
 //    if (self.currentSourceItem.content != self.editorController.textView.textStorage) {
 //        self.editorController.textView.layoutManager.textStorage = self.currentSourceItem.content;
@@ -177,6 +200,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         _projectFolderItem = [[SESourceItem alloc] initWithContentsOfURL: [self.fileURL URLByDeletingLastPathComponent] ofType: nil error: nil];
         
         self.pathWatcher = [[SCEvents alloc] init];
+        [self.pathWatcher setIgnoreEventsFromSubDirs: NO];
         self.pathWatcher.delegate = self;
         [self.pathWatcher startWatchingPaths: @[_projectFolderItem.fileURL.path]];
         

@@ -3,8 +3,7 @@
 xcodeproj 'S-Explorer.xcodeproj'
 
 #target "S-Explorer" do
-#pod 'AFNetworking'
-#pod 'SCEvents', :git => 'https://github.com/jnutting/SCEvents'
+#pod 'SCEvents', :git => 'https://github.com/quale/SCEvents'
 #end
 
 

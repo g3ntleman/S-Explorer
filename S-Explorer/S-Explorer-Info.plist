@@ -2,13 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>LanguageByFileType</key>
-	<dict>
-		<key>public.clojure-source</key>
-		<string>Clojure</string>
-		<key>public.scheme-source</key>
-		<string>Chibi-Scheme</string>
-	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDocumentTypes</key>
@@ -114,7 +107,7 @@
 	<key>CFBundleIconFile</key>
 	<string>S-Explorer</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.cocoanuts.${PRODUCT_NAME:rfc1034identifier}</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -131,6 +124,13 @@
 	<string>public.app-category.developer-tools</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
+	<key>LanguageByFileType</key>
+	<dict>
+		<key>public.clojure-source</key>
+		<string>Clojure</string>
+		<key>public.scheme-source</key>
+		<string>Chibi-Scheme</string>
+	</dict>
 	<key>LanguageSupport</key>
 	<dict>
 		<key>Chibi-Scheme</key>
@@ -523,7 +523,7 @@
 					<string>new</string>
 					<string>set!</string>
 					<string>*</string>
-					<string>*&apos;</string>
+					<string>*'</string>
 					<string>*1</string>
 					<string>*2</string>
 					<string>*3</string>
@@ -566,9 +566,9 @@
 					<string>*verbose-defrecords*</string>
 					<string>*warn-on-reflection*</string>
 					<string>+</string>
-					<string>+&apos;</string>
+					<string>+'</string>
 					<string>-</string>
-					<string>-&apos;</string>
+					<string>-'</string>
 					<string>-&gt;</string>
 					<string>-&gt;&gt;</string>
 					<string>-&gt;ArrayChunk</string>
@@ -736,7 +736,7 @@
 					<string>cycle</string>
 					<string>d</string>
 					<string>dec</string>
-					<string>dec&apos;</string>
+					<string>dec'</string>
 					<string>decimal?</string>
 					<string>declare</string>
 					<string>default-data-readers</string>
@@ -872,7 +872,7 @@
 					<string>import</string>
 					<string>in-ns</string>
 					<string>inc</string>
-					<string>inc&apos;</string>
+					<string>inc'</string>
 					<string>inc-report-counter</string>
 					<string>index</string>
 					<string>init-proxy</string>
@@ -1333,7 +1333,7 @@
 			<key>WelcomeMessage</key>
 			<string>Welcome to Clojure!
     Docs: (doc function-name-here)
-          (find-doc &quot;part-of-name-here&quot;)
+          (find-doc "part-of-name-here")
   Source: (source function-name-here)</string>
 		</dict>
 	</dict>
