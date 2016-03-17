@@ -177,13 +177,27 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     if (item) {
         
-        if (item.isTextItem) {
-            NSLog(@"Textfile %@ has changed.", item);
-            [self.sourceList reloadItem: item];
-        } else {
+        if ((flags & SCEventStreamEventFlagItemIsDir) || (flags & (SCEventStreamEventFlagItemRemoved | SCEventStreamEventFlagItemCreated | SCEventStreamEventFlagItemRenamed))) {
+            if (flags & SCEventStreamEventFlagItemIsFile) {
+                item = item.parent;
+            }
+            
             [item syncChildrenRecursive: flags & SCEventStreamEventFlagMustScanSubDirs];
-            [self reloadSourceList];
-        }        
+            [self.sourceList reloadItem: item reloadChildren: YES];
+        } else {
+            // File or Symlink
+            NSLog(@"File %@ has changed.", item);
+
+        }
+        
+        
+//        if (item.isTextItem && ! (flags & (SCEventStreamEventFlagItemRemoved | SCEventStreamEventFlagItemCreated | SCEventStreamEventFlagItemRenamed))) {
+//            NSLog(@"Textfile %@ has changed.", item);
+//            [self.sourceList reloadItem: item];
+//        } else {
+//            [item syncChildrenRecursive: flags & SCEventStreamEventFlagMustScanSubDirs];
+//            [self reloadSourceList];
+//        }
     }
     
 //    if (self.currentSourceItem.content != self.editorController.textView.textStorage) {
