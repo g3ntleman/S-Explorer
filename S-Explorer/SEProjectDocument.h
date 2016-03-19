@@ -18,7 +18,7 @@ extern NSString* SEProjectDocumentType;
 
 @class SESourceItem;
 
-@interface SEProjectDocument : NSDocument <NSOutlineViewDataSource, NSOutlineViewDelegate, NSUserInterfaceValidations, NSTabViewDelegate, SCEventListenerProtocol>
+@interface SEProjectDocument : NSDocument <NSOutlineViewDataSource, NSOutlineViewDelegate, NSUserInterfaceValidations, NSTabViewDelegate, SCEventListenerProtocol, NSSplitViewDelegate>
 
 @property (strong, nonatomic) SCEvents* pathWatcher;
 
@@ -29,6 +29,9 @@ extern NSString* SEProjectDocumentType;
 @property (strong, nonatomic) IBOutlet NSView* sourceCellView;
 @property (strong, nonatomic) IBOutlet NSImageView* sourceCellIconView;
 @property (strong, nonatomic) IBOutlet NSTextField* sourceCellTextField;
+
+@property (strong, nonatomic) IBOutlet NSSplitView* verticalSplitView;
+@property (strong, nonatomic) IBOutlet NSSplitView* horizontalSplitView;
 
 @property (readonly) SESourceItem* projectFolderItem;
 @property (strong, nonatomic) NSDictionary* tabbedSourceItems; // keys are NSNumbers, starting with @(0), values are SESourceItem objects.

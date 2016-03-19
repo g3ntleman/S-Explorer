@@ -27,6 +27,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 @implementation SEProjectDocument {
     NSMutableDictionary* uiSettings;
+    NSDictionary* savedSplitViewPositions;
 }
 
 @synthesize tabbedSourceItems;
@@ -122,6 +123,36 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [self.sourceList reloadData];
     SESourceItem* newSourceItem = [self.projectFolderItem childWithPath: filename];
     [self.sourceList selectRowIndex: [self.sourceList rowForItem: newSourceItem]];
+}
+
+- (IBAction) toggleCodeMode: (id) sender {
+    
+    if (savedSplitViewPositions) {
+        // restore savedSplitViewPositions:
+    } else {
+        // store savedSplitViewPositions:
+//        savedSplitViewPositions = @{@"h": @([self.horizontalSplitView dividerPositionAtIndex: 0]),"v": @([self.verticalSplitView dividerPositionAtIndex: 0]))};
+        
+        // Collapse left and lower pane:
+        [self.verticalSplitView setPosition: 0.0 ofDividerAtIndex: 0];
+        [self.horizontalSplitView setPosition: 0.0 ofDividerAtIndex: 0];
+    
+    }
+    
+    
+    
+}
+
+- (BOOL) splitView: (NSSplitView*) splitView canCollapseSubview: (NSView*) subview {
+    return sourceTabView.superview != subview;
+}
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex {
+    if (splitView == self.verticalSplitView) {
+        return 170.0;
+    }
+    
+    return 50.0;
 }
 
 

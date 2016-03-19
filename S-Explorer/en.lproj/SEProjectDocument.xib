@@ -5,12 +5,14 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="SEProject">
+        <customObject id="-2" userLabel="File's Owner" customClass="SEProjectDocument">
             <connections>
                 <outlet property="editorController" destination="100185" id="qgF-mn-A0j"/>
+                <outlet property="horizontalSplitView" destination="100052" id="Yyk-NT-kVU"/>
                 <outlet property="replTabView" destination="ABI-Lc-Lrj" id="aYi-dg-iQm"/>
                 <outlet property="sourceList" destination="100115" id="100152"/>
                 <outlet property="sourceTabView" destination="b2f-B1-JXW" id="9zb-qF-hbB"/>
+                <outlet property="verticalSplitView" destination="100050" id="gWF-aQ-bvG"/>
                 <outlet property="window" destination="5" id="18"/>
             </connections>
         </customObject>
@@ -25,7 +27,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="716" height="482"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <splitView vertical="YES" id="100050">
+                    <splitView vertical="YES" id="100050" userLabel="Vertical Split View">
                         <rect key="frame" x="0.0" y="0.0" width="716" height="482"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -112,7 +114,7 @@
                                 <rect key="frame" x="168" y="0.0" width="548" height="482"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <splitView autosaveName="RightSplitView" id="100052">
+                                    <splitView autosaveName="RightSplitView" id="100052" userLabel="Horizontal Split View">
                                         <rect key="frame" x="0.0" y="0.0" width="548" height="482"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
@@ -286,6 +288,9 @@
                                             <real value="250"/>
                                             <real value="250"/>
                                         </holdingPriorities>
+                                        <connections>
+                                            <outlet property="delegate" destination="-2" id="yJA-DE-S7w"/>
+                                        </connections>
                                     </splitView>
                                 </subviews>
                             </customView>
@@ -294,6 +299,9 @@
                             <real value="250"/>
                             <real value="250"/>
                         </holdingPriorities>
+                        <connections>
+                            <outlet property="delegate" destination="-2" id="u3x-Is-EY9"/>
+                        </connections>
                     </splitView>
                 </subviews>
             </view>
