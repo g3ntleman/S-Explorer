@@ -152,6 +152,8 @@
  **/
 - (void) startWithCompletionBlock: (SEnREPLCompletionBlock) block {
     
+    return;
+    
     // Stop a running task if neccessary:
     [self stop];
     

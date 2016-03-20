@@ -125,35 +125,69 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [self.sourceList selectRowIndex: [self.sourceList rowForItem: newSourceItem]];
 }
 
-- (IBAction) toggleCodeMode: (id) sender {
+- (IBAction) toggleSourceOnlyMode: (id) sender {
     
-    if (savedSplitViewPositions) {
+//    if ([self.verticalSplitView isSubviewCollapsed: self.verticalSplitView.subviews.firstObject]) {
+//        [self.verticalSplitView.subviews.firstObject setHidden: NO];
+//        [self.horizontalSplitView.subviews.lastObject setHidden: NO];
+//    } else {
+//        [self.verticalSplitView.subviews.firstObject setHidden: YES];
+//        [self.horizontalSplitView.subviews.lastObject setHidden: YES];
+//    }
+    
+    
+    if (savedSplitViewPositions.count) {
         // restore savedSplitViewPositions:
+        NSNumber* filesPaneWidth = savedSplitViewPositions[@"filesPaneWidth"];
+        NSNumber* debugPaneHeight = savedSplitViewPositions[@"debugPaneHeight"];
+        
+        [self.verticalSplitView setPosition: filesPaneWidth.floatValue ofDividerAtIndex: 0];
+        [self.horizontalSplitView setPosition: self.horizontalSplitView.frame.size.height - debugPaneHeight.floatValue - self.horizontalSplitView.dividerThickness ofDividerAtIndex: 0];
+        
+        savedSplitViewPositions = nil;
     } else {
         // store savedSplitViewPositions:
-//        savedSplitViewPositions = @{@"h": @([self.horizontalSplitView dividerPositionAtIndex: 0]),"v": @([self.verticalSplitView dividerPositionAtIndex: 0]))};
+        
+        NSNumber* filesPaneWidth = @([self.verticalSplitView.subviews.firstObject frame].size.width);
+        NSNumber* debugPaneHeight =  @([self.horizontalSplitView.subviews.lastObject frame].size.height);
+
+        savedSplitViewPositions = @{@"filesPaneWidth": filesPaneWidth,
+                                    @"debugPaneHeight": debugPaneHeight};
         
         // Collapse left and lower pane:
         [self.verticalSplitView setPosition: 0.0 ofDividerAtIndex: 0];
-        [self.horizontalSplitView setPosition: 0.0 ofDividerAtIndex: 0];
-    
+        [self.horizontalSplitView setPosition: 10000.0 ofDividerAtIndex: 0];
     }
-    
-    
-    
+    //[self.verticalSplitView adjustSubviews];
+    //[self.horizontalSplitView adjustSubviews];
 }
 
 - (BOOL) splitView: (NSSplitView*) splitView canCollapseSubview: (NSView*) subview {
-    return sourceTabView.superview != subview;
+    if (splitView == self.verticalSplitView) {
+        NSLog(@"Can colapse %@", subview);
+        return subview != self.horizontalSplitView.superview;
+    }
+    return YES;
 }
 
-- (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex {
+- (CGFloat) splitView: (NSSplitView*) splitView constrainMinCoordinate:(CGFloat)proposedMinimumPosition ofSubviewAt:(NSInteger)dividerIndex {
     if (splitView == self.verticalSplitView) {
-        return 170.0;
+        return proposedMinimumPosition + 170.0;
     }
     
-    return 50.0;
+    return proposedMinimumPosition + 50.0;
 }
+
+/*
+ * Controls the minimum size of the right subview (or lower subview in a horizonal NSSplitView)
+ */
+- (CGFloat) splitView: (NSSplitView*) splitView constrainMaxCoordinate: (CGFloat)proposedMaximumPosition ofSubviewAt: (NSInteger) dividerIndex {
+    if (splitView == self.verticalSplitView) {
+        return proposedMaximumPosition - 450.0;
+    }
+    return proposedMaximumPosition - 80.0;
+}
+
 
 
 - (void) setFileURL:(NSURL *)url {

@@ -63,6 +63,9 @@ extern NSString* SEProjectDocumentType;
 - (IBAction) revealInFinder: (id) sender;
 - (IBAction) newFile: (id) sender;
 
+- (IBAction) toggleSourceOnlyMode: (id) sender;
+
+
 
 - (void) setSourceItem: (SESourceItem*) item forTabIndex: (NSUInteger) index;
 

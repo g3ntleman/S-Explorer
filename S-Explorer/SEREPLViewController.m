@@ -304,6 +304,8 @@ static NSData* lineFeedData = nil;
  */
 - (void) connectWithBlock: (SEnREPLConnectBlock) connectBlock {
     
+    return;
+    
     [self stop: self];
     //NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
     

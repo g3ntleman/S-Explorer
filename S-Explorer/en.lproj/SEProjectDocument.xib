@@ -31,7 +31,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="716" height="482"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <customView id="100047">
+                            <customView focusRingType="none" id="100047">
                                 <rect key="frame" x="0.0" y="0.0" width="159" height="482"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
@@ -43,7 +43,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnResizing="NO" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="16" autoresizesOutlineColumn="YES" outlineTableColumn="100119" id="100115">
-                                                    <rect key="frame" x="0.0" y="0.0" width="150" height="455"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="150" height="0.0"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <size key="intercellSpacing" width="3" height="2"/>
                                                     <color key="backgroundColor" red="0.94117653369999998" green="0.94117653369999998" blue="0.94117653369999998" alpha="1" colorSpace="deviceRGB"/>
@@ -75,7 +75,7 @@
                                                                             <rect key="frame" x="25" y="0.0" width="122" height="17"/>
                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                             <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="100156">
-                                                                                <font key="font" metaFont="titleBar" size="12"/>
+                                                                                <font key="font" metaFont="cellTitle"/>
                                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             </textFieldCell>
@@ -309,7 +309,7 @@
                 <outlet property="delegate" destination="-2" id="17"/>
             </connections>
         </window>
-        <customObject id="-3" userLabel="Application"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="100185" customClass="SESourceEditorController">
             <connections>
                 <outlet property="textView" destination="L5G-U4-FvL" id="5RA-gb-Ojx"/>
