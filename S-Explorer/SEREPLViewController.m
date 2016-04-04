@@ -3,7 +3,7 @@
 //  S-Explorer
 //
 //  Created by Dirk Theisen on 09.05.13.
-//  Copyright (c) 2013 Cocoanuts. All rights reserved.
+//  Copyright (c) 2016 Cocoanuts.org. All rights reserved.
 //
 
 #import "SEREPLViewController.h"
@@ -303,13 +303,11 @@ static NSData* lineFeedData = nil;
  * or - after a connection has been established - on sudden disconnect.
  */
 - (void) connectWithBlock: (SEnREPLConnectBlock) connectBlock {
-    
-    return;
-    
+        
     [self stop: self];
     //NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
     
-    _evalConnection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.nREPL.port sessionID: nil];
+    _evalConnection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.replServer.port sessionID: nil];
     [_evalConnection openWithConnectBlock:^(SEnREPLConnection *connection, NSError *error) {
         self.textView.editable = !error;
         if (error) {
@@ -324,7 +322,7 @@ static NSData* lineFeedData = nil;
                 if (connection.sessionID.length) {
                     // Now connect the _controlConnection using the same sessionID:
                     NSLog(@"Eval Connection %@ established.", _evalConnection);
-                    _controlConnection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.nREPL.port sessionID: connection.sessionID];
+                    _controlConnection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.replServer.port sessionID: connection.sessionID];
                     [_controlConnection openWithConnectBlock:^(SEnREPLConnection *connection, NSError *error) {
                         [connection evaluateExpression:@"nil" completionBlock:^(NSDictionary *partialResult) {
                             NSLog(@"Control connection %@ established.", connection);

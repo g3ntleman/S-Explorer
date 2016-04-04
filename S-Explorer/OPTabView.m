@@ -3,7 +3,7 @@
 //  OPTabView
 //
 //  Created by Dirk Theisen on 27.09.13.
-//  Copyright (c) 2013 Cocoanuts. All rights reserved.
+//  Copyright (c) 2016 Cocoanuts.org. All rights reserved.
 //
 
 /**

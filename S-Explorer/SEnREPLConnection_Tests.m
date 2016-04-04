@@ -3,17 +3,17 @@
 //  S-Explorer
 //
 //  Created by Dirk Theisen on 06.11.13.
-//  Copyright (c) 2013 Cocoanuts. All rights reserved.
+//  Copyright (c) 2016 Cocoanuts.org. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
 #import "SEnREPLConnection.h"
-#import "SEnREPL.h"
+#import "SEREPLServer.h"
 #import "XCTestAsync.h"
 
 @interface SEnREPLConnection_Tests : XCTestCase
 
-@property SEnREPL* repl;
+@property SEREPLServer* repl;
 @property SEnREPLConnection* connection;
 
 @end

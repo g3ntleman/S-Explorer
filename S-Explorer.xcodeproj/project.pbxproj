@@ -27,6 +27,7 @@
 		8D470B9C18196DCA00C0C654 /* OPBEncoding_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D470B9B18196DCA00C0C654 /* OPBEncoding_Tests.m */; };
 		8D4DF7E717F4587F00BC0773 /* OPCharFilterFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */; };
 		8D4DF83317F5AAF600BC0773 /* chibi-repl-server.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8D4DF83217F5AAF600BC0773 /* chibi-repl-server.scm */; };
+		8D585DA11CAB2CEC00917A04 /* Runtime-Support in Resources */ = {isa = PBXBuildFile; fileRef = 8D585DA01CAB2CEC00917A04 /* Runtime-Support */; };
 		8D5C020418688E69007EBFAA /* Scratchpad.clj in Resources */ = {isa = PBXBuildFile; fileRef = 8D5C020318688E69007EBFAA /* Scratchpad.clj */; };
 		8D5DD11917F6D13800E352FE /* NSView+OPCopying.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D5DD11817F6D13800E352FE /* NSView+OPCopying.m */; };
 		8D604254173BE60800149409 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D604252173BE60800149409 /* InfoPlist.strings */; };
@@ -49,8 +50,8 @@
 		8D85E47C182C99FB0096C76E /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D85E47B182C99FB0096C76E /* CFNetwork.framework */; };
 		8D85E47E182C9B140096C76E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D85E478182C8C330096C76E /* Security.framework */; };
 		8D85E47F182C9B1A0096C76E /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D85E47B182C99FB0096C76E /* CFNetwork.framework */; };
-		8D88F641182FBC1F00AB1D35 /* SEnREPL.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D88F63E182FBC1F00AB1D35 /* SEnREPL.m */; };
-		8D88F642182FBC1F00AB1D35 /* SEnREPL.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D88F63E182FBC1F00AB1D35 /* SEnREPL.m */; };
+		8D88F641182FBC1F00AB1D35 /* SEREPLServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D88F63E182FBC1F00AB1D35 /* SEREPLServer.m */; };
+		8D88F642182FBC1F00AB1D35 /* SEREPLServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D88F63E182FBC1F00AB1D35 /* SEREPLServer.m */; };
 		8D8F9AF917EBEBDA00299D24 /* OPTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D8F9AF717EBEBDA00299D24 /* OPTabView.m */; };
 		8D99612717BDB9740058FD0B /* SESourceEditorController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D99612617BDB9730058FD0B /* SESourceEditorController.m */; };
 		8D99612B17BE42150058FD0B /* NSTimer-NoodleExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D99612917BE41520058FD0B /* NSTimer-NoodleExtensions.m */; };
@@ -71,6 +72,7 @@
 		8DEB1AA217CF7BEC0088C7C1 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8DEB1AA117CF7BEC0088C7C1 /* README.md */; };
 		8DEE2AC717D434EE005BEDD0 /* SEDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DEE2AC517D434EE005BEDD0 /* SEDocumentController.m */; };
 		8DF3C39617CFA3D200C75197 /* OPUtilityFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DF3C39517CFA3D200C75197 /* OPUtilityFunctions.m */; };
+		8DF7785A1CA0A56B002CDFA9 /* SETarget.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DF778591CA0A56B002CDFA9 /* SETarget.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -130,6 +132,7 @@
 		8D4DF7E417F4587F00BC0773 /* OPCharFilterFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = OPCharFilterFormatter.h; sourceTree = "<group>"; };
 		8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPCharFilterFormatter.m; sourceTree = "<group>"; };
 		8D4DF83217F5AAF600BC0773 /* chibi-repl-server.scm */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; fileEncoding = 4; path = "chibi-repl-server.scm"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.javascript; };
+		8D585DA01CAB2CEC00917A04 /* Runtime-Support */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "Runtime-Support"; path = "Resources/Runtime-Support"; sourceTree = "<group>"; };
 		8D59F73317F130F6001CEAE4 /* repl-server.scm */ = {isa = PBXFileReference; lastKnownFileType = text; path = "repl-server.scm"; sourceTree = "<group>"; };
 		8D5C020318688E69007EBFAA /* Scratchpad.clj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Scratchpad.clj; sourceTree = "<group>"; };
 		8D5DD11717F6D13800E352FE /* NSView+OPCopying.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView+OPCopying.h"; sourceTree = "<group>"; };
@@ -162,8 +165,8 @@
 		8D85E473182C8B190096C76E /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
 		8D85E478182C8C330096C76E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		8D85E47B182C99FB0096C76E /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
-		8D88F63D182FBC1F00AB1D35 /* SEnREPL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEnREPL.h; sourceTree = "<group>"; };
-		8D88F63E182FBC1F00AB1D35 /* SEnREPL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEnREPL.m; sourceTree = "<group>"; };
+		8D88F63D182FBC1F00AB1D35 /* SEREPLServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEREPLServer.h; sourceTree = "<group>"; };
+		8D88F63E182FBC1F00AB1D35 /* SEREPLServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEREPLServer.m; sourceTree = "<group>"; };
 		8D8F9AF617EBEBDA00299D24 /* OPTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = OPTabView.h; sourceTree = "<group>"; };
 		8D8F9AF717EBEBDA00299D24 /* OPTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPTabView.m; sourceTree = "<group>"; };
 		8D94C2451783AA8B00D8595B /* PseudoTTY.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PseudoTTY.h; sourceTree = "<group>"; };
@@ -196,6 +199,8 @@
 		8DEE2AC517D434EE005BEDD0 /* SEDocumentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEDocumentController.m; sourceTree = "<group>"; };
 		8DF3C39417CFA3D200C75197 /* OPUtilityFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OPUtilityFunctions.h; sourceTree = "<group>"; };
 		8DF3C39517CFA3D200C75197 /* OPUtilityFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPUtilityFunctions.m; sourceTree = "<group>"; };
+		8DF778581CA0A56B002CDFA9 /* SETarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SETarget.h; sourceTree = "<group>"; };
+		8DF778591CA0A56B002CDFA9 /* SETarget.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SETarget.m; sourceTree = "<group>"; };
 		910FEBFB5D694D2FB3D688F0 /* libPods-S-Explorer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-S-Explorer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -353,11 +358,13 @@
 				8DD6BA961877562F00A88B99 /* SEREPLView.m */,
 				8D604294173C22D600149409 /* SEREPLViewController.h */,
 				8D604295173C22D600149409 /* SEREPLViewController.m */,
-				8D88F63D182FBC1F00AB1D35 /* SEnREPL.h */,
-				8D88F63E182FBC1F00AB1D35 /* SEnREPL.m */,
+				8D88F63D182FBC1F00AB1D35 /* SEREPLServer.h */,
+				8D88F63E182FBC1F00AB1D35 /* SEREPLServer.m */,
 				8D72C53318287B6400776B14 /* SEnREPLConnection.h */,
 				8D72C53418287B6400776B14 /* SEnREPLConnection.m */,
 				8D5C020318688E69007EBFAA /* Scratchpad.clj */,
+				8DF778581CA0A56B002CDFA9 /* SETarget.h */,
+				8DF778591CA0A56B002CDFA9 /* SETarget.m */,
 			);
 			path = "S-Explorer";
 			sourceTree = "<group>";
@@ -388,6 +395,7 @@
 		8D8F9AFA17EBEF8300299D24 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8D585DA01CAB2CEC00917A04 /* Runtime-Support */,
 				8DE794461937F38B0093DCCF /* folder.png */,
 				8DE794471937F38B0093DCCF /* folder@2x.png */,
 				8DE7944B19380FE30093DCCF /* doc_clojure.png */,
@@ -524,6 +532,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D585DA11CAB2CEC00917A04 /* Runtime-Support in Resources */,
 				8D60FFE517EC58B600F14B50 /* Templates in Resources */,
 				8D604254173BE60800149409 /* InfoPlist.strings in Resources */,
 				8D60425A173BE60800149409 /* Credits.rtf in Resources */,
@@ -571,7 +580,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D88F642182FBC1F00AB1D35 /* SEnREPL.m in Sources */,
+				8D88F642182FBC1F00AB1D35 /* SEREPLServer.m in Sources */,
 				8D179894193D4423002FA4AB /* XCTestAsync.m in Sources */,
 				8D470B9C18196DCA00C0C654 /* OPBEncoding_Tests.m in Sources */,
 				8D7E69571829E44300F320A9 /* SEnREPLConnection_Tests.m in Sources */,
@@ -586,6 +595,7 @@
 				8D60425D173BE60800149409 /* SEProjectDocument.m in Sources */,
 				8D68CC5D191FCE30004C727A /* SEImageView.m in Sources */,
 				8D604297173C22D600149409 /* SEREPLViewController.m in Sources */,
+				8DF7785A1CA0A56B002CDFA9 /* SETarget.m in Sources */,
 				8D00FA931740D31B00E1AF90 /* NSAlert+OPBlocks.m in Sources */,
 				8D27BFF51766C59D00F1F8FA /* SESyntaxParser.m in Sources */,
 				8D05309C1B25B1E300312A7C /* SCEvents.m in Sources */,
@@ -612,7 +622,7 @@
 				8D7B0BEC181184910046403D /* OPBEncoder.m in Sources */,
 				8DEE2AC717D434EE005BEDD0 /* SEDocumentController.m in Sources */,
 				8D05309B1B25B1DF00312A7C /* SCEvent.m in Sources */,
-				8D88F641182FBC1F00AB1D35 /* SEnREPL.m in Sources */,
+				8D88F641182FBC1F00AB1D35 /* SEREPLServer.m in Sources */,
 				8D20FB281988660B002A8995 /* NSTableView+OPSelection.m in Sources */,
 				8D16FB5C19491FDE00DF9F91 /* PseudoTTY.m in Sources */,
 			);

@@ -3,17 +3,17 @@
 //  S-Explorer
 //
 //  Created by Dirk Theisen on 10.11.13.
-//  Copyright (c) 2013 Cocoanuts. All rights reserved.
+//  Copyright (c) 2016 Cocoanuts.org. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
-@class SEnREPL;
+@class SEREPLServer;
 
-typedef void (^SEnREPLCompletionBlock)(SEnREPL* repl, NSError* error);
+typedef void (^SEREPLServerCompletionBlock)(SEREPLServer* repl, NSError* error);
 
 
-@interface SEnREPL : NSObject
+@interface SEREPLServer : NSObject
 
 @property (nonatomic, readonly) NSTask* task;
 
@@ -23,7 +23,7 @@ typedef void (^SEnREPLCompletionBlock)(SEnREPL* repl, NSError* error);
 
 - (id) initWithSettings: (NSDictionary*) initialSettings;
 
-- (void) startWithCompletionBlock: (SEnREPLCompletionBlock) block;
+- (void) startWithCompletionBlock: (SEREPLServerCompletionBlock) block;
 - (void) stop;
 
 @end

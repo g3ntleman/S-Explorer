@@ -3,7 +3,7 @@
 //  S-Explorer
 //
 //  Created by Dirk Theisen on 09.05.13.
-//  Copyright (c) 2013 Cocoanuts. All rights reserved.
+//  Copyright (c) 2016 Cocoanuts.org. All rights reserved.
 //
 
 #import <AppKit/AppKit.h>
@@ -11,7 +11,7 @@
 #import "SESyntaxParser.h"
 #import "SESourceItem.h"
 #import "SESourceEditorController.h"
-#import "SEnREPL.h"
+#import "SEREPLServer.h"
 #import "SCEvents.h"
 
 extern NSString* SEProjectDocumentType;
@@ -22,7 +22,7 @@ extern NSString* SEProjectDocumentType;
 
 @property (strong, nonatomic) SCEvents* pathWatcher;
 
-@property (nonatomic, readonly) SEnREPL* nREPL;
+@property (nonatomic, readonly) SEREPLServer* replServer;
 @property (readonly, nonatomic) SEREPLViewController* topREPLController;
 @property (readonly, nonatomic) NSDictionary* allREPLControllers;
 @property (strong, nonatomic) IBOutlet NSTabView* replTabView;

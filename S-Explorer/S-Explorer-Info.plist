@@ -523,7 +523,7 @@
 					<string>new</string>
 					<string>set!</string>
 					<string>*</string>
-					<string>*'</string>
+					<string>*&apos;</string>
 					<string>*1</string>
 					<string>*2</string>
 					<string>*3</string>
@@ -566,9 +566,9 @@
 					<string>*verbose-defrecords*</string>
 					<string>*warn-on-reflection*</string>
 					<string>+</string>
-					<string>+'</string>
+					<string>+&apos;</string>
 					<string>-</string>
-					<string>-'</string>
+					<string>-&apos;</string>
 					<string>-&gt;</string>
 					<string>-&gt;&gt;</string>
 					<string>-&gt;ArrayChunk</string>
@@ -736,7 +736,7 @@
 					<string>cycle</string>
 					<string>d</string>
 					<string>dec</string>
-					<string>dec'</string>
+					<string>dec&apos;</string>
 					<string>decimal?</string>
 					<string>declare</string>
 					<string>default-data-readers</string>
@@ -872,7 +872,7 @@
 					<string>import</string>
 					<string>in-ns</string>
 					<string>inc</string>
-					<string>inc'</string>
+					<string>inc&apos;</string>
 					<string>inc-report-counter</string>
 					<string>index</string>
 					<string>init-proxy</string>
@@ -1325,6 +1325,8 @@
 			<array>
 				<string>repl</string>
 				<string>:headless</string>
+				<string>:jvm-opts [&quot;-Dclojure.server.datarepl=&quot;{:port 5555 :accept &apos;replicant.util/data-repl}&quot;]</string>
+				<string>:source-paths [&quot;src/main/clojure&quot; &quot;src&quot;]</string>
 			</array>
 			<key>RuntimePortArgumentFormat</key>
 			<string>:port %@</string>
@@ -1333,12 +1335,12 @@
 			<key>WelcomeMessage</key>
 			<string>Welcome to Clojure!
     Docs: (doc function-name-here)
-          (find-doc "part-of-name-here")
+          (find-doc &quot;part-of-name-here&quot;)
   Source: (source function-name-here)</string>
 		</dict>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2014 Dirk Theisen. All rights reserved.</string>
+	<string>Copyright © 2016 Dirk Theisen. All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>

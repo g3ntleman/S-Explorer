@@ -3,13 +3,13 @@
 //  S-Explorer
 //
 //  Created by Dirk Theisen on 09.05.13.
-//  Copyright (c) 2013 Cocoanuts. All rights reserved.
+//  Copyright (c) 2016 Cocoanuts.org. All rights reserved.
 //
 
 #import <AppKit/AppKit.h>
 #import "SEREPLView.h"
 #import "SEnREPLConnection.h"
-#import "SEnREPL.h"
+#import "SEREPLServer.h"
 #import "SESourceTextViewController.h"
 
 @class SEProjectDocument;

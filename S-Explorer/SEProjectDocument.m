@@ -3,7 +3,7 @@
 //  S-Explorer
 //
 //  Created by Dirk Theisen on 09.05.13.
-//  Copyright (c) 2013 Cocoanuts. All rights reserved.
+//  Copyright (c) 2016 Cocoanuts.org. All rights reserved.
 //
 
 #import "SEProjectDocument.h"
@@ -17,6 +17,7 @@
 #import "NSTableView+OPSelection.h"
 #import "SCEvents.h"
 #import "SCEvent.h"
+#import "SETarget.h"
 
 
 NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
@@ -164,7 +165,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 - (BOOL) splitView: (NSSplitView*) splitView canCollapseSubview: (NSView*) subview {
     if (splitView == self.verticalSplitView) {
-        NSLog(@"Can colapse %@", subview);
+        // NSLog(@"Can collapse %@", subview);
         return subview != self.horizontalSplitView.superview;
     }
     return YES;
@@ -561,16 +562,17 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 - (void) startREPLServerAsNeccessary {
     
-    if (! self.nREPL.task.isRunning && self.fileURL) {
-        if (! self.nREPL) {
+    if (! self.replServer.task.isRunning && self.fileURL) {
+        if (! self.replServer) {
             NSMutableDictionary* settings = [self.languageDictionary mutableCopy];
             [settings addEntriesFromDictionary: self.topREPLSettings];
             [settings setObject: [self.fileURL.path stringByDeletingLastPathComponent] forKey: @"WorkingDirectory"];
             
-            self.topREPLController.replView.interpreterString = @"Starting nREPL Server...";
+            //self.topREPLController.replView.interpreterString = @"Starting nREPL Server...";
             
-            _nREPL = [[SEnREPL alloc] initWithSettings: settings];
-            [_nREPL startWithCompletionBlock:^(SEnREPL *repl, NSError *error) {
+            //_target = [[SETarget alloc] initWithSettings: settings];
+            _replServer = [[SEREPLServer alloc] initWithSettings: settings];
+            [_replServer startWithCompletionBlock: ^(SEREPLServer* repl, NSError* error) {
                 NSLog(@"%@ startup completed (with error %@), listening on port #%ld", repl, error, repl.port);
                 if (! error) {
                     // Connect clients:
@@ -629,7 +631,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     if (tabView == self.replTabView) {
         SEREPLViewController* replController = self.topREPLController;
-        if (self.nREPL.port && ! replController.evalConnection.socket.isConnected) {
+        if (self.replServer.port && ! replController.evalConnection.socket.isConnected) {
             [replController connectWithBlock:^(SEnREPLConnection *connection, NSError *error) {
                 
             }];
@@ -825,7 +827,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [self.topREPLController run: sender];
 }
 
-- (void) replServerDidStart: (SEnREPL*) repl {
+- (void) replServerDidStart: (SEREPLServer*) repl {
     if (repl.task.isRunning) {
         NSLog(@"replServerDidStart: %@", repl);
     }

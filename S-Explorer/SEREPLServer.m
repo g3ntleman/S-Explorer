@@ -3,15 +3,15 @@
 //  S-Explorer
 //
 //  Created by Dirk Theisen on 10.11.13.
-//  Copyright (c) 2013 Cocoanuts. All rights reserved.
+//  Copyright (c) 2016 Cocoanuts.org. All rights reserved.
 //
 
-#import "SEnREPL.h"
+#import "SEREPLServer.h"
 #import "PseudoTTY.h"
 
-@interface SEnREPL ()
+@interface SEREPLServer ()
 
-@property (strong, nonatomic) SEnREPLCompletionBlock completionBlock;
+@property (strong, nonatomic) SEREPLServerCompletionBlock completionBlock;
 @property (strong, nonatomic) PseudoTTY* tty;
 
 @end
@@ -91,7 +91,7 @@
 
 
 
-@implementation SEnREPL
+@implementation SEREPLServer
 
 
 - (id) initWithSettings: (NSDictionary*) initialSettings {
@@ -150,9 +150,7 @@
 /**
  * Starts the REPL task. A previous task is terminated.
  **/
-- (void) startWithCompletionBlock: (SEnREPLCompletionBlock) block {
-    
-    return;
+- (void) startWithCompletionBlock: (SEREPLServerCompletionBlock) block {
     
     // Stop a running task if neccessary:
     [self stop];
@@ -161,19 +159,26 @@
     _task = [[NSTask alloc] init];
 
     //NSError* error = nil;
-    NSMutableArray* commandArguments = [_settings[@"RuntimeArguments"] mutableCopy];
+    //NSMutableArray* commandArguments = [_settings[@"RuntimeArguments"] mutableCopy];
+    NSString* runtimeSupportPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent: @"Runtime-Support/clojure"];
+    
+    
+    NSArray* commandArguments = @[
+                                  //,
+                                  @"repl"
+                                  ];
     
     NSString* workingDirectory = _settings[@"WorkingDirectory"];
     
-    NSString* sourceFile = _settings[@"StartupSource"];
-    if (sourceFile.length) {
-        [commandArguments addObject: [NSString stringWithFormat: @"-l%@", sourceFile]];
-    }
-    
-    NSString* expression = _settings[@"StartupExpression"];
-    if (expression.length) {
-        [commandArguments addObject: [NSString stringWithFormat: @"-e%@", expression]];
-    }
+//    NSString* sourceFile = _settings[@"StartupSource"];
+//    if (sourceFile.length) {
+//        [commandArguments addObject: [NSString stringWithFormat: @"-l%@", sourceFile]];
+//    }
+//    
+//    NSString* expression = _settings[@"StartupExpression"];
+//    if (expression.length) {
+//        [commandArguments addObject: [NSString stringWithFormat: @"-e%@", expression]];
+//    }
     
 //    int port = OPGetUnusedSocketPort();
 //    port = OPGetUnusedSocketPort();
@@ -185,41 +190,49 @@
 //        [commandArguments addObjectsFromArray: [[NSString stringWithFormat: portFormat, @(_port)] componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
 //    }
     
-    NSString* tool = _settings[@"RuntimeTool"];
+    NSString* toolPath = @"/usr/local/bin/lein"; //_settings[@"RuntimeTool"];
     
-    if (! [[NSFileManager defaultManager] isExecutableFileAtPath: tool]) {
+    if (! [[NSFileManager defaultManager] isExecutableFileAtPath: toolPath]) {
         _completionBlock(self, [NSError errorWithDomain: @"org.cocoanuts.s-explorer"
                                                    code: 404
-                                               userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No Executable file at '%@'", tool]}]);
+                                               userInfo: @{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat: @"No Executable file at '%@'", toolPath]}]);
         return;
     }
     
-    _task.launchPath = tool;
+    _task.launchPath = toolPath;
     _task.currentDirectoryPath = workingDirectory;
     
     NSDictionary *defaultEnvironment = [[NSProcessInfo processInfo] environment];
     NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary:defaultEnvironment];
     [environment setObject: @"YES" forKey: @"NSUnbufferedIO"];
     [environment setObject: @"en_US-iso8859-1" forKey: @"LANG"];
+    NSString* jvmOpts = [NSString stringWithFormat: @"-Dclojure.server.datarepl={:port %lu :accept 'replicant.util/data-repl} ", (unsigned long)5555];
+    jvmOpts = [jvmOpts stringByAppendingFormat: @"-Djava.library.path=%@", runtimeSupportPath];
+    
+    environment[@"JVM_OPTS"] = jvmOpts;
+    NSString* classPath = runtimeSupportPath; //environment[@"CLASSPATH"];
+    //environment[@"LEIN_JVM_OPTS"] = [NSString stringWithFormat: @"-cp %@", runtimeSupportPath];
+    //[classPath ? classPath : @"" stringByAppendingString: [NSString stringWithFormat: @";%@", runtimeSupportPath]];
     
     [_task setEnvironment: environment];
     [_task setArguments: commandArguments];
     
+    const SEREPLServerCompletionBlock cblock = _completionBlock;
     
     _task.terminationHandler =  ^void (NSTask* task) {
         NSLog(@"REPL Task %@ Terminated with return code %d", task, task.terminationStatus);
-        if (_completionBlock) {
+        if (cblock) {
             if (task.terminationStatus != 0) {
                 NSError* error = [NSError errorWithDomain: @"NSTask" code: task.terminationStatus
                                                  userInfo: @{@"reason": @(task.terminationReason)}];
-                _completionBlock(nil, error);
+                cblock(nil, error);
             }
             _task = nil; // break retain cycle
             _completionBlock = NULL;
         }
     };
     
-    NSLog(@"Launching '%@' with %@: %@", _task.launchPath, _task.arguments, _task);
+    NSLog(@"Launching %@: %@ %@\nEnvironment:\n%@", _task, _task.launchPath, [_task.arguments componentsJoinedByString: @" "], environment);
     
     
     self.tty = [[PseudoTTY alloc] init];
