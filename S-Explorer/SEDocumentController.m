@@ -3,7 +3,7 @@
 //  S-Explorer
 //
 //  Created by Dirk Theisen on 02.09.13.
-//  Copyright (c) 2013 Cocoanuts. All rights reserved.
+//  Copyright (c) 2016 Cocoanuts.org. All rights reserved.
 //
 
 #import "SEDocumentController.h"
@@ -84,12 +84,22 @@
     }
     // The source file specified in url is not already part of an open project document.
     
+    if ([urlPath.lastPathComponent isEqualToString: @"project.clj"]) {
+        NSURL* projectURL = [url URLByDeletingLastPathComponent];
+        [self openDocumentWithContentsOfURL: projectURL display: displayDocument completionHandler: ^(NSDocument* _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
+            [self openDocumentWithContentsOfURL: url display: displayDocument completionHandler: completionHandler];
+        }];
+        return;
+    }
     
     
 //    NSURL* projectFileURL = nil;
 //    NSURL* projectFolderURL = nil;
     NSFileManager *fm = [NSFileManager defaultManager];
     BOOL isDir;
+    
+
+    
 //    NSString* filename = nil;
     if ([fm fileExistsAtPath: [url path] isDirectory: &isDir]) {
         if (isDir) {
