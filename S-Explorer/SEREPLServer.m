@@ -8,6 +8,7 @@
 
 #import "SEREPLServer.h"
 #import "PseudoTTY.h"
+#include <arpa/inet.h>
 
 @interface SEREPLServer ()
 
@@ -90,9 +91,37 @@
 
 
 
-
 @implementation SEREPLServer
 
++ (int) availableTCPPort {
+    struct sockaddr_in addr;
+    socklen_t len = sizeof(addr);
+    addr.sin_port = 0;
+    inet_aton("0.0.0.0", &addr.sin_addr);
+    
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+
+    if (sock < 0) {
+        perror("socket()");
+        return -1;
+    }
+    if (bind(sock, (struct sockaddr*) &addr, sizeof(addr)) != 0) {
+        perror("bind()");
+        return -1;
+    }
+    if (getsockname(sock, (struct sockaddr*) &addr, &len) != 0) {
+        perror("getsockname()");
+        return -1;
+    }
+    int iSetOption = 1;
+    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption, sizeof(iSetOption));
+    
+    int result = (addr.sin_port);
+    
+    close(sock);
+    
+    return result;
+}
 
 - (id) initWithSettings: (NSDictionary*) initialSettings {
     if (self = [self init]) {
@@ -160,13 +189,19 @@
 
     //NSError* error = nil;
     //NSMutableArray* commandArguments = [_settings[@"RuntimeArguments"] mutableCopy];
-    NSString* runtimeSupportPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent: @"Runtime-Support/clojure"];
+    //NSString* runtimeSupportPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent: @"Runtime-Support/clojure"];
+    int availableTCPPort = [SEREPLServer availableTCPPort];
     
+    NSArray* commandArgumentTemplates = self.settings[@"RuntimeArguments"];
     
-    NSArray* commandArguments = @[
-                                  //,
-                                  @"repl"
-                                  ];
+    commandArgumentTemplates = @[@"-Dclojure.server.toolrepl={:port\ %PORT\ :accept\ replicant.util/data-repl}",
+                                 @"clojure.main"];
+    
+    NSMutableArray* commandArguments = [NSMutableArray array];
+    for (NSString* template in commandArgumentTemplates) {
+        NSString* argument = [template stringByReplacingOccurrencesOfString: @"%PORT" withString: [@(availableTCPPort) description]];
+        [commandArguments addObject: argument];
+    }
     
     NSString* workingDirectory = _settings[@"WorkingDirectory"];
     
@@ -190,7 +225,8 @@
 //        [commandArguments addObjectsFromArray: [[NSString stringWithFormat: portFormat, @(_port)] componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
 //    }
     
-    NSString* toolPath = @"/usr/local/bin/lein"; //_settings[@"RuntimeTool"];
+    NSString* toolPath = self.settings[@"RuntimeTool"];
+    toolPath = @"/usr/bin/java";
     
     if (! [[NSFileManager defaultManager] isExecutableFileAtPath: toolPath]) {
         _completionBlock(self, [NSError errorWithDomain: @"org.cocoanuts.s-explorer"
@@ -203,14 +239,15 @@
     _task.currentDirectoryPath = workingDirectory;
     
     NSDictionary *defaultEnvironment = [[NSProcessInfo processInfo] environment];
-    NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary:defaultEnvironment];
+    NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary: defaultEnvironment];
     [environment setObject: @"YES" forKey: @"NSUnbufferedIO"];
     [environment setObject: @"en_US-iso8859-1" forKey: @"LANG"];
-    NSString* jvmOpts = [NSString stringWithFormat: @"-Dclojure.server.datarepl={:port %lu :accept 'replicant.util/data-repl} ", (unsigned long)5555];
-    jvmOpts = [jvmOpts stringByAppendingFormat: @"-Djava.library.path=%@", runtimeSupportPath];
+    //NSString* jvmOpts = [NSString stringWithFormat: @"-Dclojure.server.datarepl={:port %lu :accept 'replicant.util/data-repl} ", (unsigned long)5555];
+    //jvmOpts = [jvmOpts stringByAppendingFormat: @"-Djava.library.path=%@", runtimeSupportPath];
     
-    environment[@"JVM_OPTS"] = jvmOpts;
-    NSString* classPath = runtimeSupportPath; //environment[@"CLASSPATH"];
+    //environment[@"JVM_OPTS"] = jvmOpts;
+    [environment setObject: self.settings[@"JavaClassPath"] forKey: @"CLASSPATH"];
+ ; //environment[@"CLASSPATH"];
     //environment[@"LEIN_JVM_OPTS"] = [NSString stringWithFormat: @"-cp %@", runtimeSupportPath];
     //[classPath ? classPath : @"" stringByAppendingString: [NSString stringWithFormat: @";%@", runtimeSupportPath]];
     

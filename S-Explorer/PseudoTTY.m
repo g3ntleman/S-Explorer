@@ -13,7 +13,7 @@
 @synthesize slaveFileHandle;
 @synthesize masterFileHandle;
 
--(id)init {
+-(id) init {
     if (self = [super init]) {
         int masterfd, slavefd;
         char devname[1024];
@@ -25,14 +25,14 @@
         name = [[NSString alloc] initWithCString:devname encoding: NSASCIIStringEncoding];
         slaveFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:slavefd];
         masterFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:masterfd
-                                                  closeOnDealloc:YES];
-
-	if (setsid() < 0)
-	    perror("setsid");
-	
-	if (ioctl(slavefd, TIOCSCTTY, NULL) < 0)
-	    perror("setting control terminal");
+                                                         closeOnDealloc:YES];
+        
+        //	if (setsid() < 0)
+        //	    perror("setsid");
+        //	if (ioctl(slavefd, TIOCSCTTY, NULL) < 0)
+        //	    perror("setting control terminal");
     }
+        
     return self;
 }
 

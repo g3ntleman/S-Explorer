@@ -22,7 +22,7 @@ extern NSString* SEProjectDocumentType;
 
 @property (strong, nonatomic) SCEvents* pathWatcher;
 
-@property (nonatomic, readonly) SEREPLServer* replServer;
+@property (readonly) SEREPLServer* replServer;
 @property (readonly, nonatomic) SEREPLViewController* topREPLController;
 @property (readonly, nonatomic) NSDictionary* allREPLControllers;
 @property (strong, nonatomic) IBOutlet NSTabView* replTabView;
@@ -44,6 +44,10 @@ extern NSString* SEProjectDocumentType;
 @property (strong, nonatomic) NSString* currentLanguage;
 @property (strong, readonly) NSDictionary* languageDictionary;
 @property (strong, readonly) SESourceItem* currentSourceItem;
+
+@property (strong, readonly) NSString* javaClasspath;
+
+- (void) populateJavaClassPathWithCompletion: (void (^)(SEProjectDocument* document, NSError* error)) completed;
 
 - (NSMutableDictionary*) replSettingsForIdentifier: (NSString*) identifier;
 
@@ -69,7 +73,7 @@ extern NSString* SEProjectDocumentType;
 
 - (void) setSourceItem: (SESourceItem*) item forTabIndex: (NSUInteger) index;
 
-- (void) startREPLServerAsNeccessary;
+- (void) startREPLServer;
 
 - (void) openSourceItem: (SESourceItem*) item;
 

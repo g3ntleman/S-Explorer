@@ -24,6 +24,10 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 @interface SEProjectDocument ()
 @property (readonly) NSString* uiSettingsPath;
+@property (strong) NSString* javaClasspath;
+@property (atomic) SEREPLServer* replServer;
+
+
 @end
 
 @implementation SEProjectDocument {
@@ -117,7 +121,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 - (IBAction) newFile: (id) sender {
     
     NSError* error = nil;
-    NSString* filename = @"Untitled.scm";
+    NSString* filename = @"Untitled.clj";
     NSURL* newURL = [self.projectFolderItem.fileURL URLByAppendingPathComponent: filename];
     [@"" writeToURL: newURL atomically: NO encoding: NSUTF8StringEncoding error: &error];
     [self.projectFolderItem syncChildrenRecursive: NO];
@@ -560,71 +564,78 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 }
 
 
-- (void) startREPLServerAsNeccessary {
+- (void) startREPLServerWithCompletion: (SEREPLServerCompletionBlock) block {
     
     if (! self.replServer.task.isRunning && self.fileURL) {
         if (! self.replServer) {
             NSMutableDictionary* settings = [self.languageDictionary mutableCopy];
             [settings addEntriesFromDictionary: self.topREPLSettings];
             [settings setObject: [self.fileURL.path stringByDeletingLastPathComponent] forKey: @"WorkingDirectory"];
+            [settings setObject: self.javaClasspath forKey: @"JavaClassPath"];
             
             //self.topREPLController.replView.interpreterString = @"Starting nREPL Server...";
             
             //_target = [[SETarget alloc] initWithSettings: settings];
-            _replServer = [[SEREPLServer alloc] initWithSettings: settings];
-            [_replServer startWithCompletionBlock: ^(SEREPLServer* repl, NSError* error) {
-                NSLog(@"%@ startup completed (with error %@), listening on port #%ld", repl, error, repl.port);
-                if (! error) {
-                    // Connect clients:
-                    [self.topREPLController.replView appendInterpreterString:  @"Connecting to nREPL Server..."];
-                    self.topREPLController.greeting = self.languageDictionary[@"WelcomeMessage"];
-                    self.topREPLController.replView.prompt = self.languageDictionary[@"Prompt"];
-                    
-                    [self.topREPLController connectWithBlock:^(SEnREPLConnection *connection, NSError *error) {
-                        if (error) {
-                            [self.topREPLController.replView appendInterpreterString: [NSString stringWithFormat: @"\nConnect failed: %@", error]];
-                        }
-                        
-                        NSString* keywordExpression = self.languageDictionary[@"Keywords"][@"DynamicExpression"];
-                        if (keywordExpression.length) {
-                            [connection evaluateExpression: keywordExpression
-                                           completionBlock:^(NSDictionary *partialResult) {
-                                               NSString* allKeywordsString = [partialResult[@"value"] mutableCopy];
-                                               if ([allKeywordsString hasPrefix: @"("] && [allKeywordsString hasSuffix: @")"]) {
-                                                   allKeywordsString = [allKeywordsString substringWithRange: NSMakeRange(1, allKeywordsString.length-2)];
-                                               
-                                                   // Convert List (Expression) into String-Array:
-                                                   //NSOrderedSet* allKeywords = [self.editorController.keywords];
-                                                   
-                                                   NSMutableArray* allKeywords = [self.editorController.defaultKeywords mutableCopy];
-                                                   [allKeywords addObjectsFromArray: [allKeywordsString componentsSeparatedByString: @" "]];
-                                                   [allKeywords sortUsingSelector: @selector(compare:)];
-                                                   
-                                                   NSOrderedSet* orderedKeywords = [NSOrderedSet orderedSetWithArray: allKeywords];
-                                                   
-                                                   NSLog(@"'Partial' keyword result: %@", orderedKeywords);
-                                                   
-                                                   // Copy the set of keywords to editor and repl view:
-                                                   self.editorController.textView.keywords = orderedKeywords;
-                                                   self.topREPLController.replView.keywords = orderedKeywords;
-                                               
-                                                   //                                               id allSessionIDs = [connection allSessionIDs];
-                                                   //                                               NSLog(@"allSessionIDs: %@", allSessionIDs);
-                                               }
-                                           }];
-                        }
-                    }];
+            self.replServer = [[SEREPLServer alloc] initWithSettings: settings];
+            
+        }
+        [self.replServer startWithCompletionBlock: block];
+    }
+    
+   /* Code to start an interactive user repl:
+    
+    [_replServer startWithCompletionBlock: ^(SEREPLServer* repl, NSError* error) {
+        NSLog(@"%@ startup completed (with error %@), listening on port #%ld", repl, error, repl.port);
+        if (! error) {
+            // Connect clients:
+            [self.topREPLController.replView appendInterpreterString:  @"Connecting to nREPL Server..."];
+            self.topREPLController.greeting = self.languageDictionary[@"WelcomeMessage"];
+            self.topREPLController.replView.prompt = self.languageDictionary[@"Prompt"];
+            
+            [self.topREPLController connectWithBlock:^(SEnREPLConnection *connection, NSError *error) {
+                if (error) {
+                    [self.topREPLController.replView appendInterpreterString: [NSString stringWithFormat: @"\nConnect failed: %@", error]];
+                }
+                
+                NSString* keywordExpression = self.languageDictionary[@"Keywords"][@"DynamicExpression"];
+                if (keywordExpression.length) {
+                    [connection evaluateExpression: keywordExpression
+                                   completionBlock:^(NSDictionary *partialResult) {
+                                       NSString* allKeywordsString = [partialResult[@"value"] mutableCopy];
+                                       if ([allKeywordsString hasPrefix: @"("] && [allKeywordsString hasSuffix: @")"]) {
+                                           allKeywordsString = [allKeywordsString substringWithRange: NSMakeRange(1, allKeywordsString.length-2)];
+                                           
+                                           // Convert List (Expression) into String-Array:
+                                           //NSOrderedSet* allKeywords = [self.editorController.keywords];
+                                           
+                                           NSMutableArray* allKeywords = [self.editorController.defaultKeywords mutableCopy];
+                                           [allKeywords addObjectsFromArray: [allKeywordsString componentsSeparatedByString: @" "]];
+                                           [allKeywords sortUsingSelector: @selector(compare:)];
+                                           
+                                           NSOrderedSet* orderedKeywords = [NSOrderedSet orderedSetWithArray: allKeywords];
+                                           
+                                           NSLog(@"'Partial' keyword result: %@", orderedKeywords);
+                                           
+                                           // Copy the set of keywords to editor and repl view:
+                                           self.editorController.textView.keywords = orderedKeywords;
+                                           self.topREPLController.replView.keywords = orderedKeywords;
+                                           
+                                           //                                               id allSessionIDs = [connection allSessionIDs];
+                                           //                                               NSLog(@"allSessionIDs: %@", allSessionIDs);
+                                       }
+                                   }];
                 }
             }];
         }
-        
-        
+    }];
+
+    
 //        if (_nREPL.task. error) {
 //            [[NSAlert alertWithError: error] runWithCompletion:^(NSInteger buttonIndex) {
 //                [self performSelector: @selector(close) withObject: nil afterDelay: 0.1];
 //            }];
 //        }
-    }
+    */
 }
 
 - (void) tabView: (NSTabView*) tabView didSelectTabViewItem: (NSTabViewItem*) tabViewItem {
@@ -727,7 +738,25 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [self revealInSourceList: nil];
     
     
-    [self startREPLServerAsNeccessary];
+    [self populateJavaClassPathWithCompletion: ^(SEProjectDocument* document, NSError* error) {
+        
+        // Append bundle path to classPath:
+        
+        NSString* additionalSourcesPath = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent: @"Runtime-Support"] stringByAppendingPathComponent: self.currentLanguage];
+        self.javaClasspath = [self.javaClasspath stringByAppendingFormat: @":%@", additionalSourcesPath];
+        
+        if (! error) {
+            [self startREPLServerWithCompletion: ^(SEREPLServer* repl, NSError* error) {
+                // Connect tool REPL:
+                if (error) {
+                    NSLog(@"Error creating REPL server: %@", error);
+                } else {
+                    NSLog(@"Socket REPL ready.");
+                }
+            }];
+        }
+    }];
+    
 }
 
 + (BOOL) autosavesInPlace {
@@ -804,6 +833,50 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return [self.projectFolderItem childWithPath: path];
 }
 
+- (void) populateJavaClassPathWithCompletion: (void (^)(SEProjectDocument* document, NSError* error)) completed {
+
+    NSTask* task = [[NSTask alloc] init];
+    NSPipe* pipe = [NSPipe pipe];
+    
+    [task setLaunchPath: @"/usr/local/bin/lein"];
+    [task setArguments: @[@"classpath"]];
+    [task setStandardOutput: pipe];
+    task.currentDirectoryPath = self.projectFolderItem.fileURL.path;
+    
+    NSFileHandle* file = [pipe fileHandleForReading];
+    
+//    [task setTerminationHandler: ^(NSTask* t) {
+//        NSError* error = nil;
+//        if (t.terminationStatus != 0) {
+//            error = [[NSError alloc] initWithDomain: @"org.cocoanuts.s-explorer"
+//                                               code: t.terminationStatus userInfo: nil];
+//        }
+//
+//    }];
+    
+    [task launch];
+    
+    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+        
+        NSError* error = nil;
+
+        // Blocking read in background thread:
+        NSData* data = [file readDataToEndOfFile];
+        NSString* result = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
+        self.javaClasspath = [result stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        
+        if (! result.length) {
+            NSLog(@"Error, got no classpath.");
+            error = [NSError errorWithDomain: @"S-Explorer" code: 12 userInfo: nil]; // TODO: Populate error
+        }
+        if (completed) {
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                completed(self, error);
+            });
+        }
+    });
+}
+
 
 #pragma mark - Actions
 
@@ -836,16 +909,18 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 - (IBAction) revealInSourceList: (id) sender {
     SESourceItem* currentSourceItem = self.currentSourceItem;
     
-    [self expandSourceListToItem: currentSourceItem];
-    // Select itemAtPath in source list:
-    NSUInteger itemRow = [self.sourceList rowForItem: currentSourceItem];
-    
-    if (itemRow != -1) {
-        [self.sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: itemRow]
-                     byExtendingSelection: NO];
-        return;
+    if (currentSourceItem) {
+        [self expandSourceListToItem: currentSourceItem];
+        // Select itemAtPath in source list:
+        NSUInteger itemRow = [self.sourceList rowForItem: currentSourceItem];
+        
+        if (itemRow != -1) {
+            [self.sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: itemRow]
+                         byExtendingSelection: NO];
+            return;
+        }
     }
-    NSLog(@"Unable to reveal %@ in source list.", currentSourceItem);
+        NSLog(@"Unable to reveal %@ in source list.", currentSourceItem);
 }
 
 - (IBAction) revealInFinder: (id) sender {

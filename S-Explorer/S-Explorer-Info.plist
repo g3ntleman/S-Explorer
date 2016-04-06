@@ -1323,15 +1323,11 @@
 			<string>=&gt; </string>
 			<key>RuntimeArguments</key>
 			<array>
-				<string>repl</string>
-				<string>:headless</string>
-				<string>:jvm-opts [&quot;-Dclojure.server.datarepl=&quot;{:port 5555 :accept &apos;replicant.util/data-repl}&quot;]</string>
-				<string>:source-paths [&quot;src/main/clojure&quot; &quot;src&quot;]</string>
+				<string>-Dclojure.server.toolrepl=&quot;{:port %PORT :accept replicant.util/data-repl}&quot;</string>
+				<string>clojure.main</string>
 			</array>
-			<key>RuntimePortArgumentFormat</key>
-			<string>:port %@</string>
 			<key>RuntimeTool</key>
-			<string>/usr/local/bin/lein</string>
+			<string>/usr/bin/java</string>
 			<key>WelcomeMessage</key>
 			<string>Welcome to Clojure!
     Docs: (doc function-name-here)
