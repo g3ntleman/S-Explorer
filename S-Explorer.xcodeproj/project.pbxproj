@@ -42,7 +42,6 @@
 		8D60FFE517EC58B600F14B50 /* Templates in Resources */ = {isa = PBXBuildFile; fileRef = 8D60FFE417EC58B600F14B50 /* Templates */; };
 		8D68CC5D191FCE30004C727A /* SEImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D68CC5C191FCE30004C727A /* SEImageView.m */; };
 		8D72C53618287B6400776B14 /* SEREPLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D72C53418287B6400776B14 /* SEREPLConnection.m */; };
-		8D7B0BEC181184910046403D /* OPBEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7B0BEB181184910046403D /* OPBEncoder.m */; };
 		8D7E69571829E44300F320A9 /* SEnREPLConnection_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7E69561829E44300F320A9 /* SEnREPLConnection_Tests.m */; };
 		8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8D8298D31758088000336E2F /* S-Explorer-support.scm */; };
 		8D85E476182C8B190096C76E /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D85E473182C8B190096C76E /* GCDAsyncSocket.m */; };
@@ -619,7 +618,6 @@
 				8DCBE48D17C76EBB00A872A7 /* NSColor+OPExtensions.m in Sources */,
 				8D4DF7E717F4587F00BC0773 /* OPCharFilterFormatter.m in Sources */,
 				8DF3C39617CFA3D200C75197 /* OPUtilityFunctions.m in Sources */,
-				8D7B0BEC181184910046403D /* OPBEncoder.m in Sources */,
 				8DEE2AC717D434EE005BEDD0 /* SEDocumentController.m in Sources */,
 				8D05309B1B25B1DF00312A7C /* SCEvent.m in Sources */,
 				8D88F641182FBC1F00AB1D35 /* SEREPLServer.m in Sources */,
