@@ -37,14 +37,16 @@
     panel.allowsMultipleSelection = NO;
     panel.allowedFileTypes = @[SEProjectDocumentType];
     
-    [self beginOpenPanel: panel forTypes: @[SEProjectDocumentType, @"public.folder"] completionHandler:^(NSInteger result) {
+    [self beginOpenPanel: panel forTypes: @[SEProjectDocumentType, @"public.folder"] completionHandler: ^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton) {
             NSURL* selectedURL = [[panel URLs] objectAtIndex:0];
             NSLog(@"selected URL: %@", selectedURL);
-            NSError* error = nil;
-            id project = [self openDocumentWithContentsOfURL: selectedURL display: YES error: &error];
-            NSLog(@"Opened URL %@ (Error %@)", selectedURL, error);
-            NSLog(@"Got %@", project);
+            [self openDocumentWithContentsOfURL: selectedURL
+                                        display: YES
+                              completionHandler: ^(NSDocument * _Nullable project, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
+                                  NSLog(@"Opened URL %@ (Error %@)", selectedURL, error);
+                                  NSLog(@"Got %@", project);
+                              }];
         }
     }];
     

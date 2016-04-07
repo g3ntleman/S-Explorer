@@ -25,7 +25,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 @interface SEProjectDocument ()
 @property (readonly) NSString* uiSettingsPath;
 @property (strong) NSString* javaClasspath;
-@property (atomic) SEREPLServer* replServer;
+@property (strong, atomic) SEREPLServer* replServer;
+@property (strong, atomic) SEREPLConnection* toolConnection;
 
 
 @end
@@ -643,7 +644,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     if (tabView == self.replTabView) {
         SEREPLViewController* replController = self.topREPLController;
         if (self.replServer.port && ! replController.evalConnection.socket.isConnected) {
-            [replController connectWithBlock:^(SEnREPLConnection *connection, NSError *error) {
+            [replController connectWithBlock:^(SEREPLConnection *connection, NSError *error) {
                 
             }];
         }
@@ -746,12 +747,23 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         self.javaClasspath = [self.javaClasspath stringByAppendingFormat: @":%@", additionalSourcesPath];
         
         if (! error) {
-            [self startREPLServerWithCompletion: ^(SEREPLServer* repl, NSError* error) {
-                // Connect tool REPL:
+            [self startREPLServerWithCompletion: ^(SEREPLServer* server, NSError* error) {
+                // Connect to tool REPL:
                 if (error) {
                     NSLog(@"Error creating REPL server: %@", error);
                 } else {
-                    NSLog(@"Socket REPL ready.");
+                    NSLog(@"Socket REPL ready. Connecting...");
+                    self.toolConnection = [[SEREPLConnection alloc] initWithHostname: @"localhost" port: server.port];
+                    [self.toolConnection openWithConnectBlock: ^(SEREPLConnection* connection, NSError* error) {
+                        if (! error) {
+                        [connection sendExpression: @"(+ 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
+                            NSLog(@"Socket REPL got result: %@", resultDictionary);
+                        }];
+                        } else {
+                            NSLog(@"Error connecting to socket REPL server: %@", error);
+                        }
+                    }];
+                    
                 }
             }];
         }

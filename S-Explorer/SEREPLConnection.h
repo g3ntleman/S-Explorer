@@ -10,16 +10,16 @@
 #import "GCDAsyncSocket.h"
 
 @class SEnREPLResultState;
-@class SEnREPLConnection;
+@class SEREPLConnection;
 
 //typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
 
-typedef void (^SEnREPLPartialResultBlock)(NSDictionary* partialResult);
+typedef void (^SEREPLResultBlock)(NSDictionary* partialResult);
 
 /**
  * Called on connect, but also on disconnect.
  */
-typedef void (^SEnREPLConnectBlock)(SEnREPLConnection* connection, NSError* error);
+typedef void (^SEREPLConnectBlock)(SEREPLConnection* connection, NSError* error);
 
 
 @interface SEnREPLResultState : NSObject
@@ -28,46 +28,39 @@ typedef void (^SEnREPLConnectBlock)(SEnREPLConnection* connection, NSError* erro
 @property (readonly, nonatomic) NSError* error;
 @property (readonly, nonatomic) NSString* evaluationID;
 @property (readonly, nonatomic) NSArray* results;
-@property (readonly, nonatomic) SEnREPLPartialResultBlock partialResultBlock;
+@property (readonly, nonatomic) SEREPLResultBlock partialResultBlock;
 @property (readonly) BOOL isStatusDone;
 @property (readonly) NSTimeInterval timeout;
 
 
 - (id) initWithEvaluationID: (NSString*) anId
                     timeout: (NSTimeInterval) timeoutSeconds
-                resultBlock: (SEnREPLPartialResultBlock) aResultBlock;
+                resultBlock: (SEREPLResultBlock) aResultBlock;
 
 
 @end
 
-@interface SEnREPLConnection : NSObject <GCDAsyncSocketDelegate>
+@interface SEREPLConnection : NSObject <GCDAsyncSocketDelegate>
 
 // USe CFStreamCreatePairWithSocketToHost instead?
 
 @property (readonly, nonatomic) GCDAsyncSocket* socket;
 @property (readonly, nonatomic) NSString* hostname;
-@property (readonly, nonatomic) NSString* sessionID;
 @property (readonly, nonatomic) NSInteger port;
 @property (readonly, nonatomic) NSInteger requestCounter;
 @property (readonly, nonatomic) BOOL isConnecting;
 
 
-- (id) initWithHostname: (NSString*) hostname port: (NSInteger) port sessionID: (NSString*) aSessionID;
-
-- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREPLPartialResultBlock) block timeout: (NSTimeInterval) timeout;
+- (id) initWithHostname: (NSString*) hostname port: (NSInteger) port;
 
 - (void) sendConsoleInput: (NSString*) inputString;
 
-- (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREPLPartialResultBlock) block;
+- (long) sendExpression: (NSString*) expression timeout: (NSTimeInterval) timeout completion: (SEREPLResultBlock) block;
 
-//- (id) allSessionIDs;
+- (void) terminateSessionWithCompletionBlock: (SEREPLResultBlock) block;
 
-- (void) terminateSessionWithCompletionBlock: (SEnREPLPartialResultBlock) block;
-
-- (void) openWithConnectBlock: (SEnREPLConnectBlock) completionBlock;
+- (void) openWithConnectBlock: (SEREPLConnectBlock) completionBlock;
 
 - (void) close;
-
-- (id) allSessionIDs;
 
 @end

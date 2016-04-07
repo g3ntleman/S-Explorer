@@ -7,14 +7,14 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "SEnREPLConnection.h"
+#import "SEREPLConnection.h"
 #import "SEREPLServer.h"
 #import "XCTestAsync.h"
 
 @interface SEnREPLConnection_Tests : XCTestCase
 
 @property SEREPLServer* repl;
-@property SEnREPLConnection* connection;
+@property SEREPLConnection* connection;
 
 @end
 
@@ -27,7 +27,7 @@
 
 
 
-- (void) evaluateExpression: (NSString*) expression completionBlock:  (void (^)(SEnREPLConnection* connection, NSDictionary* partialResult)) block {
+- (void) evaluateExpression: (NSString*) expression completionBlock:  (void (^)(SEREPLConnection* connection, NSDictionary* partialResult)) block {
     
     [self.repl startWithCompletionBlock: ^(SEnREPL* repl, NSError* anError) {
         XCTAssert(anError == nil, @"Error starting REPL: %@", anError);

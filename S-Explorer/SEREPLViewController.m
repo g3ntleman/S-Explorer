@@ -69,7 +69,7 @@ static NSData* lineFeedData = nil;
     
     if (commandString.length) {
         NSParameterAssert(self.evalConnection.socket.isConnected);
-        [self.evalConnection evaluateExpression: commandString completionBlock:^(NSDictionary* partialResult) {
+        [self.evalConnection sendExpression: commandString timeout: 10.0 completion: ^(NSDictionary* partialResult) {
             NSLog(@"<-- Received %@ from nREPL.", [partialResult description]);
             NSString* output = partialResult[@"out"];
             if (output.length) {
@@ -302,13 +302,13 @@ static NSData* lineFeedData = nil;
  * The block will be called on connect, connection error 
  * or - after a connection has been established - on sudden disconnect.
  */
-- (void) connectWithBlock: (SEnREPLConnectBlock) connectBlock {
+- (void) connectWithBlock: (SEREPLConnectBlock) connectBlock {
         
     [self stop: self];
     //NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
     
-    _evalConnection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.replServer.port sessionID: nil];
-    [_evalConnection openWithConnectBlock:^(SEnREPLConnection *connection, NSError *error) {
+    _evalConnection = [[SEREPLConnection alloc] initWithHostname: @"localhost" port: self.project.replServer.port];
+    [_evalConnection openWithConnectBlock:^(SEREPLConnection *connection, NSError *error) {
         self.textView.editable = !error;
         if (error) {
             //NSLog(@"Connection to nREPL failed with error: %@", error);
@@ -317,18 +317,16 @@ static NSData* lineFeedData = nil;
             }
             // TODO: Show NSAlert here?
         } else {
-            [connection evaluateExpression:@"(use 'clojure.repl)" completionBlock:^(NSDictionary *partialResult) {
+            [connection sendExpression:@"(use 'clojure.repl)" timeout: 10.0 completion:^(NSDictionary *partialResult) {
                 // _evalConnection established.
-                if (connection.sessionID.length) {
-                    // Now connect the _controlConnection using the same sessionID:
-                    NSLog(@"Eval Connection %@ established.", _evalConnection);
-                    _controlConnection = [[SEnREPLConnection alloc] initWithHostname: @"localhost" port: self.project.replServer.port sessionID: connection.sessionID];
-                    [_controlConnection openWithConnectBlock:^(SEnREPLConnection *connection, NSError *error) {
-                        [connection evaluateExpression:@"nil" completionBlock:^(NSDictionary *partialResult) {
-                            NSLog(@"Control connection %@ established.", connection);
-                        }];
+                // Now connect the _controlConnection using the same sessionID:
+                NSLog(@"Eval Connection %@ established.", _evalConnection);
+                _controlConnection = [[SEREPLConnection alloc] initWithHostname: @"localhost" port: self.project.replServer.port];
+                [_controlConnection openWithConnectBlock:^(SEREPLConnection *connection, NSError *error) {
+                    [connection sendExpression: @"nil" timeout: 10.0 completion: ^(NSDictionary* result) {
+                        NSLog(@"Control connection %@ established.", connection);
                     }];
-                }
+                }];
             }];
             
             self.replView.editable = YES;
@@ -346,7 +344,7 @@ static NSData* lineFeedData = nil;
 }
 
 - (IBAction) run: (id) sender {
-    [self connectWithBlock: ^(SEnREPLConnection *connection, NSError *error) {
+    [self connectWithBlock: ^(SEREPLConnection *connection, NSError *error) {
         // TODO: Launch Target.
         // TODO: Trigger UI Updates
     }];

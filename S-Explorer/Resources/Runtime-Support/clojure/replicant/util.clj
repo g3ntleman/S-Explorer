@@ -53,7 +53,7 @@
 
 (comment
   ;; First start a tooling repl server - tool repl will connect to this
-  ;; -Dclojure.server.datarepl="{:port 5555 :accept 'replicant.util/data-repl}"
+  ;; -Dclojure.server.datarepl="{:port 5555 :accept replicant.util/data-repl}"
 
   ;; From tool, connect as a client to 127.0.0.1:5555
 

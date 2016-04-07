@@ -8,7 +8,7 @@
 
 #import <AppKit/AppKit.h>
 #import "SEREPLView.h"
-#import "SEnREPLConnection.h"
+#import "SEREPLConnection.h"
 #import "SEREPLServer.h"
 #import "SESourceTextViewController.h"
 
@@ -18,8 +18,8 @@
 
 @property (readonly, nonatomic) SEREPLView* replView;
 
-@property (nonatomic, readonly) SEnREPLConnection* evalConnection;
-@property (nonatomic, readonly) SEnREPLConnection* controlConnection;
+@property (nonatomic, readonly) SEREPLConnection* evalConnection;
+@property (nonatomic, readonly) SEREPLConnection* controlConnection;
 @property (nonatomic, strong) NSString* greeting;
 
 @property (nonatomic, readonly) NSArray* commandHistory;
@@ -40,7 +40,7 @@
 
 - (IBAction) connectREPL: (id) sender;
 
-- (void) connectWithBlock: (SEnREPLConnectBlock) connectBlock;
+- (void) connectWithBlock: (SEREPLConnectBlock) connectBlock;
 
 - (BOOL) sendCurrentCommand;
 

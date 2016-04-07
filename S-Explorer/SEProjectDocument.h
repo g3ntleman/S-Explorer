@@ -73,7 +73,7 @@ extern NSString* SEProjectDocumentType;
 
 - (void) setSourceItem: (SESourceItem*) item forTabIndex: (NSUInteger) index;
 
-- (void) startREPLServer;
+- (void) startREPLServerWithCompletion: (SEREPLServerCompletionBlock) block;
 
 - (void) openSourceItem: (SESourceItem*) item;
 

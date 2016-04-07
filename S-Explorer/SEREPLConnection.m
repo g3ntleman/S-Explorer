@@ -6,26 +6,25 @@
 //  Copyright (c) 2016 Cocoanuts.org. All rights reserved.
 //
 
-#import "SEnREPLConnection.h"
-#import "OPBEncoder.h"
+#import "SEREPLConnection.h"
 #import "NSDictionary+OPImmutablility.h"
 
-@interface SEnREPLConnection () <NSStreamDelegate>
+@interface SEREPLConnection () <NSStreamDelegate>
 
 @property (strong, nonatomic) NSMutableDictionary* evaluationStatesByTag;
 @property (readonly, nonatomic) NSInteger connectRetries;
-@property (strong, nonatomic) SEnREPLConnectBlock connectBlock;
+@property (strong, nonatomic) SEREPLConnectBlock connectBlock;
 @property (readonly, nonatomic) NSMutableData* readBuffer;
 
 @end
 
 
-@implementation SEnREPLConnection
+@implementation SEREPLConnection
 
 /**
  * aSessionID may be nil. Will be assigned by the server with first reply.
  */
-- (id) initWithHostname: (NSString*) hostname port: (NSInteger) port sessionID: (NSString*) aSessionID {
+- (id) initWithHostname: (NSString*) hostname port: (NSInteger) port {
     if (self = [self init]) {
         _hostname = [hostname copy];
         _port = port;
@@ -33,7 +32,6 @@
         
         _socket = [[GCDAsyncSocket alloc] initWithDelegate: self delegateQueue: dispatch_get_main_queue()];
         _socket.delegate = self;
-        _sessionID = [aSessionID copy];
         _readBuffer = [[NSMutableData alloc] init];
     }
     return self;
@@ -43,7 +41,7 @@
     [self close];
 }
 
-- (void) openWithConnectBlock: (SEnREPLConnectBlock) completionBlock {
+- (void) openWithConnectBlock: (SEREPLConnectBlock) completionBlock {
     
     NSAssert(self.evaluationStatesByTag.count == 0, @"Looks like the connection %@ had been used before. Allocate a new connection each time.", self);
     NSAssert(self.socket, @"openWithError: Socket not set.");
@@ -71,19 +69,17 @@
     
     void (^closeBlock)(NSDictionary* partialResult) = ^(NSDictionary* partialResult) {
         _connectRetries = 0;
-        if ([_socket isConnected]) {
+        if ([self.socket isConnected]) {
             NSLog(@"Trying to disconnect %@", _socket);
-            [_socket disconnect];
+            [self.socket disconnect];
         }
         [_evaluationStatesByTag removeAllObjects];
     };
     
     if ([_socket isConnected]) {
-        if (self.sessionID.length) {
-            NSLog(@"Connection %@ will first close session.", self);
-            [self terminateSessionWithCompletionBlock: closeBlock];
-            return;
-        }
+        NSLog(@"Connection %@ will first close session.", self);
+        [self terminateSessionWithCompletionBlock: closeBlock];
+        return;
         closeBlock(nil);
     }
 }
@@ -111,63 +107,41 @@
 }
 
 
-- (void)socket: (GCDAsyncSocket*) sock didReadData: (NSData*) data withTag: (long) tag {
+- (void) socket: (GCDAsyncSocket*) sock didReadData: (NSData*) data withTag: (long) tag {
     
     /* tag is of no use and should be -1. */
     
     [self.readBuffer appendData: data];
     
-    //NSString* dataString = [[NSString alloc] initWithData: self.readBuffer encoding: NSUTF8StringEncoding];
-    //NSLog(@"Socket read data for tag %ld. Buffer now: %@", tag, dataString);
+    NSString* dataString = [[NSString alloc] initWithData: self.readBuffer encoding: NSUTF8StringEncoding];
+    NSLog(@"Socket read data. Buffer now: %@", dataString);
     
     
-    NSMutableDictionary* partialResultDictionary = [[OPBEncoder decoderForData: self.readBuffer mutableContainers: YES] decodeObject];
     
-    NSArray* status = partialResultDictionary[@"status"];
-    NSString* lastStatus = [status lastObject];
-    if ([lastStatus isEqualToString: @"error"]) {
-        NSLog(@"%@ received error: %@", self, status);
-        partialResultDictionary[@"NSError"] = [NSError errorWithDomain: @"org.cocoanuts.S-Explorer" code: -12 userInfo: @{NSLocalizedDescriptionKey: status[0]}]; // use all bust last array elements in description?
-    }
+    //NSMutableDictionary* partialResultDictionary = [[OPBEncoder decoderForData: self.readBuffer mutableContainers: YES] decodeObject];
+    
+//    NSArray* status = partialResultDictionary[@"status"];
+//    NSString* lastStatus = [status lastObject];
+//    if ([lastStatus isEqualToString: @"error"]) {
+//        NSLog(@"%@ received error: %@", self, status);
+//        partialResultDictionary[@"NSError"] = [NSError errorWithDomain: @"org.cocoanuts.S-Explorer" code: -12 userInfo: @{NSLocalizedDescriptionKey: status[0]}]; // use all bust last array elements in description?
+//    }
+//    
+//    
+//    BOOL done = [lastStatus isEqualToString: @"done"];
+//    
+//    // Test, if the dictionary is complete:
+//    if (partialResultDictionary) {
+//        
+//        NSNumber* requestNo = partialResultDictionary[@"id"];
+//        SEnREPLResultState* evalState = _evaluationStatesByTag[requestNo]; // expect this to exist
+//    }
+    
+    self.readBuffer.length = 0; // Not always correct. Need to trim only parsed part (yet unknown).
     
     
-    BOOL done = [lastStatus isEqualToString: @"done"];
-
-    // Test, if the dictionary is complete:
-    if (partialResultDictionary) {
-        
-        NSNumber* requestNo = partialResultDictionary[@"id"];
-        SEnREPLResultState* evalState = _evaluationStatesByTag[requestNo]; // expect this to exist
-
-        NSString* sessionID = partialResultDictionary[@"session"];
-        if (sessionID.length) {
-            if (_sessionID && ! [_sessionID isEqualToString: sessionID]) {
-                NSLog(@"Warning! Session ID is changing.");
-            }
-            _sessionID = sessionID;
-            NSLog(@"%@ assigned session id.", self);
-        }
-        
-        self.readBuffer.length = 0; // Not always correct. Need to trim only parsed part (yet unknown).
-        
-
-        // Do not send the last message (for now). Remove this, if the terminating message is needed.
-        if (! done) {
-            NSAssert(evalState, @"No eval state found for partialResultDictionary %@", partialResultDictionary);
-
-            evalState.partialResultBlock(partialResultDictionary);
-        } else {
-            NSLog(@"%@ received: %@ for requestNo %@", self, partialResultDictionary, requestNo);
-
-            // Cleanup:
-            [_evaluationStatesByTag removeObjectForKey: requestNo];
-        }
-        
-    }
+    // Do not send the last message (for now). Remove this, if the terminating message is needed.
     
-    if (! done) {
-        [self.socket readDataWithTimeout: -1 tag: -1];
-    }
 }
 
 //- (void) socket: (GCDAsyncSocket*) sock didWriteDataWithTag: (long) tag {
@@ -179,26 +153,24 @@
 }
 
 /**
- * Sends the encoded commandDictionary to the nREPL server process.
+ * Sends the EDN encoded expression to the REPL server process.
  * Calls the given block after decoding the result.
  * The timeout given is used for both, sending and receiving messages.
  * Returns the tag of the command.
  **/
-- (long) sendCommandDictionary: (NSDictionary*) commandDictionary completionBlock: (SEnREPLPartialResultBlock) block timeout: (NSTimeInterval) timeout {
+- (long) sendExpression: (NSString*) expression timeout: (NSTimeInterval) timeout completion: (SEREPLResultBlock) block {
     
-    NSAssert([self.socket isConnected], @"Cannot send Command without open connection. -open first.");
+    NSAssert([self.socket isConnected], @"Cannot send Command without open connection. Call -[open] first.");
 
     // This messes with the _tagCounter, so protect it:
     @synchronized(self) {
-        // Does not work - getting unknown session error.
-        if (_sessionID.length) {
-            commandDictionary = [commandDictionary dictionaryBySettingObject: _sessionID forKey: @":session"];
-        }
+
         
-        NSData* benData = [[[OPBEncoder alloc] init] encodedDataFromObject: commandDictionary];
+        //NSData* benData = [[[OPBEncoder alloc] init] encodedDataFromObject: commandDictionary];
         //NSString* benString = [[NSString alloc] initWithData: benData encoding:NSUTF8StringEncoding];
-        NSLog(@"%@ is sending '%@' for requestNo %ld", self, commandDictionary, _requestCounter);
-        [self.socket writeData: benData withTimeout: timeout tag: _requestCounter];
+        NSLog(@"%@ is sending '%@' as requestNo %ld", self, expression, _requestCounter);
+        NSData* stringData = [expression dataUsingEncoding: NSUTF8StringEncoding];
+        [self.socket writeData: stringData withTimeout: timeout tag: _requestCounter];
         //[self.socket writeData: [GCDAsyncSocket LFData] withTimeout: timeout tag:_tagCounter];
         
         SEnREPLResultState* evalState = [[SEnREPLResultState alloc] initWithEvaluationID: [@(_requestCounter) description]
@@ -212,51 +184,8 @@
     }
 }
 
-/**
- * Returns the tag of the command.
- **/
-- (long) evaluateExpression: (NSString*) expression completionBlock: (SEnREPLPartialResultBlock) block {
-    NSParameterAssert(expression);
-    NSDictionary* command = @{@"op": @"eval", @"code": expression, @"id": @(_requestCounter)};
-    return [self sendCommandDictionary: command completionBlock: block timeout: 6.0];
-}
-
-- (id) allSessionIDs {
-    __block NSString* sessionIDsString = nil;
-    NSDictionary* command = @{@"op": @"clone", @"id": @(_requestCounter)};
-    [self sendCommandDictionary: command completionBlock:^(NSDictionary *partialResult) {
-        sessionIDsString = partialResult[@"value"];
-    } timeout: 6.0];
-    
-    NSDate* start = [NSDate date];
-    
-    // Wait synchonously:
-    while (! sessionIDsString && [[NSDate date] timeIntervalSinceDate: start] < 6.0) {
-        NSLog(@"Waiting...");
-    	[[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode beforeDate: [NSDate dateWithTimeIntervalSinceNow: 0.2]];
-    }
-    return sessionIDsString;
-}
-
-- (void) terminateSessionWithCompletionBlock: (SEnREPLPartialResultBlock) block {
-    
-    if (! _sessionID) {
-        block(nil);
-        return;
-    }
-    
-    // NSLog(@"Closing The receiver session.");
-    [self sendCommandDictionary: @{@"op": @"close", @"session": _sessionID}
-                completionBlock: ^(NSDictionary* partialResult) {
-                    block(partialResult);
-                    _sessionID = nil;
-                }
-                        timeout: 2.0];
-}
-
-
 - (NSString*) description {
-    return [NSString stringWithFormat: @"%@, session '%@'", [super description], self.sessionID];
+    return [NSString stringWithFormat: @"%@, port '%lu'", [super description], (unsigned long)self.port];
 }
 
 
@@ -268,7 +197,7 @@
 }
 
 @property (strong, nonatomic) NSString* evaluationID;
-@property (strong, nonatomic) SEnREPLPartialResultBlock partialResultBlock;
+@property (strong, nonatomic) SEREPLResultBlock partialResultBlock;
 
 
 @end
@@ -289,7 +218,7 @@
 
 - (id) initWithEvaluationID: (NSString*) anId
                     timeout: (NSTimeInterval) timeoutSeconds
-                resultBlock: (SEnREPLPartialResultBlock) aResultBlock {
+                resultBlock: (SEREPLResultBlock) aResultBlock {
     if (self = [self init]) {
         self.evaluationID = anId;
         self.partialResultBlock = aResultBlock;

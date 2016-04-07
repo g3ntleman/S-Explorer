@@ -41,7 +41,7 @@
 		8D604297173C22D600149409 /* SEREPLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D604295173C22D600149409 /* SEREPLViewController.m */; };
 		8D60FFE517EC58B600F14B50 /* Templates in Resources */ = {isa = PBXBuildFile; fileRef = 8D60FFE417EC58B600F14B50 /* Templates */; };
 		8D68CC5D191FCE30004C727A /* SEImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D68CC5C191FCE30004C727A /* SEImageView.m */; };
-		8D72C53618287B6400776B14 /* SEnREPLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D72C53418287B6400776B14 /* SEnREPLConnection.m */; };
+		8D72C53618287B6400776B14 /* SEREPLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D72C53418287B6400776B14 /* SEREPLConnection.m */; };
 		8D7B0BEC181184910046403D /* OPBEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7B0BEB181184910046403D /* OPBEncoder.m */; };
 		8D7E69571829E44300F320A9 /* SEnREPLConnection_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7E69561829E44300F320A9 /* SEnREPLConnection_Tests.m */; };
 		8D8298D41758088100336E2F /* S-Explorer-support.scm in Resources */ = {isa = PBXBuildFile; fileRef = 8D8298D31758088000336E2F /* S-Explorer-support.scm */; };
@@ -155,8 +155,8 @@
 		8D60FFE417EC58B600F14B50 /* Templates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Templates; path = Resources/Templates; sourceTree = "<group>"; };
 		8D68CC5B191FCE30004C727A /* SEImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEImageView.h; sourceTree = "<group>"; };
 		8D68CC5C191FCE30004C727A /* SEImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEImageView.m; sourceTree = "<group>"; };
-		8D72C53318287B6400776B14 /* SEnREPLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEnREPLConnection.h; sourceTree = "<group>"; };
-		8D72C53418287B6400776B14 /* SEnREPLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEnREPLConnection.m; sourceTree = "<group>"; };
+		8D72C53318287B6400776B14 /* SEREPLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEREPLConnection.h; sourceTree = "<group>"; };
+		8D72C53418287B6400776B14 /* SEREPLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEREPLConnection.m; sourceTree = "<group>"; };
 		8D7B0BEA181184910046403D /* OPBEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OPBEncoder.h; sourceTree = "<group>"; };
 		8D7B0BEB181184910046403D /* OPBEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPBEncoder.m; sourceTree = "<group>"; };
 		8D7E69561829E44300F320A9 /* SEnREPLConnection_Tests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SEnREPLConnection_Tests.m; path = "../S-Explorer/SEnREPLConnection_Tests.m"; sourceTree = "<group>"; };
@@ -360,8 +360,8 @@
 				8D604295173C22D600149409 /* SEREPLViewController.m */,
 				8D88F63D182FBC1F00AB1D35 /* SEREPLServer.h */,
 				8D88F63E182FBC1F00AB1D35 /* SEREPLServer.m */,
-				8D72C53318287B6400776B14 /* SEnREPLConnection.h */,
-				8D72C53418287B6400776B14 /* SEnREPLConnection.m */,
+				8D72C53318287B6400776B14 /* SEREPLConnection.h */,
+				8D72C53418287B6400776B14 /* SEREPLConnection.m */,
 				8D5C020318688E69007EBFAA /* Scratchpad.clj */,
 				8DF778581CA0A56B002CDFA9 /* SETarget.h */,
 				8DF778591CA0A56B002CDFA9 /* SETarget.m */,
@@ -612,7 +612,7 @@
 				8D99612F17BE42FF0058FD0B /* NoodleGlue.m in Sources */,
 				8DD6BA971877562F00A88B99 /* SEREPLView.m in Sources */,
 				8D5DD11917F6D13800E352FE /* NSView+OPCopying.m in Sources */,
-				8D72C53618287B6400776B14 /* SEnREPLConnection.m in Sources */,
+				8D72C53618287B6400776B14 /* SEREPLConnection.m in Sources */,
 				8D14A97519982D4F00DC8D7F /* NSMutableAttributedString+OPConvenience.m in Sources */,
 				8D16399617C3B7A6000DD491 /* SESourceEditorTextView.m in Sources */,
 				8D16399C17C6BC1D000DD491 /* SEApplicationDelegate.m in Sources */,
