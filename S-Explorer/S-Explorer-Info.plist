@@ -1323,7 +1323,7 @@
 			<string>=&gt; </string>
 			<key>RuntimeArguments</key>
 			<array>
-				<string>-Dclojure.server.toolrepl=&quot;{:port %PORT :accept replicant.util/data-repl}&quot;</string>
+				<string>-Dclojure.server.toolrepl={:port %PORT :accept replicant.util/data-repl}</string>
 				<string>clojure.main</string>
 			</array>
 			<key>RuntimeTool</key>

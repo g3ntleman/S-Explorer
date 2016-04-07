@@ -194,8 +194,8 @@
     
     NSArray* commandArgumentTemplates = self.settings[@"RuntimeArguments"];
     
-    commandArgumentTemplates = @[@"-Dclojure.server.toolrepl={:port\ %PORT\ :accept\ replicant.util/data-repl}",
-                                 @"clojure.main"];
+    //commandArgumentTemplates = @[@"-Dclojure.server.toolrepl={:port %PORT :accept replicant.util/data-repl}",
+    //                             @"clojure.main"];
     
     NSMutableArray* commandArguments = [NSMutableArray array];
     for (NSString* template in commandArgumentTemplates) {
