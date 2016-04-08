@@ -291,9 +291,7 @@ static NSData* lineFeedData = nil;
 - (IBAction) stop: (id) sender {
     
     if (! self.evalConnection.socket.isDisconnected) {
-        [self.evalConnection terminateSessionWithCompletionBlock:^(NSDictionary *partialResult) {
-            [self.evalConnection close];
-        }];
+        [self.evalConnection close];
         self.replView.editable = NO;
     }
 }

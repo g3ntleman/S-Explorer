@@ -197,7 +197,7 @@
 //    NSArray* templateNames = [templateNames map]
     
     //[panel setNameFieldStringValue:newName];
-    [panel beginSheetModalForWindow: nil completionHandler: ^(NSInteger result){
+    [panel beginSheetModalForWindow: self.currentDocument.windowForSheet completionHandler: ^(NSInteger result){
         if (result == NSFileHandlingPanelOKButton) {
             NSURL* projectURL = [panel URL];
             NSString* templateName = [[templateButton selectedItem] title];

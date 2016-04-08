@@ -67,20 +67,21 @@
 
 - (void) close {
     
-    void (^closeBlock)(NSDictionary* partialResult) = ^(NSDictionary* partialResult) {
-        _connectRetries = 0;
-        if ([self.socket isConnected]) {
-            NSLog(@"Trying to disconnect %@", _socket);
-            [self.socket disconnect];
-        }
-        [_evaluationStatesByTag removeAllObjects];
-    };
+//    void (^closeBlock)(NSDictionary* partialResult) = ^(NSDictionary* partialResult) {
+//        _connectRetries = 0;
+//
+//        [_evaluationStatesByTag removeAllObjects];
+//    };
     
-    if ([_socket isConnected]) {
-        NSLog(@"Connection %@ will first close session.", self);
-        [self terminateSessionWithCompletionBlock: closeBlock];
-        return;
-        closeBlock(nil);
+//    if ([_socket isConnected]) {
+//        NSLog(@"Connection %@ will first close session.", self);
+//        [self terminateSessionWithCompletion: closeBlock];
+//        return;
+//        closeBlock(nil);
+//    }
+    if ([self.socket isConnected]) {
+        NSLog(@"Trying to disconnect %@", _socket);
+        [self.socket disconnect];
     }
 }
 
@@ -173,12 +174,18 @@
         [self.socket writeData: stringData withTimeout: timeout tag: _requestCounter];
         //[self.socket writeData: [GCDAsyncSocket LFData] withTimeout: timeout tag:_tagCounter];
         
-        SEnREPLResultState* evalState = [[SEnREPLResultState alloc] initWithEvaluationID: [@(_requestCounter) description]
-                                                                                 timeout: timeout
-                                                                             resultBlock: block];
-        [_evaluationStatesByTag setObject: evalState forKey: @(_requestCounter)];
+//        SEnREPLResultState* evalState = [[SEnREPLResultState alloc] initWithEvaluationID: [@(_requestCounter) description]
+//                                                                                 timeout: timeout
+//                                                                             resultBlock: block];
+//        [_evaluationStatesByTag setObject: evalState forKey: @(_requestCounter)];
         
         [self.socket readDataWithTimeout: timeout tag: -1];
+        
+        NSDictionary* resultDict = nil;
+        
+        if (block) {
+            block(resultDict);
+        }
         
         return _requestCounter++;
     }
@@ -191,41 +198,41 @@
 
 @end
 
-@interface SEnREPLResultState () {
-    NSMutableArray* _results;
-    NSMutableData* _buffer;
-}
+//@interface SEnREPLResultState () {
+//    NSMutableArray* _results;
+//    NSMutableData* _buffer;
+//}
+//
+//@property (strong, nonatomic) NSString* evaluationID;
+//@property (strong, nonatomic) SEREPLResultBlock resultBlock;
+//
+//
+//@end
 
-@property (strong, nonatomic) NSString* evaluationID;
-@property (strong, nonatomic) SEREPLResultBlock partialResultBlock;
-
-
-@end
-
-@implementation SEnREPLResultState
-
-- (NSArray*) results {
-    return _results;
-}
-
-- (NSMutableData*) buffer {
-    if (!_buffer) {
-        _buffer = [[NSMutableData alloc] init];
-    }
-    return _buffer;
-}
-
-
-- (id) initWithEvaluationID: (NSString*) anId
-                    timeout: (NSTimeInterval) timeoutSeconds
-                resultBlock: (SEREPLResultBlock) aResultBlock {
-    if (self = [self init]) {
-        self.evaluationID = anId;
-        self.partialResultBlock = aResultBlock;
-        _timeout = timeoutSeconds;
-    }
-    return self;
-}
+//@implementation SEnREPLResultState
+//
+//- (NSArray*) results {
+//    return _results;
+//}
+//
+//- (NSMutableData*) buffer {
+//    if (!_buffer) {
+//        _buffer = [[NSMutableData alloc] init];
+//    }
+//    return _buffer;
+//}
+//
+//
+//- (id) initWithEvaluationID: (NSString*) anId
+//                    timeout: (NSTimeInterval) timeoutSeconds
+//                resultBlock: (SEREPLResultBlock) aResultBlock {
+//    if (self = [self init]) {
+//        self.evaluationID = anId;
+//        self.resultBlock = aResultBlock;
+//        _timeout = timeoutSeconds;
+//    }
+//    return self;
+//}
 
 //- (void) updateWithPartialResult: (NSDictionary*) partialResultDictionary {
 //    
@@ -246,5 +253,4 @@
 //    //NSLog(@"Updated status with: %@ to %@", partialResultDictionary, self);
 //
 //}
-
-@end
+//@end

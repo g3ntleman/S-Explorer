@@ -580,7 +580,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
             self.replServer = [[SEREPLServer alloc] initWithSettings: settings];
             
         }
-        [self.replServer startWithCompletionBlock: block];
+        [self.replServer startWithCompletion: block];
     }
     
    /* Code to start an interactive user repl:
@@ -756,8 +756,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                     self.toolConnection = [[SEREPLConnection alloc] initWithHostname: @"localhost" port: server.port];
                     [self.toolConnection openWithConnectBlock: ^(SEREPLConnection* connection, NSError* error) {
                         if (! error) {
-                        [connection sendExpression: @"(+ 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
-                            NSLog(@"Socket REPL got result: %@", resultDictionary);
+                        [connection sendExpression: @"(+ 2 3)\n" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
+                            //NSLog(@"Socket REPL got result: %@", resultDictionary);
                         }];
                         } else {
                             NSLog(@"Error connecting to socket REPL server: %@", error);

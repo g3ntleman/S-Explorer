@@ -10,6 +10,6 @@
 
 @interface SEImageView : NSImageView
 
-@property (getter=isHighlighted, nonatomic) BOOL highlighted;
+@property (getter=isHighlighted) BOOL highlighted;
 
 @end

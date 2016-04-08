@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "GCDAsyncSocket.h"
 
-@class SEnREPLResultState;
+//@class SEnREPLResultState;
 @class SEREPLConnection;
 
 //typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
@@ -22,23 +22,23 @@ typedef void (^SEREPLResultBlock)(NSDictionary* partialResult);
 typedef void (^SEREPLConnectBlock)(SEREPLConnection* connection, NSError* error);
 
 
-@interface SEnREPLResultState : NSObject
-
-@property (readonly, nonatomic) NSString* status;
-@property (readonly, nonatomic) NSError* error;
-@property (readonly, nonatomic) NSString* evaluationID;
-@property (readonly, nonatomic) NSArray* results;
-@property (readonly, nonatomic) SEREPLResultBlock partialResultBlock;
-@property (readonly) BOOL isStatusDone;
-@property (readonly) NSTimeInterval timeout;
-
-
-- (id) initWithEvaluationID: (NSString*) anId
-                    timeout: (NSTimeInterval) timeoutSeconds
-                resultBlock: (SEREPLResultBlock) aResultBlock;
-
-
-@end
+//@interface SEnREPLResultState : NSObject
+//
+//@property (readonly, nonatomic) NSString* status;
+//@property (readonly, nonatomic) NSError* error;
+//@property (readonly, nonatomic) NSString* evaluationID;
+//@property (readonly, nonatomic) NSArray* results;
+//@property (readonly, nonatomic) SEREPLResultBlock resultBlock;
+//@property (readonly) BOOL isStatusDone;
+//@property (readonly) NSTimeInterval timeout;
+//
+//
+//- (id) initWithEvaluationID: (NSString*) anId
+//                    timeout: (NSTimeInterval) timeoutSeconds
+//                resultBlock: (SEREPLResultBlock) aResultBlock;
+//
+//
+//@end
 
 @interface SEREPLConnection : NSObject <GCDAsyncSocketDelegate>
 
@@ -56,8 +56,6 @@ typedef void (^SEREPLConnectBlock)(SEREPLConnection* connection, NSError* error)
 - (void) sendConsoleInput: (NSString*) inputString;
 
 - (long) sendExpression: (NSString*) expression timeout: (NSTimeInterval) timeout completion: (SEREPLResultBlock) block;
-
-- (void) terminateSessionWithCompletionBlock: (SEREPLResultBlock) block;
 
 - (void) openWithConnectBlock: (SEREPLConnectBlock) completionBlock;
 

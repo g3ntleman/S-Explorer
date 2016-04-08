@@ -14,7 +14,7 @@
 
 @property (strong, nonatomic) SEREPLServerCompletionBlock completionBlock;
 @property (strong, nonatomic) PseudoTTY* tty;
-
+@property (nonatomic) in_port_t port;
 @end
 
 #import <sys/socket.h>
@@ -93,7 +93,9 @@
 
 @implementation SEREPLServer
 
-+ (int) availableTCPPort {
++ (in_port_t) availableTCPPort {
+    
+    int result = 0;
     struct sockaddr_in addr;
     socklen_t len = sizeof(addr);
     addr.sin_port = 0;
@@ -105,22 +107,26 @@
         perror("socket()");
         return -1;
     }
-    if (bind(sock, (struct sockaddr*) &addr, sizeof(addr)) != 0) {
+    
+    int iSetOption = 1;
+    result = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption, sizeof(iSetOption));
+
+    if (bind(sock, (struct sockaddr*) &addr, sizeof(addr))) {
         perror("bind()");
         return -1;
     }
-    if (getsockname(sock, (struct sockaddr*) &addr, &len) != 0) {
+    if (getsockname(sock, (struct sockaddr*) &addr, &len)) {
         perror("getsockname()");
         return -1;
     }
-    int iSetOption = 1;
-    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption, sizeof(iSetOption));
     
-    int result = (addr.sin_port);
+    in_port_t port = (addr.sin_port);
     
-    close(sock);
+    result = close(sock);
     
-    return result;
+    NSLog(@"Found free server port #%d", port);
+    
+    return port;
 }
 
 - (id) initWithSettings: (NSDictionary*) initialSettings {
@@ -156,16 +162,16 @@
         NSString* string = [[NSString alloc] initWithData: data encoding: NSISOLatin1StringEncoding];
         
         
-        if (_completionBlock && [string hasPrefix: @"nREPL"]) {
-            NSRange portPrefixRange = [string rangeOfString: @"port "];
-            NSScanner* scanner = [[NSScanner alloc] initWithString: string];
-            [scanner setScanLocation: NSMaxRange(portPrefixRange)];
-            [scanner scanInteger: &_port];
-            _completionBlock(self, nil); // nRepl was successfully started
-            _completionBlock = NULL;
-        } else {
-            NSLog(@"Read unexpected: '%@'", string);
-        }
+//        if (_completionBlock && [string hasPrefix: @"nREPL"]) {
+//            NSRange portPrefixRange = [string rangeOfString: @"port "];
+//            NSScanner* scanner = [[NSScanner alloc] initWithString: string];
+//            [scanner setScanLocation: NSMaxRange(portPrefixRange)];
+//            [scanner scanInteger: &_port];
+//            _completionBlock(self, nil); // nRepl was successfully started
+//            _completionBlock = NULL;
+//        } else {
+            NSLog(@"Read: '%@'", string);
+//        }
         
         [filehandle readInBackgroundAndNotify];
     } else {
@@ -179,7 +185,7 @@
 /**
  * Starts the REPL task. A previous task is terminated.
  **/
-- (void) startWithCompletionBlock: (SEREPLServerCompletionBlock) block {
+- (void) startWithCompletion: (SEREPLServerCompletionBlock) block {
     
     // Stop a running task if neccessary:
     [self stop];
@@ -190,7 +196,7 @@
     //NSError* error = nil;
     //NSMutableArray* commandArguments = [_settings[@"RuntimeArguments"] mutableCopy];
     //NSString* runtimeSupportPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent: @"Runtime-Support/clojure"];
-    int availableTCPPort = [SEREPLServer availableTCPPort];
+    self.port = [SEREPLServer availableTCPPort];
     
     NSArray* commandArgumentTemplates = self.settings[@"RuntimeArguments"];
     
@@ -199,7 +205,7 @@
     
     NSMutableArray* commandArguments = [NSMutableArray array];
     for (NSString* template in commandArgumentTemplates) {
-        NSString* argument = [template stringByReplacingOccurrencesOfString: @"%PORT" withString: [@(availableTCPPort) description]];
+        NSString* argument = [template stringByReplacingOccurrencesOfString: @"%PORT" withString: [@(self.port) description]];
         [commandArguments addObject: argument];
     }
     
@@ -226,7 +232,6 @@
 //    }
     
     NSString* toolPath = self.settings[@"RuntimeTool"];
-    toolPath = @"/usr/bin/java";
     
     if (! [[NSFileManager defaultManager] isExecutableFileAtPath: toolPath]) {
         _completionBlock(self, [NSError errorWithDomain: @"org.cocoanuts.s-explorer"
@@ -238,8 +243,8 @@
     _task.launchPath = toolPath;
     _task.currentDirectoryPath = workingDirectory;
     
-    NSDictionary *defaultEnvironment = [[NSProcessInfo processInfo] environment];
-    NSMutableDictionary *environment = [[NSMutableDictionary alloc] initWithDictionary: defaultEnvironment];
+    NSDictionary* defaultEnvironment = [[NSProcessInfo processInfo] environment];
+    NSMutableDictionary* environment = [[NSMutableDictionary alloc] initWithDictionary: defaultEnvironment];
     [environment setObject: @"YES" forKey: @"NSUnbufferedIO"];
     [environment setObject: @"en_US-iso8859-1" forKey: @"LANG"];
     //NSString* jvmOpts = [NSString stringWithFormat: @"-Dclojure.server.datarepl={:port %lu :accept 'replicant.util/data-repl} ", (unsigned long)5555];
@@ -304,7 +309,10 @@
 //        self.watcher = nil;
 //        
 //    }];
-
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        _completionBlock(self, nil); // REPL Server was successfully started
+    });
     
  }
 

@@ -19,11 +19,11 @@ typedef void (^SEREPLServerCompletionBlock)(SEREPLServer* repl, NSError* error);
 
 @property (nonatomic, strong) NSDictionary* settings;
 
-@property (readonly, nonatomic) NSInteger port; // the network port on localhost, where clients can connect to
+@property (readonly, nonatomic) in_port_t port; // the network port on localhost, where clients can connect to
 
 - (id) initWithSettings: (NSDictionary*) initialSettings;
 
-- (void) startWithCompletionBlock: (SEREPLServerCompletionBlock) block;
+- (void) startWithCompletion: (SEREPLServerCompletionBlock) block;
 - (void) stop;
 
 @end

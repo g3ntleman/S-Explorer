@@ -103,11 +103,11 @@
     
     _task.terminationHandler =  ^void (NSTask* task) {
         NSLog(@"REPL Task %@ Terminated with return code %d", task, task.terminationStatus);
-        if (_completionBlock) {
+        if (block) {
             if (task.terminationStatus != 0) {
                 NSError* error = [NSError errorWithDomain: @"NSTask" code: task.terminationStatus
                                                  userInfo: @{@"reason": @(task.terminationReason)}];
-                _completionBlock(nil, error);
+                block(nil, error);
             }
             _task = nil; // break retain cycle
             _completionBlock = NULL;
