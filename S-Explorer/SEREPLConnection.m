@@ -8,6 +8,7 @@
 
 #import "SEREPLConnection.h"
 #import "NSDictionary+OPImmutablility.h"
+#import <MPEdn/MPEdn.h>
 
 @interface SEREPLConnection () <NSStreamDelegate>
 
@@ -15,6 +16,7 @@
 @property (readonly, nonatomic) NSInteger connectRetries;
 @property (strong, nonatomic) SEREPLConnectBlock connectBlock;
 @property (readonly, nonatomic) NSMutableData* readBuffer;
+@property (strong, readonly) NSMutableArray* resultBlocksQueue;
 
 @end
 
@@ -33,6 +35,7 @@
         _socket = [[GCDAsyncSocket alloc] initWithDelegate: self delegateQueue: dispatch_get_main_queue()];
         _socket.delegate = self;
         _readBuffer = [[NSMutableData alloc] init];
+        _resultBlocksQueue = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -114,10 +117,20 @@
     
     [self.readBuffer appendData: data];
     
-    NSString* dataString = [[NSString alloc] initWithData: self.readBuffer encoding: NSUTF8StringEncoding];
-    NSLog(@"Socket read data. Buffer now: %@", dataString);
+    NSString* ednString = [[NSString alloc] initWithData: self.readBuffer encoding: NSUTF8StringEncoding];
+    NSLog(@"Socket data read -> Buffer now: '%@'", ednString);
     
+    // Try to parse the result as an edn dictionary:
     
+    NSDictionary* ednDictionary = [ednString ednStringToObject];
+    
+    if (ednDictionary) {
+        SEREPLResultBlock resultBlock = [self.resultBlocksQueue firstObject];
+        if (resultBlock) {
+            [self.resultBlocksQueue removeObjectAtIndex: 0];
+            resultBlock(ednDictionary);
+        }
+    }
     
     //NSMutableDictionary* partialResultDictionary = [[OPBEncoder decoderForData: self.readBuffer mutableContainers: YES] decodeObject];
     
@@ -159,7 +172,7 @@
  * The timeout given is used for both, sending and receiving messages.
  * Returns the tag of the command.
  **/
-- (long) sendExpression: (NSString*) expression timeout: (NSTimeInterval) timeout completion: (SEREPLResultBlock) block {
+- (long) sendExpression: (NSString*) expression timeout: (NSTimeInterval) timeout completion: (SEREPLResultBlock) resultBlock {
     
     NSAssert([self.socket isConnected], @"Cannot send Command without open connection. Call -[open] first.");
 
@@ -173,19 +186,13 @@
         NSData* stringData = [expression dataUsingEncoding: NSUTF8StringEncoding];
         [self.socket writeData: stringData withTimeout: timeout tag: _requestCounter];
         //[self.socket writeData: [GCDAsyncSocket LFData] withTimeout: timeout tag:_tagCounter];
+        [self.resultBlocksQueue addObject: resultBlock];
         
 //        SEnREPLResultState* evalState = [[SEnREPLResultState alloc] initWithEvaluationID: [@(_requestCounter) description]
 //                                                                                 timeout: timeout
 //                                                                             resultBlock: block];
-//        [_evaluationStatesByTag setObject: evalState forKey: @(_requestCounter)];
         
         [self.socket readDataWithTimeout: timeout tag: -1];
-        
-        NSDictionary* resultDict = nil;
-        
-        if (block) {
-            block(resultDict);
-        }
         
         return _requestCounter++;
     }

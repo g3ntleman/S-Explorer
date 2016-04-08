@@ -763,7 +763,6 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                             NSLog(@"Error connecting to socket REPL server: %@", error);
                         }
                     }];
-                    
                 }
             }];
         }
