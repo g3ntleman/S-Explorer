@@ -102,21 +102,21 @@
     
 
     
-//    NSString* filename = nil;
-    if ([fm fileExistsAtPath: [url path] isDirectory: &isDir]) {
-        if (isDir) {
-            url = [url URLByAppendingPathComponent: [[url lastPathComponent] stringByAppendingPathExtension: @"seproj"]];
-            NSError* error = nil;
-
-            
-            NSDocument* document = [self openUntitledDocumentAndDisplay: displayDocument error: &error];
-            document.fileURL = url;
-            
-//            if (displayDocument) {
-//                [document makeWindowControllers];
-//            }
-        }
-    }
+////    NSString* filename = nil;
+//    if ([fm fileExistsAtPath: [url path] isDirectory: &isDir]) {
+//        if (isDir) {
+//            NSError* error = nil;
+//
+//            [self openDocumentWithContentsOfURL: url display: displayDocument completionHandler: completionHandler];
+//            
+//            return;
+//            //NSDocument* document = [self openUntitledDocumentAndDisplay: displayDocument error: &error];
+//            //document.fileURL = url;
+////            if (displayDocument) {
+////                [document makeWindowControllers];
+////            }
+//        }
+//    }
     
     [super openDocumentWithContentsOfURL: url display: displayDocument completionHandler: completionHandler];
 
@@ -176,7 +176,7 @@
     panel.accessoryView = nil; // todo
     panel.prompt = @"Create New Project";
     panel.title = @"New Project";
-    panel.message = @"Please name a folder where your project will be created in.\nA project file with the same name (and 'seproj' extension) will be ceated in there.";
+    panel.message = @"Please name a folder where your project will be created in.";
     panel.nameFieldLabel = @"Name:";
     
     // Extend save panel with template type:
@@ -216,10 +216,10 @@
                 NSURL* sourceURL = [NSURL fileURLWithPathComponents:@[templatePath, sourceFile]];
                 // Most files are just copied over:
                 NSString* targetFile = sourceFile;
-                // Any project file is changed to pathname
-                if ([sourceFile.pathExtension isEqualToString: @"seproj"]) {
-                    targetFile = [[projectURL lastPathComponent] stringByAppendingPathExtension:@"seproj"];
-                }
+//                // Any project file is changed to pathname
+//                if ([sourceFile.pathExtension isEqualToString: @"seproj"]) {
+//                    targetFile = [[projectURL lastPathComponent] stringByAppendingPathExtension:@"seproj"];
+//                }
                 NSURL* targetURL = [projectURL URLByAppendingPathComponent: targetFile];
                 
                 [fm copyItemAtURL: sourceURL toURL: targetURL error: &error];

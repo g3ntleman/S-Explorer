@@ -253,6 +253,13 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     return success;
 }
 
+- (SESourceItem*) _childItemWithName: (NSString*) name {
+    if (name.length == 0 || [name isEqualToString: @"/"]) {
+        return self;
+    }
+    return [_children itemWithName: name];
+}
+
 /**
  * Primitive. Does not automatically sync.
  */
@@ -260,12 +267,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     if (name.length == 0 || [name isEqualToString: @"/"]) {
         return self;
     }
-    for (SESourceItem* child in _children) {
-        if ([child.name isEqualToString: name]) {
-            return child;
-        }
-    }
-    return nil;
+    return [self.children itemWithName: name];
 }
 
 /**
@@ -276,9 +278,6 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
         aPath = [aPath substringFromIndex: 1];
     }
     
-    if (_children == nil) {
-        [self syncChildrenRecursive: YES];
-    }
     NSArray* pathComponents = [aPath pathComponents];
     SESourceItem* current = self;
     for (NSString* name in pathComponents) {
@@ -324,7 +323,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
                                                return YES;
                                            }])
     {
-        SESourceItem* item =  [self childItemWithName: [itemURL lastPathComponent]];
+        SESourceItem* item =  [self _childItemWithName: [itemURL lastPathComponent]];
         if (! item) {
             item = [[[self class] alloc] initWithContentsOfURL: itemURL parent: self ofType: nil error: nil];
         } else {
@@ -538,5 +537,18 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     return self.fileURL;
 }
 
+
+@end
+
+@implementation NSArray (SEFind)
+
+- (id) itemWithName: (NSString*) name {
+    for (id item in self) {
+        if ([[item name] isEqualToString: name]) {
+            return item;
+        }
+    }
+    return nil;
+}
 
 @end

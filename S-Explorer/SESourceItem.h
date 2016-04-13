@@ -51,3 +51,9 @@ typedef enum {
 @interface SESourceItem (PB) <NSPasteboardWriting>
 
 @end
+
+@interface NSArray (SEFind)
+
+- (id) itemWithName: (NSString*) name;
+
+@end

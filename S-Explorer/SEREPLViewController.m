@@ -315,7 +315,7 @@ static NSData* lineFeedData = nil;
             }
             // TODO: Show NSAlert here?
         } else {
-            [connection sendExpression:@"(use 'clojure.repl)" timeout: 10.0 completion:^(NSDictionary *partialResult) {
+            [connection sendExpression: @"(use 'clojure.repl)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
                 // _evalConnection established.
                 // Now connect the _controlConnection using the same sessionID:
                 NSLog(@"Eval Connection %@ established.", _evalConnection);

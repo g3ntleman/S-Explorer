@@ -9,26 +9,6 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>seproj</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>S-Explorer Project</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSIsAppleDefaultForType</key>
-			<true/>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>org.cocoanuts.s-explorer.project</string>
-			</array>
-			<key>LSTypeIsPackage</key>
-			<false/>
-			<key>NSDocumentClass</key>
-			<string>SEProjectDocument</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
 				<string>scm</string>
 				<string>sld</string>
 			</array>
@@ -61,6 +41,26 @@
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>public.clojure-source</string>
+			</array>
+			<key>LSTypeIsPackage</key>
+			<integer>0</integer>
+			<key>NSDocumentClass</key>
+			<string>SESourceItem</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>edn</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>doc_clojure</string>
+			<key>CFBundleTypeName</key>
+			<string>EDN</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.edn</string>
 			</array>
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
@@ -1323,7 +1323,7 @@
 			<string>=&gt; </string>
 			<key>RuntimeArguments</key>
 			<array>
-				<string>-Dclojure.server.toolrepl={:port %PORT :accept replicant.util/data-repl}</string>
+				<string>-Dclojure.server.toolrepl={:port %PORT :accept replicant.util/data-repl :server-daemon false :client-daemon false}</string>
 				<string>clojure.main</string>
 			</array>
 			<key>RuntimeTool</key>
@@ -1376,23 +1376,6 @@
 				<array>
 					<string>scm</string>
 					<string>sld</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.text</string>
-			</array>
-			<key>UTTypeIdentifier</key>
-			<string>org.cocoanuts.s-explorer.project</string>
-			<key>UTTypeReferenceURL</key>
-			<string>http://developer.apple.com/tools/xcode/</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>seproj</string>
 				</array>
 			</dict>
 		</dict>
