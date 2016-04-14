@@ -80,8 +80,8 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     return [self initWithContentsOfURL: aURL parent: nil ofType: typeName error: outError];
 }
 
-- (void)windowControllerDidLoadNib:(NSWindowController *)aController {
-    [super windowControllerDidLoadNib:aController];
+- (void) windowControllerDidLoadNib:(NSWindowController *)aController {
+    [super windowControllerDidLoadNib: aController];
     self.sourceEditorController.defaultKeywords = self.languageDictionary[@"Keywords"][@"StaticList"];
     self.sourceEditorController.sourceItem = self;
 }
@@ -234,24 +234,60 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
         _wasRead = YES;
     }
     //self.fileType = typeName;
+    
     return contentString != nil;
 }
 
-- (BOOL) writeToURL: (NSURL*) url ofType: (NSString*) typeName error: (NSError *__autoreleasing *) outError {
-    BOOL success = [self.contents.string writeToURL: url atomically: NO encoding: NSUTF8StringEncoding error: outError];
-    if (success) {
-        NSError* error2 = nil;
-        NSDictionary * attributes = [[NSFileManager defaultManager] attributesOfItemAtPath: url.path error: &error2];
-        if (error2) {
-            if (outError) *outError = error2;
-            return NO;
-        }
-        if (attributes) {
-            self.fileModificationDate = attributes[NSFileModificationDate];
-        }
-    }
+//- (NSData*) dataOfType: (NSString*) typeName
+//                 error: (NSError**) outError {
+//
+//    NSData* result = [self.contents.string dataUsingEncoding: NSUTF8StringEncoding];
+//    return result;
+//}
+
+
+- (BOOL) writeSafelyToURL: (NSURL*) url ofType: (NSString*) typeName forSaveOperation: (NSSaveOperationType) saveOperation error: (NSError**) outError {
+    
+    NSAssert([url isEqual: self.fileURL], @"Writing source to a different file?");
+    
+    BOOL success = [self.contents.string writeToURL: url atomically: YES encoding: NSUTF8StringEncoding error: outError];
+
     return success;
 }
+
+
+- (void) saveDocumentWithDelegate: (id) delegate didSaveSelector: (SEL)didSaveSelector contextInfo: (void*) contextInfo {
+    
+    // Check, if we can save without user interaction:
+    if (self.fileURL != nil && self.fileType.length) {
+        // Skip any "file moved" checks by not calling super:
+        [self saveToURL: self.fileURL ofType: self.fileType forSaveOperation:NSSaveOperation delegate: delegate didSaveSelector: didSaveSelector contextInfo: contextInfo];
+        return;
+    }
+    
+    // Let user interaction to the default implementation:
+    [super saveDocumentWithDelegate: delegate didSaveSelector: didSaveSelector contextInfo: contextInfo];
+    
+}
+//
+//- (BOOL) writeToURL: (NSURL*) url ofType: (NSString*) typeName error: (NSError *__autoreleasing *) outError {
+//    
+//    NSAssert([url isEqual: self.fileURL], @"Writing source to a different file?");
+//    
+//    BOOL success = [self.contents.string writeToURL: url atomically: NO encoding: NSUTF8StringEncoding error: outError];
+//    if (success) {
+//        NSError* error2 = nil;
+//        NSDictionary * attributes = [[NSFileManager defaultManager] attributesOfItemAtPath: url.path error: &error2];
+//        if (error2) {
+//            if (outError) *outError = error2;
+//            return NO;
+//        }
+//        if (attributes) {
+//            self.fileModificationDate = attributes[NSFileModificationDate];
+//        }
+//    }
+//    return success;
+//}
 
 - (SESourceItem*) _childItemWithName: (NSString*) name {
     if (name.length == 0 || [name isEqualToString: @"/"]) {
