@@ -153,11 +153,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEProjectDocument.m"
-            timestampString = "482273317.904217"
+            timestampString = "482369876.298057"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "823"
-            endingLineNumber = "823"
+            startingLineNumber = "825"
+            endingLineNumber = "825"
             landmarkName = "-writeToURL:ofType:error:"
             landmarkType = "5">
          </BreakpointContent>
@@ -217,11 +217,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SESourceItem.m"
-            timestampString = "482341101.922812"
+            timestampString = "482369876.298057"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "359"
-            endingLineNumber = "359"
+            startingLineNumber = "350"
+            endingLineNumber = "350"
             landmarkName = "-syncChildrenRecursive:"
             landmarkType = "5">
          </BreakpointContent>
@@ -313,7 +313,7 @@
                   moduleName = "S-Explorer"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/theisen/Projects/Work/S-Explorer/S-Explorer/SEREPLViewController.m"
-                  timestampString = "482341102.345992"
+                  timestampString = "482630630.152888"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "318"
@@ -328,7 +328,7 @@
                   moduleName = "S-Explorer"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/theisen/Projects/Work/S-Explorer/S-Explorer/SEREPLViewController.m"
-                  timestampString = "482341102.346116"
+                  timestampString = "482630630.153078"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "318"
@@ -361,12 +361,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEProjectDocument.m"
-            timestampString = "482273317.904217"
+            timestampString = "482369876.298057"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "950"
-            endingLineNumber = "950"
+            startingLineNumber = "952"
+            endingLineNumber = "952"
             landmarkName = "-revealInSourceList:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "S-Explorer/SEREPLServer.m"
+            timestampString = "482612154.890181"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "210"
+            endingLineNumber = "210"
+            landmarkName = "-startWithCompletion:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

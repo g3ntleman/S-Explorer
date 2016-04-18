@@ -195,19 +195,27 @@
 
     //NSError* error = nil;
     //NSMutableArray* commandArguments = [_settings[@"RuntimeArguments"] mutableCopy];
-    //NSString* runtimeSupportPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent: @"Runtime-Support/clojure"];
+    NSString* runtimeSupportPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent: @"Runtime-Support/Clojure"];
     self.port = [SEREPLServer availableTCPPort];
     
-    NSArray* commandArgumentTemplates = self.settings[@"RuntimeArguments"];
+    //NSArray* commandArgumentTemplates = self.settings[@"RuntimeArguments"];
     
     //commandArgumentTemplates = @[@"-Dclojure.server.toolrepl={:port %PORT :accept replicant.util/data-repl}",
     //                             @"clojure.main"];
     
     NSMutableArray* commandArguments = [NSMutableArray array];
-    for (NSString* template in commandArgumentTemplates) {
-        NSString* argument = [template stringByReplacingOccurrencesOfString: @"%PORT" withString: [@(self.port) description]];
-        [commandArguments addObject: argument];
-    }
+    
+    NSString* expression = [NSString stringWithFormat: @"(do (load-file \"%@/replicant/util.clj\")(replicant.util/run-tool-repl %@))", runtimeSupportPath, @(self.port)];
+    
+    //[commandArguments addObject: @"/usr/local/bin/java"];
+    [commandArguments addObject: @"clojure.main"];
+    [commandArguments addObject: @"-e"];
+    [commandArguments addObject: expression];
+    
+//    for (NSString* template in commandArgumentTemplates) {
+//        NSString* argument = [template stringByReplacingOccurrencesOfString: @"%PORT" withString: [@(self.port) description]];
+//        [commandArguments addObject: argument];
+//    }
     
     NSString* workingDirectory = _settings[@"WorkingDirectory"];
     
@@ -311,7 +319,9 @@
 //    }];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        _completionBlock(self, nil); // REPL Server was successfully started
+        if (_completionBlock) {
+            _completionBlock(self, nil); // REPL Server was successfully started
+        }
     });
     
  }

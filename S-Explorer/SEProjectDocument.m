@@ -193,6 +193,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
 
 - (void) setFileURL:(NSURL *)url {
+    BOOL isDir = NO;
+    NSParameterAssert(url.hasDirectoryPath && [[NSFileManager defaultManager] fileExistsAtPath: url.path isDirectory: &isDir] && isDir);
     if (! [url isEqual: self.fileURL]) {
         [super setFileURL:url];
         _projectFolderItem = nil;
@@ -758,8 +760,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
         
         // Append bundle path to classPath:
         
-        NSString* additionalSourcesPath = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent: @"Runtime-Support"] stringByAppendingPathComponent: self.currentLanguage];
-        self.javaClasspath = [self.javaClasspath stringByAppendingFormat: @":%@", additionalSourcesPath];
+        //NSString* additionalSourcesPath = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent: @"Runtime-Support"] stringByAppendingPathComponent: self.currentLanguage];
+        //self.javaClasspath = [self.javaClasspath stringByAppendingFormat: @":%@", additionalSourcesPath];
         
         if (! error) {
             [self startREPLServerWithCompletion: ^(SEREPLServer* server, NSError* error) {

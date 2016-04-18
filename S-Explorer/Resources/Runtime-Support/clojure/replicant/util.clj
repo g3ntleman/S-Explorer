@@ -37,7 +37,24 @@
     (conj kw-opts
       :init server/repl-init
       :read server/repl-read)))
-
+ 
+ (defn run-tool-repl [port]
+ (let [repl-name "tool"
+ server ^ServerSocket (server/start-server
+ {:name   repl-name
+     :port   port
+     :server-daemon false
+     :client-daemon false
+     :prompt ""
+     :accept 'replicant.util/repl
+     :args   [:eval (partial data-eval)]})
+ repl-port (.getLocalPort server)]
+ ;;(Thread/sleep 10000)
+ ))
+ 
+(defn --main [&args]
+ (run-tool-repl 5555))
+ 
 ;; helpers to stash and use bindings from another thread
 
 (defn user-eval
@@ -59,7 +76,7 @@
 
   (let [bindings (atom {})                   ;; shared atom to stash user's bindings
         repl-name (gensym "repl")            ;; generate repl server name
-        server ^SocketServer (server/start-server
+        server ^ServerSocket (server/start-server
                                 {:name   repl-name
                                  :port   0   ;; pick a free port
                                  :accept 'replicant.util/repl
