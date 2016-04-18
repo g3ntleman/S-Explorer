@@ -1,5 +1,5 @@
 //
-//  SEnREPLConnection.h
+//  SEREPLConnection.h
 //  S-Explorer
 //
 //  Created by Dirk Theisen on 05.11.13.
@@ -8,11 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import "GCDAsyncSocket.h"
+#import "MPEdnKeyword.h"
 
-//@class SEnREPLResultState;
 @class SEREPLConnection;
 
-//typedef void (^AuthorizationAsyncCallback)(OSStatus err, AuthorizationRights *blockAuthorizedRights);
 
 typedef void (^SEREPLResultBlock)(NSDictionary* partialResult);
 
@@ -20,25 +19,6 @@ typedef void (^SEREPLResultBlock)(NSDictionary* partialResult);
  * Called on connect, but also on disconnect.
  */
 typedef void (^SEREPLConnectBlock)(SEREPLConnection* connection, NSError* error);
-
-
-//@interface SEnREPLResultState : NSObject
-//
-//@property (readonly, nonatomic) NSString* status;
-//@property (readonly, nonatomic) NSError* error;
-//@property (readonly, nonatomic) NSString* evaluationID;
-//@property (readonly, nonatomic) NSArray* results;
-//@property (readonly, nonatomic) SEREPLResultBlock resultBlock;
-//@property (readonly) BOOL isStatusDone;
-//@property (readonly) NSTimeInterval timeout;
-//
-//
-//- (id) initWithEvaluationID: (NSString*) anId
-//                    timeout: (NSTimeInterval) timeoutSeconds
-//                resultBlock: (SEREPLResultBlock) aResultBlock;
-//
-//
-//@end
 
 @interface SEREPLConnection : NSObject <GCDAsyncSocketDelegate>
 
@@ -50,8 +30,12 @@ typedef void (^SEREPLConnectBlock)(SEREPLConnection* connection, NSError* error)
 @property (readonly, nonatomic) NSInteger requestCounter;
 @property (readonly, nonatomic) BOOL isConnecting;
 
+extern const MPEdnKeyword* SEREPLKeyResult;
+extern const MPEdnKeyword* SEREPLKeyStdErr;
+extern const MPEdnKeyword* SEREPLKeyStdOut;
+extern const MPEdnKeyword* SEREPLKeyException;
 
-- (id) initWithHostname: (NSString*) hostname port: (NSInteger) port;
+- (id) initWithHostname: (NSString* _Nonnull ) hostname port: (NSInteger) port;
 
 - (void) sendConsoleInput: (NSString*) inputString;
 

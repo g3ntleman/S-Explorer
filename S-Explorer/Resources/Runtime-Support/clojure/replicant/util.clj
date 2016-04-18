@@ -45,11 +45,9 @@
      :port   port
      :server-daemon false
      :client-daemon false
-     :prompt ""
      :accept 'replicant.util/repl
      :args   [:eval (partial data-eval)]})
  repl-port (.getLocalPort server)]
- ;;(Thread/sleep 10000)
  ))
  
 (defn --main [&args]

@@ -20,8 +20,24 @@
 
 @end
 
+MPEdnKeyword* SEREPLKeyResult;
+MPEdnKeyword* SEREPLKeyStdErr;
+MPEdnKeyword* SEREPLKeyStdOut;
+MPEdnKeyword* SEREPLKeyException;
 
 @implementation SEREPLConnection
+
+static NSData* LineFeed = nil; ;
+
++ (void)initialize {
+    [super initialize];
+    
+    SEREPLKeyResult = [MPEdnKeyword keyword: @"result"];
+    SEREPLKeyStdErr  = [MPEdnKeyword keyword: @"err"];
+    SEREPLKeyStdOut = [MPEdnKeyword keyword: @"out"];
+    SEREPLKeyException = [MPEdnKeyword keyword: @"exception"];
+    LineFeed = [GCDAsyncSocket LFData];
+}
 
 /**
  * aSessionID may be nil. Will be assigned by the server with first reply.
@@ -57,8 +73,10 @@
         _connectRetries = 50;
     }
     if (! [self.socket connectToHost: self.hostname onPort: self.port error: &error]) {
-        self.connectBlock(self, error);
-        self.connectBlock = nil;
+        if (self.connectBlock) {
+            self.connectBlock(self, error);
+            self.connectBlock = nil;
+        }
     }
 }
 
@@ -92,7 +110,18 @@
 - (void) socket: (GCDAsyncSocket*) sock didConnectToHost: (NSString*) host port: (UInt16) port {
     NSLog(@"%@ connected to %@:%u.", self, host, port);
     _connectRetries = 0;
-    self.connectBlock(self, nil);
+    
+    [sock readDataWithTimeout: 10.0 tag: 0];
+//    
+//    [self sendExpression: nil timeout: 20.0 completion: ^(NSDictionary *partialResult) {
+//
+//    }];
+//
+    
+    if (self.connectBlock) {
+        self.connectBlock(self, nil);
+    }
+
 }
 
 - (void) socketDidDisconnect: (GCDAsyncSocket*) sock withError: (NSError*) error {
@@ -120,17 +149,32 @@
     NSString* ednString = [[NSString alloc] initWithData: self.readBuffer encoding: NSUTF8StringEncoding];
     NSLog(@"Socket data read -> Buffer now: '%@'", ednString);
     
-    // Try to parse the result as an edn dictionary:
     
-    NSDictionary* ednDictionary = [ednString ednStringToObject];
-    
-    if (ednDictionary) {
-        SEREPLResultBlock resultBlock = [self.resultBlocksQueue firstObject];
-        if (resultBlock) {
-            [self.resultBlocksQueue removeObjectAtIndex: 0];
-            resultBlock(ednDictionary);
+    if ([ednString hasSuffix: @"=> "]) {
+        self.readBuffer.length = 0;
+        return;
+    } else {
+        
+        // Try to parse the result as an edn dictionary:
+        NSDictionary* ednDictionary = [ednString ednStringToObject];
+        
+        if ([ednDictionary isKindOfClass: [NSDictionary class]]) {
+            SEREPLResultBlock resultBlock = [self.resultBlocksQueue firstObject];
+            if (resultBlock) {
+                [self.resultBlocksQueue removeObjectAtIndex: 0];
+                resultBlock(ednDictionary);
+            }
+            
+            self.readBuffer.length = 0; // might not be correct?
+            
+            return;
         }
     }
+    
+    // Expect underfull buffer, continue reading:
+    
+    [sock readDataWithTimeout: 10.0 tag: tag];
+
     
     //NSMutableDictionary* partialResultDictionary = [[OPBEncoder decoderForData: self.readBuffer mutableContainers: YES] decodeObject];
     
@@ -176,23 +220,18 @@
     
     NSAssert([self.socket isConnected], @"Cannot send Command without open connection. Call -[open] first.");
 
-    // This messes with the _tagCounter, so protect it:
     @synchronized(self) {
-
         
-        //NSData* benData = [[[OPBEncoder alloc] init] encodedDataFromObject: commandDictionary];
-        //NSString* benString = [[NSString alloc] initWithData: benData encoding:NSUTF8StringEncoding];
-        NSLog(@"%@ is sending '%@' as requestNo %ld", self, expression, _requestCounter);
-        NSData* stringData = [expression dataUsingEncoding: NSUTF8StringEncoding];
-        [self.socket writeData: stringData withTimeout: timeout tag: _requestCounter];
-        //[self.socket writeData: [GCDAsyncSocket LFData] withTimeout: timeout tag:_tagCounter];
+        if (expression) {
+            expression = [expression stringByAppendingString: @"\n"];
+            NSLog(@"%@ is sending '%@' as request# %ld.", self, expression, _requestCounter);
+            NSData* stringData = [expression dataUsingEncoding: NSUTF8StringEncoding];
+            [self.socket writeData: stringData withTimeout: timeout tag: _requestCounter];
+        }
+        
         [self.resultBlocksQueue addObject: resultBlock];
-        
-//        SEnREPLResultState* evalState = [[SEnREPLResultState alloc] initWithEvaluationID: [@(_requestCounter) description]
-//                                                                                 timeout: timeout
-//                                                                             resultBlock: block];
-        
-        [self.socket readDataWithTimeout: timeout tag: -1];
+
+        [self.socket readDataWithTimeout: timeout tag: _requestCounter];
         
         return _requestCounter++;
     }

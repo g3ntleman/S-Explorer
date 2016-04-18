@@ -1,6 +1,6 @@
 
 //
-//  BRProject
+//  SEProjectDocument
 //  S-Explorer
 //
 //  Created by Dirk Theisen on 09.05.13.
@@ -19,6 +19,7 @@
 #import "SCEvents.h"
 #import "SCEvent.h"
 #import "SETarget.h"
+#import "MPEdnKeyword.h"
 
 
 NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
@@ -773,11 +774,27 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                     self.toolConnection = [[SEREPLConnection alloc] initWithHostname: @"localhost" port: server.port];
                     [self.toolConnection openWithConnectBlock: ^(SEREPLConnection* connection, NSError* error) {
                         if (! error) {
-                        [connection sendExpression: @"(+ 2 3)\n" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
-                            //NSLog(@"Socket REPL got result: %@", resultDictionary);
-                        }];
+                            [connection sendExpression: @"(+ 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
+                                id exception = resultDictionary[SEREPLKeyException];
+                                if (exception) {
+                                    NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
+                                } else {
+                                    id result = resultDictionary[SEREPLKeyResult];
+                                    NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
+                                }
+                            }];
+                            
+                            [connection sendExpression: @"(* 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
+                                id exception = resultDictionary[SEREPLKeyException];
+                                if (exception) {
+                                    NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
+                                } else {
+                                    id result = resultDictionary[SEREPLKeyResult];
+                                    NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
+                                }
+                            }];
                         } else {
-                            NSLog(@"Error connecting to socket REPL server: %@", error);
+                            NSLog(@"Error querying socket REPL: %@", error);
                         }
                     }];
                 }
