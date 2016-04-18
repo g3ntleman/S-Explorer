@@ -166,8 +166,6 @@ static NSData* LineFeed = nil; ;
             }
             
             self.readBuffer.length = 0; // might not be correct?
-            
-            return;
         }
     }
     

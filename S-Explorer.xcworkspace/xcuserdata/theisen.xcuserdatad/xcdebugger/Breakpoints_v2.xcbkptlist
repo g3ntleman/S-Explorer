@@ -313,7 +313,7 @@
                   moduleName = "S-Explorer"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/theisen/Projects/Work/S-Explorer/S-Explorer/SEREPLViewController.m"
-                  timestampString = "482638402.045039"
+                  timestampString = "482678458.756868"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "318"
@@ -328,7 +328,7 @@
                   moduleName = "S-Explorer"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/theisen/Projects/Work/S-Explorer/S-Explorer/SEREPLViewController.m"
-                  timestampString = "482638402.045229"
+                  timestampString = "482678458.757061"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "318"
@@ -376,22 +376,6 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "S-Explorer/SEREPLConnection.m"
-            timestampString = "482637504.698044"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "60"
-            endingLineNumber = "60"
-            landmarkName = "-dealloc"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEProjectDocument.m"
             timestampString = "482637210.769366"
             startingColumnNumber = "9223372036854775807"
@@ -409,11 +393,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEREPLConnection.h"
-            timestampString = "482637182.654816"
+            timestampString = "482678206.114154"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "34"
-            endingLineNumber = "34"
+            startingLineNumber = "35"
+            endingLineNumber = "35"
             landmarkName = "@interface SEREPLConnection"
             landmarkType = "2">
          </BreakpointContent>
