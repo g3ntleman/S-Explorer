@@ -17,6 +17,8 @@
 @property (strong, nonatomic) SEREPLConnectBlock connectBlock;
 @property (readonly, nonatomic) NSMutableData* readBuffer;
 @property (strong, readonly) NSMutableArray* resultBlocksQueue;
+@property (strong, readonly) NSMutableArray* requestBlocksQueue;
+@property BOOL isReady;
 
 @end
 
@@ -27,7 +29,9 @@ MPEdnKeyword* SEREPLKeyException;
 
 @implementation SEREPLConnection
 
-static NSData* LineFeed = nil; ;
+@synthesize isReady = _isReady;
+
+static NSData* LineFeed = nil;
 
 + (void)initialize {
     [super initialize];
@@ -52,6 +56,7 @@ static NSData* LineFeed = nil; ;
         _socket.delegate = self;
         _readBuffer = [[NSMutableData alloc] init];
         _resultBlocksQueue = [[NSMutableArray alloc] init];
+        _requestBlocksQueue = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -87,23 +92,45 @@ static NSData* LineFeed = nil; ;
 
 
 - (void) close {
-    
-//    void (^closeBlock)(NSDictionary* partialResult) = ^(NSDictionary* partialResult) {
-//        _connectRetries = 0;
-//
-//        [_evaluationStatesByTag removeAllObjects];
-//    };
-    
-//    if ([_socket isConnected]) {
-//        NSLog(@"Connection %@ will first close session.", self);
-//        [self terminateSessionWithCompletion: closeBlock];
-//        return;
-//        closeBlock(nil);
-//    }
+
     if ([self.socket isConnected]) {
         NSLog(@"Trying to disconnect %@", _socket);
         [self.socket disconnect];
     }
+}
+
+- (void) processNextRequest {
+    if (self.requestBlocksQueue.count) {
+        SEREPLRequestBlock requestBlock = self.requestBlocksQueue.firstObject;
+        [self.requestBlocksQueue removeObjectAtIndex: 0];
+        self.isReady = NO;
+        NSLog(@"Processing next expression.");
+        requestBlock();
+        [self.socket readDataWithTimeout: 10.0 tag: -1];
+    }
+}
+
+
+- (BOOL) isReady {
+    return _isReady;
+}
+
+- (void) setIsReady: (BOOL) isReady {
+    if (isReady != _isReady) {
+        _isReady = isReady;
+        
+        if (_isReady) {
+            NSLog(@"REPL is ready.");
+            [self processNextRequest];
+        }
+    }
+}
+
+- (NSTimeInterval) socket: (GCDAsyncSocket*) sock shouldTimeoutReadWithTag: (long) tag
+                  elapsed: (NSTimeInterval) elapsed
+                bytesDone: (NSUInteger) length {
+    NSLog(@"REPL did not respond for %lf seconds. Waiting.", elapsed);
+    return 1.0;
 }
 
 
@@ -112,16 +139,10 @@ static NSData* LineFeed = nil; ;
     _connectRetries = 0;
     
     [sock readDataWithTimeout: 10.0 tag: 0];
-//    
-//    [self sendExpression: nil timeout: 20.0 completion: ^(NSDictionary *partialResult) {
-//
-//    }];
-//
     
     if (self.connectBlock) {
         self.connectBlock(self, nil);
     }
-
 }
 
 - (void) socketDidDisconnect: (GCDAsyncSocket*) sock withError: (NSError*) error {
@@ -142,21 +163,19 @@ static NSData* LineFeed = nil; ;
 
 - (void) socket: (GCDAsyncSocket*) sock didReadData: (NSData*) data withTag: (long) tag {
     
-    /* tag is of no use and should be -1. */
-    
     [self.readBuffer appendData: data];
     
     NSString* ednString = [[NSString alloc] initWithData: self.readBuffer encoding: NSUTF8StringEncoding];
     NSLog(@"Socket data read -> Buffer now: '%@'", ednString);
     
-    
     if ([ednString hasSuffix: @"=> "]) {
         self.readBuffer.length = 0;
-        return;
-    } else {
-        
+        self.isReady = YES;
+    } else if ([ednString hasPrefix: @"{"] && [ednString hasSuffix: @"}\n"]) {
         // Try to parse the result as an edn dictionary:
-        NSDictionary* ednDictionary = [ednString ednStringToObject];
+        
+        MPEdnParser* parser = [MPEdnParser new];
+        NSDictionary* ednDictionary = [parser parseString: ednString];
         
         if ([ednDictionary isKindOfClass: [NSDictionary class]]) {
             SEREPLResultBlock resultBlock = [self.resultBlocksQueue firstObject];
@@ -166,38 +185,14 @@ static NSData* LineFeed = nil; ;
             }
             
             self.readBuffer.length = 0; // might not be correct?
+        } else {
+            // Expect underfull buffer, continue reading.
+            NSLog(@"Unable to parse. Partitial result? Continuing reading. (%@)", parser.error);
         }
+    } else {
+        // Expect incomplete data.
     }
-    
-    // Expect underfull buffer, continue reading:
-    
-    [sock readDataWithTimeout: 10.0 tag: tag];
 
-    
-    //NSMutableDictionary* partialResultDictionary = [[OPBEncoder decoderForData: self.readBuffer mutableContainers: YES] decodeObject];
-    
-//    NSArray* status = partialResultDictionary[@"status"];
-//    NSString* lastStatus = [status lastObject];
-//    if ([lastStatus isEqualToString: @"error"]) {
-//        NSLog(@"%@ received error: %@", self, status);
-//        partialResultDictionary[@"NSError"] = [NSError errorWithDomain: @"org.cocoanuts.S-Explorer" code: -12 userInfo: @{NSLocalizedDescriptionKey: status[0]}]; // use all bust last array elements in description?
-//    }
-//    
-//    
-//    BOOL done = [lastStatus isEqualToString: @"done"];
-//    
-//    // Test, if the dictionary is complete:
-//    if (partialResultDictionary) {
-//        
-//        NSNumber* requestNo = partialResultDictionary[@"id"];
-//        SEnREPLResultState* evalState = _evaluationStatesByTag[requestNo]; // expect this to exist
-//    }
-    
-    self.readBuffer.length = 0; // Not always correct. Need to trim only parsed part (yet unknown).
-    
-    
-    // Do not send the last message (for now). Remove this, if the terminating message is needed.
-    
 }
 
 //- (void) socket: (GCDAsyncSocket*) sock didWriteDataWithTag: (long) tag {
@@ -217,22 +212,22 @@ static NSData* LineFeed = nil; ;
 - (long) sendExpression: (NSString*) expression timeout: (NSTimeInterval) timeout completion: (SEREPLResultBlock) resultBlock {
     
     NSAssert([self.socket isConnected], @"Cannot send Command without open connection. Call -[open] first.");
-
-    @synchronized(self) {
-        
-        if (expression) {
-            expression = [expression stringByAppendingString: @"\n"];
+    
+    if (expression) {
+        expression = [expression stringByAppendingString: @"\n"];
+        SEREPLRequestBlock request = ^void() {
             NSLog(@"%@ is sending '%@' as request# %ld.", self, expression, _requestCounter);
             NSData* stringData = [expression dataUsingEncoding: NSUTF8StringEncoding];
             [self.socket writeData: stringData withTimeout: timeout tag: _requestCounter];
-        }
-        
-        [self.resultBlocksQueue addObject: resultBlock];
-
-        [self.socket readDataWithTimeout: timeout tag: _requestCounter];
-        
-        return _requestCounter++;
+            
+            [self.resultBlocksQueue addObject: resultBlock];
+        };
+        [self.requestBlocksQueue addObject: request];
     }
+    
+    [self.socket readDataWithTimeout: timeout tag: _requestCounter];
+    
+    return _requestCounter++;
 }
 
 - (NSString*) description {
@@ -298,3 +293,7 @@ static NSData* LineFeed = nil; ;
 //
 //}
 //@end
+
+
+
+

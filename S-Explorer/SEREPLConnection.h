@@ -13,6 +13,7 @@
 @class SEREPLConnection;
 
 
+typedef void (^SEREPLRequestBlock)();
 typedef void (^SEREPLResultBlock)(NSDictionary* partialResult);
 
 /**

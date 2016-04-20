@@ -774,7 +774,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                     self.toolConnection = [[SEREPLConnection alloc] initWithHostname: @"localhost" port: server.port];
                     [self.toolConnection openWithConnectBlock: ^(SEREPLConnection* connection, NSError* error) {
                         if (! error) {
-                            [connection sendExpression: @"(+ 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
+                            [connection sendExpression: @"(keys (ns-publics 'clojure.core))" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
                                 id exception = resultDictionary[SEREPLKeyException];
                                 if (exception) {
                                     NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
