@@ -53,6 +53,7 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
 
         tabbedSourceItems = @{};
         allREPLControllers = @{};
+        self.toolConnection = [[SEREPLConnection alloc] init]; // initialize early, so it can buffer requests!
     }
     return self;
 }
@@ -379,6 +380,12 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [self.sourceTabView tabViewItemAtIndex: index].label = item.name;
     
     self.editorController.sourceItem = item;
+    
+    NSString* code = item.contents.string;
+    
+    [self.toolConnection sendExpression: code timeout: 20.0 completion: ^(NSDictionary* evalResult) {
+        NSLog(@"Result evaluating '%@' source: %@", code, evalResult);
+    }];
 
 }
 
@@ -756,7 +763,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     [self revealInSourceList: nil];
     
-    
+    // Get the tool REPL going:
+
     [self populateJavaClassPathWithCompletion: ^(SEProjectDocument* document, NSError* error) {
         
         // Append bundle path to classPath:
@@ -771,32 +779,33 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
                     NSLog(@"Error creating REPL server: %@", error);
                 } else {
                     NSLog(@"Socket REPL ready. Connecting...");
-                    self.toolConnection = [[SEREPLConnection alloc] initWithHostname: @"localhost" port: server.port];
-                    [self.toolConnection openWithConnectBlock: ^(SEREPLConnection* connection, NSError* error) {
-                        if (! error) {
-                            [connection sendExpression: @"(keys (ns-publics 'clojure.core))" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
-                                id exception = resultDictionary[SEREPLKeyException];
-                                if (exception) {
-                                    NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
-                                } else {
-                                    id result = resultDictionary[SEREPLKeyResult];
-                                    NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
-                                }
-                            }];
-                            
-                            [connection sendExpression: @"(* 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
-                                id exception = resultDictionary[SEREPLKeyException];
-                                if (exception) {
-                                    NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
-                                } else {
-                                    id result = resultDictionary[SEREPLKeyResult];
-                                    NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
-                                }
-                            }];
-                        } else {
-                            NSLog(@"Error querying socket REPL: %@", error);
-                        }
-                    }];
+                    [self.toolConnection openWithHostname: @"localhost"
+                                                     port: server.port
+                                               completion: ^(SEREPLConnection* connection, NSError* error) {
+                                                   if (! error) {
+                                                       [connection sendExpression: @"(keys (ns-publics 'clojure.core))" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
+                                                           id exception = resultDictionary[SEREPLKeyException];
+                                                           if (exception) {
+                                                               NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
+                                                           } else {
+                                                               id result = resultDictionary[SEREPLKeyResult];
+                                                               NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
+                                                           }
+                                                       }];
+                                                       
+                                                       [connection sendExpression: @"(* 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
+                                                           id exception = resultDictionary[SEREPLKeyException];
+                                                           if (exception) {
+                                                               NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
+                                                           } else {
+                                                               id result = resultDictionary[SEREPLKeyResult];
+                                                               NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
+                                                           }
+                                                       }];
+                                                   } else {
+                                                       NSLog(@"Error querying socket REPL: %@", error);
+                                                   }
+                                               }];
                 }
             }];
         }
@@ -1004,6 +1013,12 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     NSLog(@"Saving current source item %@ to disk.", self.currentSourceItem);
     
     [self.currentSourceItem saveDocument: sender];
+    
+    NSString* sourceContent = self.currentSourceItem.contents.string;
+    
+    [self.toolConnection sendExpression: sourceContent timeout: 20.0 completion: ^(NSDictionary* evalResult) {
+        NSLog(@"got %@", evalResult);
+    }];
     //[self saveDocument: sender];
 }
 

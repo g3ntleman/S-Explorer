@@ -46,10 +46,8 @@ static NSData* LineFeed = nil;
 /**
  * aSessionID may be nil. Will be assigned by the server with first reply.
  */
-- (id) initWithHostname: (NSString*) hostname port: (NSInteger) port {
-    if (self = [self init]) {
-        _hostname = [hostname copy];
-        _port = port;
+- (id) init {
+    if (self = [super init]) {
         _evaluationStatesByTag = [[NSMutableDictionary alloc] initWithCapacity: 4];
         
         _socket = [[GCDAsyncSocket alloc] initWithDelegate: self delegateQueue: dispatch_get_main_queue()];
@@ -65,7 +63,12 @@ static NSData* LineFeed = nil;
     [self close];
 }
 
-- (void) openWithConnectBlock: (SEREPLConnectBlock) completionBlock {
+- (void) openWithHostname: (NSString*) hostname
+                     port: (NSInteger) portNo
+               completion: (SEREPLConnectBlock) completionBlock {
+    
+    _hostname = [hostname copy];
+    _port = portNo;
     
     NSAssert(self.evaluationStatesByTag.count == 0, @"Looks like the connection %@ had been used before. Allocate a new connection each time.", self);
     NSAssert(self.socket, @"openWithError: Socket not set.");
@@ -211,18 +214,16 @@ static NSData* LineFeed = nil;
  **/
 - (long) sendExpression: (NSString*) expression timeout: (NSTimeInterval) timeout completion: (SEREPLResultBlock) resultBlock {
     
-    NSAssert([self.socket isConnected], @"Cannot send Command without open connection. Call -[open] first.");
-    
     if (expression) {
         expression = [expression stringByAppendingString: @"\n"];
-        SEREPLRequestBlock request = ^void() {
+        SEREPLRequestBlock requestBlock = ^void() {
             NSLog(@"%@ is sending '%@' as request# %ld.", self, expression, _requestCounter);
             NSData* stringData = [expression dataUsingEncoding: NSUTF8StringEncoding];
             [self.socket writeData: stringData withTimeout: timeout tag: _requestCounter];
             
             [self.resultBlocksQueue addObject: resultBlock];
         };
-        [self.requestBlocksQueue addObject: request];
+        [self.requestBlocksQueue addObject: requestBlock];
     }
     
     [self.socket readDataWithTimeout: timeout tag: _requestCounter];
@@ -231,7 +232,7 @@ static NSData* LineFeed = nil;
 }
 
 - (NSString*) description {
-    return [NSString stringWithFormat: @"%@, port '%lu'", [super description], (unsigned long)self.port];
+    return [NSString stringWithFormat: @"%@, port '%lu', %lu running requests.", [super description], (unsigned long)self.port, (unsigned long)self.requestBlocksQueue.count];
 }
 
 

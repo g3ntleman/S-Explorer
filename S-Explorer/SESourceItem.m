@@ -72,10 +72,6 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     return self;
 }
 
-//- (id) initWithFileURL: (NSURL*) aURL {
-//    return [self initWithFileURL: aURL parent: nil];
-//}
-
 - (id) initWithContentsOfURL: (NSURL*) aURL ofType: (NSString*) typeName error: (NSError*__autoreleasing*) outError {
     return [self initWithContentsOfURL: aURL parent: nil ofType: typeName error: outError];
 }

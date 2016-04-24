@@ -7,7 +7,14 @@
 //
 
 #import <AppKit/AppKit.h>
+#import "SEProjectDocument.h"
 
 @interface SEDocumentController : NSDocumentController
+
+@end
+
+@interface NSDocumentController (SEProjects)
+
+- (SEProjectDocument*) projectForFileURL: (NSURL*) fileURL;
 
 @end

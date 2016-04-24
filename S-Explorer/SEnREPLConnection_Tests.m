@@ -27,25 +27,25 @@
 
 
 
-- (void) evaluateExpression: (NSString*) expression completionBlock:  (void (^)(SEREPLConnection* connection, NSDictionary* partialResult)) block {
-    
-    [self.repl startWithCompletionBlock: ^(SEnREPL* repl, NSError* anError) {
-        XCTAssert(anError == nil, @"Error starting REPL: %@", anError);
-        
-        self.connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost"
-                                                                 port: self.repl.port
-                                                            sessionID: nil];
-        
-        [self.connection openWithConnectBlock: ^(SEnREPLConnection* connection, NSError* anError) {
-            XCTAssert(anError == nil, @"Error connecting to REPL: %@", anError);
-
-            [self.connection evaluateExpression: expression completionBlock:^(NSDictionary* partialResult) {
-                block(self.connection, partialResult);
-                XCTAssert(self.connection.sessionID.length, @"No Session ID after successful evaluation of %@", expression);
-            }];
-        }];
-    }];
-}
+//- (void) evaluateExpression: (NSString*) expression completionBlock:  (void (^)(SEREPLConnection* connection, NSDictionary* partialResult)) block {
+//    
+//    [self.repl startWithCompletionBlock: ^(SEREPL* repl, NSError* anError) {
+//        XCTAssert(anError == nil, @"Error starting REPL: %@", anError);
+//        
+//        self.connection = [[SEREPLConnection alloc] initWithHostname: @"localhost"
+//                                                                 port: self.repl.port
+//                                                            sessionID: nil];
+//        
+//        [self.connection openWithConnectBlock: ^(SEREPLConnection* connection, NSError* anError) {
+//            XCTAssert(anError == nil, @"Error connecting to REPL: %@", anError);
+//
+//            [self.connection evaluateExpression: expression completionBlock:^(NSDictionary* partialResult) {
+//                block(self.connection, partialResult);
+//                XCTAssert(self.connection.sessionID.length, @"No Session ID after successful evaluation of %@", expression);
+//            }];
+//        }];
+//    }];
+//}
 
 
 - (void) setUp {
@@ -58,7 +58,7 @@
                                };
     
     
-    _repl = [[SEnREPL alloc] initWithSettings: settings];
+    _repl = [[SEREPLServer alloc] initWithSettings: settings];
 }
 
 
@@ -89,27 +89,27 @@
 }
 
 
-- (void) testListingAllSessionsAsync {
-    
-    XCAsyncFailAfter(20.0, @"%@ did not finish in time.", NSStringFromSelector(_cmd));
-
-    [self.repl startWithCompletionBlock: ^(SEnREPL* repl, NSError* anError) {
-        XCTAssert(anError == nil, @"Error starting REPL: %@", anError);
-        
-        self.connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost"
-                                                                 port: self.repl.port
-                                                            sessionID: nil];
-        
-        [self.connection openWithConnectBlock: ^(SEnREPLConnection* connection, NSError* anError) {
-            XCTAssert(anError == nil, @"Error connecting to REPL: %@", anError);
-
-    
-            NSString* allSessions = self.connection.allSessionIDs;
-            NSLog(@"All Session IDs = %@", allSessions);
-            XCAsyncSuccess();
-        }];
-    }];
-}
+//- (void) testListingAllSessionsAsync {
+//    
+//    XCAsyncFailAfter(20.0, @"%@ did not finish in time.", NSStringFromSelector(_cmd));
+//
+//    [self.repl startWithCompletionBlock: ^(SEnREPL* repl, NSError* anError) {
+//        XCTAssert(anError == nil, @"Error starting REPL: %@", anError);
+//        
+//        self.connection = [[SEnREPLConnection alloc] initWithHostname: @"localhost"
+//                                                                 port: self.repl.port
+//                                                            sessionID: nil];
+//        
+//        [self.connection openWithConnectBlock: ^(SEnREPLConnection* connection, NSError* anError) {
+//            XCTAssert(anError == nil, @"Error connecting to REPL: %@", anError);
+//
+//    
+//            NSString* allSessions = self.connection.allSessionIDs;
+//            NSLog(@"All Session IDs = %@", allSessions);
+//            XCAsyncSuccess();
+//        }];
+//    }];
+//}
 
 
 - (void) testMultipleExpressionEvaluationsAsync {

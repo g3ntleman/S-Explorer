@@ -7,7 +7,6 @@
 //
 
 #import "SEDocumentController.h"
-#import "SEProjectDocument.h"
 
 @interface NSSavePanel (SEDocumentController)
 
@@ -62,28 +61,27 @@
 //                  }];
 }
 
+
+
 - (void) openDocumentWithContentsOfURL: (NSURL*) url display: (BOOL) displayDocument completionHandler: (void (^)(NSDocument* document, BOOL documentWasAlreadyOpen, NSError* error)) completionHandler {
     
     // Find the project for the url given:
     // Check, if we are trying to open a file in a project that is already open:
     NSString* urlPath = url.path;
-    for (SEProjectDocument* project in self.documents) {
-        if (! [project isKindOfClass: [SEProjectDocument class]]) {
-            continue;
+
+    SEProjectDocument* project = [self projectForFileURL: url];
+    
+    if (project) {
+        NSString* filePath = [urlPath substringFromIndex: project.projectFolderItem.fileURL.path.length];
+        
+        SESourceItem* sourceItem = [project.projectFolderItem childWithPath: filePath];
+        if (displayDocument) {
+            [project showWindows];
         }
-        NSString* projectPath = project.projectFolderItem.fileURL.path;
-        if ([urlPath hasPrefix: projectPath]) {
-            // Do not open any document, just show an existing one:
-            NSString* filePath = [urlPath substringFromIndex: projectPath.length];
-            SESourceItem* sourceItem = [[project projectFolderItem] childWithPath: filePath];
-            if (displayDocument) {
-                [project showWindows];
-            }
-            [project openSourceItem: sourceItem];
-            completionHandler(project, YES, nil);
-            return;
-        }
+        [project openSourceItem: sourceItem];
+        completionHandler(project, YES, nil);
     }
+    
     // The source file specified in url is not already part of an open project document.
     
     if ([urlPath.lastPathComponent isEqualToString: @"project.clj"]) {
@@ -241,5 +239,25 @@
     }];
 }
 
+
+@end
+
+@implementation NSDocumentController (SEProjects)
+
+- (SEProjectDocument*) projectForFileURL: (NSURL*) fileURL {
+    
+    NSString* urlPath = fileURL.path;
+    for (SEProjectDocument* project in self.documents) {
+        if (! [project isKindOfClass: [SEProjectDocument class]]) {
+            continue;
+        }
+        NSString* projectPath = project.projectFolderItem.fileURL.path;
+        if ([urlPath hasPrefix: projectPath]) {
+            // Do not open any document, just show an existing one:
+            return project;
+        }
+    }
+    return nil;
+}
 
 @end

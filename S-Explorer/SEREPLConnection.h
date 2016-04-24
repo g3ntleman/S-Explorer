@@ -14,7 +14,7 @@
 
 
 typedef void (^SEREPLRequestBlock)();
-typedef void (^SEREPLResultBlock)(NSDictionary* partialResult);
+typedef void (^SEREPLResultBlock)(NSDictionary* evalResult);
 
 /**
  * Called on connect, but also on disconnect.
@@ -36,13 +36,13 @@ extern const MPEdnKeyword* SEREPLKeyStdErr;
 extern const MPEdnKeyword* SEREPLKeyStdOut;
 extern const MPEdnKeyword* SEREPLKeyException;
 
-- (id) initWithHostname: (NSString* _Nonnull ) hostname port: (NSInteger) port;
+- (void) openWithHostname: (NSString*) hostname
+                     port: (NSInteger) portNo
+               completion: (SEREPLConnectBlock) completionBlock;
 
 - (void) sendConsoleInput: (NSString*) inputString;
 
 - (long) sendExpression: (NSString*) expression timeout: (NSTimeInterval) timeout completion: (SEREPLResultBlock) block;
-
-- (void) openWithConnectBlock: (SEREPLConnectBlock) completionBlock;
 
 - (void) close;
 

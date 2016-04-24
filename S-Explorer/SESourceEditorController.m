@@ -64,11 +64,20 @@ NSSet* SESingleIndentFunctions() {
         NSString* pathExtension = [sourceItem.name.pathExtension lowercaseString];
         
         
-        NSSet* sourceExtensions = [NSSet setWithObjects: @"scm", @"sld", @"clj", nil]; // make more flexible!
+        NSSet* sourceExtensions = [NSSet setWithObjects: @"cljs", @"clj", nil]; // make flexible!
         
         _colorizeSourceItem = [sourceExtensions containsObject: pathExtension];
         
-        self.textView.keywords = [NSOrderedSet orderedSetWithArray: self.defaultKeywords];
+        NSArray* keywordsArray = self.defaultKeywords;
+        
+//        // Find enclosing project document:
+//        NSDocument* document = [[SEDocumentController sharedDocumentController] documentForWindow: self.textView.window];
+//        if (document isKindOfClass: [SEProjectDocument class]) {
+//            SEProjectDocument* project = document;
+//        }
+//    
+        
+        self.textView.keywords = [NSOrderedSet orderedSetWithArray: keywordsArray];
         
         [self.textView.enclosingScrollView flashScrollers];
         

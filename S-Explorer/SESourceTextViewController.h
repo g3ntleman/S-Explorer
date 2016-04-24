@@ -16,10 +16,10 @@
 
 @property(nonatomic, strong) IBOutlet SESourceEditorTextView* textView;
 
-- (BOOL)expandRange: (NSRange*)rangePtr toParMatchingPar: (unichar)par;
+- (BOOL) expandRange: (NSRange*)rangePtr toParMatchingPar: (unichar)par;
 
 - (IBAction) expandSelection: (id) sender;
 
-- (void)unmarkPar;
+- (void) unmarkPar;
 
 @end

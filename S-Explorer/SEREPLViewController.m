@@ -305,39 +305,41 @@ static NSData* lineFeedData = nil;
     [self stop: self];
     //NSAssert(! _task.isRunning, @"There is already a task (%@) running! Terminate it, prior to starting a new one.", _task);
     
-    _evalConnection = [[SEREPLConnection alloc] initWithHostname: @"localhost" port: self.project.replServer.port];
-    [_evalConnection openWithConnectBlock:^(SEREPLConnection *connection, NSError *error) {
-        self.textView.editable = !error;
-        if (error) {
-            //NSLog(@"Connection to nREPL failed with error: %@", error);
-            if (error.code != 49) {
-                [self.replView appendInterpreterString: [NSString stringWithFormat: @"\nError with nREPL Connection: %@\n", error]];
-            }
-            // TODO: Show NSAlert here?
-        } else {
-            [connection sendExpression: @"(use 'clojure.repl)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
-                // _evalConnection established.
-                // Now connect the _controlConnection using the same sessionID:
-                NSLog(@"Eval Connection %@ established.", _evalConnection);
-                _controlConnection = [[SEREPLConnection alloc] initWithHostname: @"localhost" port: self.project.replServer.port];
-                [_controlConnection openWithConnectBlock:^(SEREPLConnection *connection, NSError *error) {
-                    [connection sendExpression: @"nil" timeout: 10.0 completion: ^(NSDictionary* result) {
-                        NSLog(@"Control connection %@ established.", connection);
-                    }];
-                }];
-            }];
-            
-            self.replView.editable = YES;
-            
-            if (self.greeting) {
-                [self.replView appendInterpreterString: @"\n\n"];
-                [self.replView appendInterpreterString: self.greeting];
-                [self.replView appendInterpreterString: @"\n\n"];
-            }
-            [self.replView moveToEndOfDocument: self];
-        }
-        connectBlock(connection, error);
-    }];
+    _evalConnection = [[SEREPLConnection alloc] init];
+    [_evalConnection openWithHostname: @"localhost"
+                                 port: self.project.replServer.port
+                           completion: ^(SEREPLConnection *connection, NSError *error) {
+                               self.textView.editable = !error;
+                               if (error) {
+                                   //NSLog(@"Connection to nREPL failed with error: %@", error);
+                                   if (error.code != 49) {
+                                       [self.replView appendInterpreterString: [NSString stringWithFormat: @"\nError with nREPL Connection: %@\n", error]];
+                                   }
+                                   // TODO: Show NSAlert here?
+                               } else {
+//                                   [connection sendExpression: @"(use 'clojure.repl)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
+//                                       // _evalConnection established.
+//                                       // Now connect the _controlConnection using the same sessionID:
+//                                       NSLog(@"Eval Connection %@ established.", _evalConnection);
+//                                       _controlConnection = [[SEREPLConnection alloc] initWithHostname: @"localhost" port: self.project.replServer.port];
+//                                       [_controlConnection openWithConnectBlock:^(SEREPLConnection *connection, NSError *error) {
+//                                           [connection sendExpression: @"nil" timeout: 10.0 completion: ^(NSDictionary* result) {
+//                                               NSLog(@"Control connection %@ established.", connection);
+//                                           }];
+//                                       }];
+//                                   }];
+                                   
+                                   self.replView.editable = YES;
+                                   
+                                   if (self.greeting) {
+                                       [self.replView appendInterpreterString: @"\n\n"];
+                                       [self.replView appendInterpreterString: self.greeting];
+                                       [self.replView appendInterpreterString: @"\n\n"];
+                                   }
+                                   [self.replView moveToEndOfDocument: self];
+                               }
+                               connectBlock(connection, error);
+                           }];
 
 }
 
