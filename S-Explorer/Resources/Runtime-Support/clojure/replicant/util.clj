@@ -61,10 +61,18 @@
     (swap! binding-atom (get-thread-bindings))
     result))
 
-(defmacro with-user-bindings
-  [binding-atom & body]
-  `(with-bindings ~@binding-atom body))
+ (defmacro with-user-bindings
+ [binding-atom & body]
+ `(with-bindings ~@binding-atom body))
 
+ (defn map-map-vals [m f]
+ (zipmap (keys m) (map f (vals m))))
+ 
+ (defn fq-name
+ [x]
+ (str (.toString (:ns (meta x))) "/" (:name (meta x))))
+ 
+ ;; use: (map-map-vals (ns-refers *ns*) fq-name)
 
 (comment
   ;; First start a tooling repl server - tool repl will connect to this

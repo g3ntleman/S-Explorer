@@ -17,7 +17,7 @@
 @implementation SEDocumentController
 
 - (NSString*) defaultType {
-    return SEProjectDocumentType;
+    return @"public.folder";
 }
 
 //- (id) makeUntitledDocumentOfType:(NSString*) typeName error: (NSError**) outError {
@@ -34,9 +34,9 @@
     panel.canChooseFiles = YES;
     panel.canChooseDirectories = YES;
     panel.allowsMultipleSelection = NO;
-    panel.allowedFileTypes = @[SEProjectDocumentType];
+    panel.allowedFileTypes = @[@"public.folder"];
     
-    [self beginOpenPanel: panel forTypes: @[SEProjectDocumentType, @"public.folder"] completionHandler: ^(NSInteger result) {
+    [self beginOpenPanel: panel forTypes: @[@"public.folder"] completionHandler: ^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton) {
             NSURL* selectedURL = [[panel URLs] objectAtIndex:0];
             NSLog(@"selected URL: %@", selectedURL);

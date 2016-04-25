@@ -178,6 +178,7 @@ static NSData* LineFeed = nil;
         // Try to parse the result as an edn dictionary:
         
         MPEdnParser* parser = [MPEdnParser new];
+        parser.keywordsAsStrings = YES;
         NSDictionary* ednDictionary = [parser parseString: ednString];
         
         if ([ednDictionary isKindOfClass: [NSDictionary class]]) {
@@ -232,7 +233,7 @@ static NSData* LineFeed = nil;
 }
 
 - (NSString*) description {
-    return [NSString stringWithFormat: @"%@, port '%lu', %lu running requests.", [super description], (unsigned long)self.port, (unsigned long)self.requestBlocksQueue.count];
+    return [NSString stringWithFormat: @"%@ (port '%lu', %lu queued requests)", [super description], (unsigned long)self.port, (unsigned long)self.requestBlocksQueue.count];
 }
 
 

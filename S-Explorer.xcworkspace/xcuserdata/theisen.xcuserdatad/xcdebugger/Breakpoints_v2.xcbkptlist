@@ -136,28 +136,12 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "S-Explorer/SEnREPLConnection_Tests.m"
-            timestampString = "424619147.396149"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "108"
-            endingLineNumber = "108"
-            landmarkName = "-testListingAllSessionsAsync"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEProjectDocument.m"
-            timestampString = "482637570.717007"
+            timestampString = "483279743.890058"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "842"
-            endingLineNumber = "842"
+            startingLineNumber = "857"
+            endingLineNumber = "857"
             landmarkName = "-writeToURL:ofType:error:"
             landmarkType = "5">
          </BreakpointContent>
@@ -201,11 +185,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SESourceItem.m"
-            timestampString = "430696969.818978"
+            timestampString = "482974928.389576"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "123"
-            endingLineNumber = "123"
+            startingLineNumber = "119"
+            endingLineNumber = "119"
             landmarkName = "-windowWillReturnUndoManager:"
             landmarkType = "5">
          </BreakpointContent>
@@ -217,11 +201,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SESourceItem.m"
-            timestampString = "482369876.298057"
+            timestampString = "482974928.389576"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "350"
-            endingLineNumber = "350"
+            startingLineNumber = "346"
+            endingLineNumber = "346"
             landmarkName = "-syncChildrenRecursive:"
             landmarkType = "5">
          </BreakpointContent>
@@ -233,11 +217,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEProjectDocument.m"
-            timestampString = "482635613.039098"
+            timestampString = "483275097.419274"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "172"
-            endingLineNumber = "172"
+            startingLineNumber = "170"
+            endingLineNumber = "170"
             landmarkName = "-splitView:canCollapseSubview:"
             landmarkType = "5">
          </BreakpointContent>
@@ -296,60 +280,12 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "S-Explorer/SEREPLViewController.m"
-            timestampString = "481842878.636852"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "318"
-            endingLineNumber = "318"
-            landmarkName = "-connectWithBlock:"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__41-[SEREPLViewController connectWithBlock:]_block_invoke"
-                  moduleName = "S-Explorer"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/theisen/Projects/Work/S-Explorer/S-Explorer/SEREPLViewController.m"
-                  timestampString = "482845852.834873"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "318"
-                  endingLineNumber = "318"
-                  offsetFromSymbolStart = "390">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__41-[SEREPLViewController connectWithBlock:]_block_invoke_2"
-                  moduleName = "S-Explorer"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/theisen/Projects/Work/S-Explorer/S-Explorer/SEREPLViewController.m"
-                  timestampString = "482845852.83505"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "318"
-                  endingLineNumber = "318"
-                  offsetFromSymbolStart = "16">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEDocumentController.m"
-            timestampString = "482059537.242333"
+            timestampString = "483146928.971045"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "92"
-            endingLineNumber = "92"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
             landmarkName = "-openDocumentWithContentsOfURL:display:completionHandler:"
             landmarkType = "5">
          </BreakpointContent>
@@ -361,11 +297,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEProjectDocument.m"
-            timestampString = "482637570.717007"
+            timestampString = "483279743.890058"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "969"
-            endingLineNumber = "969"
+            startingLineNumber = "984"
+            endingLineNumber = "984"
             landmarkName = "-revealInSourceList:"
             landmarkType = "5">
          </BreakpointContent>
@@ -377,11 +313,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEProjectDocument.m"
-            timestampString = "482637210.769366"
+            timestampString = "483279743.890058"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "780"
-            endingLineNumber = "780"
+            startingLineNumber = "795"
+            endingLineNumber = "795"
             landmarkName = "-windowControllerDidLoadNib:"
             landmarkType = "5">
          </BreakpointContent>
@@ -473,11 +409,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pods/MPEDN/MPEdn/MPEdnParser.m"
-            timestampString = "482777059.281322"
+            timestampString = "483218485.648386"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "843"
-            endingLineNumber = "843"
+            startingLineNumber = "846"
+            endingLineNumber = "846"
             landmarkName = "-parseTag"
             landmarkType = "5">
          </BreakpointContent>
@@ -489,11 +425,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pods/MPEDN/MPEdn/MPEdnParser.m"
-            timestampString = "482777059.281322"
+            timestampString = "483218485.648386"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "859"
-            endingLineNumber = "859"
+            startingLineNumber = "862"
+            endingLineNumber = "862"
             landmarkName = "-parseTag"
             landmarkType = "5">
          </BreakpointContent>
@@ -505,11 +441,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Pods/MPEDN/MPEdn/MPEdnParser.m"
-            timestampString = "482777059.281322"
+            timestampString = "483218485.648386"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "863"
-            endingLineNumber = "863"
+            startingLineNumber = "866"
+            endingLineNumber = "866"
             landmarkName = "-parseTag"
             landmarkType = "5">
          </BreakpointContent>
@@ -591,6 +527,86 @@
             startingLineNumber = "305"
             endingLineNumber = "305"
             landmarkName = "-nextToken"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "S-Explorer/SEProjectDocument.m"
+            timestampString = "483279743.890058"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1028"
+            endingLineNumber = "1028"
+            landmarkName = "-saveCurrentSourceItem:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pods/MPEDN/MPEdn/MPEdnParser.m"
+            timestampString = "483218485.648386"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "831"
+            endingLineNumber = "831"
+            landmarkName = "-parseTag"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pods/MPEDN/MPEdn/MPEdnParser.m"
+            timestampString = "483221807.320144"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "826"
+            endingLineNumber = "826"
+            landmarkName = "-parseTag"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "S-Explorer/SEProjectDocument.m"
+            timestampString = "483279755.118801"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "366"
+            endingLineNumber = "366"
+            landmarkName = "-updateKeywords"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "S-Explorer/SEProjectDocument.m"
+            timestampString = "483286334.996612"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "717"
+            endingLineNumber = "717"
+            landmarkName = "-windowControllerDidLoadNib:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

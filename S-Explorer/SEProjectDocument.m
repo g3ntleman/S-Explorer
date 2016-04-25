@@ -21,9 +21,6 @@
 #import "SETarget.h"
 #import "MPEdnKeyword.h"
 
-
-NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
-
 @interface SEProjectDocument ()
 @property (readonly) NSString* uiSettingsPath;
 @property (strong) NSString* javaClasspath;
@@ -68,24 +65,24 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     BOOL isDir = NO;
     [[NSFileManager defaultManager] fileExistsAtPath: url.path isDirectory: &isDir];
     //NSAssert(! isDir, @"Try to open document of type '%@' from directory at '%@'.", typeName, url);
+    NSURL* sourceURL = nil;
     
-    //        if (! [typeName isEqualToString: SEProjectDocumentType]) {
-    //            // Propably some source file, use the parent folder as project name:
-    //            NSURL* folderURL = [url URLByDeletingLastPathComponent];
-    //            NSString* projectFileName = [folderURL.lastPathComponent stringByAppendingPathExtension: @"seproj"];
-    //            sourceURL = url;
-    //            url = [folderURL URLByAppendingPathComponent: projectFileName];
-    //        }
+    if (! isDir) {
+        // Propably some source file, use the parent folder as project name:
+        sourceURL = url;
+        url = [url URLByDeletingLastPathComponent];
+    }
     
     
     if (self = [super initWithContentsOfURL: url ofType: typeName error: errorPtr]) {
         
         NSLog(@"Opening document of type %@", typeName);
         
-//        if (sourceURL) {
-//            // Open sourceURL in the first Tab:
-//            self.currentSourceItem = [self.projectFolderItem childWithPath: [sourceURL lastPathComponent]];
-//        }
+        if (sourceURL) {
+            // Open sourceURL in the first Tab:
+            self.currentSourceItem = [self.projectFolderItem childWithPath: [sourceURL lastPathComponent]];
+            [self toggleSourceOnlyMode: self];
+        }
         
         NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
         [nc addObserver: self selector: @selector(sourceItemEditedStateDidChange:)
@@ -356,6 +353,20 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     return self.fileURL.lastPathComponent;
 }
 
+- (void) updateKeywords {
+    
+    SESourceEditorController* editor = self.editorController;
+    NSString* code = editor.sourceItem.contents.string;
+    
+    [self.toolConnection sendExpression: [NSString stringWithFormat: @"(do %@ (replicant.util/map-map-vals (ns-refers *ns*) replicant.util/fq-name))", code]
+                                timeout: 20.0
+                             completion: ^(NSDictionary* evalResult) {
+                                 NSDictionary* map = evalResult[SEREPLKeyResult];
+                                 NSLog(@"Result evaluating ns: '%@'", map);
+                                 editor.textView.keywords = [NSOrderedSet orderedSetWithArray: [map allKeys]];
+                             }];
+    
+}
 
 /**
  *  item may be nil to indicate a removal.
@@ -381,12 +392,9 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     self.editorController.sourceItem = item;
     
-    NSString* code = item.contents.string;
     
-    [self.toolConnection sendExpression: code timeout: 20.0 completion: ^(NSDictionary* evalResult) {
-        NSLog(@"Result evaluating '%@' source: %@", code, evalResult);
-    }];
-
+    [self updateKeywords];
+    
 }
 
 //- (BOOL) validateMenuItem:(NSMenuItem *)menuItem {
@@ -1008,6 +1016,8 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     [self.currentSourceItem revertDocumentToSaved: sender];
 }
 
+
+
 - (IBAction) saveCurrentSourceItem: (id) sender {
     
     NSLog(@"Saving current source item %@ to disk.", self.currentSourceItem);
@@ -1016,10 +1026,11 @@ NSString* SEProjectDocumentType = @"org.cocoanuts.s-explorer.project";
     
     NSString* sourceContent = self.currentSourceItem.contents.string;
     
-    [self.toolConnection sendExpression: sourceContent timeout: 20.0 completion: ^(NSDictionary* evalResult) {
-        NSLog(@"got %@", evalResult);
-    }];
+    //[self.toolConnection sendExpression: sourceContent timeout: 20.0 completion: ^(NSDictionary* evalResult) {
+    //    NSLog(@"got %@", evalResult);
+    //}];
     //[self saveDocument: sender];
+    [self updateKeywords];
 }
 
 /* 
