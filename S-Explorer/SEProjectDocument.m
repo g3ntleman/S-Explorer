@@ -361,7 +361,7 @@
     [self.toolConnection sendExpression: [NSString stringWithFormat: @"(do %@ (replicant.util/map-map-vals (ns-refers *ns*) replicant.util/fq-name))", code]
                                 timeout: 20.0
                              completion: ^(NSDictionary* evalResult) {
-                                 NSDictionary* map = evalResult[SEREPLKeyResult];
+                                 NSDictionary* map = evalResult[@"result"];
                                  NSLog(@"Result evaluating ns: '%@'", map);
                                  editor.textView.keywords = [NSOrderedSet orderedSetWithArray: [map allKeys]];
                              }];
