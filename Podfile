@@ -3,6 +3,6 @@ platform :osx, "10.8"
 project 'S-Explorer.xcodeproj'
 
 target "S-Explorer" do
-pod 'MPEDN', :git => 'git@github.com:g3ntleman/mpedn.git'
+pod 'MPEDN', :git => 'git@github.com:g3ntleman/mpedn.git', :branch => 'V2'
 #'~> 1.0.0'
 end

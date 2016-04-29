@@ -19,7 +19,6 @@
 #import "SCEvents.h"
 #import "SCEvent.h"
 #import "SETarget.h"
-#import "MPEdnKeyword.h"
 
 @interface SEProjectDocument ()
 @property (readonly) NSString* uiSettingsPath;

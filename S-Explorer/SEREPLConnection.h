@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "GCDAsyncSocket.h"
-#import "MPEdnKeyword.h"
 
 @class SEREPLConnection;
 
@@ -31,10 +30,10 @@ typedef void (^SEREPLConnectBlock)(SEREPLConnection* connection, NSError* error)
 @property (readonly, nonatomic) NSInteger requestCounter;
 @property (readonly, nonatomic) BOOL isConnecting;
 
-extern const MPEdnKeyword* SEREPLKeyResult;
-extern const MPEdnKeyword* SEREPLKeyStdErr;
-extern const MPEdnKeyword* SEREPLKeyStdOut;
-extern const MPEdnKeyword* SEREPLKeyException;
+extern const NSString* SEREPLKeyResult;
+extern const NSString* SEREPLKeyStdErr;
+extern const NSString* SEREPLKeyStdOut;
+extern const NSString* SEREPLKeyException;
 
 - (void) openWithHostname: (NSString*) hostname
                      port: (NSInteger) portNo

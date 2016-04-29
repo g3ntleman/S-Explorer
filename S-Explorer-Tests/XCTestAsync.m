@@ -101,7 +101,7 @@ typedef void(^XCTestCompletionHandler)(XCTestRun *run);
     [self setValue:aRun forKey:@"testCaseRun"];
     [aRun start];
     
-    if ([NSStringFromSelector([self selector]) hasSuffix:@"Async"]) {
+    if ([(aRun.test.name) hasSuffix:@"Async"]) {
         self.testRun = aRun;
         self.completionHandler = aCompletionHandler;
         

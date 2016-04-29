@@ -22,10 +22,10 @@
 
 @end
 
-MPEdnKeyword* SEREPLKeyResult;
-MPEdnKeyword* SEREPLKeyStdErr;
-MPEdnKeyword* SEREPLKeyStdOut;
-MPEdnKeyword* SEREPLKeyException;
+NSString* SEREPLKeyResult    = @"result";
+NSString* SEREPLKeyStdErr    = @"err";
+NSString* SEREPLKeyStdOut    = @"out";
+NSString* SEREPLKeyException = @"exception";
 
 @implementation SEREPLConnection
 
@@ -35,11 +35,6 @@ static NSData* LineFeed = nil;
 
 + (void)initialize {
     [super initialize];
-    
-    SEREPLKeyResult = [MPEdnKeyword keyword: @"result"];
-    SEREPLKeyStdErr  = [MPEdnKeyword keyword: @"err"];
-    SEREPLKeyStdOut = [MPEdnKeyword keyword: @"out"];
-    SEREPLKeyException = [MPEdnKeyword keyword: @"exception"];
     LineFeed = [GCDAsyncSocket LFData];
 }
 
@@ -177,8 +172,7 @@ static NSData* LineFeed = nil;
     } else if ([ednString hasPrefix: @"{"] && [ednString hasSuffix: @"}\n"]) {
         // Try to parse the result as an edn dictionary:
         
-        MPEdnParser* parser = [MPEdnParser new];
-        parser.keywordsAsStrings = YES;
+        MPEdnCoder* parser = [[MPEdnCoder alloc] init];
         NSDictionary* ednDictionary = [parser parseString: ednString];
         
         if ([ednDictionary isKindOfClass: [NSDictionary class]]) {
