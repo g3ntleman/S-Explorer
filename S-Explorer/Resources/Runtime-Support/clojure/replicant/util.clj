@@ -72,7 +72,7 @@
  [x]
  (str (.toString (:ns (meta x))) "/" (:name (meta x))))
  
- ;; use: (map-map-vals (ns-refers *ns*) fq-name)
+ ;; use: (map-map-vals (ns-map *ns*) fq-name)
 
 (comment
   ;; First start a tooling repl server - tool repl will connect to this

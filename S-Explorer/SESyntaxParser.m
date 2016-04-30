@@ -154,7 +154,7 @@
                 delegateBlock(self, pResult, &stop);
                 pResult.depth -= 1;
                 break;
-            case ATOM:
+            case ATOM: 
             case NUMBER:
             case STRING:
                 delegateBlock(self, pResult, &stop);

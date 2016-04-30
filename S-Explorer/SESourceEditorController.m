@@ -612,7 +612,10 @@ BOOL SEToggleLineComments(NSMutableString* replacement, unichar commentChar) {
         selectedRange.location += isAddingComments ? 1 : -1;
     }
     [self.textView setSelectedRange: selectedRange];
+}
 
+- (NSString*) description {
+    return [NSString stringWithFormat: @"%@ editing %@", [super description], self.sourceItem];
 }
 
 @end

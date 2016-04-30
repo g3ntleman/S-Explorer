@@ -168,6 +168,7 @@ static NSCharacterSet* SEWordCharacters() {
     
     [textStorage removeAttribute: NSForegroundColorAttributeName range: aRange];
 
+    __block int commentLevel = 0; // if >0, the nesting level of the current comment macro
     
     SESyntaxParser* parser =
     [[SESyntaxParser alloc] initWithString: textStorage.string
@@ -175,7 +176,22 @@ static NSCharacterSet* SEWordCharacters() {
                                      block: ^(SESyntaxParser *parser, SEParserResult pResult, BOOL *stopRef) {
                                          NSTextStorage* textStorage = self.textStorage;
                                          
+                                         if (pResult.occurrence.token == RIGHT_PAR && commentLevel == pResult.depth) {
+                                             commentLevel = 0; // end comment
+                                         }
+
+                                         if (commentLevel) {
+                                             pResult.occurrence.token = COMMENT;
+                                         }
+                                         
                                          switch (pResult.occurrence.token) {
+                                             case RIGHT_PAR: {
+                                                 if (commentLevel == pResult.depth) {
+                                                     commentLevel = 0; // end comment
+                                                 }
+                                                 break;
+                                             }
+                                                 
                                              case COMMENT: {
                                                  NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: [SESourceEditorTextView commentColor]};
                                                  [textStorage addAttributes: commentAttributes range: pResult.occurrence.range];
@@ -202,20 +218,20 @@ static NSCharacterSet* SEWordCharacters() {
                                                      //NSString* tokenString = [textStorage.string substringWithRange: tokenInstance.occurrence];
                                                      //NSLog(@"Colorizer found word '%@'", tokenString);
                                                      
-                                                     if (pResult.elementCount == 0) {
-                                                         // Found first list element
-                                                         NSColor* color = nil;
-                                                         NSString* word = [textStorage.string substringWithRange: pResult.occurrence.range];
-                                                         
-                                                         //NSLog(@"Colorizer found word '%@'", word);
-                                                         if ([self.keywords containsObject: word]) {
-                                                             color = [NSColor blueColor]; // Mark as "custom" function / name
-                                                         }
-                                                         
-                                                         if (color) {
-                                                             NSDictionary* keywordAttributes = @{NSForegroundColorAttributeName: color};
-                                                             [textStorage addAttributes: keywordAttributes range: pResult.occurrence.range];
-                                                         }
+                                                     NSColor* color = nil;
+                                                     NSString* word = [textStorage.string substringWithRange: pResult.occurrence.range];
+                                                     
+                                                     if (pResult.elementCount == 0 && [word isEqualToString: @"comment"]) {
+                                                         commentLevel = pResult.depth;
+                                                     }
+                                                     if ([self.keywords containsObject: word]) {
+                                                         NSLog(@"Colorizing '%@'", word);
+                                                         color = [NSColor blueColor]; // Mark as "custom" function / name
+                                                     }
+                                                     
+                                                     if (color) {
+                                                         NSDictionary* keywordAttributes = @{NSForegroundColorAttributeName: color};
+                                                         [textStorage addAttributes: keywordAttributes range: pResult.occurrence.range];
                                                      }
                                                  }
                                                  break;

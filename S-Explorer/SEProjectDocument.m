@@ -357,7 +357,7 @@
     SESourceEditorController* editor = self.editorController;
     NSString* code = editor.sourceItem.contents.string;
     
-    [self.toolConnection sendExpression: [NSString stringWithFormat: @"(do %@ (replicant.util/map-map-vals (ns-refers *ns*) replicant.util/fq-name))", code]
+    [self.toolConnection sendExpression: [NSString stringWithFormat: @"(do %@ (replicant.util/map-map-vals (ns-interns *ns*) replicant.util/fq-name))", code]
                                 timeout: 20.0
                              completion: ^(NSDictionary* evalResult) {
                                  NSDictionary* map = evalResult[@"result"];
@@ -371,10 +371,15 @@
  *  item may be nil to indicate a removal.
  */
 - (void) setSourceItem: (SESourceItem*) item forTabIndex: (NSUInteger) index {
+
+    NSNumber* indexNumber = @(index);
+
+    if (self.tabbedSourceItems[indexNumber] == item) {
+        return; // item already set
+    }
     
     NSParameterAssert(item == nil || [item isTextItem]);
     NSParameterAssert(index<self.sourceTabView.numberOfTabViewItems);
-    NSNumber* indexNumber = @(index);
     
     if (item) {
         NSParameterAssert([item isKindOfClass: [SESourceItem class]]);
@@ -785,33 +790,38 @@
                 if (error) {
                     NSLog(@"Error creating REPL server: %@", error);
                 } else {
+                    
                     NSLog(@"Socket REPL ready. Connecting...");
                     [self.toolConnection openWithHostname: @"localhost"
                                                      port: server.port
                                                completion: ^(SEREPLConnection* connection, NSError* error) {
-                                                   if (! error) {
-                                                       [connection sendExpression: @"(keys (ns-publics 'clojure.core))" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
-                                                           id exception = resultDictionary[SEREPLKeyException];
-                                                           if (exception) {
-                                                               NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
-                                                           } else {
-                                                               id result = resultDictionary[SEREPLKeyResult];
-                                                               NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
-                                                           }
-                                                       }];
-                                                       
-                                                       [connection sendExpression: @"(* 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
-                                                           id exception = resultDictionary[SEREPLKeyException];
-                                                           if (exception) {
-                                                               NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
-                                                           } else {
-                                                               id result = resultDictionary[SEREPLKeyResult];
-                                                               NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
-                                                           }
-                                                       }];
-                                                   } else {
-                                                       NSLog(@"Error querying socket REPL: %@", error);
-                                                   }
+//                                                   if (! error) {
+//                                                       
+//                                                       [self updateKeywords];
+//                                                       
+//                                                       //
+//                                                       //                                                       [connection sendExpression: @"(keys (ns-publics 'clojure.core))" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
+//                                                       //                                                           id exception = resultDictionary[SEREPLKeyException];
+//                                                       //                                                           if (exception) {
+//                                                       //                                                               NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
+//                                                       //                                                           } else {
+//                                                       //                                                               id result = resultDictionary[SEREPLKeyResult];
+//                                                       //                                                               NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
+//                                                       //                                                           }
+//                                                       //                                                       }];
+//                                                       //
+//                                                       //                                                       [connection sendExpression: @"(* 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
+//                                                       //                                                           id exception = resultDictionary[SEREPLKeyException];
+//                                                       //                                                           if (exception) {
+//                                                       //                                                               NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
+//                                                       //                                                           } else {
+//                                                       //                                                               id result = resultDictionary[SEREPLKeyResult];
+//                                                       //                                                               NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
+//                                                       //                                                   }
+//                                                       //                                               }];
+//                                                       //                                                   } else {
+//                                                       //                                                       NSLog(@"Error querying socket REPL: %@", error);
+//                                                   }
                                                }];
                 }
             }];
