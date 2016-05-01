@@ -56,21 +56,22 @@
 ;; helpers to stash and use bindings from another thread
 
 (defn user-eval
-  [binding-atom form]
-  (let [result (eval form)]
-    (swap! binding-atom (get-thread-bindings))
-    result))
+      [binding-atom form]
+      (let [result (eval form)]
+        (swap! binding-atom (get-thread-bindings))
+        result))
 
- (defmacro with-user-bindings
- [binding-atom & body]
- `(with-bindings ~@binding-atom body))
+(defmacro with-user-bindings
+          [binding-atom & body]
+          `(with-bindings ~@binding-atom body))
 
- (defn map-map-vals [m f]
- (zipmap (keys m) (map f (vals m))))
- 
- (defn fq-name
- [x]
- (str (.toString (:ns (meta x))) "/" (:name (meta x))))
+(defn map-map-vals [m f]
+      (zipmap (keys m) (map f (vals m))))
+
+(defn fq-name
+      [x]
+ (.toString x))
+ ;;     (str (.toString (:ns (meta x))) "/" (comment .toString (:name (meta x)))))
  
  ;; use: (map-map-vals (ns-map *ns*) fq-name)
 

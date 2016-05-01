@@ -357,12 +357,17 @@
     SESourceEditorController* editor = self.editorController;
     NSString* code = editor.sourceItem.contents.string;
     
-    [self.toolConnection sendExpression: [NSString stringWithFormat: @"(do %@ (replicant.util/map-map-vals (ns-interns *ns*) replicant.util/fq-name))", code]
+    [self.toolConnection sendExpression: [NSString stringWithFormat: @"(do %@ (replicant.util/map-map-vals (merge (comment ns-interns *ns*) (ns-map *ns*)) replicant.util/fq-name))", code]
+    // [self.toolConnection sendExpression: [NSString stringWithFormat: @"(do %@ (merge (ns-interns *ns*) (ns-map *ns*)))", code]
                                 timeout: 20.0
                              completion: ^(NSDictionary* evalResult) {
                                  NSDictionary* map = evalResult[@"result"];
-                                 NSLog(@"Result evaluating ns: '%@'", map);
-                                 editor.textView.keywords = [NSOrderedSet orderedSetWithArray: [map allKeys]];
+                                 if (map) {
+                                     NSLog(@"Result evaluating ns: '%@'", map);
+                                     editor.textView.keywords = [NSOrderedSet orderedSetWithArray: [map allKeys]];
+                                 } else {
+                                     NSLog(@"Error Result: %@", evalResult);
+                                 }
                              }];
     
 }

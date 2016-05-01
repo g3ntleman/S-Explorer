@@ -32,6 +32,7 @@
 + (NSColor*) commentColor;
 + (NSColor*) stringColor;
 + (NSColor*) numberColor;
++ (NSColor*) keywordColor;
 
 @end
 

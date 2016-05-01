@@ -176,10 +176,12 @@ static NSCharacterSet* SEWordCharacters() {
                                      block: ^(SESyntaxParser *parser, SEParserResult pResult, BOOL *stopRef) {
                                          NSTextStorage* textStorage = self.textStorage;
                                          
+                                         // Check for closing par of comment macro:
                                          if (pResult.occurrence.token == RIGHT_PAR && commentLevel == pResult.depth) {
                                              commentLevel = 0; // end comment
                                          }
 
+                                         // Treat everything inside the comment macro as a comment:
                                          if (commentLevel) {
                                              pResult.occurrence.token = COMMENT;
                                          }
@@ -204,6 +206,11 @@ static NSCharacterSet* SEWordCharacters() {
                                              }
                                              case NUMBER: {
                                                  NSDictionary* constantAttributes = @{NSForegroundColorAttributeName: [SESourceEditorTextView numberColor]};
+                                                 [textStorage addAttributes: constantAttributes range: pResult.occurrence.range];
+                                                 break;
+                                             }
+                                             case KEYWORD: {
+                                                 NSDictionary* constantAttributes = @{NSForegroundColorAttributeName: [SESourceEditorTextView keywordColor]};
                                                  [textStorage addAttributes: constantAttributes range: pResult.occurrence.range];
                                                  break;
                                              }
@@ -361,6 +368,11 @@ static NSCharacterSet* SEWordCharacters() {
 + (NSColor*) numberColor {
     return [NSColor purpleColor];
 }
+
++ (NSColor*) keywordColor {
+    return [NSColor brownColor];
+}
+
 
 + (NSColor*) constantColor {
     return [NSColor orangeColor];

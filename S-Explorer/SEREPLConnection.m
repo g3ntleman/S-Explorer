@@ -188,7 +188,9 @@ static NSData* LineFeed = nil;
             NSLog(@"Unable to parse. Partitial result? Continuing reading. (%@)", parser.error);
         }
     } else {
-        // Expect incomplete data.
+        // Expect incomplete data. Continue reading:
+        [self.socket readDataWithTimeout: 10.0 tag: -1];
+
     }
 
 }
