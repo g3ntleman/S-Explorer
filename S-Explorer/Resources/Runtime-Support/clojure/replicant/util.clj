@@ -27,7 +27,7 @@
   (apply main/repl
     (conj kw-opts
       :need-prompt (constantly false)
-      :prompt (constantly nil)
+      :prompt (constantly "")
       :eval data-eval)))
 
 ;; add kw-opts to what's currently in clojure.core.server/repl
@@ -38,19 +38,20 @@
       :init server/repl-init
       :read server/repl-read)))
  
- (defn run-tool-repl [port]
- (let [repl-name "tool"
- server ^ServerSocket (server/start-server
- {:name   repl-name
-     :port   port
-     :server-daemon false
-     :client-daemon false
-     :accept 'replicant.util/repl
-     :args   [:eval (partial data-eval)]})
- repl-port (.getLocalPort server)]
- ))
+ (defn prompt [] "")
  
-(defn --main [&args]
+ (defn run-tool-repl [port]
+   (let [repl-name "tool"
+       server ^ServerSocket (server/start-server
+          {:name   repl-name
+           :port   port
+           :server-daemon false
+           :client-daemon false
+           :accept 'replicant.util/data-repl
+           :args   [:eval (partial data-eval) :need-prompt (constantly false) :prompt (constantly "")]})
+       repl-port (.getLocalPort server)]))
+ 
+(comment defn --main [&args]
  (run-tool-repl 5555))
  
 ;; helpers to stash and use bindings from another thread
@@ -64,14 +65,13 @@
 (defmacro with-user-bindings
           [binding-atom & body]
           `(with-bindings ~@binding-atom body))
-
+ 
 (defn map-map-vals [m f]
       (zipmap (keys m) (map f (vals m))))
 
 (defn fq-name
       [x]
- (.toString x))
- ;;     (str (.toString (:ns (meta x))) "/" (comment .toString (:name (meta x)))))
+ (try (.toString (:ns (meta x))) (catch Exception e (.toString x))))
  
  ;; use: (map-map-vals (ns-map *ns*) fq-name)
 

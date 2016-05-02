@@ -95,8 +95,8 @@
     
 //    NSURL* projectFileURL = nil;
 //    NSURL* projectFolderURL = nil;
-    NSFileManager *fm = [NSFileManager defaultManager];
-    BOOL isDir;
+//    NSFileManager *fm = [NSFileManager defaultManager];
+//    BOOL isDir;
     
 
     

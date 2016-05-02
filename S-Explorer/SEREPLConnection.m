@@ -136,11 +136,12 @@ static NSData* LineFeed = nil;
     NSLog(@"%@ connected to %@:%u.", self, host, port);
     _connectRetries = 0;
     
-    [sock readDataWithTimeout: 10.0 tag: 0];
     
     if (self.connectBlock) {
         self.connectBlock(self, nil);
     }
+    
+    self.isReady = YES;
 }
 
 - (void) socketDidDisconnect: (GCDAsyncSocket*) sock withError: (NSError*) error {
@@ -158,22 +159,19 @@ static NSData* LineFeed = nil;
     }
 }
 
+- (void) socket: (GCDAsyncSocket*) sock didReadString: (NSString*) string {
+    
+    NSLog(@"Socket string read: '%@'", string);
 
-- (void) socket: (GCDAsyncSocket*) sock didReadData: (NSData*) data withTag: (long) tag {
-    
-    [self.readBuffer appendData: data];
-    
-    NSString* ednString = [[NSString alloc] initWithData: self.readBuffer encoding: NSUTF8StringEncoding];
-    NSLog(@"Socket data read -> Buffer now: '%@'", ednString);
-    
-    if ([ednString hasSuffix: @"=> "]) {
+    if ([string hasSuffix: @"=> "]) {
         self.readBuffer.length = 0;
         self.isReady = YES;
-    } else if ([ednString hasPrefix: @"{"] && [ednString hasSuffix: @"}\n"]) {
+        return;
+    } else if ([string hasPrefix: @"{"] && [string hasSuffix: @"}\n"]) {
         // Try to parse the result as an edn dictionary:
         
-        MPEdnCoder* parser = [[MPEdnCoder alloc] init];
-        NSDictionary* ednDictionary = [parser parseString: ednString];
+        MPEdnCoder* ednCoder = [[MPEdnCoder alloc] init];
+        NSDictionary* ednDictionary = [ednCoder parseString: string];
         
         if ([ednDictionary isKindOfClass: [NSDictionary class]]) {
             SEREPLResultBlock resultBlock = [self.resultBlocksQueue firstObject];
@@ -183,16 +181,34 @@ static NSData* LineFeed = nil;
             }
             
             self.readBuffer.length = 0; // might not be correct?
-        } else {
-            // Expect underfull buffer, continue reading.
-            NSLog(@"Unable to parse. Partitial result? Continuing reading. (%@)", parser.error);
+            
+            return;
         }
-    } else {
-        // Expect incomplete data. Continue reading:
-        [self.socket readDataWithTimeout: 10.0 tag: -1];
-
     }
+}
 
+
+- (void) socket: (GCDAsyncSocket*) sock didReadData: (NSData*) data withTag: (long) tag {
+    
+    // Find first LF char in data:
+    const uint8* dataBytes = data.bytes;
+    NSUInteger dataLength = data.length;
+    
+    for (NSUInteger dataPos = 0; dataPos<dataLength; dataPos++) {
+        if (dataBytes[dataPos] == '\n') {
+            [self.readBuffer appendBytes: dataBytes length: dataPos];
+            NSString* string = [[NSString alloc] initWithData: self.readBuffer encoding: NSUTF8StringEncoding];
+            [self socket: sock didReadString: string];
+            self.readBuffer.length = 0;
+            data = [data subdataWithRange: NSMakeRange(dataPos+1, dataLength-dataPos-1)];
+            [self socket: sock didReadData: data withTag: tag];
+            break;
+        }
+    }
+    [self.readBuffer appendData: data];
+    
+    NSLog(@"%@: Unable to parse line after %lu bytes. Partitial result? Continuing reading…", self, (unsigned long)self.readBuffer.length);
+    [self.socket readDataWithTimeout: 10.0 tag: -1];
 }
 
 //- (void) socket: (GCDAsyncSocket*) sock didWriteDataWithTag: (long) tag {
