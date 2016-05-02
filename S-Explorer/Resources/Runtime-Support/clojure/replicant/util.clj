@@ -69,9 +69,10 @@
 (defn map-map-vals [m f]
       (zipmap (keys m) (map f (vals m))))
 
-(defn fq-name
-      [x]
- (try (.toString (:ns (meta x))) (catch Exception e (.toString x))))
+(defn var-namespace [x]
+  (if (class? x)
+     (.getName (.getPackage (.getClass x)))
+     (.toString (:ns (meta x)))))
  
  ;; use: (map-map-vals (ns-map *ns*) fq-name)
 

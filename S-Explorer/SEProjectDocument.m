@@ -356,8 +356,8 @@
     
     SESourceEditorController* editor = self.editorController;
     NSString* code = editor.sourceItem.contents.string;
-    // (comment ns-interns *ns*)
-    [self.toolConnection sendExpression: [NSString stringWithFormat: @"(do %@ (replicant.util/map-map-vals (merge  (ns-map *ns*)) replicant.util/fq-name))", code]
+    //
+    [self.toolConnection sendExpression: [NSString stringWithFormat: @"(do %@ (replicant.util/map-map-vals (merge  (ns-map *ns*) (comment ns-interns *ns*)) replicant.util/var-namespace))", code]
     // [self.toolConnection sendExpression: [NSString stringWithFormat: @"(do %@ (merge (ns-interns *ns*) (ns-map *ns*)))", code]
                                 timeout: 20.0
                              completion: ^(NSDictionary* evalResult) {
