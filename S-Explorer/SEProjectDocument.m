@@ -363,7 +363,7 @@
                              completion: ^(NSDictionary* evalResult) {
                                  NSDictionary* map = evalResult[@"result"];
                                  if (map) {
-                                     NSLog(@"Result evaluating ns: '%@'", map);
+                                     //NSLog(@"Result evaluating ns: '%@'", map);
                                      editor.textView.keywords = [NSOrderedSet orderedSetWithArray: [map allKeys]];
                                  } else {
                                      NSLog(@"Error Result: %@", evalResult);
@@ -800,39 +800,25 @@
                     [self.toolConnection openWithHostname: @"localhost"
                                                      port: server.port
                                                completion: ^(SEREPLConnection* connection, NSError* error) {
-//                                                   if (! error) {
-//                                                       
-//                                                       [self updateKeywords];
-//                                                       
-//                                                       //
-//                                                       //                                                       [connection sendExpression: @"(keys (ns-publics 'clojure.core))" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
-//                                                       //                                                           id exception = resultDictionary[SEREPLKeyException];
-//                                                       //                                                           if (exception) {
-//                                                       //                                                               NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
-//                                                       //                                                           } else {
-//                                                       //                                                               id result = resultDictionary[SEREPLKeyResult];
-//                                                       //                                                               NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
-//                                                       //                                                           }
-//                                                       //                                                       }];
-//                                                       //
-//                                                       //                                                       [connection sendExpression: @"(* 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
-//                                                       //                                                           id exception = resultDictionary[SEREPLKeyException];
-//                                                       //                                                           if (exception) {
-//                                                       //                                                               NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
-//                                                       //                                                           } else {
-//                                                       //                                                               id result = resultDictionary[SEREPLKeyResult];
-//                                                       //                                                               NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
-//                                                       //                                                   }
-//                                                       //                                               }];
-//                                                       //                                                   } else {
-//                                                       //                                                       NSLog(@"Error querying socket REPL: %@", error);
-//                                                   }
+                                                   if (! error) {
+                                                    // Send test expression:
+                                                       [connection sendExpression: @"(* 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
+                                                           id exception = resultDictionary[SEREPLKeyException];
+                                                           if (exception) {
+                                                               NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
+                                                           } else {
+                                                               id result = resultDictionary[SEREPLKeyResult];
+                                                               NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
+                                                           }
+                                                       }];
+                                                   } else {
+                                                       NSLog(@"Error querying socket REPL: %@", error);
+                                                   }
                                                }];
                 }
             }];
         }
     }];
-    
 }
 
 + (BOOL) autosavesInPlace {

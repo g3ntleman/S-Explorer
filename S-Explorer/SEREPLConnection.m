@@ -161,7 +161,7 @@ static NSData* LineFeed = nil;
 
 - (void) socket: (GCDAsyncSocket*) sock didReadString: (NSString*) string {
     
-    NSLog(@"Socket string read: '%@'", string);
+    //NSLog(@"Socket string read: '%@'", string);
 
     if ([string hasPrefix: @"{"] && [string hasSuffix: @"}"]) {
         // Try to parse the result as an edn dictionary:
