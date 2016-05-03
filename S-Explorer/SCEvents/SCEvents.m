@@ -258,7 +258,7 @@ static FSEventStreamRef _create_events_stream(SCEvents *watcher, CFArrayRef path
 							   paths, 
 							   sinceWhen, 
 							   latency, 
-							   kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagWatchRoot | kFSEventStreamCreateFlagFileEvents);
+							   kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagWatchRoot | kFSEventStreamCreateFlagFileEvents | kFSEventStreamCreateFlagIgnoreSelf | kFSEventStreamCreateFlagMarkSelf);
 }
 
 /**

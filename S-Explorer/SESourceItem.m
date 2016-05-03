@@ -365,6 +365,8 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
             }
             if (item.isOpen) {
                 if ([item isDocumentEdited]) {
+                    NSLog(@"*** WARNING! Other Process changed edited file! Might resultin data loss!");
+                    
                     NSBeep(); // TODO: Ask user which content to use
                 } else {
                     // No changes have been made locally, so just revert to the file version:
