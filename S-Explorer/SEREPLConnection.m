@@ -98,10 +98,10 @@ static NSData* LineFeed = nil;
 }
 
 - (void) processNextRequest {
-    if (self.requestBlocksQueue.count) {
+    if (self.isReady && self.requestBlocksQueue.count) {
         SEREPLRequestBlock requestBlock = self.requestBlocksQueue.firstObject;
-        [self.requestBlocksQueue removeObjectAtIndex: 0];
         self.isReady = NO;
+        [self.requestBlocksQueue removeObjectAtIndex: 0];
         NSLog(@"Processing next expression.");
         requestBlock();
         [self.socket readDataWithTimeout: 10.0 tag: -1];
@@ -128,7 +128,7 @@ static NSData* LineFeed = nil;
                   elapsed: (NSTimeInterval) elapsed
                 bytesDone: (NSUInteger) length {
     NSLog(@"REPL did not respond for %lf seconds. Waiting.", elapsed);
-    return 1.0;
+    return 4.0;
 }
 
 
@@ -163,11 +163,7 @@ static NSData* LineFeed = nil;
     
     NSLog(@"Socket string read: '%@'", string);
 
-    if ([string hasSuffix: @"=> "]) {
-        self.readBuffer.length = 0;
-        self.isReady = YES;
-        return;
-    } else if ([string hasPrefix: @"{"] && [string hasSuffix: @"}\n"]) {
+    if ([string hasPrefix: @"{"] && [string hasSuffix: @"}"]) {
         // Try to parse the result as an edn dictionary:
         
         MPEdnCoder* ednCoder = [[MPEdnCoder alloc] init];
@@ -200,11 +196,18 @@ static NSData* LineFeed = nil;
             NSString* string = [[NSString alloc] initWithData: self.readBuffer encoding: NSUTF8StringEncoding];
             [self socket: sock didReadString: string];
             self.readBuffer.length = 0;
-            data = [data subdataWithRange: NSMakeRange(dataPos+1, dataLength-dataPos-1)];
-            [self socket: sock didReadData: data withTag: tag];
-            break;
+            NSRange rest = NSMakeRange(dataPos+1, dataLength-dataPos-1);
+            if (rest.length) {
+                // Process more results already in the buffer:
+                data = [data subdataWithRange: rest];
+                [self socket: sock didReadData: data withTag: tag];
+                return;
+            }
+            self.isReady = YES;
+            return;
         }
     }
+    // No NewLine found. Append to buffer and continue reading:
     [self.readBuffer appendData: data];
     
     NSLog(@"%@: Unable to parse line after %lu bytes. Partitial result? Continuing reading…", self, (unsigned long)self.readBuffer.length);
@@ -230,18 +233,18 @@ static NSData* LineFeed = nil;
     if (expression) {
         expression = [expression stringByAppendingString: @"\n"];
         SEREPLRequestBlock requestBlock = ^void() {
-            NSLog(@"%@ is sending '%@' as request# %ld.", self, expression, _requestCounter);
+            NSLog(@"%@ is sending '%@' as request# %ld.", self, expression, _requestCounter++);
             NSData* stringData = [expression dataUsingEncoding: NSUTF8StringEncoding];
             [self.socket writeData: stringData withTimeout: timeout tag: _requestCounter];
             
             [self.resultBlocksQueue addObject: resultBlock];
         };
         [self.requestBlocksQueue addObject: requestBlock];
+        [self processNextRequest];
+        return _requestCounter;
+
     }
-    
-    [self.socket readDataWithTimeout: timeout tag: _requestCounter];
-    
-    return _requestCounter++;
+    return 0;
 }
 
 - (NSString*) description {
@@ -250,64 +253,5 @@ static NSData* LineFeed = nil;
 
 
 @end
-
-//@interface SEnREPLResultState () {
-//    NSMutableArray* _results;
-//    NSMutableData* _buffer;
-//}
-//
-//@property (strong, nonatomic) NSString* evaluationID;
-//@property (strong, nonatomic) SEREPLResultBlock resultBlock;
-//
-//
-//@end
-
-//@implementation SEnREPLResultState
-//
-//- (NSArray*) results {
-//    return _results;
-//}
-//
-//- (NSMutableData*) buffer {
-//    if (!_buffer) {
-//        _buffer = [[NSMutableData alloc] init];
-//    }
-//    return _buffer;
-//}
-//
-//
-//- (id) initWithEvaluationID: (NSString*) anId
-//                    timeout: (NSTimeInterval) timeoutSeconds
-//                resultBlock: (SEREPLResultBlock) aResultBlock {
-//    if (self = [self init]) {
-//        self.evaluationID = anId;
-//        self.resultBlock = aResultBlock;
-//        _timeout = timeoutSeconds;
-//    }
-//    return self;
-//}
-
-//- (void) updateWithPartialResult: (NSDictionary*) partialResultDictionary {
-//    
-//    NSArray* status = partialResultDictionary[@"status"];
-//    
-//
-//    NSString* sessionID = partialResultDictionary[@"session"];
-//    if (sessionID) self.sessionID = sessionID;
-//    
-//    NSString* result = partialResultDictionary[@"value"];
-//    if (result) {
-//        if (! _results) {
-//            _results = [[NSMutableArray alloc] init];
-//        }
-//        [_results addObject: result];
-//    }
-//    
-//    //NSLog(@"Updated status with: %@ to %@", partialResultDictionary, self);
-//
-//}
-//@end
-
-
 
 
