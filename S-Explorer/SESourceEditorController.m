@@ -375,15 +375,18 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 }
 
 
-- (NSArray*) textView: (NSTextView*) textView completions: (NSArray*) words forPartialWordRange: (NSRange) charRange indexOfSelectedItem: (NSInteger*) indexPtr {
+- (NSArray<NSString*>*) textView: (NSTextView*) textView
+                     completions: (NSArray<NSString*>*) words
+             forPartialWordRange: (NSRange) charRange
+             indexOfSelectedItem: (NSInteger*) index {
     
-    NSArray* keywords = self.defaultKeywords;
+    NSArray* keywords = [self.defaultKeywords sortedArrayUsingSelector: @selector(compare:)];
 
     if (! keywords) {
         return words;
     }
     
-    *indexPtr = -1;
+    //*indexPtr = -1;
 
     NSString* prefix = [textView.string substringWithRange: charRange];
     
@@ -393,7 +396,23 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     
     NSRange fullRange = NSMakeRange(0, keywords.count);
     NSComparator prefixComparator = ^NSComparisonResult(NSString* obj1, NSString* obj2) {
-        return [obj1 compare: obj2 options: NSLiteralSearch range: NSMakeRange(0, MIN([obj1 length], [obj2 length]))];
+        if (obj1.length <= obj2.length) {
+            if ([obj2 hasPrefix: obj1]) {
+                return NSOrderedSame;
+            }
+        } else {
+            if ([obj1 hasPrefix: obj2]) {
+                return NSOrderedSame;
+            }
+        }
+        NSRange compareRange = NSMakeRange(0, MIN(obj2.length, obj2.length));
+        NSComparisonResult result = [obj1 compare: obj2 options: NSLiteralSearch range: compareRange];
+        return result;
+//        }
+//        else {
+//            NSRange compareRange = NSMakeRange(0, obj1.length);
+//            return -[obj2 compare: obj1 options: NSLiteralSearch range: compareRange];
+//        }
     };
     
     // Do binary search to find first and last keyword prefixed with 'prefix':
@@ -420,6 +439,10 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     
     return [keywords subarrayWithRange: NSMakeRange(firstIndex, lastIndex-firstIndex+1)];
 }
+
+
+
+
 
 
 - (BOOL) textView:(NSTextView*) textView shouldChangeTextInRange: (NSRange) affectedCharRange replacementString: (NSString*) replacementString {
