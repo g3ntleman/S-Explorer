@@ -11,15 +11,10 @@
 @class SESourceEditorTextView;
 
 @interface SESourceTextViewController : NSController <NSTextDelegate, NSTextViewDelegate> {
-    BOOL parMarkerSet;
 }
 
 @property(nonatomic, strong) IBOutlet SESourceEditorTextView* textView;
 
-- (BOOL) expandRange: (NSRange*)rangePtr toParMatchingPar: (unichar)par;
-
 - (IBAction) expandSelection: (id) sender;
-
-- (void) unmarkPar;
 
 @end

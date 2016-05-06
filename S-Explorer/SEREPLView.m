@@ -7,6 +7,7 @@
 //
 
 #import "SEREPLView.h"
+#import "SESourceStorage.h"
 
 //NSString* BKTextCommandAttributeName = @"BKTextCommandAttributeName";
 
@@ -208,7 +209,7 @@
     [textStorage replaceCharactersInRange: commandRange withString: newCurrentCommand];
     commandRange.length = newCurrentCommand.length;
     [textStorage setAttributes: self.typingAttributes range: commandRange];
-    [self colorizeRange: commandRange];
+    [self.textStorage colorizeRange: commandRange symbols: nil];
     [textStorage endEditing];
     
     // Place cursor behind new command:

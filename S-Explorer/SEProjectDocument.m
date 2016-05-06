@@ -364,7 +364,7 @@
                                  NSDictionary* map = evalResult[@"result"];
                                  if (map) {
                                      //NSLog(@"Result evaluating ns: '%@'", map);
-                                     editor.textView.keywords = [NSOrderedSet orderedSetWithArray: [map allKeys]];
+                                     editor.sortedKeywords = [NSOrderedSet orderedSetWithArray: [map.allKeys sortedArrayUsingSelector: @selector(compare:)]];
                                  } else {
                                      NSLog(@"Error Result: %@", evalResult);
                                  }
@@ -1024,7 +1024,7 @@
     
     [self.currentSourceItem saveDocument: sender];
     
-    NSString* sourceContent = self.currentSourceItem.contents.string;
+    //NSString* sourceContent = self.currentSourceItem.contents.string;
     
     //[self.toolConnection sendExpression: sourceContent timeout: 20.0 completion: ^(NSDictionary* evalResult) {
     //    NSLog(@"got %@", evalResult);

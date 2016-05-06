@@ -16,30 +16,19 @@
 @property (readonly) NSString* selectedString;
 @property (nonatomic, strong) NoodleLineNumberView* lineNumberView;
 
-@property (nonatomic, strong) NSOrderedSet* keywords; // for colorization
+@property (nonatomic, strong) NSOrderedSet* sortedKeywords; // for colorization
 
 - (IBAction) expandSelection: (id) sender;
 - (IBAction) contractSelection: (id) sender;
 - (IBAction) selectSpecificLine: (id) sender;
 - (IBAction) colorize: (id) sender;
 
-- (void) colorizeRange: (NSRange) aRange;
-
 - (IBAction) toggleComments: (id) sender; // implemented by the delegate
 
 - (NSRange) selectLineNumber: (NSUInteger) line;
 
-+ (NSColor*) commentColor;
-+ (NSColor*) stringColor;
-+ (NSColor*) numberColor;
-+ (NSColor*) keywordColor;
-
 @end
 
-@interface  NSMutableAttributedString (SEExtensions)
-- (void) markCharsAtRange: (NSRange) parRange;
-- (void) unmarkChars;
-@end
 
 
 

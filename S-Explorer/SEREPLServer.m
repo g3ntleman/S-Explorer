@@ -336,7 +336,7 @@
 }
 
 - (NSString*) debugDescription {
-    return [NSString stringWithFormat: @"%@ %@, listening on port %ld", [super debugDescription], self.task, self.port];
+    return [NSString stringWithFormat: @"%@ %@, listening on port %hu", [super debugDescription], self.task, self.port];
 }
 
 @end

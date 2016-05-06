@@ -9,6 +9,7 @@
 #import "SEREPLViewController.h"
 #import "SEREPLView.h"
 #import "SESyntaxParser.h"
+#import "SESourceStorage.h"
 #import "SEProjectDocument.h"
 
 static const NSString* SEMainFunctionKey = @"MainFunction";
@@ -83,8 +84,8 @@ static NSData* lineFeedData = nil;
                     range.length = resultValue.length;
                     [self.replView appendInterpreterString: resultValue];
                     [self.replView appendInterpreterString: @"\n"];
-                    NSLog(@"Colorizing '%@' ", [self.replView.string substringWithRange: range]);
-                    [self.replView colorizeRange: range];
+                    //NSLog(@"Colorizing '%@' ", [self.replView.string substringWithRange: range]);
+                    [self.replView.textStorage colorizeRange: range symbols: nil];
                     
                 } else {
                     NSString* errorString = partialResult[@"err"] ?: partialResult[@"ex"];
@@ -162,7 +163,7 @@ static NSData* lineFeedData = nil;
         [self.replView appendInterpreterString: command];
         NSRange interpreterRange = self.replView.interpreterRange;
         NSRange commandRange = NSMakeRange(NSMaxRange(interpreterRange)-command.length, command.length);
-        [self.replView colorizeRange: commandRange];
+        [self.replView.textStorage colorizeRange: commandRange symbols: nil];
         [self.replView appendInterpreterString: @"\n"];
 
 
@@ -273,7 +274,7 @@ static NSData* lineFeedData = nil;
     NSRange commandRange = self.replView.commandRange;
     
     if (self.textView.selectedRange.location >= commandRange.location) {
-        [self.replView colorizeRange: commandRange];
+        [self.replView.textStorage colorizeRange: commandRange symbols: nil];
     }
 }
 

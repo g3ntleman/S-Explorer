@@ -20,7 +20,7 @@
 @interface SESourceEditorController : SESourceTextViewController 
 
 @property (strong, nonatomic) NSArray* defaultKeywords; // sorted array (for prefix search)
-//@property (strong, nonatomic) NSArray* sortedKeywords; // sorted array (for prefix search)
+@property (strong, nonatomic) NSOrderedSet* sortedKeywords; // sorted array (for fast prefix search)
 @property (weak, nonatomic) SESourceItem* sourceItem; // the source item to display
 
 - (void) indentInRange: (NSRange) range;

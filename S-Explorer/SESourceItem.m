@@ -9,6 +9,7 @@
 #import "SESourceItem.h"
 #import "NSMutableAttributedString+OPConvenience.h"
 #import "SESourceEditorController.h"
+#import "SESourceStorage.h"
 
 NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEditedState";
 
@@ -163,7 +164,7 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
 
 - (NSTextStorage*) contents {
      if (! _contents) {
-         _contents = [[NSTextStorage alloc] init];
+         _contents = [[SESourceStorage alloc] init];
     }
     return _contents;
 }

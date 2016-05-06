@@ -12,6 +12,7 @@
 #import "NSTimer-NoodleExtensions.h"
 #import "SEApplicationDelegate.h"
 #import "NSColor+OPExtensions.h"
+#import "SESourceStorage.h"
 
 NSSet* SESingleIndentFunctions() {
     static NSSet* SESingleIndentFunctions = nil;
@@ -67,17 +68,14 @@ NSSet* SESingleIndentFunctions() {
         NSSet* sourceExtensions = [NSSet setWithObjects: @"cljs", @"clj", nil]; // make flexible!
         
         _colorizeSourceItem = [sourceExtensions containsObject: pathExtension];
-        
-        NSArray* keywordsArray = self.defaultKeywords;
-        
+                
 //        // Find enclosing project document:
 //        NSDocument* document = [[SEDocumentController sharedDocumentController] documentForWindow: self.textView.window];
 //        if (document isKindOfClass: [SEProjectDocument class]) {
 //            SEProjectDocument* project = document;
 //        }
-//    
-        
-        self.textView.keywords = [NSOrderedSet orderedSetWithArray: keywordsArray];
+//
+        self.sortedKeywords = [NSOrderedSet orderedSetWithArray: self.defaultKeywords];
         
         [self.textView.enclosingScrollView flashScrollers];
         
@@ -99,64 +97,7 @@ NSSet* SESingleIndentFunctions() {
     }
 }
 
-
-- (BOOL) expandRange: (NSRange*) rangePtr toParMatchingPar: (unichar) par {
-
-    NSTextStorage* textStorage = self.textView.textStorage;
-    unichar targetPar = matchingPar(par);
-    switch (par) {
-        case ']':
-        case ')': {
-            while ((*rangePtr).location > 0) {
-                // Search left:
-                (*rangePtr).length += 1;
-                (*rangePtr).location -= 1;
-                unichar matchingPar = [textStorage.string characterAtIndex: (*rangePtr).location];
-                NSColor* color = [textStorage attribute: NSForegroundColorAttributeName atIndex: (*rangePtr).location effectiveRange: NULL];
-                if (color != [SESourceEditorTextView commentColor] && color != [SESourceEditorTextView stringColor]) {
-                    if (matchingPar == targetPar) {
-                        return YES;
-                    }
-                    if (matchingPar == par) {
-                        NSRange newRange = NSMakeRange((*rangePtr).location, 1);
-                        if ([self expandRange: &newRange toParMatchingPar: matchingPar]) {
-                            *rangePtr = NSUnionRange(*rangePtr, newRange);
-                        } else {
-                            return NO;
-                        }
-                    }
-                }
-                // Continue search...
-            }
-            return NO;
-        }
-        case '[':
-        case '(': {
-            NSUInteger stringLength = textStorage.string.length;
-            while (NSMaxRange(*rangePtr) < stringLength) {
-                // Search left:
-                (*rangePtr).length += 1;
-                unichar matchingPar = [textStorage.string characterAtIndex: NSMaxRange(*rangePtr)-1];
-                if (matchingPar == targetPar) {
-                    return YES;
-                }
-                if (matchingPar == par) {
-                    NSRange newRange = NSMakeRange(NSMaxRange(*rangePtr)-1, 1);
-                    if ([self expandRange: &newRange toParMatchingPar: matchingPar]) {
-                        *rangePtr = NSUnionRange(*rangePtr, newRange);
-                    } else {
-                        return NO;
-                    }
-                }
-                // Continue search...
-            }
-            return NO;
-        }
-        default:
-            NSLog(@"No paranthesis detected.");
-            return NO;
-    }
-}
+// TODO: Turn into category on NSTextStorage, extract actual range finding.
 
 - (NSUInteger) columnForLocation: (NSUInteger) location {
     NSString* text = self.textView.textStorage.string;
@@ -204,7 +145,7 @@ NSSet* SESingleIndentFunctions() {
         NSRange currentExpressionRange = NSMakeRange(range.location, 0);
         indentation = 0;
         
-        if ([self expandRange: &currentExpressionRange toParMatchingPar: ')']) {
+        if ([self.textView.textStorage expandRange: &currentExpressionRange toParMatchingPar: ')']) {
             NSLog(@"Next opening par is %@", NSStringFromRange(currentExpressionRange));
             
             NSUInteger parColumn = [self columnForLocation: currentExpressionRange.location];
@@ -306,39 +247,6 @@ NSSet* SESingleIndentFunctions() {
 //    }
 //}
 
-- (void) markParCorrespondingToParAtIndex: (NSUInteger) index {
-        
-    NSTextStorage* textStorage = self.textView.textStorage;
-    
-    if (index >= textStorage.string.length) {
-        return;
-    }
-    
-    NSColor* colorAtIndex = [textStorage attribute: NSForegroundColorAttributeName atIndex:index effectiveRange:NULL];
-    
-    // Do not mark pars within comments or strings:
-    if (colorAtIndex == [SESourceEditorTextView stringColor] || colorAtIndex == [SESourceEditorTextView commentColor]) {
-        return;
-    }
-
-    [self unmarkPar];
-
-    
-    unichar par = [textStorage.string characterAtIndex: index];
-    
-    if (! isPar(par)) return;
-    
-    NSRange parRange = NSMakeRange(index, 1);
-    BOOL match = [self expandRange: &parRange toParMatchingPar: par];
-    
-    if (match) {
-        [textStorage markCharsAtRange: parRange];
-        parMarkerSet = YES;
-        //NSLog(@"found par match at %@", NSStringFromRange(parRange));
-    } else {
-        NSLog(@"Should find par matching '%c'", par);
-    }
-}
 
 + (void) recolorTextNotification: (NSNotification*) notification {
     NSLog(@"recolorTextNotification.");
@@ -375,14 +283,20 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 }
 
 
+- (NSOrderedSet*) sortedKeywords {
+    return self.textView.sortedKeywords;
+}
+
+- (void) setSortedKeywords: (NSOrderedSet*) keywords {
+    self.textView.sortedKeywords = keywords;
+}
+
 - (NSArray<NSString*>*) textView: (NSTextView*) textView
                      completions: (NSArray<NSString*>*) words
              forPartialWordRange: (NSRange) charRange
              indexOfSelectedItem: (NSInteger*) index {
     
-    NSArray* keywords = [self.defaultKeywords sortedArrayUsingSelector: @selector(compare:)];
-
-    if (! keywords) {
+    if (! self.sortedKeywords) {
         return words;
     }
     
@@ -390,11 +304,11 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
 
     NSString* prefix = [textView.string substringWithRange: charRange];
     
-    if (! prefix.length) return keywords;
+    if (! prefix.length) return nil;
     
-    NSLog(@"Completing '%@'", prefix);
+    NSLog(@"Completing '%@' (suggested %@)", prefix, words);
     
-    NSRange fullRange = NSMakeRange(0, keywords.count);
+    //NSRange fullRange = NSMakeRange(0, self.sortedKeywords.count);
     NSComparator prefixComparator = ^NSComparisonResult(NSString* obj1, NSString* obj2) {
         if (obj1.length <= obj2.length) {
             if ([obj2 hasPrefix: obj1]) {
@@ -408,36 +322,36 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
         NSRange compareRange = NSMakeRange(0, MIN(obj2.length, obj2.length));
         NSComparisonResult result = [obj1 compare: obj2 options: NSLiteralSearch range: compareRange];
         return result;
-//        }
-//        else {
-//            NSRange compareRange = NSMakeRange(0, obj1.length);
-//            return -[obj2 compare: obj1 options: NSLiteralSearch range: compareRange];
-//        }
     };
     
     // Do binary search to find first and last keyword prefixed with 'prefix':
-    NSInteger firstIndex = [keywords indexOfObject: prefix
-                                     inSortedRange: fullRange
-                                           options: NSBinarySearchingFirstEqual
-                                   usingComparator: prefixComparator];
+    NSInteger firstIndex = [self.sortedKeywords indexOfObject: prefix
+                                          inSortedRange: NSMakeRange(0, self.sortedKeywords.count)
+                                                options: NSBinarySearchingFirstEqual
+                                        usingComparator: prefixComparator];
     
     // Do not complete, if nothing found:
     if (firstIndex == NSNotFound) {
         self.lastCompletionRange = NSMakeRange(NSNotFound, 0);
         return nil;
     }
-    if ([keywords[firstIndex] isEqualToString: prefix]) {
+    if ([self.sortedKeywords[firstIndex] isEqualToString: prefix]) {
         firstIndex += 1;
     }
 
-    NSInteger lastIndex = [keywords indexOfObject: prefix
-                                    inSortedRange: fullRange
-                                          options: NSBinarySearchingLastEqual
-                                  usingComparator: prefixComparator];
+    NSInteger lastIndex = [self.sortedKeywords indexOfObject: prefix
+                                         inSortedRange: NSMakeRange(firstIndex, self.sortedKeywords.count-firstIndex)
+                                               options: NSBinarySearchingLastEqual
+                                       usingComparator: prefixComparator];
     
     self.lastCompletionRange = charRange;
     
-    return [keywords subarrayWithRange: NSMakeRange(firstIndex, lastIndex-firstIndex+1)];
+    NSArray* completions = [self.sortedKeywords.array subarrayWithRange: NSMakeRange(firstIndex, lastIndex-firstIndex+1)];
+//    if (words.count) {
+//        completions = [completions arrayByAddingObjectsFromArray: words];
+//    }
+    
+    return completions;
 }
 
 
@@ -513,8 +427,8 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
         newRange.location -= 1;
         newRange.length += 2;
     } else {
-        [self expandRange: &newRange toParMatchingPar: ')'];
-        [self expandRange: &newRange toParMatchingPar: '('];
+        [self.textView.textStorage expandRange: &newRange toParMatchingPar: ')'];
+        [self.textView.textStorage expandRange: &newRange toParMatchingPar: '('];
         // Exclude pars:
         if (newRange.length >= 2) {
             newRange.location += 1;

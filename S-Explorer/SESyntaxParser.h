@@ -11,7 +11,7 @@
 
 typedef enum {
     /* tokens */
-    DOT,
+    DOT = 1,
     LEFT_PAR,
     RIGHT_PAR,
     END_OF_INPUT,

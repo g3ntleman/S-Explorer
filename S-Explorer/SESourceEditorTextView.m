@@ -11,6 +11,8 @@
 #import "OPCharFilterFormatter.h"
 #import "SESyntaxParser.h"
 #import "NSColor+OPExtensions.h"
+#import "SESourceStorage.h"
+#import <MPEDN/MPEdn.h>
 
 
 //@interface NSAlert (TextValidation) <NSTextFieldDelegate>
@@ -47,12 +49,15 @@
 }
 
 - (id)initWithFrame:(NSRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
+    if (self = [super initWithFrame:frame]) {
         // Initialization code here.
     }
     
     return self;
+}
+
+- (void)awakeFromNib {
+    [self setAutomaticQuoteSubstitutionEnabled: NO];
 }
 
 static NSCharacterSet* SEWordCharacters() {
@@ -65,30 +70,30 @@ static NSCharacterSet* SEWordCharacters() {
     return SEWordCharacters;
 }
 
-/* Change word selection behaviour to include hythens and other characters common in function names. */
-- (NSRange) selectionRangeForProposedRange: (NSRange) proposedSelRange
-                               granularity: (NSSelectionGranularity)granularity {
-    if (granularity == NSSelectByWord) {
-        NSString* text = self.textStorage.string;
-        NSCharacterSet* wordCharSet = SEWordCharacters();
-        NSRange resultRange = proposedSelRange;
-        if ([wordCharSet characterIsMember: [text characterAtIndex: resultRange.location]]) {
-            // Search backward:
-            while (resultRange.location && ([wordCharSet characterIsMember: [text characterAtIndex: resultRange.location-1]])) {
-                resultRange.location -= 1;
-                resultRange.length += 1;
-            }
-            // Search forward:
-            while (NSMaxRange(resultRange)<text.length && ([wordCharSet characterIsMember: [text characterAtIndex: NSMaxRange(resultRange)]])) {
-                resultRange.length += 1;
-            }
-            
-            //NSLog(@"proposed: %@, result: %@", NSStringFromRange(proposedSelRange), NSStringFromRange(resultRange));
-            return resultRange;
-        }
-    }
-    return [super selectionRangeForProposedRange: proposedSelRange granularity:granularity];
-}
+///* Change word selection behaviour to include hythens and other characters common in function names. */
+//- (NSRange) selectionRangeForProposedRange: (NSRange) proposedSelRange
+//                               granularity: (NSSelectionGranularity)granularity {
+//    if (granularity == NSSelectByWord) {
+//        NSString* text = self.textStorage.string;
+//        NSCharacterSet* wordCharSet = SEWordCharacters();
+//        NSRange resultRange = proposedSelRange;
+//        if ([wordCharSet characterIsMember: [text characterAtIndex: resultRange.location]]) {
+//            // Search backward:
+//            while (resultRange.location && ([wordCharSet characterIsMember: [text characterAtIndex: resultRange.location-1]])) {
+//                resultRange.location -= 1;
+//                resultRange.length += 1;
+//            }
+//            // Search forward:
+//            while (NSMaxRange(resultRange)<text.length && ([wordCharSet characterIsMember: [text characterAtIndex: NSMaxRange(resultRange)]])) {
+//                resultRange.length += 1;
+//            }
+//            
+//            NSLog(@"proposed: %@, result: %@\n%@", NSStringFromRange(proposedSelRange), NSStringFromRange(resultRange), [text substringWithRange: resultRange]);
+//            return resultRange;
+//        }
+//    }
+//    return [super selectionRangeForProposedRange: proposedSelRange granularity:granularity];
+//}
 
 - (NSMutableArray*) selectionStack {
     if (! selectionStack) {
@@ -139,6 +144,17 @@ static NSCharacterSet* SEWordCharacters() {
     // NOP
 }
 
+//- (NSRange) selectionRangeForProposedRange: (NSRange) proposedSelRange
+//                               granularity: (NSSelectionGranularity) granularity {
+//    NSRange result = [super selectionRangeForProposedRange: proposedSelRange granularity: granularity];
+//    
+//    if (granularity == NSSelectByWord) {
+//        NSLog(@"Extended proposedSelRange %@ to %@ (%@).", NSStringFromRange(proposedSelRange), NSStringFromRange(result), [self.string substringWithRange: result]);
+//    }
+//    return result;
+//}
+
+
 - (IBAction) contractSelection: (id) sender {
     if (self.selectionStack.count == 0) {
         NSBeep();
@@ -160,116 +176,37 @@ static NSCharacterSet* SEWordCharacters() {
     }
 }
 
-- (void) colorizeRange: (NSRange) aRange {
-    
-    NSTextStorage* textStorage = self.textStorage;
 
-    [textStorage beginEditing];
-    
-    [textStorage removeAttribute: NSForegroundColorAttributeName range: aRange];
-
-    __block int commentLevel = 0; // if >0, the nesting level of the current comment macro
-    
-    SESyntaxParser* parser =
-    [[SESyntaxParser alloc] initWithString: textStorage.string
-                                     range: aRange
-                                     block: ^(SESyntaxParser *parser, SEParserResult pResult, BOOL *stopRef) {
-                                         NSTextStorage* textStorage = self.textStorage;
-                                         
-                                         // Check for closing par of comment macro:
-                                         if (pResult.occurrence.token == RIGHT_PAR && commentLevel == pResult.depth) {
-                                             commentLevel = 0; // end comment
-                                         }
-
-                                         // Treat everything inside the comment macro as a comment:
-                                         if (commentLevel) {
-                                             pResult.occurrence.token = COMMENT;
-                                         }
-                                         
-                                         switch (pResult.occurrence.token) {
-                                             case RIGHT_PAR: {
-                                                 if (commentLevel == pResult.depth) {
-                                                     commentLevel = 0; // end comment
-                                                 }
-                                                 break;
-                                             }
-                                                 
-                                             case COMMENT: {
-                                                 NSDictionary* commentAttributes = @{NSForegroundColorAttributeName: [SESourceEditorTextView commentColor]};
-                                                 [textStorage addAttributes: commentAttributes range: pResult.occurrence.range];
-                                                 break;
-                                             }
-                                             case STRING: {
-                                                 NSDictionary* stringAttributes = @{NSForegroundColorAttributeName: [SESourceEditorTextView stringColor]};
-                                                 [textStorage addAttributes: stringAttributes range: pResult.occurrence.range];
-                                                 break;
-                                             }
-                                             case NUMBER: {
-                                                 NSDictionary* constantAttributes = @{NSForegroundColorAttributeName: [SESourceEditorTextView numberColor]};
-                                                 [textStorage addAttributes: constantAttributes range: pResult.occurrence.range];
-                                                 break;
-                                             }
-                                             case KEYWORD: {
-                                                 NSDictionary* constantAttributes = @{NSForegroundColorAttributeName: [SESourceEditorTextView keywordColor]};
-                                                 [textStorage addAttributes: constantAttributes range: pResult.occurrence.range];
-                                                 break;
-                                             }
-                                             case CONSTANT: {
-                                                 NSDictionary* constantAttributes = @{NSForegroundColorAttributeName: [SESourceEditorTextView constantColor]};
-                                                 [textStorage addAttributes: constantAttributes range: pResult.occurrence.range];
-                                                 break;
-                                             }
-                                             case ATOM: {
-                                                 
-                                                 if (pResult.depth>=1) {
-                                                     //NSString* tokenString = [textStorage.string substringWithRange: tokenInstance.occurrence];
-                                                     //NSLog(@"Colorizer found word '%@'", tokenString);
-                                                     
-                                                     NSColor* color = nil;
-                                                     NSString* word = [textStorage.string substringWithRange: pResult.occurrence.range];
-                                                     
-                                                     if (pResult.elementCount == 0 && [word isEqualToString: @"comment"]) {
-                                                         commentLevel = pResult.depth;
-                                                     }
-                                                     if ([self.keywords containsObject: word]) {
-                                                         NSLog(@"Colorizing '%@'", word);
-                                                         color = [NSColor blueColor]; // Mark as "custom" function / name
-                                                     }
-                                                     
-                                                     if (color) {
-                                                         NSDictionary* keywordAttributes = @{NSForegroundColorAttributeName: color};
-                                                         [textStorage addAttributes: keywordAttributes range: pResult.occurrence.range];
-                                                     }
-                                                 }
-                                                 break;
-                                             }
-                                             default:
-                                                 break;
-                                         }
-                                     }];
-    
-    
-    NSTimeInterval startTime = [NSDate timeIntervalSinceReferenceDate];
-    [parser parseAll];
-    NSTimeInterval endTime = [NSDate timeIntervalSinceReferenceDate];
-    NSUInteger duration = lround((endTime-startTime)*1000.0);
-    if (duration > 10.0) {
-        NSLog(@"Parsing & Highlighting %ld chars took %ld milliseconds.", aRange.length, duration);
-    }
-    [textStorage endEditing];
-}
 
 
 
 - (IBAction) colorize: (id) sender {
     
     NSRange fullRange = NSMakeRange(0, self.string.length);
-    [self colorizeRange: fullRange];
+    [self.textStorage colorizeRange: fullRange symbols: self.sortedKeywords];
 }
 
-- (void) setKeywords:(NSOrderedSet *)keywords {
-    if (_keywords != keywords) {
-        _keywords = keywords;
+- (NSRange) rangeForUserCompletion {
+    NSRange selectedRange = self.selectedRange;
+    NSRange searchRange = NSMakeRange(0, selectedRange.location);
+    NSRange stopRange = [self.string rangeOfCharacterFromSet: MPEdnNonSymbolChars
+                                                  options: NSBackwardsSearch
+                                                    range: searchRange];
+    
+    if (stopRange.location == NSNotFound) {
+        return selectedRange;
+    }
+    
+    NSRange result = NSMakeRange(stopRange.location+1, selectedRange.location-(stopRange.location+1));
+    
+    // NSLog(@"Will complete text '%@'", [self.string substringWithRange: result]);
+    
+    return result;
+}
+
+- (void) setSortedKeywords:(NSOrderedSet *)keywords {
+    if (_sortedKeywords != keywords) {
+        _sortedKeywords = keywords;
         [self colorize: self];
     }
 }
@@ -357,51 +294,9 @@ static NSCharacterSet* SEWordCharacters() {
 }
 
 
-+ (NSColor*) commentColor {
-    return [NSColor colorWithDeviceRed:0.0 green:0.6 blue:0.0 alpha:1.0];
-}
-
-+ (NSColor*) stringColor {
-    return [NSColor redColor];
-}
-
-+ (NSColor*) numberColor {
-    return [NSColor purpleColor];
-}
-
-+ (NSColor*) keywordColor {
-    return [NSColor brownColor];
-}
-
-
-+ (NSColor*) constantColor {
-    return [NSColor orangeColor];
-}
-
-- (void) awakeFromNib {
-    [self setAutomaticQuoteSubstitutionEnabled: NO];
-}
-
 @end
 
 
-@implementation NSMutableAttributedString (SEExtensions)
-
-- (void) markCharsAtRange: (NSRange) parRange {
-    
-    NSColor* markColor = [NSColor colorFromHexRGB: @"F0E609"];
-    
-    [self beginEditing];
-    [self addAttribute: NSBackgroundColorAttributeName value: markColor range: NSMakeRange(parRange.location, 1)];
-    [self addAttribute: NSBackgroundColorAttributeName value: markColor range: NSMakeRange(NSMaxRange(parRange)-1, 1)];
-    [self endEditing];
-}
-
-- (void) unmarkChars {
-    [self removeAttribute: NSBackgroundColorAttributeName range: NSMakeRange(0, self.string.length)];
-}
-
-@end
 
 
 
