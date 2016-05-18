@@ -160,7 +160,8 @@ NSString* SETokenTypeAttributeName = @"TokenType";
 }
 
 - (void) colorizeRange: (NSRange) aRange
-               symbols: (NSOrderedSet*) sortedSymbols {
+               symbols: (NSSet*) sortedSymbols
+        defaultSymbols: (NSSet*) defaultSymbols {
     
     [self beginEditing];
     
@@ -230,10 +231,14 @@ NSString* SETokenTypeAttributeName = @"TokenType";
                                                      if (pResult.elementCount == 0 && [word isEqualToString: @"comment"]) {
                                                          commentLevel = pResult.depth;
                                                      }
-                                                     if ([sortedSymbols containsObject: word]) {
+                                                     
+                                                     if ([defaultSymbols containsObject: word]) {
+                                                         color = [self.class coreSymbolColor] ; // Mark as "core" function / name
+                                                     } else if ([sortedSymbols containsObject: word]) {
                                                          //NSLog(@"Colorizing '%@'", word);
-                                                         color = [NSColor blueColor]; // Mark as "custom" function / name
+                                                         color = [self.class symbolColor]; // Mark as "custom" function / name
                                                      }
+
                                                      
                                                      if (color) {
                                                          NSDictionary* keywordAttributes = @{NSForegroundColorAttributeName: color, SETokenTypeAttributeName: @(ATOM)};
@@ -274,6 +279,16 @@ NSString* SETokenTypeAttributeName = @"TokenType";
 + (NSColor*) keywordColor {
     return [NSColor brownColor];
 }
+
++ (NSColor*) symbolColor {
+    return [[NSColor blueColor] blendedColorWithFraction: 0.5 ofColor: [NSColor blackColor]];
+}
+
++ (NSColor*) coreSymbolColor {
+    return [[NSColor blueColor] blendedColorWithFraction: 0.5 ofColor: [NSColor lightGrayColor]];
+}
+
+
 
 
 + (NSColor*) constantColor {

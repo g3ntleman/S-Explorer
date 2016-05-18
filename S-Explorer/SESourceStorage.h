@@ -33,7 +33,8 @@ NSString* SETokenTypeAttributeName;
 + (NSColor*) constantColor;
 
 - (void) colorizeRange: (NSRange) aRange
-               symbols: (NSOrderedSet*) sortedSymbols;
+               symbols: (NSSet*) sortedSymbols
+        defaultSymbols: (NSSet*) defaultSymbols;
 
 - (void) unmarkPar;
 - (void) markParCorrespondingToParAtIndex: (NSUInteger) index;

@@ -183,7 +183,7 @@ static NSCharacterSet* SEWordCharacters() {
 - (IBAction) colorize: (id) sender {
     
     NSRange fullRange = NSMakeRange(0, self.string.length);
-    [self.textStorage colorizeRange: fullRange symbols: self.sortedKeywords];
+    [self.textStorage colorizeRange: fullRange symbols: self.sortedKeywords.set defaultSymbols: self.defaultKeywords];
 }
 
 - (NSRange) rangeForUserCompletion {
@@ -204,9 +204,16 @@ static NSCharacterSet* SEWordCharacters() {
     return result;
 }
 
-- (void) setSortedKeywords:(NSOrderedSet *)keywords {
+- (void) setSortedKeywords: (NSOrderedSet*) keywords {
     if (_sortedKeywords != keywords) {
         _sortedKeywords = keywords;
+        [self colorize: self];
+    }
+}
+
+- (void) setDefaultKeywords: (NSSet*) keywords {
+    if (_defaultKeywords != keywords) {
+        _defaultKeywords = keywords;
         [self colorize: self];
     }
 }

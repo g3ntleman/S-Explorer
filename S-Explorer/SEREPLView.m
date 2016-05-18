@@ -209,7 +209,7 @@
     [textStorage replaceCharactersInRange: commandRange withString: newCurrentCommand];
     commandRange.length = newCurrentCommand.length;
     [textStorage setAttributes: self.typingAttributes range: commandRange];
-    [self.textStorage colorizeRange: commandRange symbols: nil];
+    [self.textStorage colorizeRange: commandRange symbols: nil defaultSymbols: nil];
     [textStorage endEditing];
     
     // Place cursor behind new command:

@@ -85,7 +85,7 @@ static NSData* lineFeedData = nil;
                     [self.replView appendInterpreterString: resultValue];
                     [self.replView appendInterpreterString: @"\n"];
                     //NSLog(@"Colorizing '%@' ", [self.replView.string substringWithRange: range]);
-                    [self.replView.textStorage colorizeRange: range symbols: nil];
+                    [self.replView.textStorage colorizeRange: range symbols: nil defaultSymbols: nil];
                     
                 } else {
                     NSString* errorString = partialResult[@"err"] ?: partialResult[@"ex"];
@@ -163,7 +163,7 @@ static NSData* lineFeedData = nil;
         [self.replView appendInterpreterString: command];
         NSRange interpreterRange = self.replView.interpreterRange;
         NSRange commandRange = NSMakeRange(NSMaxRange(interpreterRange)-command.length, command.length);
-        [self.replView.textStorage colorizeRange: commandRange symbols: nil];
+        [self.replView.textStorage colorizeRange: commandRange symbols: nil defaultSymbols: nil];
         [self.replView appendInterpreterString: @"\n"];
 
 
@@ -274,7 +274,7 @@ static NSData* lineFeedData = nil;
     NSRange commandRange = self.replView.commandRange;
     
     if (self.textView.selectedRange.location >= commandRange.location) {
-        [self.replView.textStorage colorizeRange: commandRange symbols: nil];
+        [self.replView.textStorage colorizeRange: commandRange symbols: nil defaultSymbols: nil];
     }
 }
 

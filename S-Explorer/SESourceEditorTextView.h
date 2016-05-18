@@ -17,6 +17,7 @@
 @property (nonatomic, strong) NoodleLineNumberView* lineNumberView;
 
 @property (nonatomic, strong) NSOrderedSet* sortedKeywords; // for colorization
+@property (nonatomic, strong) NSSet* defaultKeywords; // for colorization
 
 - (IBAction) expandSelection: (id) sender;
 - (IBAction) contractSelection: (id) sender;

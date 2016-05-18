@@ -719,7 +719,7 @@
     [super windowControllerDidLoadNib: aController];
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
     
-    self.editorController.defaultKeywords = self.languageDictionary[@"Keywords"][@"StaticList"];
+    self.editorController.defaultKeywords = [NSSet setWithArray: self.languageDictionary[@"Keywords"][@"StaticList"]];
 
     // Check, wether the user wants to create a project (from a folder):
     

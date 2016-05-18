@@ -75,7 +75,7 @@ NSSet* SESingleIndentFunctions() {
 //            SEProjectDocument* project = document;
 //        }
 //
-        self.sortedKeywords = [NSOrderedSet orderedSetWithArray: self.defaultKeywords];
+//        self.defaultKeywords = [NSOrderedSet orderedSetWithArray: self.defaultKeywords];
         
         [self.textView.enclosingScrollView flashScrollers];
         
@@ -291,6 +291,14 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     self.textView.sortedKeywords = keywords;
 }
 
+- (NSSet*) defaultKeywords {
+    return self.textView.defaultKeywords;
+}
+
+- (void) setDefaultKeywords: (NSSet*) keywords {
+    self.textView.defaultKeywords = keywords;
+}
+
 - (NSArray<NSString*>*) textView: (NSTextView*) textView
                      completions: (NSArray<NSString*>*) words
              forPartialWordRange: (NSRange) charRange
@@ -326,9 +334,9 @@ void OPRunBlockAfterDelay(NSTimeInterval delay, void (^block)(void)) {
     
     // Do binary search to find first and last keyword prefixed with 'prefix':
     NSInteger firstIndex = [self.sortedKeywords indexOfObject: prefix
-                                          inSortedRange: NSMakeRange(0, self.sortedKeywords.count)
-                                                options: NSBinarySearchingFirstEqual
-                                        usingComparator: prefixComparator];
+                                                inSortedRange: NSMakeRange(0, self.sortedKeywords.count)
+                                                      options: NSBinarySearchingFirstEqual
+                                              usingComparator: prefixComparator];
     
     // Do not complete, if nothing found:
     if (firstIndex == NSNotFound) {

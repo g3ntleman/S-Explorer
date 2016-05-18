@@ -128,7 +128,6 @@
 		8D2AAB6E177A93EB008F07C4 /* MarkerLineNumberView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerLineNumberView.m; sourceTree = "<group>"; };
 		8D31EE6B191FE5150054ADD8 /* OPImageTinting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPImageTinting.m; sourceTree = "<group>"; };
 		8D31EE6D191FE52C0054ADD8 /* OPImageTinting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OPImageTinting.h; sourceTree = "<group>"; };
-		8D470B9B18196DCA00C0C654 /* OPBEncoding_Tests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPBEncoding_Tests.m; sourceTree = "<group>"; };
 		8D4DF7E417F4587F00BC0773 /* OPCharFilterFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = OPCharFilterFormatter.h; sourceTree = "<group>"; };
 		8D4DF7E517F4587F00BC0773 /* OPCharFilterFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OPCharFilterFormatter.m; sourceTree = "<group>"; };
 		8D4DF83217F5AAF600BC0773 /* chibi-repl-server.scm */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; fileEncoding = 4; path = "chibi-repl-server.scm"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.javascript; };
@@ -271,7 +270,6 @@
 				8D179891193D4423002FA4AB /* XCTestAsync.h */,
 				8D179892193D4423002FA4AB /* XCTestAsync.m */,
 				8D17FE2F17EA72A000883285 /* S_Explorer_Tests.m */,
-				8D470B9B18196DCA00C0C654 /* OPBEncoding_Tests.m */,
 				8D7E69561829E44300F320A9 /* SEnREPLConnection_Tests.m */,
 				8D17FE2A17EA72A000883285 /* Supporting Files */,
 			);
