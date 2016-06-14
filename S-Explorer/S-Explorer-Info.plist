@@ -31,6 +31,7 @@
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>clj</string>
+				<string>edn</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>doc_clojure</string>
@@ -41,26 +42,9 @@
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>public.clojure-source</string>
-			</array>
-			<key>LSTypeIsPackage</key>
-			<integer>0</integer>
-			<key>NSDocumentClass</key>
-			<string>SESourceItem</string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>edn</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>doc_clojure</string>
-			<key>CFBundleTypeName</key>
-			<string>EDN</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>public.edn</string>
+				<string>public.source-code</string>
+				<string>public.plain-text</string>
+				<string>public.item</string>
 			</array>
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>

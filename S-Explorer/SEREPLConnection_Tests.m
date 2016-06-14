@@ -11,7 +11,7 @@
 #import "SEREPLServer.h"
 #import "XCTestAsync.h"
 
-@interface SEnREPLConnection_Tests : XCTestCase
+@interface SEREPLConnection_Tests : XCTestCase
 
 @property SEREPLServer* repl;
 @property SEREPLConnection* connection;
@@ -21,7 +21,7 @@
 // problem: beim disconnect, connect zyklus, während die REPL noch startet, geht das darauffolgende Kommando verloren.
 
 
-@implementation SEnREPLConnection_Tests
+@implementation SEREPLConnection_Tests
 
 //- (void)enumerateObjectsUsingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block NS_AVAILABLE(10_6, 4_0);
 

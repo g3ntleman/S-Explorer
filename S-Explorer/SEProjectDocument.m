@@ -19,6 +19,7 @@
 #import "SCEvents.h"
 #import "SCEvent.h"
 #import "SETarget.h"
+#import "NSUserDefaults+OPMutability.h"
 
 @interface SEProjectDocument ()
 @property (readonly) NSString* uiSettingsPath;
@@ -42,6 +43,7 @@
 @synthesize currentLanguage;
 @synthesize projectFolderItem = _projectFolderItem;
 @synthesize currentSourceItem = _currentSourceItem;
+@synthesize javaClasspath = _javaClasspath;
 
 - (id) init {
     if (self = [super init]) {
@@ -95,6 +97,44 @@
 - (void) dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
 }
+
+- (NSString*) javaClasspath {
+    if (!_javaClasspath) {
+        NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
+        NSDictionary* projects = [ud dictionaryForKey: @"Projects"];
+        NSString* fileKey = self.projectFileItem.fileURL.absoluteString;
+        NSDictionary* projectDefaults = projects[fileKey][@"JavaClassPath"];
+        if (projectDefaults.count) {
+            NSNumber* modTime = projectDefaults[@"Time"];
+            NSDate* pathDate = [NSDate dateWithTimeIntervalSince1970: [modTime integerValue]];
+            NSDate* projectFileDate = self.projectFileItem.fileModificationDate;
+            if ([projectFileDate laterDate: pathDate] == pathDate) {
+                _javaClasspath = projectDefaults[@"Path"];
+                if (! [_javaClasspath isKindOfClass: [NSString class]]) {
+                    _javaClasspath = nil;
+                }
+            }
+        }
+    }
+    return _javaClasspath;
+}
+
+- (void) setJavaClasspath: (NSString*) javaClasspath {
+    
+    if (_javaClasspath != javaClasspath) {
+        _javaClasspath = javaClasspath;
+        NSMutableDictionary* allProjects = [[NSUserDefaults standardUserDefaults] mutableDictionaryForKey: @"Projects"];
+        NSString* fileKey = self.projectFileItem.fileURL.absoluteString;
+        NSMutableDictionary* projectDefaults = [allProjects mutableDictionaryForKey: fileKey];
+        [projectDefaults setObject: @{@"Time": @((NSInteger)[[NSDate date] timeIntervalSince1970]), @"Path": javaClasspath} forKey: @"JavaClassPath"];
+        
+//        NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
+//        NSString* fileKey = [NSString stringWithFormat: @"prj#%ld-d", self.projectFileItem.hash];
+//        [ud setInteger: (NSInteger)[[NSDate date] timeIntervalSince1970] forKey: fileKey];
+//        [ud setObject: _javaClasspath forKey: [fileKey stringByAppendingString: @"p"]];
+    }
+}
+
 
 - (void) sourceItemEditedStateDidChange: (NSNotification*) notification {
     SESourceItem* sourceItem = notification.object;
@@ -345,6 +385,10 @@
         */
     }
     return _projectFolderItem;
+}
+
+- (SESourceItem*) projectFileItem {
+    return [self.projectFolderItem childWithPath: @"project.clj"];
 }
 
 
@@ -720,7 +764,7 @@
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
     
     self.editorController.defaultKeywords = [NSSet setWithArray: self.languageDictionary[@"Keywords"][@"StaticList"]];
-
+    
     // Check, wether the user wants to create a project (from a folder):
     
     self.replTabView.delegate = self;
@@ -729,9 +773,9 @@
     [self tabView:self.replTabView didSelectTabViewItem: self.replTabView.selectedTabViewItem];
     
     [self.sourceList setDraggingSourceOperationMask: NSDragOperationLink forLocal: NO];
-
+    
     // Restore Source Tabs and Selection:
-
+    
     NSDictionary* pathsByTabIndex = self.uiSettings[@"tabbedSources"];
     for (NSString* indexString in [pathsByTabIndex allKeys]) {
         NSUInteger tabIndex = [indexString integerValue];
@@ -765,10 +809,10 @@
     [self displayCurrentSourceItem];
     
     
-//    // Make sure the displayed source is selected in source list:
-//    NSUInteger row = [sourceList rowForItem: self.currentSourceItem];
-//    [sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: row]
-//            byExtendingSelection: NO];
+    //    // Make sure the displayed source is selected in source list:
+    //    NSUInteger row = [sourceList rowForItem: self.currentSourceItem];
+    //    [sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: row]
+    //            byExtendingSelection: NO];
     
     
     for (NSString* path in [self.uiSettings[@"expandedFolders"] allKeys]) {
@@ -776,12 +820,10 @@
         [self.sourceList expandItem: item];
     }
     
-    
-    
     [self revealInSourceList: nil];
     
     // Get the tool REPL going:
-
+    
     [self populateJavaClassPathWithCompletion: ^(SEProjectDocument* document, NSError* error) {
         
         // Append bundle path to classPath:
@@ -801,7 +843,7 @@
                                                      port: server.port
                                                completion: ^(SEREPLConnection* connection, NSError* error) {
                                                    if (! error) {
-                                                    // Send test expression:
+                                                       // Send test expression:
                                                        [connection sendExpression: @"(* 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
                                                            id exception = resultDictionary[SEREPLKeyException];
                                                            if (exception) {
@@ -898,6 +940,13 @@
 
 - (void) populateJavaClassPathWithCompletion: (void (^)(SEProjectDocument* document, NSError* error)) completed {
 
+    if (self.javaClasspath.length) {
+        if (completed) {
+            completed(self, nil);
+        }
+        return;
+    }
+    
     NSTask* task = [[NSTask alloc] init];
     NSPipe* pipe = [NSPipe pipe];
     
@@ -921,22 +970,25 @@
     
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         
-        NSError* error = nil;
 
         // Blocking read in background thread:
         NSData* data = [file readDataToEndOfFile];
         NSString* result = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
-        self.javaClasspath = [result stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        
-        if (! result.length) {
-            NSLog(@"Error, got no classpath.");
-            error = [NSError errorWithDomain: @"S-Explorer" code: 12 userInfo: nil]; // TODO: Populate error
-        }
-        if (completed) {
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            NSError* error = nil;
+
+            self.javaClasspath = [result stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            
+            if (! result.length) {
+                NSLog(@"Error, got no classpath.");
+                error = [NSError errorWithDomain: @"S-Explorer" code: 12 userInfo: nil]; // TODO: Populate error
+            }
+
+            if (completed) {
                 completed(self, error);
-            });
-        }
+            }
+        });
+        
     });
 }
 

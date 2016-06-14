@@ -34,6 +34,8 @@ extern NSString* SEProjectDocumentType;
 @property (strong, nonatomic) IBOutlet NSSplitView* horizontalSplitView;
 
 @property (readonly) SESourceItem* projectFolderItem;
+@property (readonly) SESourceItem* projectFileItem;
+
 @property (strong, nonatomic) NSDictionary* tabbedSourceItems; // keys are NSNumbers, starting with @(0), values are SESourceItem objects.
 @property (strong, nonatomic) IBOutlet NSTabView* sourceTabView;
 @property (strong, nonatomic) IBOutlet NSOutlineView* sourceList;

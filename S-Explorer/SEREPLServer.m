@@ -130,7 +130,12 @@
 }
 
 - (id) initWithSettings: (NSDictionary*) initialSettings {
+    
+    NSParameterAssert(initialSettings!=nil);
     if (self = [self init]) {
+        
+        NSLog(@"Starting REPL Server with settings %@.", initialSettings);
+        
         self.settings = initialSettings;
     }
     return self;

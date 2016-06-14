@@ -552,6 +552,10 @@ NSString* SESourceItemChangedEditedStateNotification = @"SESourceItemChangedEdit
     }
 }
 
+- (NSUInteger) hash {
+    return self.fileURL.hash;
+}
+
 @end
 
 @implementation SESourceItem (PB)

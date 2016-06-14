@@ -233,7 +233,8 @@ static NSData* LineFeed = nil;
     if (expression) {
         expression = [expression stringByAppendingString: @"\n"];
         SEREPLRequestBlock requestBlock = ^void() {
-            NSLog(@"%@ is sending '%@' as request# %ld.", self, expression, _requestCounter++);
+            
+            NSLog(@"%@ is sending '%@' as request# %ld.", self, [expression substringToIndex: MIN(expression.length-1, 100)], _requestCounter++);
             NSData* stringData = [expression dataUsingEncoding: NSUTF8StringEncoding];
             [self.socket writeData: stringData withTimeout: timeout tag: _requestCounter];
             
