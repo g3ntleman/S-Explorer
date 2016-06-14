@@ -13,8 +13,10 @@
 }
 
 @property (readonly) NSString* key;
+@property BOOL dictDidChange;
 
 - (id) initWithKey: (NSString*) key;
+
 
 @end
 
@@ -42,6 +44,7 @@
 }
 
 - (void)forwardInvocation:(NSInvocation *)invocation {
+    _dictDidChange = YES;
     [invocation invokeWithTarget: _dict];
 }
 
@@ -49,13 +52,14 @@
     return [_dict methodSignatureForSelector: sel];
 }
 
-
 - (void) commitChanges {
-    NSAssert(_dict, @"No dictionary set.");
-    [[NSUserDefaults standardUserDefaults] setObject: _dict forKey: _key];
+    if (_dictDidChange) {
+        NSAssert(_dict, @"No dictionary set.");
+        [[NSUserDefaults standardUserDefaults] setObject: _dict forKey: _key];
+    }
 }
 
-- (void)dealloc {
+- (void) dealloc {
     [self commitChanges];
 }
 

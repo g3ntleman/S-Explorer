@@ -102,7 +102,7 @@
     if (!_javaClasspath) {
         NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
         NSDictionary* projects = [ud dictionaryForKey: @"Projects"];
-        NSString* fileKey = self.projectFileItem.fileURL.absoluteString;
+        NSString* fileKey = self.projectFileItem.fileURL.fileReferenceURL.absoluteString;
         NSDictionary* projectDefaults = projects[fileKey][@"JavaClassPath"];
         if (projectDefaults.count) {
             NSNumber* modTime = projectDefaults[@"Time"];
@@ -124,7 +124,7 @@
     if (_javaClasspath != javaClasspath) {
         _javaClasspath = javaClasspath;
         NSMutableDictionary* allProjects = [[NSUserDefaults standardUserDefaults] mutableDictionaryForKey: @"Projects"];
-        NSString* fileKey = self.projectFileItem.fileURL.absoluteString;
+        NSString* fileKey = self.projectFileItem.fileURL.fileReferenceURL.absoluteString;
         NSMutableDictionary* projectDefaults = [allProjects mutableDictionaryForKey: fileKey];
         [projectDefaults setObject: @{@"Time": @((NSInteger)[[NSDate date] timeIntervalSince1970]), @"Path": javaClasspath} forKey: @"JavaClassPath"];
         
