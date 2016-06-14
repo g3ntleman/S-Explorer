@@ -126,12 +126,8 @@
         NSMutableDictionary* allProjects = [[NSUserDefaults standardUserDefaults] mutableDictionaryForKey: @"Projects"];
         NSString* fileKey = self.projectFileItem.fileURL.fileReferenceURL.absoluteString;
         NSMutableDictionary* projectDefaults = [allProjects mutableDictionaryForKey: fileKey];
-        [projectDefaults setObject: @{@"Time": @((NSInteger)[[NSDate date] timeIntervalSince1970]), @"Path": javaClasspath} forKey: @"JavaClassPath"];
-        
-//        NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
-//        NSString* fileKey = [NSString stringWithFormat: @"prj#%ld-d", self.projectFileItem.hash];
-//        [ud setInteger: (NSInteger)[[NSDate date] timeIntervalSince1970] forKey: fileKey];
-//        [ud setObject: _javaClasspath forKey: [fileKey stringByAppendingString: @"p"]];
+        [projectDefaults setObject: @{@"Time": @((NSInteger)[[NSDate date] timeIntervalSince1970]),
+                                      @"Path": javaClasspath} forKey: @"JavaClassPath"];
     }
 }
 
