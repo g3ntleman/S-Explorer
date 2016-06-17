@@ -23,6 +23,7 @@
 @implementation NSUserDefaults (OPMutability)
 
 - (NSMutableDictionary*) mutableDictionaryForKey: (NSString*) key {
+    NSParameterAssert(key.length > 0);
     return (NSMutableDictionary*)[[OPUserDefaultsProxy alloc] initWithKey: key];
 }
 
@@ -72,6 +73,8 @@
 @implementation NSMutableDictionary (OPMutability)
 
 - (NSMutableDictionary*) mutableDictionaryForKey: (NSString*) key {
+    NSParameterAssert(key.length > 0);
+
     NSMutableDictionary* result = [self objectForKey: key];
     if (! result) {
         result = [[NSMutableDictionary alloc] init];

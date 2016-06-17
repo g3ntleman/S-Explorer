@@ -818,45 +818,49 @@
     
     [self revealInSourceList: nil];
     
-    // Get the tool REPL going:
-    
-    [self populateJavaClassPathWithCompletion: ^(SEProjectDocument* document, NSError* error) {
+    // Check, if we have a project file to derive a classpath from. If not, do not start the tool repl:
+    if (self.projectFileItem) {
         
-        // Append bundle path to classPath:
-        
-        //NSString* additionalSourcesPath = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent: @"Runtime-Support"] stringByAppendingPathComponent: self.currentLanguage];
-        //self.javaClasspath = [self.javaClasspath stringByAppendingFormat: @":%@", additionalSourcesPath];
-        
-        if (! error) {
-            [self startREPLServerWithCompletion: ^(SEREPLServer* server, NSError* error) {
-                // Connect to tool REPL:
-                if (error) {
-                    NSLog(@"Error creating REPL server: %@", error);
-                } else {
-                    
-                    NSLog(@"Socket REPL ready. Connecting...");
-                    [self.toolConnection openWithHostname: @"localhost"
-                                                     port: server.port
-                                               completion: ^(SEREPLConnection* connection, NSError* error) {
-                                                   if (! error) {
-                                                       // Send test expression:
-                                                       [connection sendExpression: @"(* 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
-                                                           id exception = resultDictionary[SEREPLKeyException];
-                                                           if (exception) {
-                                                               NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
-                                                           } else {
-                                                               id result = resultDictionary[SEREPLKeyResult];
-                                                               NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
-                                                           }
-                                                       }];
-                                                   } else {
-                                                       NSLog(@"Error querying socket REPL: %@", error);
-                                                   }
-                                               }];
-                }
-            }];
-        }
-    }];
+        // Get the tool REPL going:
+
+        [self populateJavaClassPathWithCompletion: ^(SEProjectDocument* document, NSError* error) {
+            
+            // Append bundle path to classPath:
+            
+            //NSString* additionalSourcesPath = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent: @"Runtime-Support"] stringByAppendingPathComponent: self.currentLanguage];
+            //self.javaClasspath = [self.javaClasspath stringByAppendingFormat: @":%@", additionalSourcesPath];
+            
+            if (! error) {
+                [self startREPLServerWithCompletion: ^(SEREPLServer* server, NSError* error) {
+                    // Connect to tool REPL:
+                    if (error) {
+                        NSLog(@"Error creating REPL server: %@", error);
+                    } else {
+                        
+                        NSLog(@"Socket REPL ready. Connecting...");
+                        [self.toolConnection openWithHostname: @"localhost"
+                                                         port: server.port
+                                                   completion: ^(SEREPLConnection* connection, NSError* error) {
+                                                       if (! error) {
+                                                           // Send test expression:
+                                                           [connection sendExpression: @"(* 2 3)" timeout: 10.0 completion: ^(NSDictionary* resultDictionary) {
+                                                               id exception = resultDictionary[SEREPLKeyException];
+                                                               if (exception) {
+                                                                   NSLog(@"Socket REPL got error: '%@' of class %@", exception, [exception class]);
+                                                               } else {
+                                                                   id result = resultDictionary[SEREPLKeyResult];
+                                                                   NSLog(@"Socket REPL got result: '%@' of class %@", result, [result class]);
+                                                               }
+                                                           }];
+                                                       } else {
+                                                           NSLog(@"Error querying socket REPL: %@", error);
+                                                       }
+                                                   }];
+                    }
+                }];
+            }
+        }];
+    }
 }
 
 + (BOOL) autosavesInPlace {
@@ -966,25 +970,24 @@
     
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         
-
         // Blocking read in background thread:
         NSData* data = [file readDataToEndOfFile];
+        
         NSString* result = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             NSError* error = nil;
-
+            
             self.javaClasspath = [result stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
             
             if (! result.length) {
                 NSLog(@"Error, got no classpath.");
                 error = [NSError errorWithDomain: @"S-Explorer" code: 12 userInfo: nil]; // TODO: Populate error
             }
-
+            
             if (completed) {
                 completed(self, error);
             }
         });
-        
     });
 }
 
