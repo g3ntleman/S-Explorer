@@ -98,15 +98,17 @@
             result.range.length = 1;
             return result;
         }
-        case '"':
-        result.token = STRING;
-        do {
-            c = [self getc];
-        } while (c != 0 && c != '"');
-        result.range.length = position-result.range.location;
-        
-        return result;
-        
+        case '"': {
+            register unichar prev = 0;
+            result.token = STRING;
+            do {
+                prev = c;
+                c = [self getc];
+            } while (c != 0 && (c != '"' || prev=='\\'));
+            result.range.length = position-result.range.location;
+            
+            return result;
+        }
         default:
         
         do {
