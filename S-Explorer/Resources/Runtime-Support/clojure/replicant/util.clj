@@ -76,7 +76,9 @@
  
  ;; use: (map-map-vals (ns-map *ns*) fq-name)
 
- (defn start-user-repl
+ (comment
+
+ (defn start-user-repl []
  (let [bindings (atom {})                   ;; shared atom to stash user's bindings
  repl-name (gensym "repl")            ;; generate repl server name
  server ^ServerSocket (server/start-server
@@ -86,10 +88,9 @@
      :args   [:eval (partial user-eval bindings)]})
  repl-port (.getLocalPort server)]
  ))
- )
+ 
 
  
-(comment
   ;; First start a tooling repl server - tool repl will connect to this
   ;; -Dclojure.server.datarepl="{:port 5555 :accept replicant.util/data-repl}"
 

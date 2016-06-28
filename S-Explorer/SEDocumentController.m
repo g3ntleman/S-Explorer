@@ -232,7 +232,7 @@
                 if (error) {
                     [[NSAlert alertWithError:error] runModal];
                 } else {
-                    [project saveProjectSettings];
+                    [project saveSettings];
                 }
             }];
         }

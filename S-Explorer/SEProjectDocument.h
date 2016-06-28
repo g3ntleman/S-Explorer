@@ -46,6 +46,8 @@ extern NSString* SEProjectDocumentType;
 @property (strong, readonly) NSDictionary* languageDictionary;
 @property (strong, readonly) SESourceItem* currentSourceItem;
 
+@property (readonly) NSMutableDictionary* settings;
+
 @property (strong, readonly) NSString* javaClasspath;
 
 - (void) populateJavaClassPathWithCompletion: (void (^)(SEProjectDocument* document, NSError* error)) completed;
@@ -54,7 +56,7 @@ extern NSString* SEProjectDocumentType;
 
 
 
-- (void) saveProjectSettings;
+- (void) saveSettings;
 
 // IBActions:
 

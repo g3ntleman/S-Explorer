@@ -31,8 +31,8 @@
 @end
 
 @implementation SEProjectDocument {
-    NSMutableDictionary* uiSettings;
-    BOOL _uiSettingsNeedSave;
+    NSMutableDictionary* _settings;
+    BOOL _settingsNeedSave;
     NSDictionary* savedSplitViewPositions;
 }
 
@@ -98,12 +98,26 @@
     [[NSNotificationCenter defaultCenter] removeObserver: self];
 }
 
+- (NSMutableDictionary*) settings {
+    if (! _settings) {
+        NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
+        NSString* fileKey = self.projectFileItem.fileURL.fileReferenceURL.absoluteString;
+        if (! fileKey) {
+            return nil; // no project file, no settings
+        }
+        NSDictionary* projectSettings = [ud objectForKey: [@"Project@" stringByAppendingString: fileKey]];
+        if (! projectSettings) {
+            projectSettings = [[NSMutableDictionary alloc] init];
+        }
+        // Cache a deep mutable copy:
+        _settings =  CFBridgingRelease(CFPropertyListCreateDeepCopy(NULL, (CFDictionaryRef)projectSettings, kCFPropertyListMutableContainers));
+    }
+    return _settings;
+}
+
 - (NSString*) javaClasspath {
     if (!_javaClasspath) {
-        NSUserDefaults* ud = [NSUserDefaults standardUserDefaults];
-        NSDictionary* projects = [ud dictionaryForKey: @"Projects"];
-        NSString* fileKey = self.projectFileItem.fileURL.fileReferenceURL.absoluteString;
-        NSDictionary* projectDefaults = projects[fileKey][@"JavaClassPath"];
+        NSDictionary* projectDefaults = self.settings[@"JavaClassPath"];
         if (projectDefaults.count) {
             NSNumber* modTime = projectDefaults[@"Time"];
             NSDate* pathDate = [NSDate dateWithTimeIntervalSince1970: [modTime integerValue]];
@@ -123,11 +137,9 @@
     
     if (_javaClasspath != javaClasspath) {
         _javaClasspath = javaClasspath;
-        NSMutableDictionary* allProjects = [[NSUserDefaults standardUserDefaults] mutableDictionaryForKey: @"Projects"];
-        NSString* fileKey = self.projectFileItem.fileURL.fileReferenceURL.absoluteString;
-        NSMutableDictionary* projectDefaults = [allProjects mutableDictionaryForKey: fileKey];
-        [projectDefaults setObject: @{@"Time": @((NSInteger)[[NSDate date] timeIntervalSince1970]),
+        [self.settings setObject: @{@"Time": @((NSInteger)[[NSDate date] timeIntervalSince1970]),
                                       @"Path": javaClasspath} forKey: @"JavaClassPath"];
+        [self settingsNeedSave];
     }
 }
 
@@ -402,7 +414,7 @@
                                 timeout: 20.0
                              completion: ^(NSDictionary* evalResult) {
                                  NSDictionary* map = evalResult[@"result"];
-                                 if (map) {
+                                 if ([map isKindOfClass: [NSDictionary class]]) {
                                      //NSLog(@"Result evaluating ns: '%@'", map);
                                      editor.sortedKeywords = [NSOrderedSet orderedSetWithArray: [map.allKeys sortedArrayUsingSelector: @selector(compare:)]];
                                  } else {
@@ -435,7 +447,7 @@
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryByRemovingObjectForKey: indexNumber];
         [self.uiSettings[@"tabbedSources"] removeObjectForKey: indexNumber.stringValue];
     }
-    [self uiSettingsNeedSave];
+    [self settingsNeedSave];
     
     [self.sourceTabView tabViewItemAtIndex: index].label = item.name;
     
@@ -480,7 +492,7 @@
         NSUInteger tabNo = [sourceTabView indexOfSelectedTabViewItem];
         [self setSourceItem: self.currentSourceItem forTabIndex: tabNo];
         self.uiSettings[@"selectedSourceTab"] = @(tabNo);
-        [self uiSettingsNeedSave];
+        [self settingsNeedSave];
     }
 }
 
@@ -502,20 +514,6 @@
     [self revealInSourceList: self];
 }
 
-//- (NSMutableDictionary*) projectSettings {
-//    
-////    if (! projectSettings) {
-////        //[self revertDocumentToSaved: self];
-////    }
-//    
-//    return projectSettings;
-//}
-
-//- (void) saveProjectSettings {
-//    @synchronized(self) {
-//        [self.projectSettings writeToURL: self.fileURL atomically: NO];
-//    }
-//}
 
 - (void) saveDocument: (id) sender {
     
@@ -551,60 +549,32 @@
     return [self replSettingsForIdentifier: replID];
 }
 
-- (NSString*) uiSettingsPath {
-    NSURL* uiFolderURL = self.projectFolderItem.fileURL;
-    NSString* uiFilePath = [uiFolderURL.path stringByAppendingPathComponent: @".UISettings.plist"];
-    return uiFilePath;
-}
-
 - (NSMutableDictionary*) uiSettings {
-    
-    if (! uiSettings) {
-        NSError* error = nil;
-        NSData* uiData = [NSData dataWithContentsOfFile: [self uiSettingsPath]];
-        if (uiData) {
-            uiSettings = [NSPropertyListSerialization propertyListWithData: uiData
-                                                                   options: NSPropertyListMutableContainers
-                                                                    format: NULL
-                                                                     error: &error];
-        }
-        if (error) {
-            NSLog(@"Error reading '%@': %@", [self uiSettingsPath], error);
-        }
-        
-        if (! uiSettings) {
-            uiSettings = [[NSMutableDictionary alloc] init];
-        }
-        if (! uiSettings[@"expandedFolders"]) {
-            uiSettings[@"expandedFolders"] = [[NSMutableDictionary alloc] init];
-        }
-        if (! uiSettings[@"tabbedSources"]) {
-            uiSettings[@"tabbedSources"] = [[NSMutableDictionary alloc] init];
-        }
-    }
+    NSMutableDictionary* uiSettings = [self.settings mutableDictionaryForKey: @"UISettings"];
     return uiSettings;
 }
 
-- (void) saveUISettings {
-    NSError* error = nil;
-    NSString* errorString = nil;
-    NSData* data = [NSPropertyListSerialization dataFromPropertyList: self.uiSettings format: NSPropertyListBinaryFormat_v1_0 errorDescription: &errorString];
-    NSAssert(! errorString, @"Problem serializing %@: %@", self.uiSettings, errorString);
-    BOOL done = [data writeToFile: self.uiSettingsPath options: NSDataWritingAtomic error:&error];
-    if (! done) {
-        NSLog(@"Warning: Unable to write uiSettings to '%@': %@", self.uiSettingsPath, error);
+- (void) saveSettings {
+    
+    if (_settingsNeedSave) {
+        
+        NSString* fileKey = self.projectFileItem.fileURL.fileReferenceURL.absoluteString;
+        if (fileKey) {
+            [[NSUserDefaults standardUserDefaults] setObject: self.settings
+                                                      forKey: [@"Project@" stringByAppendingString: fileKey]];
+        }
     }
-    _uiSettingsNeedSave = NO;
+    _settingsNeedSave = NO;
 }
 
-- (void) uiSettingsNeedSave {
+- (void) settingsNeedSave {
     
-    if (! _uiSettingsNeedSave) {
+    if (! _settingsNeedSave) {
         // TODO: save later (on idle?)
-        _uiSettingsNeedSave = YES;
+        _settingsNeedSave = YES;
     
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self saveUISettings];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self saveSettings];
         });
     }
 }
@@ -810,11 +780,15 @@
     //    [sourceList selectRowIndexes: [NSIndexSet indexSetWithIndex: row]
     //            byExtendingSelection: NO];
     
-    
-    for (NSString* path in [self.uiSettings[@"expandedFolders"] allKeys]) {
-        SESourceItem* item = [self sourceItemForRelativePath: path];
-        [self.sourceList expandItem: item];
+    @try {
+        for (NSString* path in [[self.uiSettings mutableDictionaryForKey: @"expandedFolders"] allKeys]) {
+            SESourceItem* item = [self sourceItemForRelativePath: path];
+            [self.sourceList expandItem: item];
+        }
+    } @catch (NSException *exception) {
+        NSLog(@"Error Restoring expanded folders: %@. Ignored.", exception);
     }
+
     
     [self revealInSourceList: nil];
     
@@ -1082,6 +1056,7 @@
     //}];
     //[self saveDocument: sender];
     [self updateKeywords];
+    [self saveSettings];
 }
 
 /* 
@@ -1103,9 +1078,12 @@
 }
 
 - (void) close {
+    [self.toolConnection close];
+    [self.replServer stop];
     [self.pathWatcher stopWatchingPaths];
     self.pathWatcher.delegate = nil;
     self.pathWatcher = nil;
+    [self saveSettings];
     [super close];
 }
 
@@ -1160,14 +1138,14 @@
 }
 
 - (BOOL) outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item {
-    self.uiSettings[@"expandedFolders"][[self relativePathForSourceItem: item]] = @YES;
-    [self uiSettingsNeedSave];
+    [self.uiSettings mutableDictionaryForKey: @"expandedFolders"][[self relativePathForSourceItem: item]] = @YES;
+    [self settingsNeedSave];
     return YES;
 }
 
 - (BOOL) outlineView:(NSOutlineView *)outlineView shouldCollapseItem:(id)item {
     [self.uiSettings[@"expandedFolders"] removeObjectForKey: [self relativePathForSourceItem: item]];
-    [self uiSettingsNeedSave];
+    [self settingsNeedSave];
     return YES;
 }
 

@@ -228,7 +228,7 @@ static NSCharacterSet* SEWordCharacters() {
     NoodleLineNumberView* lineNumberView = [self lineNumberView];
     line = MIN(lineNumberView.numberOfLines, MAX(1, line));
     
-    NSRange lineRange = [lineNumberView characterRangeForLineNumber: line];
+    NSRange lineRange = [lineNumberView characterRangeForLineNumber: line-1];
     self.selectedRange = lineRange;
     return lineRange;
 }

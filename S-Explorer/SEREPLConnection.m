@@ -90,7 +90,6 @@ static NSData* LineFeed = nil;
 
 
 - (void) close {
-
     if ([self.socket isConnected]) {
         NSLog(@"Trying to disconnect %@", _socket);
         [self.socket disconnect];
@@ -159,9 +158,13 @@ static NSData* LineFeed = nil;
     }
 }
 
-- (void) socket: (GCDAsyncSocket*) sock didReadString: (NSString*) string {
+- (void) socket: (GCDAsyncSocket*) socket didReadString: (NSString*) string {
     
     //NSLog(@"Socket string read: '%@'", string);
+    
+    if (! socket.isConnected) {
+        return;
+    }
 
     if ([string hasPrefix: @"{"] && [string hasSuffix: @"}"]) {
         // Try to parse the result as an edn dictionary:
