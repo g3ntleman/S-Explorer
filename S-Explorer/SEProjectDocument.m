@@ -781,7 +781,11 @@
     //            byExtendingSelection: NO];
     
     @try {
-        for (NSString* path in [[self.uiSettings mutableDictionaryForKey: @"expandedFolders"] allKeys]) {
+        NSArray* expandedFolders = [[self.uiSettings mutableDictionaryForKey: @"expandedFolders"] allKeys];
+        // Make sure, folders are expanded in the right order (parents first):
+        expandedFolders = [expandedFolders sortedArrayUsingSelector: @selector(length)];
+        //NSLog(@"Settings: expandedFolders = %@", expandedFolders);
+        for (NSString* path in expandedFolders) {
             SESourceItem* item = [self sourceItemForRelativePath: path];
             [self.sourceList expandItem: item];
         }
