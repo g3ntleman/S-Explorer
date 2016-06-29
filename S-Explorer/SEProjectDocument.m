@@ -21,12 +21,16 @@
 #import "SETarget.h"
 #import "NSUserDefaults+OPMutability.h"
 
+
+static inline int sign(NSInteger x) {
+    return (x > 0) - (x < 0);
+}
+
 @interface SEProjectDocument ()
 @property (readonly) NSString* uiSettingsPath;
 @property (strong) NSString* javaClasspath;
 @property (strong, atomic) SEREPLServer* replServer;
 @property (strong, atomic) SEREPLConnection* toolConnection;
-
 
 @end
 
@@ -784,9 +788,9 @@
         NSArray* expandedFolders = [[self.uiSettings mutableDictionaryForKey: @"expandedFolders"] allKeys];
         // Make sure, folders are expanded in the right order (parents first):
         expandedFolders = [expandedFolders sortedArrayUsingComparator: ^NSComparisonResult(NSString* _Nonnull obj1, NSString* _Nonnull obj2) {
-            return obj1.length < obj2.length ? NSOrderedAscending : (obj1.length == obj2.length ? NSOrderedSame : NSOrderedDescending);
+            return sign(obj1.length - obj2.length);
         }];
-        NSLog(@"Settings: expandedFolders = %@", expandedFolders);
+        //NSLog(@"Settings: expandedFolders = %@", expandedFolders);
         for (NSString* path in expandedFolders) {
             SESourceItem* item = [self sourceItemForRelativePath: path];
             [self.sourceList expandItem: item];
