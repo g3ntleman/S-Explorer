@@ -442,24 +442,26 @@ static inline int sign(NSInteger x) {
     NSParameterAssert(item == nil || [item isTextItem]);
     NSParameterAssert(index<self.sourceTabView.numberOfTabViewItems);
     
+    NSMutableDictionary* sourcesByTab = [self.uiSettings mutableDictionaryForKey: @"tabbedSources"];
+    
     if (item) {
         NSParameterAssert([item isKindOfClass: [SESourceItem class]]);
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryBySettingObject: item forKey: indexNumber];
         
-        self.uiSettings[@"tabbedSources"][indexNumber.stringValue] = [self relativePathForSourceItem: item];
+        sourcesByTab[indexNumber.stringValue] = [self relativePathForSourceItem: item];
     } else {
         self.tabbedSourceItems = [self.tabbedSourceItems dictionaryByRemovingObjectForKey: indexNumber];
-        [self.uiSettings[@"tabbedSources"] removeObjectForKey: indexNumber.stringValue];
+        [sourcesByTab removeObjectForKey: indexNumber.stringValue];
     }
+    NSLog(@"Storing settings: %@", self.uiSettings[@"tabbedSources"]);
+    
     [self settingsNeedSave];
     
     [self.sourceTabView tabViewItemAtIndex: index].label = item.name;
     
     self.editorController.sourceItem = item;
     
-    
     [self updateKeywords];
-    
 }
 
 //- (BOOL) validateMenuItem:(NSMenuItem *)menuItem {
@@ -745,7 +747,6 @@ static inline int sign(NSInteger x) {
     [self.sourceList setDraggingSourceOperationMask: NSDragOperationLink forLocal: NO];
     
     // Restore Source Tabs and Selection:
-    
     NSDictionary* pathsByTabIndex = self.uiSettings[@"tabbedSources"];
     for (NSString* indexString in [pathsByTabIndex allKeys]) {
         NSUInteger tabIndex = [indexString integerValue];
