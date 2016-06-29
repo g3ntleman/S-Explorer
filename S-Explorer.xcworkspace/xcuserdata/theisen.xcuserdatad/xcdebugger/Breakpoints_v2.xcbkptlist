@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "S-Explorer/SEProjectDocument.m"
-            timestampString = "488810485.41552"
+            timestampString = "488924983.19432"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "950"
-            endingLineNumber = "950"
+            startingLineNumber = "956"
+            endingLineNumber = "956"
             landmarkName = "-populateJavaClassPathWithCompletion:"
             landmarkType = "5">
          </BreakpointContent>

@@ -783,8 +783,10 @@
     @try {
         NSArray* expandedFolders = [[self.uiSettings mutableDictionaryForKey: @"expandedFolders"] allKeys];
         // Make sure, folders are expanded in the right order (parents first):
-        expandedFolders = [expandedFolders sortedArrayUsingSelector: @selector(length)];
-        //NSLog(@"Settings: expandedFolders = %@", expandedFolders);
+        expandedFolders = [expandedFolders sortedArrayUsingComparator: ^NSComparisonResult(NSString* _Nonnull obj1, NSString* _Nonnull obj2) {
+            return obj1.length < obj2.length ? NSOrderedAscending : (obj1.length == obj2.length ? NSOrderedSame : NSOrderedDescending);
+        }];
+        NSLog(@"Settings: expandedFolders = %@", expandedFolders);
         for (NSString* path in expandedFolders) {
             SESourceItem* item = [self sourceItemForRelativePath: path];
             [self.sourceList expandItem: item];
