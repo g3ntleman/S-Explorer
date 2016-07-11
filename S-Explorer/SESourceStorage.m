@@ -102,61 +102,90 @@ NSString* SETokenTypeAttributeName = @"TokenType";
 
 @implementation NSTextStorage (SE)
 
+/**
+ *  Expande the given range to
+ */
+- (unichar) expandToAnyPar: (NSRange*) rangePtr {
+    while ((*rangePtr).location > 0) {
+        // Search left:
+        (*rangePtr).length += 1;
+        (*rangePtr).location -= 1;
+        unichar matchingPar = [self.string characterAtIndex: (*rangePtr).location];
+        NSColor* color = [self attribute: NSForegroundColorAttributeName atIndex: (*rangePtr).location effectiveRange: NULL];
+        // Try to ignore pars in comments and strings:
+        if (color != [self.class commentColor] && color != [self.class stringColor]) {
+            if (isOpeningPar(matchingPar)) {
+                if ([self expandRange: rangePtr toParMatchingPar: matchingPar]) {
+                    return matchingPar;
+                } else {
+                    return 0x0;
+                }
+            }
+            if (isClosingPar(matchingPar)) {
+                NSRange newRange = NSMakeRange((*rangePtr).location, 1);
+                if ([self expandRange: &newRange toParMatchingPar: matchingPar]) {
+                    *rangePtr = NSUnionRange(*rangePtr, newRange);
+                } else {
+                    return 0x0;
+                }
+            }
+        }
+        // Continue search...
+    }
+    return 0x0;
+
+}
+
 - (BOOL) expandRange: (NSRange*) rangePtr toParMatchingPar: (unichar) par {
     
     unichar targetPar = matchingPar(par);
-    switch (par) {
-        case ']':
-        case ')': {
-            while ((*rangePtr).location > 0) {
-                // Search left:
-                (*rangePtr).length += 1;
-                (*rangePtr).location -= 1;
-                unichar matchingPar = [self.string characterAtIndex: (*rangePtr).location];
-                NSColor* color = [self attribute: NSForegroundColorAttributeName atIndex: (*rangePtr).location effectiveRange: NULL];
-                if (color != [self.class commentColor] && color != [self.class stringColor]) {
-                    if (matchingPar == targetPar) {
-                        return YES;
-                    }
-                    if (matchingPar == par) {
-                        NSRange newRange = NSMakeRange((*rangePtr).location, 1);
-                        if ([self expandRange: &newRange toParMatchingPar: matchingPar]) {
-                            *rangePtr = NSUnionRange(*rangePtr, newRange);
-                        } else {
-                            return NO;
-                        }
-                    }
-                }
-                // Continue search...
-            }
-            return NO;
-        }
-        case '[':
-        case '(': {
-            NSUInteger stringLength = self.string.length;
-            while (NSMaxRange(*rangePtr) < stringLength) {
-                // Search left:
-                (*rangePtr).length += 1;
-                unichar matchingPar = [self.string characterAtIndex: NSMaxRange(*rangePtr)-1];
+    if (isClosingPar(par)) {
+        while ((*rangePtr).location > 0) {
+            // Search left:
+            (*rangePtr).length += 1;
+            (*rangePtr).location -= 1;
+            unichar matchingPar = [self.string characterAtIndex: (*rangePtr).location];
+            NSColor* color = [self attribute: NSForegroundColorAttributeName atIndex: (*rangePtr).location effectiveRange: NULL];
+            // Try to ignore pars in comments and strings:
+            if (color != [self.class commentColor] && color != [self.class stringColor]) {
                 if (matchingPar == targetPar) {
                     return YES;
                 }
                 if (matchingPar == par) {
-                    NSRange newRange = NSMakeRange(NSMaxRange(*rangePtr)-1, 1);
+                    NSRange newRange = NSMakeRange((*rangePtr).location, 1);
                     if ([self expandRange: &newRange toParMatchingPar: matchingPar]) {
                         *rangePtr = NSUnionRange(*rangePtr, newRange);
                     } else {
-                        return NO;
+                        return 0x0;
                     }
                 }
-                // Continue search...
             }
-            return NO;
+            // Continue search...
         }
-        default:
-            NSLog(@"No paranthesis detected.");
-            return NO;
+        return 0x0;
+    } else if (isOpeningPar(par)) {
+        NSUInteger stringLength = self.string.length;
+        while (NSMaxRange(*rangePtr) < stringLength) {
+            // Search left:
+            (*rangePtr).length += 1;
+            unichar matchingPar = [self.string characterAtIndex: NSMaxRange(*rangePtr)-1];
+            if (matchingPar == targetPar) {
+                return YES;
+            }
+            if (matchingPar == par) {
+                NSRange newRange = NSMakeRange(NSMaxRange(*rangePtr)-1, 1);
+                if ([self expandRange: &newRange toParMatchingPar: matchingPar]) {
+                    *rangePtr = NSUnionRange(*rangePtr, newRange);
+                } else {
+                    return NO;
+                }
+            }
+            // Continue search...
+        }
+        return NO;
     }
+    NSLog(@"No paranthesis detected.");
+    return NO;
 }
 
 - (void) colorizeRange: (NSRange) aRange

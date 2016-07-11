@@ -21,6 +21,7 @@ NSString* SETokenTypeAttributeName;
 @interface NSTextStorage (SE)
 
 - (BOOL) expandRange: (NSRange*) rangePtr toParMatchingPar: (unichar) par;
+- (unichar) expandToAnyPar: (NSRange*) rangePtr;
 
 + (NSColor*) commentColor;
 

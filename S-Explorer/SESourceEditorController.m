@@ -19,6 +19,7 @@ NSSet* SESingleIndentFunctions() {
     if (! SESingleIndentFunctions) {
         SESingleIndentFunctions = [NSSet setWithObjects: @"define", @"lambda", @"module", @"let", @"letrec", @"let*", @"and-let*", nil];
     }
+//todo: put into plist?
     return SESingleIndentFunctions;
 }
 
@@ -145,7 +146,8 @@ NSSet* SESingleIndentFunctions() {
         NSRange currentExpressionRange = NSMakeRange(range.location, 0);
         indentation = 0;
         
-        if ([self.textView.textStorage expandRange: &currentExpressionRange toParMatchingPar: ')']) {
+        unichar openingPar = [self.textView.textStorage expandToAnyPar: &currentExpressionRange];
+        if (openingPar != 0) {
             NSLog(@"Next opening par is %@", NSStringFromRange(currentExpressionRange));
             
             NSUInteger parColumn = [self columnForLocation: currentExpressionRange.location];
@@ -160,10 +162,19 @@ NSSet* SESingleIndentFunctions() {
             while (location < NSMaxRange(range)) {
                 locationChar = [text characterAtIndex: location];
                 if (locationChar == ' ' || isPar(locationChar) || locationChar == '\n') {
-                    wordRange = NSMakeRange(currentExpressionRange.location+1, location - currentExpressionRange.location-1);
+                    wordRange = NSMakeRange(currentExpressionRange.location+1, location - currentExpressionRange.location-1); // wordRange now contains the first word
+                
+                    // Skip more spaces after first word:
+                    do {
+                        if (locationChar == ' ') {
+                            locationChar = [text characterAtIndex: ++location];
+                        } else {
+                            break;
+                        }
+                    } while (location < NSMaxRange(range));
                     // Check, if something follows:
                     do {
-                        if (locationChar == '\n') break;
+                        if (locationChar == '\n' || [text characterAtIndex: wordRange.location] == ':' || openingPar == '[') break;
                         if (locationChar != ' ') {
                             isSingleItem = NO; // more elements coming
                             break;
@@ -176,10 +187,8 @@ NSSet* SESingleIndentFunctions() {
             }
             
             if (wordRange.length) {
-                indentation += 1;
-                NSString* word = [text substringWithRange: wordRange];
-                if (! [SESingleIndentFunctions() containsObject: word] && !isSingleItem) {
-                    indentation += wordRange.length;
+                if (! isSingleItem) {
+                    indentation += wordRange.length+1;
                 }
             }
         }
