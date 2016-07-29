@@ -18,5 +18,5 @@ Planned Features
   * Syntax-Highlighting (easy)
   * Parenthesis Highlighting (easy)
   * Expression Selection by double-clicking Parenthesis (easy)
-* Project creation via Leiningen [leiningen.org|Leiningen]
+* Project creation via Leiningen <http://www.leiningen.org>
 * Support for running Tests (todo)
